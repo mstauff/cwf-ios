@@ -23,7 +23,5 @@ struct OrgType : JSONParsable {
         let orgType = OrgType( id:id, name: name )
         return orgType
     }
-    
-    
 }
 
