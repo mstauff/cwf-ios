@@ -24,5 +24,6 @@ struct OrgType : JSONParsable {
         return orgType
     }
     
+    
 }
 
