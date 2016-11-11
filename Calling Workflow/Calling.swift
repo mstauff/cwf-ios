@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Calling : JSONParsable {
+public struct Calling : JSONParsable {
     let id : Int64
     let currentIndId : Int64?
     let proposedIndId : Int64?
@@ -16,10 +16,10 @@ struct Calling : JSONParsable {
     let position : Position
     let notes : String?
     let editableByOrg : Bool
-    let parentOrg : Org?
+    var parentOrg : Org?
     
     
-    static func parseFrom(_ json: JSONObject) -> Calling? {
+    public static func parseFrom(_ json: JSONObject) -> Calling? {
         guard
             let id = json["id"] as? Int64,
             let status = json["status"] as? String,
