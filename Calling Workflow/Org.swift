@@ -8,48 +8,52 @@
 
 import Foundation
 
-struct Org : JSONParsable  {
-    
-    var orgType : OrgType
-    var orgName : String
-    var positions : [Position]
-    var subOrgs : [Org]
+public struct Org : JSONParsable  {
+
+    let id : Int64
+    let orgType : OrgType
+    let orgName : String
+    let displayOrder : Int
+    let children : [Org]
+
+    var callings : [Calling]
     // Do we need these? Probably not for the app, but maybe we will to be able to send necessary data to LCR for calling updates
     //    var parentOrg : Org
-    //    var childOrgs : [Org]
     
-    init( orgType: OrgType, orgName: String ) {
-        self.init( orgType: orgType, orgName: orgName, positions: [] )
+    public func toJSON() -> String? {
+        var jsonString : String? = nil
+        do {
+            jsonString = String( data: try JSONSerialization.data(withJSONObject: self ), encoding: .utf8 )
+        } catch {
+            // do nothing - leave nil
+        }
+        return jsonString
     }
     
-    init( orgType: OrgType, orgName: String, positions: [Position] ) {
-        self.orgType = orgType
-        self.orgName = orgName
-        self.positions = positions
-        self.subOrgs = []
-    }
     
-//    func toJSON() -> String {
-//        return String( JSONSerialization.data(withJSONObject: self ), encoding: UTF8() )
-//    }
-    
-    
-    static func parseFrom(_ json: JSONObject) -> Org? {
+    public static func parseFrom(_ json: JSONObject) -> Org? {
         guard
-            let orgType = OrgType.parseFrom(json["orgType"] as! JSONObject),
-            let orgName = json["orgName"] as? String,
-            let positions = json["positions"] as? [JSONObject]
+            // currently orgType is inlined with the org object, rather than a separate JSON piece
+            let orgType = OrgType.parseFrom( json ),
+            let id = json["subOrgId"] as? Int64,
+            let displayOrder = json["displayOrder"] as? Int
             else {
                 return nil
         }
-        var org = Org( orgType: orgType, orgName: orgName )
-        let parsedPositions : [Position] = positions.map() { positionJson -> Position? in
-            var position = Position.parseFrom( positionJson )
-            position?.org = org
-            return position
-        }.filter() { $0 != nil } as! [Position]
+        let children = json["children"] as? [JSONObject] ?? []
+        let callings = json["callings"] as? [JSONObject] ?? []
+        var orgName = json["customOrgName"] as? String ?? json["defaultOrgName"] as? String
+        orgName = orgName ?? ""
+        let childOrgs : [Org] = [] // todo - need to parse children from JSON
+//        orgName = orgName?.isEmpty ?  json["orgName"] as? String
+        var org = Org( id: id, orgType: orgType, orgName: orgName!, displayOrder: displayOrder, children: childOrgs, callings: [] )
+        let parsedCallings : [Calling] = callings.map() { callingJson -> Calling? in
+            var calling = Calling.parseFrom( callingJson )
+            calling?.parentOrg = org
+            return calling
+        }.filter() { $0 != nil } as! [Calling]
         
-        org.positions = parsedPositions
+        org.callings = parsedCallings
         return org
     }
     

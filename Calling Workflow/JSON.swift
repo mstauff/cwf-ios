@@ -36,5 +36,5 @@ public extension Data {
 
 public protocol JSONParsable {
     static func parseFrom( _ object: JSONObject) -> Self?
-//    func toJSON() -> String
+//    func toJSON() -> String?
 }
