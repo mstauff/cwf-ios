@@ -35,7 +35,7 @@ class OrgDetailTableViewController: UITableViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
         var sectionCount = 1
         
-        if ((organizationToDisplay?.positions.count)! > 0) {
+        if ((organizationToDisplay?.callings.count)! > 0) {
             sectionCount += 1
         }
         
@@ -43,7 +43,7 @@ class OrgDetailTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if (organizationToDisplay?.positions.count)! > 0 {
+        if (organizationToDisplay?.callings.count)! > 0 {
 
             if section == 0 {
                 return "\(organizationToDisplay?.orgName) Callings"
@@ -59,32 +59,32 @@ class OrgDetailTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if (organizationToDisplay?.positions.count)! > 0 {
+        if (organizationToDisplay?.children.count)! > 0 {
             if section == 0 {
-                return (organizationToDisplay?.positions.count)!
+                return (organizationToDisplay?.children.count)!
             }
             else {
-                return (organizationToDisplay?.subOrgs[section-1].subOrgs.count)!
+                return (organizationToDisplay?.children[section-1].children.count)!
             }
         }
         else {
-            return (organizationToDisplay?.subOrgs.count)!
+            return (organizationToDisplay?.children.count)!
         }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         var nameString : String? = nil
-        if (organizationToDisplay?.positions.count)! > 0 {
+        if (organizationToDisplay?.callings.count)! > 0 {
             if indexPath.section == 0 {
-                nameString = organizationToDisplay?.positions[indexPath.row].name
+                //nameString = organizationToDisplay?.callings[indexPath.row].
             }
             else {
-                nameString = organizationToDisplay?.subOrgs[indexPath.section - 1].orgName
+                nameString = organizationToDisplay?.children[indexPath.section - 1].orgName
             }
         }
         else {
-            nameString = organizationToDisplay?.subOrgs[indexPath.section].orgName
+            nameString = organizationToDisplay?.children[indexPath.section].orgName
         }
         
         cell.textLabel?.text = nameString
