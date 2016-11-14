@@ -31,7 +31,7 @@ class OrganizationTableViewController: UITableViewController {
     func getOrgs() {
         let orgTypes = [OrgType(id: 7428354, name: "Primary"), OrgType(id: 2, name: "Young Mens"), OrgType(id: 3, name: "Young Womens")]
         
-        var org1 = Org(orgType: orgTypes[0], orgName: orgTypes[0].name)
+/*        var org1 = Org(id: 1, orgType: orgTypes[0], orgName: orgTypes[0].name)
         
         var subOrg1 = Org(orgType: OrgType(id: 38432972, name:"CTR 7"), orgName: "CTR 7")
         subOrg1.positions.append(Position(id: 1, positionTypeId: 2, name: "Primary Worker CTR 7", description: "Primary Teacher", org: org1))
@@ -41,7 +41,7 @@ class OrganizationTableViewController: UITableViewController {
         
         organizationsToDisplay?.append( Org(orgType: orgTypes[1], orgName: orgTypes[1].name) )
         organizationsToDisplay?.append( Org(orgType: orgTypes[2], orgName: orgTypes[2].name) )
-        
+ */
     }
     
     // MARK: - Table View Delegate/DataSource
