@@ -8,15 +8,15 @@
 
 import Foundation
 
-struct OrgType : JSONParsable {
+public struct OrgType : JSONParsable {
     
     let id : Int
     let name : String
     
-    static func parseFrom(_ json: JSONObject) -> OrgType? {
+    public static func parseFrom(_ json: JSONObject) -> OrgType? {
         guard
-            let id = json["id"] as? Int,
-            let name = json["name"] as? String
+            let id = json["orgTypeId"] as? Int,
+            let name = json["orgName"] as? String
             else {
                 return nil
         }
