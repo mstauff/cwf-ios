@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LDSCredentialsViewController: UIViewController {
+class LDSCredentialsTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +21,88 @@ class LDSCredentialsViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - Table view data source
+    override func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+        return 22.0
+    }
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0.01
+    }
+    
+//    override func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
+//        return -0.1
+//    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            return "LDS Account"
+        default:
+            return ""
+        }
+    }
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch section {
+        case 0:
+            return 2
+        case 1:
+            return 1
+        default:
+            return 1
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        switch indexPath.section {
+        case 0:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath) as? InputTableViewCell
 
+            switch indexPath.row {
+            case 0:
+                cell?.inputField?.placeholder = "LDS Username"
+            case 1:
+                cell?.inputField?.placeholder = "Password"
+            default:
+                cell?.textLabel?.text = nil
+            }
+            return cell!
+            
+        case 1:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath)
+            
+            return cell
+            
+        default:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath) as? InputTableViewCell
+            cell?.inputField = nil
+            return cell!
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch indexPath.section {
+        case 0:
+            tableView.deselectRow(at: indexPath, animated: true)
+
+        case 1:
+            logInLDSUser()
+            tableView.deselectRow(at: indexPath, animated: true)
+
+        default:
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+    }
+
+    func logInLDSUser() {
+        print("loging in lds user")
+    }
+    
     /*
     // MARK: - Navigation
 

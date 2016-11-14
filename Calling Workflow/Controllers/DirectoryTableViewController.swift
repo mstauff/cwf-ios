@@ -10,78 +10,84 @@ import UIKit
 
 class DirectoryTableViewController: UITableViewController {
 
+    var members : [Member]!
+
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        members = []
+        
+        setupData()
+        
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+  
+    // MARK: - Setup
+    func setupData() {
+        let newMember = Member(indId: 1, name: "John Doe", indPhone: "801-801-8018", housePhone: "8108108108", email: "jd@email.com", currentCall: "Sunbeam Teacher")
+        members.append(newMember)
+        
+        let newMember2 = Member(indId: 123, name: "Adams, Steve", indPhone: "555-433-2222", housePhone: "555-433-1111", email: "steve@adams.com", currentCall: nil)
+        members.append(newMember2)
+    }
+  
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 0
+        return members.count
     }
 
-    /*
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
+        let cell: NameCallingProposedTableViewCell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! NameCallingProposedTableViewCell
+        let memberForCell = members[indexPath.row]
+        
+        cell.nameLabel?.text = memberForCell.formattedName
+        
+        if memberForCell.currentCalling != nil {
+            cell.currentCallingLabel?.text = memberForCell.currentCalling
+        }
+        else {
+            cell.currentCallingLabel?.text = nil
+        }
+        
+        if let calling = getCallingForMemberWithId(memberId: memberForCell.individualId) {
+            cell.callingInProcessLabel?.text = calling.position.name
+        }
+        else {
+            cell.callingInProcessLabel?.text = nil
+        }
+        
         return cell
     }
-    */
+    
 
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+    // MARK: - GetData
+    
+    func getCallingForMemberWithId(memberId: Int64) -> Calling? {
+        
+        let position = Position(id: 01, positionTypeId: 01, name: "Sunbeam Teacher", description: nil, org: nil)
+        
+        
+        let calling = Calling(id: 01, currentIndId: 1, proposedIndId: 123, status: "CONSIDERING", position: position, notes: nil, editableByOrg: true, parentOrg: nil)
+        
+        if calling.proposedIndId == memberId {
+            return calling
+        }
+        else {
+            return nil
+        }
     }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
+    
     /*
     // MARK: - Navigation
 
@@ -91,5 +97,6 @@ class DirectoryTableViewController: UITableViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
 
 }

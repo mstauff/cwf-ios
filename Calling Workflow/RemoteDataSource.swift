@@ -53,7 +53,8 @@ class RemoteDataSource : NSObject, DataSource {
     override init() {
         // TODO - this doesn't work locally, may be due to a bug when xcode debugger is attached to a sim.
         // Need to try it once we're working on a device, w/o xcode debugger
-        if let auth = GTMOAuth2ViewControllerTouch.authForGoogleFromKeychain( forName: RemoteStorageConstants.authTokenKeychainId, clientID: RemoteStorageConstants.oauthClientId,clientSecret: nil) {
+        
+        if let auth = GTMOAuth2ViewControllerTouch.authForGoogleFromKeychain( forName: RemoteStorageConstants.authTokenKeychainId, clientID: RemoteStorageConstants.oauthClientId,clientSecret: nil){
             if( auth.canAuthorize ) {
                 driveService.authorizer = auth
             }
