@@ -9,9 +9,14 @@
 import UIKit
 
 class OrgDetailTableViewController: UITableViewController {
-
+    
+    var organizationToDisplay : Org?
+    
+    // MARK: - Lyfecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.title = organizationToDisplay?.orgName
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -28,24 +33,67 @@ class OrgDetailTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+        var sectionCount = 1
+        
+        if ((organizationToDisplay?.positions.count)! > 0) {
+            sectionCount += 1
+        }
+        
+        return sectionCount
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if (organizationToDisplay?.positions.count)! > 0 {
+
+            if section == 0 {
+                return "\(organizationToDisplay?.orgName) Callings"
+            }
+            else {
+                return "Suborganizations"
+            }
+        }
+        else {
+            return nil
+        }
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+        
+        if (organizationToDisplay?.positions.count)! > 0 {
+            if section == 0 {
+                return (organizationToDisplay?.positions.count)!
+            }
+            else {
+                return (organizationToDisplay?.subOrgs[section-1].subOrgs.count)!
+            }
+        }
+        else {
+            return (organizationToDisplay?.subOrgs.count)!
+        }
     }
 
-    /*
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        var nameString : String? = nil
+        if (organizationToDisplay?.positions.count)! > 0 {
+            if indexPath.section == 0 {
+                nameString = organizationToDisplay?.positions[indexPath.row].name
+            }
+            else {
+                nameString = organizationToDisplay?.subOrgs[indexPath.section - 1].orgName
+            }
+        }
+        else {
+            nameString = organizationToDisplay?.subOrgs[indexPath.section].orgName
+        }
+        
+        cell.textLabel?.text = nameString
+        
         return cell
     }
-    */
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
 
     /*
     // Override to support conditional editing of the table view.

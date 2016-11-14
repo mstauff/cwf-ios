@@ -10,6 +10,11 @@ import UIKit
 
 class NameCallingProposedTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var nameLabel: UILabel!
+    
+    @IBOutlet weak var currentCallingLabel: UILabel!
+    
+    @IBOutlet weak var callingInProcessLabel: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
