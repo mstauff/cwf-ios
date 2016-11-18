@@ -9,7 +9,7 @@
 import Foundation
 
 public struct Calling : JSONParsable {
-    let id : Int64
+    let id : Int64?
     let currentIndId : Int64?
     let proposedIndId : Int64?
     let status : String
@@ -21,13 +21,15 @@ public struct Calling : JSONParsable {
     
     public static func parseFrom(_ json: JSONObject) -> Calling? {
         guard
-            let id = json["id"] as? Int64,
             let status = json["status"] as? String,
-            let position = Position.parseFrom(json["position"] as! JSONObject)
+            let position = Position.parseFrom(json)
             else {
                 return nil
         }
-        return Calling( id:id, currentIndId: json["currentIndId"] as! Int64?, proposedIndId: json["proposedIndId"] as! Int64?, status: status, position: position, notes: json["notes"] as! String?, editableByOrg: true, parentOrg: nil )
+        let id = json["positionId"] as? NSNumber
+        let currentIndIdNum = json["currentIndId"] as? NSNumber
+        let proposedIndIdNum = json["proposedIndId"] as? NSNumber
+        return Calling( id:id?.int64Value, currentIndId: currentIndIdNum?.int64Value, proposedIndId: proposedIndIdNum?.int64Value, status: status, position: position, notes: json["notes"] as! String?, editableByOrg: true, parentOrg: nil )
     }
     
 }

@@ -11,7 +11,7 @@ import Foundation
 public struct Org : JSONParsable  {
 
     let id : Int64
-    let orgType : OrgType
+    let orgTypeId : Int
     let orgName : String
     let displayOrder : Int
     let children : [Org]
@@ -34,8 +34,8 @@ public struct Org : JSONParsable  {
     public static func parseFrom(_ json: JSONObject) -> Org? {
         guard
             // currently orgType is inlined with the org object, rather than a separate JSON piece
-            let orgType = OrgType.parseFrom( json ),
-            let id = json["subOrgId"] as? Int64,
+            let orgTypeId = json["orgTypeId"] as? Int,
+            let id = json["subOrgId"] as? NSNumber,
             let displayOrder = json["displayOrder"] as? Int
             else {
                 return nil
@@ -44,9 +44,11 @@ public struct Org : JSONParsable  {
         let callings = json["callings"] as? [JSONObject] ?? []
         var orgName = json["customOrgName"] as? String ?? json["defaultOrgName"] as? String
         orgName = orgName ?? ""
-        let childOrgs : [Org] = [] // todo - need to parse children from JSON
-//        orgName = orgName?.isEmpty ?  json["orgName"] as? String
-        var org = Org( id: id, orgType: orgType, orgName: orgName!, displayOrder: displayOrder, children: childOrgs, callings: [] )
+        let childOrgs : [Org] = children.map() { childOrgJSON -> Org? in
+            Org.parseFrom( childOrgJSON )
+            }.filter() { $0 != nil } as! [Org]
+        
+        var org = Org( id: id.int64Value, orgTypeId: orgTypeId, orgName: orgName!, displayOrder: displayOrder, children: childOrgs, callings: [] )
         let parsedCallings : [Calling] = callings.map() { callingJson -> Calling? in
             var calling = Calling.parseFrom( callingJson )
             calling?.parentOrg = org

@@ -75,7 +75,7 @@ class DirectoryTableViewController: UITableViewController {
     
     func getCallingForMemberWithId(memberId: Int64) -> Calling? {
         
-        let position = Position(id: 01, positionTypeId: 01, name: "Sunbeam Teacher", description: nil, hidden: false)
+        let position = Position(positionTypeId: 01, name: "Sunbeam Teacher", hidden: false)
         
         
         let calling = Calling(id: 01, currentIndId: 1, proposedIndId: 123, status: "CONSIDERING", position: position, notes: nil, editableByOrg: true, parentOrg: nil)

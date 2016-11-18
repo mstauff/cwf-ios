@@ -1,6 +1,0 @@
-framework module Pods_Calling_WorkflowTests {
-  umbrella header "Pods-Calling WorkflowTests-umbrella.h"
-
-  export *
-  module * { export * }
-}
