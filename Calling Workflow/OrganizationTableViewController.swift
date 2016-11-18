@@ -29,7 +29,7 @@ class OrganizationTableViewController: UITableViewController {
     // MARK: - Setup
     
     func getOrgs() {
-        let orgTypes = [OrgType(id: 7428354, name: "Primary"), OrgType(id: 2, name: "Young Mens"), OrgType(id: 3, name: "Young Womens")]
+        let orgTypes = UnitLevelOrgType.wardOrgTypes
         
 /*        var org1 = Org(id: 1, orgType: orgTypes[0], orgName: orgTypes[0].name)
         

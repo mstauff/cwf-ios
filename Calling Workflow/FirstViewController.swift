@@ -33,7 +33,7 @@ class FirstViewController: UIViewController {
     // TODO - need a constructor/init in the interface
     //    private let dataSource = RemoteDataSource()
     private let callingMgr = CallingDataManager( dataSource: RemoteDataSource() )
-    private let eq = Org( id: 284, orgType: OrgType( id: 1, name: "EQ" ), orgName: "Elders Quorum", displayOrder: 400, children: [], callings: [] )
+    private let eq = Org( id: 284, orgTypeId: UnitLevelOrgType.Elders.rawValue, orgName: "Elders Quorum", displayOrder: 400, children: [], callings: [] )
     
     @IBOutlet var output: UITextView!
     @IBAction func showFileClicked() {

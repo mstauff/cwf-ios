@@ -27,17 +27,19 @@
 		3CE4C9111DCA82A000AAFB31 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C9061DCA82A000AAFB31 /* GoogleService-Info.plist */; };
 		3CE4C9121DCA82A000AAFB31 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9071DCA82A000AAFB31 /* JSON.swift */; };
 		3CE4C9131DCA82A000AAFB31 /* Org.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9081DCA82A000AAFB31 /* Org.swift */; };
-		3CE4C9141DCA82A000AAFB31 /* OrgType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9091DCA82A000AAFB31 /* OrgType.swift */; };
 		3CE4C9151DCA82A000AAFB31 /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90A1DCA82A000AAFB31 /* Position.swift */; };
 		3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */; };
 		3CE4C9171DCA82A000AAFB31 /* RestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */; };
-		3CE4C9551DCBDECC00AAFB31 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C9541DCBDECC00AAFB31 /* cwf-object.js */; };
 		3CEBAF411DCD0D160071BE9F /* CallingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF401DCD0D160071BE9F /* CallingsTableViewController.swift */; };
 		3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF421DCD0E010071BE9F /* DirectoryTableViewController.swift */; };
 		3CEBAF451DCD0FBF0071BE9F /* Member.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF441DCD0FBF0071BE9F /* Member.swift */; };
 		3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF471DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift */; };
 		7383B52A48EE9878CC51A26A /* Pods_Calling_WorkflowUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 188CFE612548010ED581E770 /* Pods_Calling_WorkflowUITests.framework */; };
 		D9B29D5CC172075896D53F87 /* Pods_Calling_Workflow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5ADD1C197D84D3D19A7A24CD /* Pods_Calling_Workflow.framework */; };
+		E8189A8A1DDA2D4600E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A881DDA2D4600E983D4 /* cwf-object.js */; };
+		E8189A8B1DDA2D4600E983D4 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8189A891DDA2D4600E983D4 /* ModelTests.swift */; };
+		E8189A931DDA74E700E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A921DDA74E700E983D4 /* cwf-object.js */; };
+		E8189A951DDE67FB00E983D4 /* UnitLevelOrgType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8189A941DDE67FB00E983D4 /* UnitLevelOrgType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,11 +89,9 @@
 		3CE4C9061DCA82A000AAFB31 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3CE4C9071DCA82A000AAFB31 /* JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
 		3CE4C9081DCA82A000AAFB31 /* Org.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Org.swift; sourceTree = "<group>"; };
-		3CE4C9091DCA82A000AAFB31 /* OrgType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrgType.swift; sourceTree = "<group>"; };
 		3CE4C90A1DCA82A000AAFB31 /* Position.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Position.swift; sourceTree = "<group>"; };
 		3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteDataSource.swift; sourceTree = "<group>"; };
 		3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestAPI.swift; sourceTree = "<group>"; };
-		3CE4C9541DCBDECC00AAFB31 /* cwf-object.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "cwf-object.js"; sourceTree = "<group>"; };
 		3CEBAF401DCD0D160071BE9F /* CallingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingsTableViewController.swift; path = Controllers/CallingsTableViewController.swift; sourceTree = "<group>"; };
 		3CEBAF421DCD0E010071BE9F /* DirectoryTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DirectoryTableViewController.swift; path = Controllers/DirectoryTableViewController.swift; sourceTree = "<group>"; };
 		3CEBAF441DCD0FBF0071BE9F /* Member.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Member.swift; path = Model/Member.swift; sourceTree = "<group>"; };
@@ -101,6 +101,13 @@
 		6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowUITests/Pods-Calling WorkflowUITests.release.xcconfig"; sourceTree = "<group>"; };
 		D54A3B58DD7D62D3E57ECD6A /* Pods-Calling WorkflowTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests.release.xcconfig"; sourceTree = "<group>"; };
 		E44CDBB5DE5984D9F73C386E /* Pods-Calling WorkflowTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E8189A881DDA2D4600E983D4 /* cwf-object.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "cwf-object.js"; sourceTree = "<group>"; };
+		E8189A891DDA2D4600E983D4 /* ModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
+		E8189A8C1DDA687600E983D4 /* GTMOAuth2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GTMOAuth2.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Calling_Workflow-exfgumoddixqfzcrdepaqirmseyo/Build/Products/Debug-iphonesimulator/GTMOAuth2/GTMOAuth2.framework"; sourceTree = "<group>"; };
+		E8189A8E1DDA687C00E983D4 /* GTMSessionFetcher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GTMSessionFetcher.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Calling_Workflow-exfgumoddixqfzcrdepaqirmseyo/Build/Products/Debug-iphonesimulator/GTMSessionFetcher/GTMSessionFetcher.framework"; sourceTree = "<group>"; };
+		E8189A901DDA688000E983D4 /* GoogleAPIClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAPIClient.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Calling_Workflow-exfgumoddixqfzcrdepaqirmseyo/Build/Products/Debug-iphonesimulator/GoogleAPIClient/GoogleAPIClient.framework"; sourceTree = "<group>"; };
+		E8189A921DDA74E700E983D4 /* cwf-object.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "cwf-object.js"; sourceTree = "<group>"; };
+		E8189A941DDE67FB00E983D4 /* UnitLevelOrgType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnitLevelOrgType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +141,9 @@
 		3A65547E098349B931D50703 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E8189A901DDA688000E983D4 /* GoogleAPIClient.framework */,
+				E8189A8E1DDA687C00E983D4 /* GTMSessionFetcher.framework */,
+				E8189A8C1DDA687600E983D4 /* GTMOAuth2.framework */,
 				5ADD1C197D84D3D19A7A24CD /* Pods_Calling_Workflow.framework */,
 				0EBF616855ECD1B37403E34D /* Pods_Calling_WorkflowTests.framework */,
 				188CFE612548010ED581E770 /* Pods_Calling_WorkflowUITests.framework */,
@@ -184,6 +194,8 @@
 		3CE4C8E81DCA824100AAFB31 /* Calling WorkflowTests */ = {
 			isa = PBXGroup;
 			children = (
+				E8189A881DDA2D4600E983D4 /* cwf-object.js */,
+				E8189A891DDA2D4600E983D4 /* ModelTests.swift */,
 				3CE4C8E91DCA824100AAFB31 /* Calling_WorkflowTests.swift */,
 				3CE4C8EB1DCA824100AAFB31 /* Info.plist */,
 			);
@@ -203,10 +215,10 @@
 			isa = PBXGroup;
 			children = (
 				3CE4C9081DCA82A000AAFB31 /* Org.swift */,
-				3CE4C9091DCA82A000AAFB31 /* OrgType.swift */,
 				3CE4C90A1DCA82A000AAFB31 /* Position.swift */,
 				3CE4C9031DCA82A000AAFB31 /* Calling.swift */,
 				3CEBAF441DCD0FBF0071BE9F /* Member.swift */,
+				E8189A941DDE67FB00E983D4 /* UnitLevelOrgType.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -238,8 +250,8 @@
 		3CEBAF491DD151400071BE9F /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
+				E8189A921DDA74E700E983D4 /* cwf-object.js */,
 				3CE4C9061DCA82A000AAFB31 /* GoogleService-Info.plist */,
-				3CE4C9541DCBDECC00AAFB31 /* cwf-object.js */,
 				3CE4C8DD1DCA824100AAFB31 /* LaunchScreen.storyboard */,
 				3CE4C8E01DCA824100AAFB31 /* Info.plist */,
 				3CE4C9021DCA82A000AAFB31 /* AppConfig.swift */,
@@ -337,11 +349,12 @@
 				TargetAttributes = {
 					3CE4C8CE1DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 42MR5LM3U2;
+						DevelopmentTeam = 75DK5N8LHP;
 						ProvisioningStyle = Automatic;
 					};
 					3CE4C8E41DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = 75DK5N8LHP;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3CE4C8CE1DCA824100AAFB31;
 					};
@@ -381,7 +394,7 @@
 				3CE4C9111DCA82A000AAFB31 /* GoogleService-Info.plist in Resources */,
 				3CE4C8DC1DCA824100AAFB31 /* Assets.xcassets in Resources */,
 				3CE4C8DA1DCA824100AAFB31 /* Main.storyboard in Resources */,
-				3CE4C9551DCBDECC00AAFB31 /* cwf-object.js in Resources */,
+				E8189A931DDA74E700E983D4 /* cwf-object.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +402,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8189A8A1DDA2D4600E983D4 /* cwf-object.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,7 +473,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		8E6950FB36AC6BB56B7DDA52 /* [CP] Copy Pods Resources */ = {
@@ -504,7 +518,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		A443C3EBA1237FE26A822244 /* [CP] Copy Pods Resources */ = {
@@ -534,7 +548,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -547,7 +561,6 @@
 				3CE4C9151DCA82A000AAFB31 /* Position.swift in Sources */,
 				3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
-				3CE4C9141DCA82A000AAFB31 /* OrgType.swift in Sources */,
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
 				3CE4C8D71DCA824100AAFB31 /* OrganizationTableViewController.swift in Sources */,
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
@@ -563,6 +576,7 @@
 				3CE4C90E1DCA82A000AAFB31 /* Calling.swift in Sources */,
 				3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */,
 				3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */,
+				E8189A951DDE67FB00E983D4 /* UnitLevelOrgType.swift in Sources */,
 				3CE4C9121DCA82A000AAFB31 /* JSON.swift in Sources */,
 				3CEBAF451DCD0FBF0071BE9F /* Member.swift in Sources */,
 			);
@@ -573,6 +587,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CE4C8EA1DCA824100AAFB31 /* Calling_WorkflowTests.swift in Sources */,
+				E8189A8B1DDA2D4600E983D4 /* ModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -717,11 +732,11 @@
 			baseConfigurationReference = 13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 42MR5LM3U2;
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.colsen.Calling-Workflow";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-Workflow";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -732,11 +747,11 @@
 			baseConfigurationReference = 403F3DEDFCDAEFE6861B2C7D /* Pods-Calling Workflow.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 42MR5LM3U2;
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.colsen.Calling-Workflow";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-Workflow";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -744,13 +759,14 @@
 		};
 		3CE4C8FD1DCA824100AAFB31 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E44CDBB5DE5984D9F73C386E /* Pods-Calling WorkflowTests.debug.xcconfig */;
+			baseConfigurationReference = 13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.colsen.Calling-WorkflowTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Calling Workflow.app/Calling Workflow";
@@ -763,9 +779,10 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.colsen.Calling-WorkflowTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Calling Workflow.app/Calling Workflow";
@@ -779,7 +796,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.colsen.Calling-WorkflowUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = "Calling Workflow";
@@ -793,7 +810,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.colsen.Calling-WorkflowUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = "Calling Workflow";

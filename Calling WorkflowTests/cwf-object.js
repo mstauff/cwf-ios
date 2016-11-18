@@ -49,7 +49,7 @@
         }
     ],
     "org": {
-        "orgTypeId": 25,
+        "orgTypeId": 77,
 		"defaultOrgName": "Primary",
 		"displayOrder":700,
 		"customOrgName": null,
