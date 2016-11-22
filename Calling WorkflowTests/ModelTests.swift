@@ -7,6 +7,8 @@
 //
 
 import XCTest
+
+@testable
 import Calling_Workflow
 
 class ModelTests: XCTestCase {
@@ -22,8 +24,12 @@ class ModelTests: XCTestCase {
         // lines like formatted JSON is usually presented, but the amount of escaping of quotes, and handling of line
         // breaks makes it very difficult to read, or add to or edit, so we're going to just put all the data in an
         // external file, read it in and reference different objects for different test cases
-        if let filePath = Bundle.main.path(forResource: "cwf-object", ofType: "json") {
-            let jsonData = Data( referencing: NSData(contentsOfFile: filePath)!)
+        let bundle = Bundle( for: type(of: self) )
+        if let filePath = bundle.path(forResource: "cwf-object", ofType: "js"),
+            let fileData = NSData(contentsOfFile: filePath) {
+            
+            let jsonData = Data( referencing: fileData )
+            print( jsonData.debugDescription )
             testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:AnyObject]
         } else {
             print( "No File Path found for file" )
@@ -35,14 +41,43 @@ class ModelTests: XCTestCase {
         super.tearDown()
     }
     
-    func testJsonSerialization() {
-        let org = Org.parseFrom( (testJSON?["org"] as? JSONObject)! )
-        print( org.debugDescription )
+    func testOrgJsonDeserialization() {
+        let org = Org.parseFrom( (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
         
-
-        XCTAssert( true )
+        XCTAssertNotNil(org)
+        XCTAssertEqual( org!.orgName, "Primary" )
+        XCTAssertEqual( org!.orgTypeId, 77 )
+        XCTAssertEqual( org!.displayOrder, 700 )
+        XCTAssertEqual( org!.id, 7428354 )
+        XCTAssertEqual( org!.children.count, 1 )
+        XCTAssertNotNil(org!.callings)
+        XCTAssertEqual(org!.callings.count, 0)
+    }
+    func testJsonCallingsInSubOrg() {
+        let org = Org.parseFrom( (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+        
+        let childOrg = org?.children[0]
+        XCTAssertNotNil(childOrg)
+        XCTAssertEqual( childOrg!.orgName, "CTR 7" )
+        XCTAssertEqual(childOrg!.callings.count, 2)
+        let calling = childOrg!.callings[0]
+        XCTAssertEqual(calling.currentIndId!, 123)
+        XCTAssertEqual(calling.id, 734829)
+        XCTAssertEqual(calling.position.positionTypeId, 1481)
+        XCTAssertEqual(calling.position.name, "Primary Teacher")
+        XCTAssertEqual(calling.position.hidden, false)
+        XCTAssertEqual(calling.status, "PROPOSED")
+        XCTAssertEqual(calling.notes, "Some String")
+        
     }
     
+    func testInvalidOrgsJson() {
+        let orgsJSON = testJSON?["invalidOrgs"] as? [JSONObject]!
+        orgsJSON?.forEach() { orgJSON in
+            let org = Org.parseFrom( orgJSON )
+            XCTAssertNil( org )
+        }
+    }
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {
