@@ -40,6 +40,8 @@
 		E8189A8B1DDA2D4600E983D4 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8189A891DDA2D4600E983D4 /* ModelTests.swift */; };
 		E8189A931DDA74E700E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A921DDA74E700E983D4 /* cwf-object.js */; };
 		E8189A951DDE67FB00E983D4 /* UnitLevelOrgType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8189A941DDE67FB00E983D4 /* UnitLevelOrgType.swift */; };
+		E8B6CF1C1DF8CF5C0080097F /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B6CF1B1DF8CF5C0080097F /* DataExtensions.swift */; };
+		E8B6CF1E1DF8CF990080097F /* DictionaryExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B6CF1D1DF8CF990080097F /* DictionaryExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +110,8 @@
 		E8189A901DDA688000E983D4 /* GoogleAPIClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAPIClient.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Calling_Workflow-exfgumoddixqfzcrdepaqirmseyo/Build/Products/Debug-iphonesimulator/GoogleAPIClient/GoogleAPIClient.framework"; sourceTree = "<group>"; };
 		E8189A921DDA74E700E983D4 /* cwf-object.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "cwf-object.js"; sourceTree = "<group>"; };
 		E8189A941DDE67FB00E983D4 /* UnitLevelOrgType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnitLevelOrgType.swift; sourceTree = "<group>"; };
+		E8B6CF1B1DF8CF5C0080097F /* DataExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
+		E8B6CF1D1DF8CF990080097F /* DictionaryExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionaryExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +180,7 @@
 		3CE4C8D11DCA824100AAFB31 /* Calling Workflow */ = {
 			isa = PBXGroup;
 			children = (
+				E8B6CF1A1DF8CF0C0080097F /* Extensions */,
 				3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */,
 				3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */,
 				3CE4C9041DCA82A000AAFB31 /* CallingDataManager.swift */,
@@ -270,6 +275,15 @@
 				6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		E8B6CF1A1DF8CF0C0080097F /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				E8B6CF1B1DF8CF5C0080097F /* DataExtensions.swift */,
+				E8B6CF1D1DF8CF990080097F /* DictionaryExtensions.swift */,
+			);
+			name = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -559,6 +573,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CE4C9151DCA82A000AAFB31 /* Position.swift in Sources */,
+				E8B6CF1C1DF8CF5C0080097F /* DataExtensions.swift in Sources */,
+				E8B6CF1E1DF8CF990080097F /* DictionaryExtensions.swift in Sources */,
 				3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,

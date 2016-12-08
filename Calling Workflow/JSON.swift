@@ -11,30 +11,51 @@ import Foundation
 // JSONObject is a dictionary with Strings as keys and AnyObject as value
 public typealias JSONObject = [String:AnyObject]
 
-public extension Data {
-    public var jsonArrayValue : [JSONObject] {
-        guard
-        let json = try? JSONSerialization.jsonObject(with: self, options: []),
-        let objects = json as? [JSONObject]
-            else {
-                return[]
-        
-        }
-        return objects
-    }
-    
-    public var jsonDictionaryValue : JSONObject? {
-        guard
-        let json = try? JSONSerialization.jsonObject(with: self, options: []),
-        let object = json as? JSONObject
-            else {
-                return nil
-        }
-        return object
-    }
+public protocol JSONParsable {
+    init?(_ object: JSONObject)
+    func toJSONObject() -> JSONObject
 }
 
-public protocol JSONParsable {
-    static func parseFrom( _ object: JSONObject) -> Self?
-//    func toJSON() -> String?
+public protocol JSONSerializer {
+    func serialize( jsonObject : JSONObject ) -> String?
 }
+public class JSONSerializerImpl : JSONSerializer  {
+    public func prepare( jsonObject : JSONObject ) -> NSDictionary {
+        let jsonDictionary : NSMutableDictionary = [:]
+        for( jsonKey, jsonVal ) in jsonObject {
+            // We don't have support for Bool types. They need to be stored in the jsonObject as strings
+            // before it becomes an AnyObject. Once it gets cast to AnyObject it gets converted to a 
+            // 0/1 Int, so it gets handled by the is Int case below
+            if jsonVal is String {
+                jsonDictionary[jsonKey] = jsonVal as? String
+            } else if jsonVal is Int || jsonVal is Int64  {
+                jsonDictionary[jsonKey] = String(describing: jsonVal)
+            } else if jsonVal is [JSONObject] {
+                jsonDictionary[jsonKey] = (jsonVal as! Array).map() { jsonObj -> NSDictionary in
+                    return prepare( jsonObject: jsonObj )
+                }
+            } else if jsonVal is JSONObject {
+                jsonDictionary[jsonKey] = prepare( jsonObject: (jsonVal as? JSONObject)! )
+            }
+            
+        }
+        return NSDictionary(dictionary: jsonDictionary)
+    }
+
+    public func serialize( jsonObject : JSONObject ) -> String? {
+        var jsonString : String? = nil
+        do {
+            let jsonDictionary = prepare( jsonObject : jsonObject )
+            
+            let jsonData = try JSONSerialization.data(withJSONObject: jsonDictionary )
+            jsonString = String( data: jsonData, encoding: .utf8 ) ?? ""
+            
+        } catch {
+            // do nothing - just return nil
+        }
+        
+        return jsonString
+    }
+    
+}
+

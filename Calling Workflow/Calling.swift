@@ -38,18 +38,54 @@ public struct Calling : JSONParsable {
     // reference back to the parent org that this calling is a member of. It is only optional because we create the org with the callings and then fill in the reference to the owning org afterwards.
     var parentOrg : Org?
     
+    init( id : Int64?, currentIndId : Int64?, proposedIndId : Int64?, status : String?, position : Position, notes : String?, editableByOrg : Bool, parentOrg : Org?) {
+        self.id = id
+        self.currentIndId = currentIndId
+        self.proposedIndId = proposedIndId
+        self.status = status
+        self.position = position
+        self.notes = notes
+        self.editableByOrg = editableByOrg
+        self.parentOrg = parentOrg
+    }
     
-    public static func parseFrom(_ json: JSONObject) -> Calling? {
+    public init?(_ json: JSONObject) {
         guard
-            let position = Position.parseFrom(json)
+            let validPosition = Position(json)
             else {
                 return nil
         }
-        let status = json["status"] as? String
-        let id = json["positionId"] as? NSNumber
-        let currentIndIdNum = json["memberId"] as? NSNumber
-        let proposedIndIdNum = json["proposedIndId"] as? NSNumber
-        return Calling( id:id?.int64Value, currentIndId: currentIndIdNum?.int64Value, proposedIndId: proposedIndIdNum?.int64Value, status: status, position: position, notes: json["notes"] as? String, editableByOrg: true, parentOrg: nil )
+        id = (json[CallingJsonKeys.id] as? NSNumber)?.int64Value
+        position = validPosition
+        status = json[CallingJsonKeys.status] as? String
+        currentIndId = (json[CallingJsonKeys.currentIndId] as? NSNumber)?.int64Value
+        proposedIndId = (json[CallingJsonKeys.proposedIndId] as? NSNumber)?.int64Value
+        // if notes are "null" then it comes through as NSNull, so we need to check if it's an actual string before assigning it. If it's not a string then we just use nil
+        let notesJson = json[CallingJsonKeys.notes]
+        notes = notesJson is String ? notesJson as? String : nil
+        editableByOrg = json[CallingJsonKeys.editableByOrg] as? Bool ?? true
+        parentOrg = nil
+    }
+    
+    public func toJSONObject() -> JSONObject {
+        var jsonObj = JSONObject()
+        jsonObj[CallingJsonKeys.id] = self.id as AnyObject
+        jsonObj[CallingJsonKeys.status] = self.status as AnyObject
+        jsonObj[CallingJsonKeys.currentIndId] = self.currentIndId as AnyObject
+        jsonObj[CallingJsonKeys.proposedIndId] = self.proposedIndId as AnyObject
+        jsonObj[CallingJsonKeys.notes] = self.notes as AnyObject
+        jsonObj = jsonObj.merge( withDictionary: position.toJSONObject() )
+        return jsonObj;
     }
     
 }
+
+private struct CallingJsonKeys {
+    static let id = "positionId"
+    static let status = "status"
+    static let currentIndId = "memberId"
+    static let proposedIndId = "proposedIndId"
+    static let notes = "notes"
+    static let editableByOrg = "editableByOrg"
+}
+
