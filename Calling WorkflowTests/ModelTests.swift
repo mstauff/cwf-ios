@@ -14,6 +14,7 @@ import Calling_Workflow
 class ModelTests: XCTestCase {
     
     var testJSON : [String:AnyObject]? = nil
+    var jsonSerializer : JSONSerializer = JSONSerializerImpl()
     
     override func setUp() {
         super.setUp()
@@ -42,7 +43,7 @@ class ModelTests: XCTestCase {
     }
     
     func testOrgJsonDeserialization() {
-        let org = Org.parseFrom( (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+        let org = Org( (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
         
         XCTAssertNotNil(org)
         XCTAssertEqual( org!.orgName, "Primary" )
@@ -53,8 +54,8 @@ class ModelTests: XCTestCase {
         XCTAssertNotNil(org!.callings)
         XCTAssertEqual(org!.callings.count, 0)
     }
-    func testJsonCallingsInSubOrg() {
-        let org = Org.parseFrom( (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+    func testCallingsInSubOrgFromJson() {
+        let org = Org( (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
         
         let childOrg = org?.children[0]
         XCTAssertNotNil(childOrg)
@@ -70,14 +71,53 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(calling.notes, "Some String")
         
     }
+    func testCallingsInOrgFromJson() {
+        let org = Org( (testJSON?["orgWithDirectCallings"] as? JSONObject)! )
+        
+        XCTAssertNotNil(org)
+        let calling = org!.callings[0]
+        XCTAssertEqual(calling.currentIndId!, 123)
+        XCTAssertEqual(calling.id, 734829)
+        XCTAssertEqual(calling.position.positionTypeId, 1481)
+        XCTAssertEqual(calling.position.name, "Primary Teacher")
+        XCTAssertEqual(calling.position.hidden, true)
+        XCTAssertEqual(calling.status, "PROPOSED")
+        XCTAssertEqual(calling.notes, "Some String")
+        
+    }
     
-    func testInvalidOrgsJson() {
+    
+    func testInvalidOrgsFromJson() {
         let orgsJSON = testJSON?["invalidOrgs"] as? [JSONObject]!
         orgsJSON?.forEach() { orgJSON in
-            let org = Org.parseFrom( orgJSON )
+            let org = Org( orgJSON )
             XCTAssertNil( org )
         }
     }
+    
+    func testOrgToJson() {
+        let org = Org( (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+        
+        let orgJson = org!.toJSONObject()
+        let jsonString = jsonSerializer.serialize( jsonObject: orgJson )
+        XCTAssertTrue(jsonString!.contains( "\"defaultOrgName\":\"Primary\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"subOrgId\":\"7428354\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"orgTypeId\":\"77\"" ))
+        // just test that there is some object in the callings array. If it's empty it would not have the { and " after the [
+        XCTAssertTrue(jsonString!.contains( "\"callings\":[{\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"memberId\":\"123\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"positionId\":\"734829\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"proposedIndId\":\"456\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"positionTypeId\":\"1481\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"notes\":\"Some String\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"status\":\"PROPOSED\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"position\":\"Primary Teacher\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"hidden\":\"false\"" ))
+        print( jsonString )
+        
+    
+    }
+    
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {

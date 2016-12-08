@@ -13,8 +13,13 @@ struct NetworkConstants {
     
     static let memberListURLKey = "MEMBER_LIST"
     static let callingsListURLKey = "CALLING_LIST"
+    static let userDataURLKey = "USER_DATA"
+    static let signInURLKey = "SIGN_IN"
+    static let signOutURLKey = "SIGN_OUT"
+    static let updateCallingURLKey = "UPDATE_CALLING"
     
-    static let ldsOrgEndpoints = [ memberListURLKey : "/directory/list", callingsListURLKey : "/directory/callings" ]
+    // these are defaults - they will potentially be overridden by results from the configUrl
+    static let ldsOrgEndpoints = [ memberListURLKey : "https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/member-detaillist/:unitNum", callingsListURLKey : "https://www.lds.org/mls/mbr/services/orgs/sub-orgs-with-callings", userDataURLKey : "https://www.lds.org/mobiledirectory/services/v2/ldstools/current-user-detail", signInURLKey : "https://signin.lds.org/login.html", signOutURLKey: "https://www.lds.org/signinout/?lang=eng&signmeout" ]
     static var ldsOrgEndpointKeys : [String] {
         // implicit get for computed properties that are read only
         return [String](ldsOrgEndpoints.keys)

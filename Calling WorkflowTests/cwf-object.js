@@ -101,7 +101,7 @@
 			"positionTypeId": 1481,
 			"positionTypeEnum": "PRIMARY_WORKER_CTR_7",
 			"position": "Primary Teacher",
-			"hidden": false,
+			"hidden": true,
 			"status": "PROPOSED",
 			"proposedIndId": 456,
 			"notes": "Some String",
