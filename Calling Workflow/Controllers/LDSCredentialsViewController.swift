@@ -8,11 +8,24 @@
 
 import UIKit
 
-class LDSCredentialsTableViewController: UITableViewController {
+class LDSCredentialsTableViewController: CallingsBaseTableViewController {
 
+    var accountName : String? = nil
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        if let accountName = accountName {
+            do {
+                let passwordItem = KeychainPasswordItem(service: KeychainConfiguration.serviceName, account: accountName, accessGroup: KeychainConfiguration.accessGroup)
+                
+                accountNameField.text = passwordItem.account
+                passwordField.text = try passwordItem.readPassword()
+            }
+            catch {
+                fatalError("Error reading password from keychain - \(error)")
+            }
+        }
         // Do any additional setup after loading the view.
     }
 
@@ -101,6 +114,7 @@ class LDSCredentialsTableViewController: UITableViewController {
 
     func logInLDSUser() {
         print("loging in lds user")
+        self.dismiss(animated: true, completion: nil)
     }
     
     /*

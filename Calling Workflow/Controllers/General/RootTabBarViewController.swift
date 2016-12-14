@@ -12,8 +12,8 @@ class RootTabBarViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        signIntoLDSAPI()
     }
 
     override func didReceiveMemoryWarning() {
@@ -31,5 +31,16 @@ class RootTabBarViewController: UITabBarController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    func signIntoLDSAPI() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
+        
+        let navController2 = UINavigationController()
+        navController2.addChildViewController(loginVC)
+        
+        self.present(navController2, animated: false, completion: nil)
+        
+    }
 
 }
