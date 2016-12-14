@@ -39,7 +39,7 @@ class RestAPI {
                 return
             }
             
-                completionHandler( AppConfig.parseFrom( responseData.jsonDictionaryValue! ), nil )
+                completionHandler( AppConfig( responseData.jsonDictionaryValue! ), nil )
         }) 
         
         task.resume()
