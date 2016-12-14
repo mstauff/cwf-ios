@@ -8,10 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		1F9C0A0FDCC7705330E80026 /* Pods_Calling_WorkflowTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EBF616855ECD1B37403E34D /* Pods_Calling_WorkflowTests.framework */; };
+		3C001A571DFB7CA9001E4DBD /* KeychainAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C001A561DFB7CA9001E4DBD /* KeychainAccess.swift */; };
+		3C1D66D71DF898E800F34224 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3C1D66D91DF898E800F34224 /* Localizable.strings */; };
+		3C1D66DB1DF89A7300F34224 /* Org.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9081DCA82A000AAFB31 /* Org.swift */; };
 		3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */; };
 		3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */; };
 		3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */; };
 		3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */; };
+		3C2B96751DECBF620080D090 /* OrganizationsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2B96741DECBF620080D090 /* OrganizationsUITests.swift */; };
+		3C7F82E21DE4B6E8005A495F /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = 3C7F82E11DE4B6E8005A495F /* cwf-object.js */; };
+		3C7F82E41DE4BFF5005A495F /* DirectoryUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7F82E31DE4BFF5005A495F /* DirectoryUITests.swift */; };
+		3C7F82E91DE4C869005A495F /* CallingsBaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7F82E81DE4C869005A495F /* CallingsBaseTableViewController.swift */; };
+		3C7F82EB1DE4C957005A495F /* SettingsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7F82EA1DE4C957005A495F /* SettingsUITests.swift */; };
+		3C7F82ED1DE600B1005A495F /* CallingsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7F82EC1DE600B1005A495F /* CallingsUITests.swift */; };
+		3CE077AD1DF0DE6800527E31 /* RootTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE077AC1DF0DE6800527E31 /* RootTabBarViewController.swift */; };
 		3CE4C8D31DCA824100AAFB31 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */; };
 		3CE4C8D51DCA824100AAFB31 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */; };
 		3CE4C8D71DCA824100AAFB31 /* OrganizationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D61DCA824100AAFB31 /* OrganizationTableViewController.swift */; };
@@ -26,7 +36,6 @@
 		3CE4C9101DCA82A000AAFB31 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9051DCA82A000AAFB31 /* Constants.swift */; };
 		3CE4C9111DCA82A000AAFB31 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C9061DCA82A000AAFB31 /* GoogleService-Info.plist */; };
 		3CE4C9121DCA82A000AAFB31 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9071DCA82A000AAFB31 /* JSON.swift */; };
-		3CE4C9131DCA82A000AAFB31 /* Org.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9081DCA82A000AAFB31 /* Org.swift */; };
 		3CE4C9151DCA82A000AAFB31 /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90A1DCA82A000AAFB31 /* Position.swift */; };
 		3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */; };
 		3CE4C9171DCA82A000AAFB31 /* RestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */; };
@@ -64,14 +73,26 @@
 		13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling Workflow.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling Workflow/Pods-Calling Workflow.debug.xcconfig"; sourceTree = "<group>"; };
 		186DC4A209D5B238D4E39AD8 /* Pods-Calling WorkflowUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowUITests/Pods-Calling WorkflowUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		188CFE612548010ED581E770 /* Pods_Calling_WorkflowUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Calling_WorkflowUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C001A561DFB7CA9001E4DBD /* KeychainAccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainAccess.swift; sourceTree = "<group>"; };
+		3C1D66CC1DF882BF00F34224 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
+		3C1D66CD1DF882C000F34224 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		3C1D66D81DF898E800F34224 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3C1D66DA1DF898EE00F34224 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OrgDetailTableViewController.swift; path = Controllers/OrgDetailTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsTableViewController.swift; path = Controllers/SettingsTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LDSCredentialsViewController.swift; path = Controllers/LDSCredentialsViewController.swift; sourceTree = "<group>"; };
 		3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InputTableViewCell.swift; path = Controllers/TableViewCells/InputTableViewCell.swift; sourceTree = "<group>"; };
+		3C2B96741DECBF620080D090 /* OrganizationsUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrganizationsUITests.swift; sourceTree = "<group>"; };
+		3C7F82E11DE4B6E8005A495F /* cwf-object.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "cwf-object.js"; sourceTree = "<group>"; };
+		3C7F82E31DE4BFF5005A495F /* DirectoryUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectoryUITests.swift; sourceTree = "<group>"; };
+		3C7F82E81DE4C869005A495F /* CallingsBaseTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingsBaseTableViewController.swift; path = Controllers/General/CallingsBaseTableViewController.swift; sourceTree = "<group>"; };
+		3C7F82EA1DE4C957005A495F /* SettingsUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsUITests.swift; sourceTree = "<group>"; };
+		3C7F82EC1DE600B1005A495F /* CallingsUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallingsUITests.swift; sourceTree = "<group>"; };
+		3CE077AC1DF0DE6800527E31 /* RootTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RootTabBarViewController.swift; path = Controllers/General/RootTabBarViewController.swift; sourceTree = "<group>"; };
 		3CE4C8CF1DCA824100AAFB31 /* Calling Workflow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Calling Workflow.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
-		3CE4C8D61DCA824100AAFB31 /* OrganizationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationTableViewController.swift; sourceTree = "<group>"; };
+		3CE4C8D61DCA824100AAFB31 /* OrganizationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OrganizationTableViewController.swift; path = Controllers/OrganizationTableViewController.swift; sourceTree = "<group>"; };
 		3CE4C8D91DCA824100AAFB31 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3CE4C8DE1DCA824100AAFB31 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -151,6 +172,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		3C7F82E71DE4C859005A495F /* General */ = {
+			isa = PBXGroup;
+			children = (
+				3C7F82E81DE4C869005A495F /* CallingsBaseTableViewController.swift */,
+				3CE077AC1DF0DE6800527E31 /* RootTabBarViewController.swift */,
+			);
+			name = General;
+			sourceTree = "<group>";
+		};
 		3CE4C8C61DCA824100AAFB31 = {
 			isa = PBXGroup;
 			children = (
@@ -184,6 +214,7 @@
 				3CE4C8D81DCA824100AAFB31 /* Main.storyboard */,
 				3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */,
 				3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */,
+				3C001A561DFB7CA9001E4DBD /* KeychainAccess.swift */,
 				3CE4C9531DCA9BE800AAFB31 /* Controllers */,
 				3CE4C9521DCA9A6100AAFB31 /* Model */,
 				3CEBAF491DD151400071BE9F /* Support Files */,
@@ -194,10 +225,10 @@
 		3CE4C8E81DCA824100AAFB31 /* Calling WorkflowTests */ = {
 			isa = PBXGroup;
 			children = (
-				E8189A881DDA2D4600E983D4 /* cwf-object.js */,
 				E8189A891DDA2D4600E983D4 /* ModelTests.swift */,
 				3CE4C8E91DCA824100AAFB31 /* Calling_WorkflowTests.swift */,
 				3CE4C8EB1DCA824100AAFB31 /* Info.plist */,
+				E8189A881DDA2D4600E983D4 /* cwf-object.js */,
 			);
 			path = "Calling WorkflowTests";
 			sourceTree = "<group>";
@@ -205,8 +236,13 @@
 		3CE4C8F31DCA824100AAFB31 /* Calling WorkflowUITests */ = {
 			isa = PBXGroup;
 			children = (
+				3C2B96741DECBF620080D090 /* OrganizationsUITests.swift */,
 				3CE4C8F41DCA824100AAFB31 /* Calling_WorkflowUITests.swift */,
+				3C7F82EC1DE600B1005A495F /* CallingsUITests.swift */,
+				3C7F82E31DE4BFF5005A495F /* DirectoryUITests.swift */,
+				3C7F82EA1DE4C957005A495F /* SettingsUITests.swift */,
 				3CE4C8F61DCA824100AAFB31 /* Info.plist */,
+				3C7F82E11DE4B6E8005A495F /* cwf-object.js */,
 			);
 			path = "Calling WorkflowUITests";
 			sourceTree = "<group>";
@@ -226,6 +262,7 @@
 		3CE4C9531DCA9BE800AAFB31 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				3C7F82E71DE4C859005A495F /* General */,
 				3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */,
 				3CE4C8D61DCA824100AAFB31 /* OrganizationTableViewController.swift */,
 				3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */,
@@ -255,6 +292,7 @@
 				3CE4C8DD1DCA824100AAFB31 /* LaunchScreen.storyboard */,
 				3CE4C8E01DCA824100AAFB31 /* Info.plist */,
 				3CE4C9021DCA82A000AAFB31 /* AppConfig.swift */,
+				3C1D66D91DF898E800F34224 /* Localizable.strings */,
 			);
 			name = "Support Files";
 			sourceTree = "<group>";
@@ -349,7 +387,7 @@
 				TargetAttributes = {
 					3CE4C8CE1DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 75DK5N8LHP;
+						DevelopmentTeam = 42MR5LM3U2;
 						ProvisioningStyle = Automatic;
 					};
 					3CE4C8E41DCA824100AAFB31 = {
@@ -372,6 +410,7 @@
 			knownRegions = (
 				en,
 				Base,
+				es,
 			);
 			mainGroup = 3CE4C8C61DCA824100AAFB31;
 			productRefGroup = 3CE4C8D01DCA824100AAFB31 /* Products */;
@@ -391,6 +430,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CE4C8DF1DCA824100AAFB31 /* LaunchScreen.storyboard in Resources */,
+				3C1D66D71DF898E800F34224 /* Localizable.strings in Resources */,
 				3CE4C9111DCA82A000AAFB31 /* GoogleService-Info.plist in Resources */,
 				3CE4C8DC1DCA824100AAFB31 /* Assets.xcassets in Resources */,
 				3CE4C8DA1DCA824100AAFB31 /* Main.storyboard in Resources */,
@@ -410,6 +450,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C7F82E21DE4B6E8005A495F /* cwf-object.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,7 +514,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		8E6950FB36AC6BB56B7DDA52 /* [CP] Copy Pods Resources */ = {
@@ -518,7 +559,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		A443C3EBA1237FE26A822244 /* [CP] Copy Pods Resources */ = {
@@ -548,7 +589,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -558,8 +599,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C1D66DB1DF89A7300F34224 /* Org.swift in Sources */,
 				3CE4C9151DCA82A000AAFB31 /* Position.swift in Sources */,
 				3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */,
+				3CE077AD1DF0DE6800527E31 /* RootTabBarViewController.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
 				3CE4C8D71DCA824100AAFB31 /* OrganizationTableViewController.swift in Sources */,
@@ -567,9 +610,10 @@
 				3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */,
 				3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */,
 				3CE4C90F1DCA82A000AAFB31 /* CallingDataManager.swift in Sources */,
+				3C7F82E91DE4C869005A495F /* CallingsBaseTableViewController.swift in Sources */,
 				3CE4C8D31DCA824100AAFB31 /* AppDelegate.swift in Sources */,
+				3C001A571DFB7CA9001E4DBD /* KeychainAccess.swift in Sources */,
 				3CE4C9101DCA82A000AAFB31 /* Constants.swift in Sources */,
-				3CE4C9131DCA82A000AAFB31 /* Org.swift in Sources */,
 				3CE4C8D51DCA824100AAFB31 /* FirstViewController.swift in Sources */,
 				3CEBAF411DCD0D160071BE9F /* CallingsTableViewController.swift in Sources */,
 				3CE4C9171DCA82A000AAFB31 /* RestAPI.swift in Sources */,
@@ -596,6 +640,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CE4C8F51DCA824100AAFB31 /* Calling_WorkflowUITests.swift in Sources */,
+				3C7F82EB1DE4C957005A495F /* SettingsUITests.swift in Sources */,
+				3C7F82ED1DE600B1005A495F /* CallingsUITests.swift in Sources */,
+				3C7F82E41DE4BFF5005A495F /* DirectoryUITests.swift in Sources */,
+				3C2B96751DECBF620080D090 /* OrganizationsUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -615,10 +663,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		3C1D66D91DF898E800F34224 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3C1D66D81DF898E800F34224 /* Base */,
+				3C1D66DA1DF898EE00F34224 /* es */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		3CE4C8D81DCA824100AAFB31 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				3CE4C8D91DCA824100AAFB31 /* Base */,
+				3C1D66CC1DF882BF00F34224 /* es */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -627,6 +685,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				3CE4C8DE1DCA824100AAFB31 /* Base */,
+				3C1D66CD1DF882C000F34224 /* es */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -638,6 +697,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -688,6 +748,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -732,7 +793,7 @@
 			baseConfigurationReference = 13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -747,7 +808,7 @@
 			baseConfigurationReference = 403F3DEDFCDAEFE6861B2C7D /* Pods-Calling Workflow.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -759,7 +820,7 @@
 		};
 		3CE4C8FD1DCA824100AAFB31 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */;
+			baseConfigurationReference = E44CDBB5DE5984D9F73C386E /* Pods-Calling WorkflowTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
