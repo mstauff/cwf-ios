@@ -14,9 +14,9 @@ public struct Org : JSONParsable  {
     let orgTypeId : Int
     let orgName : String
     let displayOrder : Int
-    let children : [Org]
-
+    var children : [Org]
     var callings : [Calling]
+    
     // Do we need these? Probably not for the app, but maybe we will to be able to send necessary data to LCR for calling updates
     //    var parentOrg : Org
     

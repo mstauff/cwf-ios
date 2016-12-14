@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DirectoryTableViewController: UITableViewController {
+class DirectoryTableViewController: CallingsBaseTableViewController {
 
     var members : [Member]!
 
@@ -17,7 +17,6 @@ class DirectoryTableViewController: UITableViewController {
         members = []
         
         setupData()
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -25,6 +24,10 @@ class DirectoryTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.navigationItem.title = "Directiory"
+    }
   
     // MARK: - Setup
     func setupData() {

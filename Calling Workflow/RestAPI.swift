@@ -44,4 +44,13 @@ class RestAPI {
         
         task.resume()
     }
+    
+    static func getLDSSignin(_ completionHandler: @escaping ( _ appConfig:AppConfig?, _ error:NSError? ) -> Void) {
+        guard let url = URL( string: NetworkConstants.configUrl ) else {
+            let errorMsg = "Error: cannot create URL: " + NetworkConstants.configUrl
+            print( errorMsg )
+            completionHandler( nil, NSError( domain: ErrorConstants.domain, code: 404, userInfo: [ "error" : errorMsg ] ) )
+            return
+        }
+    }
 }

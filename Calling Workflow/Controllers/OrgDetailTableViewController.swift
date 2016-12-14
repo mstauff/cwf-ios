@@ -8,7 +8,7 @@
 
 import UIKit
 
-class OrgDetailTableViewController: UITableViewController {
+class OrgDetailTableViewController: CallingsBaseTableViewController {
     
     var organizationToDisplay : Org?
     
@@ -35,7 +35,7 @@ class OrgDetailTableViewController: UITableViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
         var sectionCount = 1
         
-        if ((organizationToDisplay?.callings.count)! > 0) {
+        if ((organizationToDisplay?.callings.count)! > 0 && (organizationToDisplay?.children.count)! > 0) {
             sectionCount += 1
         }
         
@@ -43,10 +43,10 @@ class OrgDetailTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if (organizationToDisplay?.callings.count)! > 0 {
+        if ((organizationToDisplay?.callings.count)! > 0 && (organizationToDisplay?.children.count)! > 0) {
 
             if section == 0 {
-                return "\(organizationToDisplay?.orgName) Callings"
+                return "\((organizationToDisplay?.orgName)!) Callings"
             }
             else {
                 return "Suborganizations"
@@ -59,12 +59,12 @@ class OrgDetailTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if (organizationToDisplay?.children.count)! > 0 {
+        if (organizationToDisplay?.callings.count)! > 0 {
             if section == 0 {
-                return (organizationToDisplay?.children.count)!
+                return (organizationToDisplay?.callings.count)!
             }
             else {
-                return (organizationToDisplay?.children[section-1].children.count)!
+                return (organizationToDisplay?.children.count)!
             }
         }
         else {
@@ -77,22 +77,39 @@ class OrgDetailTableViewController: UITableViewController {
         var nameString : String? = nil
         if (organizationToDisplay?.callings.count)! > 0 {
             if indexPath.section == 0 {
-                //nameString = organizationToDisplay?.callings[indexPath.row].
+                nameString = organizationToDisplay?.callings[indexPath.row].position.name
             }
             else {
-                nameString = organizationToDisplay?.children[indexPath.section - 1].orgName
+                nameString = organizationToDisplay?.children[indexPath.row].orgName
             }
         }
         else {
-            nameString = organizationToDisplay?.children[indexPath.section].orgName
+            nameString = organizationToDisplay?.children[indexPath.row].orgName
         }
         
         cell.textLabel?.text = nameString
         
         return cell
     }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        if (organizationToDisplay?.callings.count)! > 0 {
+            if indexPath.section == 0 {
+            }
+            else {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let nextVC = storyboard.instantiateViewController(withIdentifier: "OrgDetailTableViewController") as? OrgDetailTableViewController
+                nextVC?.organizationToDisplay = organizationToDisplay?.children[indexPath.row]
+                self.navigationController?.pushViewController(nextVC!, animated: true)
+            }
+        }
+        else {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let nextVC = storyboard.instantiateViewController(withIdentifier: "OrgDetailTableViewController") as? OrgDetailTableViewController
+            nextVC?.organizationToDisplay = organizationToDisplay?.children[indexPath.row]
+            self.navigationController?.present(nextVC!, animated: true, completion: nil)
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 
     /*

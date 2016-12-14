@@ -7,3 +7,10 @@
 //
 
 import Foundation
+import Security
+
+struct KeychainConfig {
+    
+    static let accessGroup :String? = nil
+    
+}
