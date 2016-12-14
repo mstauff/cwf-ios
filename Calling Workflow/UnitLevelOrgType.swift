@@ -7,7 +7,11 @@
 //
 
 import Foundation
-
+/**
+ UnitLevelOrgType represents the CDOL enum for an org type, but we only need them at the unit level to handle permissions (i.e. EQ, Primary, RS, etc. we don't need or want to manage enums for all the primary and SS classes, etc.). The int values for this enum are based on the CDOL values, and should not be changed unless there is a corresponding CDOL change (which would be very unlikely).
+ 
+ For Convenience there are also collections of the orgs that apply to the basic units that we support. Currently that includes wardOrgTypes and branchOrgTypes, but at some point would include stake orgs as well
+ */
 public enum UnitLevelOrgType : Int  {
     
     case Bishopric = 1179
