@@ -36,12 +36,17 @@
 		3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF471DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift */; };
 		7383B52A48EE9878CC51A26A /* Pods_Calling_WorkflowUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 188CFE612548010ED581E770 /* Pods_Calling_WorkflowUITests.framework */; };
 		D9B29D5CC172075896D53F87 /* Pods_Calling_Workflow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5ADD1C197D84D3D19A7A24CD /* Pods_Calling_Workflow.framework */; };
+		E8084F7C1E046D5D0077FDAE /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F7B1E046D5D0077FDAE /* DateExtensions.swift */; };
 		E8189A8A1DDA2D4600E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A881DDA2D4600E983D4 /* cwf-object.js */; };
 		E8189A8B1DDA2D4600E983D4 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8189A891DDA2D4600E983D4 /* ModelTests.swift */; };
 		E8189A931DDA74E700E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A921DDA74E700E983D4 /* cwf-object.js */; };
 		E8189A951DDE67FB00E983D4 /* UnitLevelOrgType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8189A941DDE67FB00E983D4 /* UnitLevelOrgType.swift */; };
+		E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E7E1E01FC6A00A7A618 /* Utils.swift */; };
+		E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */; };
 		E8B6CF1C1DF8CF5C0080097F /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B6CF1B1DF8CF5C0080097F /* DataExtensions.swift */; };
 		E8B6CF1E1DF8CF990080097F /* DictionaryExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B6CF1D1DF8CF990080097F /* DictionaryExtensions.swift */; };
+		E8CC956A1E01E722007EBA47 /* member-objects.js in Resources */ = {isa = PBXBuildFile; fileRef = E8CC95691E01E722007EBA47 /* member-objects.js */; };
+		E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC956B1E01E77F007EBA47 /* MemberTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,6 +108,7 @@
 		6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowUITests/Pods-Calling WorkflowUITests.release.xcconfig"; sourceTree = "<group>"; };
 		D54A3B58DD7D62D3E57ECD6A /* Pods-Calling WorkflowTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests.release.xcconfig"; sourceTree = "<group>"; };
 		E44CDBB5DE5984D9F73C386E /* Pods-Calling WorkflowTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E8084F7B1E046D5D0077FDAE /* DateExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
 		E8189A881DDA2D4600E983D4 /* cwf-object.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "cwf-object.js"; sourceTree = "<group>"; };
 		E8189A891DDA2D4600E983D4 /* ModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
 		E8189A8C1DDA687600E983D4 /* GTMOAuth2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GTMOAuth2.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Calling_Workflow-exfgumoddixqfzcrdepaqirmseyo/Build/Products/Debug-iphonesimulator/GTMOAuth2/GTMOAuth2.framework"; sourceTree = "<group>"; };
@@ -110,8 +116,13 @@
 		E8189A901DDA688000E983D4 /* GoogleAPIClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAPIClient.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Calling_Workflow-exfgumoddixqfzcrdepaqirmseyo/Build/Products/Debug-iphonesimulator/GoogleAPIClient/GoogleAPIClient.framework"; sourceTree = "<group>"; };
 		E8189A921DDA74E700E983D4 /* cwf-object.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "cwf-object.js"; sourceTree = "<group>"; };
 		E8189A941DDE67FB00E983D4 /* UnitLevelOrgType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnitLevelOrgType.swift; sourceTree = "<group>"; };
+		E87A9E7E1E01FC6A00A7A618 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HTVTMemberParser.swift; path = Model/HTVTMemberParser.swift; sourceTree = "<group>"; };
 		E8B6CF1B1DF8CF5C0080097F /* DataExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
 		E8B6CF1D1DF8CF990080097F /* DictionaryExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionaryExtensions.swift; sourceTree = "<group>"; };
+		E8B6CF211E01C9A40080097F /* cwf.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = cwf.playground; sourceTree = "<group>"; };
+		E8CC95691E01E722007EBA47 /* member-objects.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "member-objects.js"; sourceTree = "<group>"; };
+		E8CC956B1E01E77F007EBA47 /* MemberTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,6 +191,7 @@
 		3CE4C8D11DCA824100AAFB31 /* Calling Workflow */ = {
 			isa = PBXGroup;
 			children = (
+				E8B6CF211E01C9A40080097F /* cwf.playground */,
 				E8B6CF1A1DF8CF0C0080097F /* Extensions */,
 				3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */,
 				3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */,
@@ -199,10 +211,13 @@
 		3CE4C8E81DCA824100AAFB31 /* Calling WorkflowTests */ = {
 			isa = PBXGroup;
 			children = (
+				E8084F7B1E046D5D0077FDAE /* DateExtensions.swift */,
+				E8CC95691E01E722007EBA47 /* member-objects.js */,
 				E8189A881DDA2D4600E983D4 /* cwf-object.js */,
 				E8189A891DDA2D4600E983D4 /* ModelTests.swift */,
 				3CE4C8E91DCA824100AAFB31 /* Calling_WorkflowTests.swift */,
 				3CE4C8EB1DCA824100AAFB31 /* Info.plist */,
+				E8CC956B1E01E77F007EBA47 /* MemberTests.swift */,
 			);
 			path = "Calling WorkflowTests";
 			sourceTree = "<group>";
@@ -224,6 +239,8 @@
 				3CE4C9031DCA82A000AAFB31 /* Calling.swift */,
 				3CEBAF441DCD0FBF0071BE9F /* Member.swift */,
 				E8189A941DDE67FB00E983D4 /* UnitLevelOrgType.swift */,
+				E87A9E7E1E01FC6A00A7A618 /* Utils.swift */,
+				E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -417,6 +434,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8189A8A1DDA2D4600E983D4 /* cwf-object.js in Resources */,
+				E8CC956A1E01E722007EBA47 /* member-objects.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -577,6 +595,7 @@
 				E8B6CF1E1DF8CF990080097F /* DictionaryExtensions.swift in Sources */,
 				3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
+				E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */,
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
 				3CE4C8D71DCA824100AAFB31 /* OrganizationTableViewController.swift in Sources */,
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
@@ -592,6 +611,7 @@
 				3CE4C90E1DCA82A000AAFB31 /* Calling.swift in Sources */,
 				3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */,
 				3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */,
+				E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */,
 				E8189A951DDE67FB00E983D4 /* UnitLevelOrgType.swift in Sources */,
 				3CE4C9121DCA82A000AAFB31 /* JSON.swift in Sources */,
 				3CEBAF451DCD0FBF0071BE9F /* Member.swift in Sources */,
@@ -603,6 +623,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CE4C8EA1DCA824100AAFB31 /* Calling_WorkflowTests.swift in Sources */,
+				E8084F7C1E046D5D0077FDAE /* DateExtensions.swift in Sources */,
+				E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */,
 				E8189A8B1DDA2D4600E983D4 /* ModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
