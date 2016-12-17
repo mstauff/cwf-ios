@@ -193,9 +193,9 @@
             "address": {
                 "streetAddress": "456 Another Street",
                 "streetAddress2": "Savali, Tonga",
-                "city": "City Field Shouldn't override",
+                "city": "Savali",
                 "state": null,
-                "postal": null
+                "postal": "shouldn't be included"
             },
             "emailAddress": "hh@email.com",
             "responsibleHTAuxiliaryId": 908949,

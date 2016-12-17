@@ -34,7 +34,7 @@ class MemberTests: XCTestCase {
         } else {
             print( "No File Path found for file" )
         }
-
+        
         let htvtParser = HTVTMemberParser()
         let memberList = testJSON?["members"] as? [JSONObject]
         memberList?.forEach() { familyJson in
@@ -48,8 +48,8 @@ class MemberTests: XCTestCase {
     
     /*
      Tests that a household with a single member is correctly parsed. Also tests name, individual phone & email, birthdate, age, gender and null priesthood.
-     todo - would be good to add a family where the only member is in the spouse position rather than HOH
      */
+    //TODO: would be good to add a family where the only member is in the spouse position rather than HOH
     func testSingleMemberFromJson() {
         let singleHOHMember = memberMap[8999999998963918]
         
@@ -70,9 +70,9 @@ class MemberTests: XCTestCase {
         XCTAssertNil( singleHOHMember?.priesthood )
         
     }
-
+    
     /*
-     Tests that a couple with no children are parsed correctly. Also validates null/empty phone, email, birthdate & priesthood are handled. Also validates that the individual phone & email work when HH phone/email are null. 
+     Tests that a couple with no children are parsed correctly. Also validates null/empty phone, email, birthdate & priesthood are handled. Validates that the individual phone & email work when HH phone/email are null, and that the city state and zip are formatted properly when there is no city in street 2
      */
     func testCoupleFromJson() {
         let hoh = memberMap[-1]
@@ -104,6 +104,10 @@ class MemberTests: XCTestCase {
         XCTAssertEqual( spouse?.gender, .Female )
     }
     
+    /*
+     Validates that children are parsed when included. Validates that the home phone is used if no individual phone is set. Validates that when address 2 already contains the city & state that we don't append it again.
+     */
+    //TODO: there are a few other variants here that could be tested, like city is contained in address2, but state is not, and vice versa
     func testChildrenFromJSON() {
         let hoh = memberMap[11111]
         let spouse = memberMap[22222]
@@ -125,6 +129,8 @@ class MemberTests: XCTestCase {
         // should have an address - this tests the case where the city is already in street address 2 and in the city field
         XCTAssertGreaterThan( hoh!.streetAddress.count, 0 )
         XCTAssertEqual( hoh!.streetAddress[1], "Savali, Tonga" )
+        // shouldn't have any more address fields
+        XCTAssertEqual( hoh!.streetAddress.count, 2 )
         
         XCTAssertEqual( child1!.gender, .Male )
         XCTAssertEqual( child1!.priesthood, .Deacon )
@@ -132,7 +138,10 @@ class MemberTests: XCTestCase {
         XCTAssertEqual( child2!.name, "AFPEleven, Child2")
         
     }
-
+    
+    /*
+     Validates that city state and zip are combined correctly into a single string. Since some LDS.org services don't provide discrete city, state, zip fields, we've modeled the member object to just have an array of strings for the address. HTVT does provide city state and zip, so we'll need to combine them. This method validates that if there is no city we don't get ", UT 58585", or that when we have all elements they are formatted correctly
+     */
     func testAddressString() {
         let htvtParser = HTVTMemberParser()
         XCTAssertNil( htvtParser.addressString(city: nil, state: nil, zip: nil))
@@ -145,14 +154,30 @@ class MemberTests: XCTestCase {
         XCTAssertEqual(htvtParser.addressString(city: "City", state: nil, zip: nil), "City" )
         XCTAssertEqual(htvtParser.addressString(city: "City", state: "", zip: ""), "City" )
     }
+    
+    /*
+     Since we couldn't use the default initializers for the enums, I'm adding a test to make sure they are correctly initialized from Strings
+     */
+    func testPriesthoodEnum() {
+        let invalidVals : [String?] = [ nil, "", "foo" ]
+        invalidVals.forEach() { val in
+            XCTAssertNil( Priesthood( optionalRaw: val ) )
+        }
+        
+        let validVals : [String:Priesthood] = ["DEACON": .Deacon, "TEACHER": .Teacher, "PRIEST": .Priest, "ELDER": .Elder, "HIGH_PRIEST": .HighPriest, "SEVENTY": .Seventy]
+        
+        validVals.forEach() { key, value in
+            XCTAssertEqual( Priesthood(rawValue: key ), value )
+            XCTAssertEqual( Priesthood(optionalRaw: key ), value )
+            
+        }
+        
+        
+        
+    }
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
-    }
-    
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
     
     func testPerformanceExample() {
