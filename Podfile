@@ -6,6 +6,7 @@ target 'Calling Workflow' do
   use_frameworks!
   pod 'GoogleAPIClient/Drive', '~> 1.0.2'
   pod 'GTMOAuth2', '~> 1.1.0'
+  pod 'Locksmith'
 
   # Pods for Calling Workflow
 
