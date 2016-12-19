@@ -31,10 +31,12 @@ class DirectoryTableViewController: CallingsBaseTableViewController {
   
     // MARK: - Setup
     func setupData() {
-        let newMember = Member(indId: 1, name: "John Doe", indPhone: "801-801-8018", housePhone: "8108108108", email: "jd@email.com", currentCall: "Sunbeam Teacher")
+        let sunbeamTeacherPosition = Position( positionTypeId: 36, name: "Sunbeam Teacher", hidden: false )
+        let sunbeamCalling = Calling(id: 4838284, currentIndId: 1, proposedIndId: nil, status: "RECORDED", position: sunbeamTeacherPosition, notes: nil, editableByOrg: true, parentOrg: nil)
+        let newMember = Member(indId: 1, name: "John Doe", indPhone: "801-801-8018", housePhone: "8108108108", indEmail: "jd@email.com", householdEmail: nil, streetAddress: [], birthdate: nil, gender: .Male, priesthood: .Elder, callings: [sunbeamCalling])
         members.append(newMember)
         
-        let newMember2 = Member(indId: 123, name: "Adams, Steve", indPhone: "555-433-2222", housePhone: "555-433-1111", email: "steve@adams.com", currentCall: nil)
+        let newMember2 = Member(indId: 123, name: "Adams, Steve", indPhone: "555-433-2222", housePhone: "555-433-1111", indEmail: "steve@adams.com", householdEmail: nil, streetAddress: [], birthdate: nil, gender: .Male, priesthood: nil, callings: [])
         members.append(newMember2)
     }
   
@@ -54,10 +56,10 @@ class DirectoryTableViewController: CallingsBaseTableViewController {
         let cell: NameCallingProposedTableViewCell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! NameCallingProposedTableViewCell
         let memberForCell = members[indexPath.row]
         
-        cell.nameLabel?.text = memberForCell.formattedName
+        cell.nameLabel?.text = memberForCell.name
         
-        if memberForCell.currentCalling != nil {
-            cell.currentCallingLabel?.text = memberForCell.currentCalling
+        if let currentCalling : Calling? = memberForCell.currentCallings.count > 0 ? memberForCell.currentCallings[0] : nil {
+            cell.currentCallingLabel?.text = currentCalling!.position.name
         }
         else {
             cell.currentCallingLabel?.text = nil
