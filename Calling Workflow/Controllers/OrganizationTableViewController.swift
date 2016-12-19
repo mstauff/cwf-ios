@@ -8,16 +8,13 @@
 
 import UIKit
 
-class OrganizationTableViewController: CallingsBaseTableViewController {
+class OrganizationTableViewController: UITableViewController {
     
     var organizationsToDisplay: [Org]?
     var organizationSelected: Org?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        navigationItem.title = NSLocalizedString("Organizations", comment: "")
-        
         organizationsToDisplay = []
         organizationSelected = nil
         getOrgs()
@@ -28,27 +25,23 @@ class OrganizationTableViewController: CallingsBaseTableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-      	
+    
     // MARK: - Setup
     
     func getOrgs() {
-        let emptyChildrenArray : [Org] = []
-        let emptyCallingArray : [Calling] = []
+        let orgTypes = UnitLevelOrgType.wardOrgTypes
         
-        var org1 = Org(id: 01, orgTypeId: UnitLevelOrgType.Primary.rawValue, orgName: "Primary", displayOrder: 700, children: emptyChildrenArray, callings: emptyCallingArray)
+/*        var org1 = Org(id: 1, orgType: orgTypes[0], orgName: orgTypes[0].name)
         
-        var childOrg1 = Org(id: 3843972, orgTypeId: UnitLevelOrgType.Other.rawValue, orgName: "CTR 7", displayOrder: 701, children: emptyChildrenArray, callings: emptyCallingArray)
-        
-        let childOrg2 = Org(id: 123456, orgTypeId: UnitLevelOrgType.Other.rawValue, orgName: "Cub Scouts", displayOrder: 702, children: emptyChildrenArray, callings: emptyCallingArray)
-        
-        childOrg1.callings.append(Calling(id: 2, currentIndId: nil, proposedIndId: nil, status: "Interviewed", position:Position(positionTypeId: 2, name: "Primary Worker CTR 7", hidden: false), notes: nil, editableByOrg: true, parentOrg: childOrg1))
-        
-        org1.children.append(childOrg1)
-        org1.children.append(childOrg2)
+        var subOrg1 = Org(orgType: OrgType(id: 38432972, name:"CTR 7"), orgName: "CTR 7")
+        subOrg1.positions.append(Position(id: 1, positionTypeId: 2, name: "Primary Worker CTR 7", description: "Primary Teacher", org: org1))
+        org1.subOrgs.append(subOrg1)
         
         organizationsToDisplay?.append(org1)
         
- 
+        organizationsToDisplay?.append( Org(orgType: orgTypes[1], orgName: orgTypes[1].name) )
+        organizationsToDisplay?.append( Org(orgType: orgTypes[2], orgName: orgTypes[2].name) )
+ */
     }
     
     // MARK: - Table View Delegate/DataSource
