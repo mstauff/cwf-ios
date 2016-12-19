@@ -33,6 +33,9 @@ class RootTabBarViewController: UITabBarController {
     */
     
     func signIntoLDSAPI() {
+
+        RestAPI.ldsSignin()
+        
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
         

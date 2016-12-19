@@ -7,26 +7,23 @@
 //
 
 import UIKit
+import Locksmith
 
 class LDSCredentialsTableViewController: CallingsBaseTableViewController {
-
-    var accountName : String? = nil
+    
+    var userNameField : UITextField?
+    var passwordField : UITextField?
+    
+    var keychainDataDictionary: Dictionary<String, String>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let accountName = accountName {
-            do {
-                let passwordItem = KeychainPasswordItem(service: KeychainConfiguration.serviceName, account: accountName, accessGroup: KeychainConfiguration.accessGroup)
-                
-                accountNameField.text = passwordItem.account
-                passwordField.text = try passwordItem.readPassword()
-            }
-            catch {
-                fatalError("Error reading password from keychain - \(error)")
-            }
-        }
-        // Do any additional setup after loading the view.
+        userNameField = nil
+        passwordField = nil
+        
+        keychainDataDictionary = Locksmith.loadDataForUserAccount(userAccount: "callingWorkFlow") as! Dictionary<String, String>?
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -41,11 +38,7 @@ class LDSCredentialsTableViewController: CallingsBaseTableViewController {
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.01
     }
-    
-//    override func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
-//        return -0.1
-//    }
-    
+        
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 0:
@@ -78,9 +71,24 @@ class LDSCredentialsTableViewController: CallingsBaseTableViewController {
 
             switch indexPath.row {
             case 0:
-                cell?.inputField?.placeholder = "LDS Username"
+                if (keychainDataDictionary?["username"] != nil) {
+                    cell?.inputField?.text = keychainDataDictionary?["username"]
+                }
+                else {
+                    cell?.inputField?.placeholder = "LDS Username"
+                }
+                self.userNameField = cell?.inputField
+                
             case 1:
-                cell?.inputField?.placeholder = "Password"
+                if (keychainDataDictionary?["password"] != nil) {
+                    cell?.inputField.text = keychainDataDictionary?["password"]
+                }
+                else {
+                    cell?.inputField?.placeholder = "Password"
+                }
+                cell?.inputField?.isSecureTextEntry = true
+                passwordField = cell?.inputField 
+                
             default:
                 cell?.textLabel?.text = nil
             }
@@ -104,27 +112,59 @@ class LDSCredentialsTableViewController: CallingsBaseTableViewController {
             tableView.deselectRow(at: indexPath, animated: true)
 
         case 1:
-            logInLDSUser()
+            userNameField?.resignFirstResponder()
+            passwordField?.resignFirstResponder()
+            
+            logInLDSUser(username: (self.userNameField?.text)!, password: (passwordField?.text)!)
             tableView.deselectRow(at: indexPath, animated: true)
-
+            
         default:
             tableView.deselectRow(at: indexPath, animated: true)
         }
     }
 
-    func logInLDSUser() {
-        print("loging in lds user")
-        self.dismiss(animated: true, completion: nil)
+    func logInLDSUser(username: String, password: String) {
+        //Show alert on empty strings
+        if (username == "" || password == "") {
+            let alertview = UIAlertController(title: "Login Error", message: "Enter username and password to login", preferredStyle: UIAlertControllerStyle.alert)
+            let alertAction = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: UIAlertActionStyle.default, handler: nil)
+            alertview.addAction(alertAction)
+            self.present(alertview, animated: true, completion: nil)
+        }
+        // Check if the id and password are valid
+        else if (ldsIdIsValid(username: username, password: password)) {
+            do {
+                try Locksmith.deleteDataForUserAccount(userAccount: "callingWorkFlow")
+            }
+            catch {
+                print("error deleting login data")
+            }
+            
+            do {
+                try Locksmith.saveData(data: ["username": username, "password": password], forUserAccount: "callingWorkFlow")
+            }
+            catch{
+                print("error saving username")
+            }
+
+            self.dismiss(animated: true, completion: nil)
+        }
+        // Show alert on bad info
+        else {
+            let alertview = UIAlertController(title: "Login Error", message: "Incorrect username or password.", preferredStyle: UIAlertControllerStyle.alert)
+            let alertAction = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: UIAlertActionStyle.default, handler: nil)
+            alertview.addAction(alertAction)
+            self.present(alertview, animated: true, completion: nil)
+
+        }
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    func ldsIdIsValid(username: String, password: String) -> Bool {
+        if (username == "a" && password == "s") {
+            return true
+        }
+        else {
+            return false
+        }
     }
-    */
-
 }
