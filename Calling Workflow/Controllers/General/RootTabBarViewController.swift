@@ -33,8 +33,12 @@ class RootTabBarViewController: UITabBarController {
     */
     
     func signIntoLDSAPI() {
-
-        RestAPI.ldsSignin()
+        
+        
+       RestAPI.ldsSignin(username: "***REMOVED***", password: "***REMOVED***",  { (error) -> Void in
+            
+            print( error!)
+        })
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")

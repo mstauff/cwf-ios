@@ -45,36 +45,48 @@ class RestAPI {
         task.resume()
     }
     
-    static func ldsSignin() {
-        guard let url = URL( string: NetworkConstants.ldsOrgEndpoints["SIGN_IN"]!) else {
+    static func ldsSignin(username: String, password: String,_ completionHandler: @escaping ( _ error:NSError? ) -> Void) {
+        guard let url = URL( string: "https://ident.lds.org/sso/UI/Login") else {
             let errorMsg = "Error: cannot create URL: " + NetworkConstants.ldsOrgEndpoints["SIGN_IN"]!
             print( errorMsg )
-//            completionHandler( nil, NSError( domain: ErrorConstants.domain, code: 404, userInfo: [ "error" : errorMsg ] ) )
+            completionHandler(NSError( domain: ErrorConstants.domain, code: 404, userInfo: [ "error" : errorMsg ] ) )
             return
         }
         
-        let restRequest = URLRequest( url:  url )
-
+        var restRequest = URLRequest(url: url)
+        restRequest.httpMethod = "POST"
+        
+        let postString = "username=\(username)&password=\(password)"
+        restRequest.httpBody = postString.data(using: String.Encoding.utf8)
+        
         let config = URLSessionConfiguration.default
-        let session = URLSession( configuration: config )
-
-        let task = session.dataTask(with: restRequest, completionHandler: { (data, response, error) -> Void in
+        let currentSession = URLSession( configuration: config )
+        
+        let task = currentSession.dataTask(with: restRequest, completionHandler: { (data, response, error) -> Void in
             
             print( "Response: \(response.debugDescription) Data: " + data.debugDescription + " Error: " + error.debugDescription )
             guard error == nil else {
                 print( "Error: " + error.debugDescription )
-//                completionHandler( nil, error as NSError? )
+                completionHandler(error as NSError? )
                 return
             }
             
             guard let responseData = data else {
                 let errorMsg = "Error: No network error, but did not recieve data from \(NetworkConstants.ldsOrgEndpoints["SIGN_IN"]!)"
                 print( errorMsg )
-//                completionHandler( nil, NSError( domain: ErrorConstants.domain, code: 404, userInfo: [ "error" : errorMsg ] ) )
+                completionHandler(NSError( domain: ErrorConstants.domain, code: 404, userInfo: [ "error" : errorMsg ] ) )
                 return
             }
             
-//            completionHandler( AppConfig( responseData.jsonDictionaryValue! ), nil )
+            let task2 = currentSession.dataTask(with: URLRequest(url: URL(string: "https://www.lds.org/mobiledirectory/services/v2/ldstools/current-user-detail")!), completionHandler: { (data, response, error) -> Void in
+                print(data?.description)
+                let stringData = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
+                print(stringData)
+            
+            })
+            task2.resume()
+            
+//            completionHandler( nil )
         })
         
         task.resume()
