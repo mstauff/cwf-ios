@@ -35,7 +35,7 @@ class RootTabBarViewController: UITabBarController {
     func signIntoLDSAPI() {
         
         
-       RestAPI.ldsSignin(username: "colsen880", password: "snow2003",  { (error) -> Void in
+       RestAPI.ldsSignin(username: "", password: "",  { (error) -> Void in
             
             print( error!)
         })
