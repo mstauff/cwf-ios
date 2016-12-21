@@ -8,7 +8,7 @@
 
 import UIKit
 
-class OrgDetailTableViewController: CallingsBaseTableViewController {
+class OrgDetailTableViewController: CWFBaseTableViewController {
     
     var organizationToDisplay : Org?
     

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DirectoryTableViewController: CallingsBaseTableViewController {
+class DirectoryTableViewController: CWFBaseTableViewController {
 
     var members : [Member]!
 
@@ -58,8 +58,8 @@ class DirectoryTableViewController: CallingsBaseTableViewController {
         
         cell.nameLabel?.text = memberForCell.name
         
-        if let currentCalling : Calling? = memberForCell.currentCallings.count > 0 ? memberForCell.currentCallings[0] : nil {
-            cell.currentCallingLabel?.text = currentCalling!.position.name
+        if memberForCell.currentCallings.count > 0 {
+            cell.currentCallingLabel?.text = memberForCell.currentCallings[0].position.name
         }
         else {
             cell.currentCallingLabel?.text = nil

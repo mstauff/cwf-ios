@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CallingsTableViewController: CallingsBaseTableViewController {
+class CallingsTableViewController: CWFBaseTableViewController {
     
     var callingsToDisplay : [Calling] = []
     
@@ -56,11 +56,11 @@ class CallingsTableViewController: CallingsBaseTableViewController {
         
         let callingForRow = callingsToDisplay[indexPath.row]
         
-        let newMember = Member(indId: 1, name: "John Doe", indPhone: "801-801-8018", housePhone: "8108108108", email: "jd@email.com", currentCall: "Primary Worker CTR 7")
+        let newMember = Member(indId: 1, name: "John Doe", indPhone: "801-801-8018", housePhone: "8108108108", indEmail: "jd@email.com", householdEmail: "jd@email.com", streetAddress: [], birthdate: nil, gender: nil, priesthood: nil, callings: [])
         
         cell?.nameLabel.text = callingForRow.position.name
         
-        cell?.currentCallingLabel.text = newMember.formattedName
+        cell?.currentCallingLabel.text = newMember.name
         
         cell?.callingInProcessLabel.text = callingForRow.status
 

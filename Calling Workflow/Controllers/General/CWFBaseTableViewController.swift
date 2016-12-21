@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CallingsBaseTableViewController: UITableViewController {
+class CWFBaseTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

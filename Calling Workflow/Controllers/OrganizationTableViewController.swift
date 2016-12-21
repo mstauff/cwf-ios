@@ -8,7 +8,7 @@
 
 import UIKit
 
-class OrganizationTableViewController: UITableViewController {
+class OrganizationTableViewController: CWFBaseTableViewController {
     
     var organizationsToDisplay: [Org]?
     var organizationSelected: Org?

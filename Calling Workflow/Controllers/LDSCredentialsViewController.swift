@@ -9,7 +9,7 @@
 import UIKit
 import Locksmith
 
-class LDSCredentialsTableViewController: CallingsBaseTableViewController {
+class LDSCredentialsTableViewController: CWFBaseTableViewController {
     
     var userNameField : UITextField?
     var passwordField : UITextField?
