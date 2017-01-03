@@ -44,4 +44,7 @@ struct RemoteStorageConstants {
 
 struct ErrorConstants {
     static let domain = "org.ldscd"
+    
+    static let notFound = 404
+    static let jsonParseError = 450
 }
