@@ -40,6 +40,7 @@
 		E8084F871E0476F80077FDAE /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F831E0476F80077FDAE /* Position.swift */; };
 		E8084F881E0476F80077FDAE /* UnitLevelOrgType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F841E0476F80077FDAE /* UnitLevelOrgType.swift */; };
 		E8084F8A1E04814F0077FDAE /* OrganizationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F891E04814F0077FDAE /* OrganizationTableViewController.swift */; };
+		E8084F8C1E088A870077FDAE /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F8B1E088A870077FDAE /* DataSource.swift */; };
 		E8189A8A1DDA2D4600E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A881DDA2D4600E983D4 /* cwf-object.js */; };
 		E8189A8B1DDA2D4600E983D4 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8189A891DDA2D4600E983D4 /* ModelTests.swift */; };
 		E8189A931DDA74E700E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A921DDA74E700E983D4 /* cwf-object.js */; };
@@ -112,6 +113,7 @@
 		E8084F831E0476F80077FDAE /* Position.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Position.swift; path = Model/Position.swift; sourceTree = "<group>"; };
 		E8084F841E0476F80077FDAE /* UnitLevelOrgType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UnitLevelOrgType.swift; path = Model/UnitLevelOrgType.swift; sourceTree = "<group>"; };
 		E8084F891E04814F0077FDAE /* OrganizationTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OrganizationTableViewController.swift; path = Controllers/OrganizationTableViewController.swift; sourceTree = "<group>"; };
+		E8084F8B1E088A870077FDAE /* DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
 		E8189A881DDA2D4600E983D4 /* cwf-object.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "cwf-object.js"; sourceTree = "<group>"; };
 		E8189A891DDA2D4600E983D4 /* ModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
 		E8189A8C1DDA687600E983D4 /* GTMOAuth2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GTMOAuth2.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Calling_Workflow-exfgumoddixqfzcrdepaqirmseyo/Build/Products/Debug-iphonesimulator/GTMOAuth2/GTMOAuth2.framework"; sourceTree = "<group>"; };
@@ -197,6 +199,7 @@
 				3CE4C9051DCA82A000AAFB31 /* Constants.swift */,
 				3CE4C9071DCA82A000AAFB31 /* JSON.swift */,
 				3CE4C8D81DCA824100AAFB31 /* Main.storyboard */,
+				E8084F8B1E088A870077FDAE /* DataSource.swift */,
 				3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */,
 				3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */,
 				3CE4C9531DCA9BE800AAFB31 /* Controllers */,
@@ -588,6 +591,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8084F8C1E088A870077FDAE /* DataSource.swift in Sources */,
 				3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */,
 				E8084F7F1E0476C10077FDAE /* DataExtensions.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
