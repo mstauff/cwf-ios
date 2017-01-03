@@ -35,9 +35,10 @@ public struct Org : JSONParsable  {
     
     /** Any child sub orgs. If this is a unit level org (like Primary) then it the callings array will be empty and the children array will be populated with all the classes, the presidency, the music, etc. If this is a sub org like a primary class then the children will be empty, and callings will be populated. The only top level org that we have observed that has callings directly, and no children, is the Bishopric org
      */
-    let children : [Org]
+    var children : [Org]
     
     var callings : [Calling]
+    
     // Do we need these? Probably not for the app, but maybe we will to be able to send necessary data to LCR for calling updates
     //    var parentOrg : Org
     

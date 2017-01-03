@@ -1,4 +1,4 @@
-//
+ //
 //  CallingsTableViewController.swift
 //  Calling Workflow
 //
@@ -8,45 +8,66 @@
 
 import UIKit
 
-class CallingsTableViewController: UITableViewController {
+class CallingsTableViewController: CWFBaseTableViewController {
+    
+    var callingsToDisplay : [Calling] = []
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupCallingsToDisplay()
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        let addButton = UIBarButtonItem(title: "Add", style: UIBarButtonItemStyle.plain, target: self, action: nil)
+        addButton.tintColor = UIColor.white
+        self.navigationItem.rightBarButtonItem = addButton
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    // MARK: - Setup
+    
+    func setupCallingsToDisplay() {
+        
+        let position = Position(positionTypeId: 2, name: "Primary Worker CTR 7", hidden: false)
+        let calling1 = Calling(id: 01, currentIndId: 01, proposedIndId: 02, status: "Interviewed", position: position, notes: nil, editableByOrg: true, parentOrg: nil)
+        callingsToDisplay.append(calling1)
+    }
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+
+        return callingsToDisplay.count
     }
 
-    /*
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NameCallingProposedTableViewCell
+        
+        let callingForRow = callingsToDisplay[indexPath.row]
+        
+        let newMember = Member(indId: 1, name: "John Doe", indPhone: "801-801-8018", housePhone: "8108108108", indEmail: "jd@email.com", householdEmail: "jd@email.com", streetAddress: [], birthdate: nil, gender: nil, priesthood: nil, callings: [])
+        
+        cell?.nameLabel.text = callingForRow.position.name
+        
+        cell?.currentCallingLabel.text = newMember.name
+        
+        cell?.callingInProcessLabel.text = callingForRow.status
 
         // Configure the cell...
 
-        return cell
+        return cell!
     }
-    */
 
     /*
     // Override to support conditional editing of the table view.
