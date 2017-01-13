@@ -187,7 +187,30 @@
                     "phone": "",
                     "birthdate": "1988-08-16T00:00:00.000-06:00",
                     "photoUrl": "img/no-pic.png"
-                }
+                },
+                         {
+                         "individualId": 55555,
+                         "formattedName": "AFPEleven, Infant",
+                         "surname": "AFPEleven",
+                         "givenName1": "Infant",
+                         "priesthoodOffice": null,
+                         "email": "",
+                         "isAdult": false,
+                         "imageId": "",
+                         "gender": "MALE",
+                         "notes": null,
+                         "teacherAuxIds": {
+                         "htAuxiliaries": [],
+                         "vtAuxiliaries": []
+                         },
+                         "responsibleVTAuxiliaryId": null,
+                         "isAssignedVT": false,
+                         "headOfHouseIndividualId": 11111,
+                         "phone": "",
+                         "birthdate": "2015-08-16T00:00:00.000-06:00",
+                         "photoUrl": "img/no-pic.png"
+                         }
+
             ],
             "phone": "444-HOME-PHONE",
             "address": {

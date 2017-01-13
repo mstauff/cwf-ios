@@ -9,7 +9,7 @@
 import Foundation
 
 struct NetworkConstants {
-    static let configUrl = "http://dev-ldscd.rhcloud.com/cwf/config"
+    static let configUrl = "http://dev-ldscd.rhcloud.com/cwf/config?env=test"
     
     static let memberListURLKey = "MEMBER_LIST"
     static let callingsListURLKey = "CALLING_LIST"
@@ -24,6 +24,9 @@ struct NetworkConstants {
         // implicit get for computed properties that are read only
         return [String](ldsOrgEndpoints.keys)
     }
+    
+    static let ldsOrgSignInUsernameParam = "username"
+    static let ldsOrgSignInPasswordParam = "password"
 }
 
 struct RemoteStorageConstants {
@@ -42,9 +45,14 @@ struct RemoteStorageConstants {
     
 }
 
+struct MemberConstants {
+    static let minimumAge = 11
+}
+
 struct ErrorConstants {
     static let domain = "org.ldscd"
     
+    static let networkError = 400
     static let notFound = 404
     static let jsonParseError = 450
 }
