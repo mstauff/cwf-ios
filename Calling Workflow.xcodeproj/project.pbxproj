@@ -46,8 +46,12 @@
 		E8189A8A1DDA2D4600E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A881DDA2D4600E983D4 /* cwf-object.js */; };
 		E8189A8B1DDA2D4600E983D4 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8189A891DDA2D4600E983D4 /* ModelTests.swift */; };
 		E8189A931DDA74E700E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A921DDA74E700E983D4 /* cwf-object.js */; };
+		E8316CE91E26AC1E0091419D /* LdscdRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */; };
+		E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE81E26AC1E0091419D /* LdsRestApi.swift */; };
+		E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CEB1E26AD4F0091419D /* RestAPITests.swift */; };
 		E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E7E1E01FC6A00A7A618 /* Utils.swift */; };
 		E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */; };
+		E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87D00B91E26EF7000FA722B /* LdsUser.swift */; };
 		E8CC956A1E01E722007EBA47 /* member-objects.js in Resources */ = {isa = PBXBuildFile; fileRef = E8CC95691E01E722007EBA47 /* member-objects.js */; };
 		E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC956B1E01E77F007EBA47 /* MemberTests.swift */; };
 /* End PBXBuildFile section */
@@ -124,8 +128,12 @@
 		E8189A8E1DDA687C00E983D4 /* GTMSessionFetcher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GTMSessionFetcher.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Calling_Workflow-exfgumoddixqfzcrdepaqirmseyo/Build/Products/Debug-iphonesimulator/GTMSessionFetcher/GTMSessionFetcher.framework"; sourceTree = "<group>"; };
 		E8189A901DDA688000E983D4 /* GoogleAPIClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAPIClient.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Calling_Workflow-exfgumoddixqfzcrdepaqirmseyo/Build/Products/Debug-iphonesimulator/GoogleAPIClient/GoogleAPIClient.framework"; sourceTree = "<group>"; };
 		E8189A921DDA74E700E983D4 /* cwf-object.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "cwf-object.js"; sourceTree = "<group>"; };
+		E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdscdRestApi.swift; sourceTree = "<group>"; };
+		E8316CE81E26AC1E0091419D /* LdsRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdsRestApi.swift; sourceTree = "<group>"; };
+		E8316CEB1E26AD4F0091419D /* RestAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestAPITests.swift; sourceTree = "<group>"; };
 		E87A9E7E1E01FC6A00A7A618 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HTVTMemberParser.swift; path = Model/HTVTMemberParser.swift; sourceTree = "<group>"; };
+		E87D00B91E26EF7000FA722B /* LdsUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LdsUser.swift; path = Model/LdsUser.swift; sourceTree = "<group>"; };
 		E8CC95691E01E722007EBA47 /* member-objects.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "member-objects.js"; sourceTree = "<group>"; };
 		E8CC956B1E01E77F007EBA47 /* MemberTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -196,7 +204,8 @@
 		3CE4C8D11DCA824100AAFB31 /* Calling Workflow */ = {
 			isa = PBXGroup;
 			children = (
-				E8B6CF1A1DF8CF0C0080097F /* Extensions */,
+				E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */,
+				E8316CE81E26AC1E0091419D /* LdsRestApi.swift */,
 				3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */,
 				3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */,
 				3CE4C9041DCA82A000AAFB31 /* CallingDataManager.swift */,
@@ -207,6 +216,7 @@
 				3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */,
 				3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */,
 				3CE4C9531DCA9BE800AAFB31 /* Controllers */,
+				E8B6CF1A1DF8CF0C0080097F /* Extensions */,
 				3CE4C9521DCA9A6100AAFB31 /* Model */,
 				3CEBAF491DD151400071BE9F /* Support Files */,
 			);
@@ -216,6 +226,7 @@
 		3CE4C8E81DCA824100AAFB31 /* Calling WorkflowTests */ = {
 			isa = PBXGroup;
 			children = (
+				E8316CEB1E26AD4F0091419D /* RestAPITests.swift */,
 				E8084F7B1E046D5D0077FDAE /* DateExtensions.swift */,
 				E8CC95691E01E722007EBA47 /* member-objects.js */,
 				E8189A881DDA2D4600E983D4 /* cwf-object.js */,
@@ -246,6 +257,7 @@
 				3CEBAF441DCD0FBF0071BE9F /* Member.swift */,
 				E87A9E7E1E01FC6A00A7A618 /* Utils.swift */,
 				E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */,
+				E87D00B91E26EF7000FA722B /* LdsUser.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -395,7 +407,7 @@
 				TargetAttributes = {
 					3CE4C8CE1DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 42MR5LM3U2;
+						DevelopmentTeam = 75DK5N8LHP;
 						ProvisioningStyle = Automatic;
 					};
 					3CE4C8E41DCA824100AAFB31 = {
@@ -406,6 +418,7 @@
 					};
 					3CE4C8EF1DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = 75DK5N8LHP;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3CE4C8CE1DCA824100AAFB31;
 					};
@@ -608,6 +621,7 @@
 				E8084F8C1E088A870077FDAE /* DataSource.swift in Sources */,
 				3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */,
 				E8084F7F1E0476C10077FDAE /* DataExtensions.swift in Sources */,
+				E8316CE91E26AC1E0091419D /* LdscdRestApi.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
 				E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */,
 				E8084F861E0476F80077FDAE /* Org.swift in Sources */,
@@ -615,6 +629,7 @@
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
 				3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */,
 				3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */,
+				E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */,
 				E8084F871E0476F80077FDAE /* Position.swift in Sources */,
 				3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */,
 				3CE4C90F1DCA82A000AAFB31 /* CallingDataManager.swift in Sources */,
@@ -628,6 +643,7 @@
 				E8084F8A1E04814F0077FDAE /* OrganizationTableViewController.swift in Sources */,
 				3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */,
 				E8084F801E0476C10077FDAE /* DictionaryExtensions.swift in Sources */,
+				E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */,
 				3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */,
 				E8084F851E0476F80077FDAE /* Calling.swift in Sources */,
 				E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */,
@@ -640,6 +656,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */,
 				3CE4C8EA1DCA824100AAFB31 /* Calling_WorkflowTests.swift in Sources */,
 				E8084F7C1E046D5D0077FDAE /* DateExtensions.swift in Sources */,
 				E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */,
@@ -790,7 +807,7 @@
 			baseConfigurationReference = 13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 42MR5LM3U2;
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -805,7 +822,7 @@
 			baseConfigurationReference = 403F3DEDFCDAEFE6861B2C7D /* Pods-Calling Workflow.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 42MR5LM3U2;
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -852,6 +869,7 @@
 			baseConfigurationReference = 186DC4A209D5B238D4E39AD8 /* Pods-Calling WorkflowUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowUITests";
@@ -866,6 +884,7 @@
 			baseConfigurationReference = 6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowUITests";

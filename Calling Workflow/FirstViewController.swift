@@ -39,7 +39,7 @@ class FirstViewController: UIViewController {
     @IBAction func showFileClicked() {
         callingMgr.getOrgCallings( org: eq ) {
             ( fileContents, error ) -> Void in
-            self.output.text = fileContents
+            self.output.text = fileContents != nil ? String( data: fileContents!, encoding: .utf8 ) : "No Data"
         }
     }
     @IBAction func updateClicked() {

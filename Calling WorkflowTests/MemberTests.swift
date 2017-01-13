@@ -43,8 +43,38 @@ class MemberTests: XCTestCase {
                 memberMap[ member.individualId ] = member
             }
         }
+    }
+    
+    func testAgeFilter() {
+        let htvtParser = HTVTMemberParser()
+        let memberJSON = testJSON?["members"] as? [JSONObject]
+        [true, false].forEach() { includeChildren in
+            var memberList : [Member] = []
+            // parse the members, either including or excluding children
+            memberJSON?.forEach() { familyJson in
+                let familyMembers = htvtParser.parseFamilyFrom( json: familyJson, includeChildren: includeChildren )
+                memberList.append(contentsOf: familyMembers)
+            }
+            // count how many members are under age.
+            let underageMemberCount = memberList.reduce(0) { (count, member) in
+                guard let age = member.age else {
+                    return count
+                }
+                return  count + age <= MemberConstants.minimumAge ? 1 : 0
+            }
+            if includeChildren {
+                // if children are included there should be 1 or more children in the list
+                XCTAssertGreaterThan(underageMemberCount, 0)
+            } else {
+                // if children are not included there should be 0
+                XCTAssertEqual(underageMemberCount, 0)
+            }
+            // if the json file gets modified so there aren't any children in the list then this test will fail until a child is added back in. Also note the age in the file is not dynamic so in 2026 this test will start to fail as well :)
+            
+        }
         
     }
+    
     
     /*
      Tests that a household with a single member is correctly parsed. Also tests name, individual phone & email, birthdate, age, gender and null priesthood.
