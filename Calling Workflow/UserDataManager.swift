@@ -11,7 +11,7 @@ import Foundation
 class UserDataManager : CWFBaseDataManager {
     
     
-    func getUserData (completionHandler: @escaping ( _ orgData: String?, _ error: NSError? ) -> Void ){
+    func getUserData (completionHandler: @escaping ( _ orgData: Data?, _ error: NSError? ) -> Void ){
         dataSource.fetchFileContents(fileName: getFileNameForCurrentUser()) { fileContents, error in
             guard error == nil else {
                 print( "CallingDataManager.getOrgCallings() Error: " + error.debugDescription )
