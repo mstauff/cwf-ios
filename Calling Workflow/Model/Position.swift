@@ -35,7 +35,7 @@ public struct Position : JSONParsable {
         self.unitNum = nil
     }
     
-    public init?(_ json: JSONObject) {
+    public init?(fromJSON json: JSONObject) {
         guard
             let validPositionTypeId = json[PositionJsonKeys.positionTypeId] as? Int
             else {

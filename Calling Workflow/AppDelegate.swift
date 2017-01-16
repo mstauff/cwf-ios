@@ -15,6 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var globalDataSource: CWFCallingManagerService?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+
         // Override point for customization after application launch.
         setupDataSource()
         return true
@@ -48,6 +49,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     }
     
-
+}
+struct InjectionMap {
+    static var dataSource:DataSource = RemoteDataSource()
+    static var ldsOrgApi:LdsOrgApi = LdsRestApi(  appConfig: AppConfig() )
 }
 

@@ -102,7 +102,7 @@ class RemoteDataSource : NSObject, DataSource {
                 }
                 do {
                     let orgJson = try JSONSerialization.jsonObject(with: fileContents!, options: [])
-                    let orgResults = Org( orgJson as! JSONObject )
+                    let orgResults = Org( fromJSON: orgJson as! JSONObject )
                     completionHandler( orgResults, nil )
                 } catch {
                     completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.jsonParseError, userInfo: [:]) )

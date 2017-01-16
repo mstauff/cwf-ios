@@ -35,17 +35,18 @@ public struct Org : JSONParsable  {
     
     /** Any child sub orgs. If this is a unit level org (like Primary) then it the callings array will be empty and the children array will be populated with all the classes, the presidency, the music, etc. If this is a sub org like a primary class then the children will be empty, and callings will be populated. The only top level org that we have observed that has callings directly, and no children, is the Bishopric org
      */
-    var children : [Org]
+    var children : [Org] = []
     
-    var callings : [Calling]
+    var callings : [Calling] = []
     
     // Do we need these? Probably not for the app, but maybe we will to be able to send necessary data to LCR for calling updates
     //    var parentOrg : Org
     
-    public init?(_ json: JSONObject) {
+    public init?(fromJSON json: JSONObject) {
         guard
             // currently orgType is inlined with the org object, rather than a separate JSON piece
-            let orgTypeId = json[ OrgJsonKeys.orgTypeId ] as? Int,
+            // orgs can come from our google drive structure, or from LCR. Most of the google drive structure was designed based on the LCR org so fields are mostly named the same. OrgTypeId is the one exception. In the google drive object it's orgTypeId, in LCR there is an array of orgTypeIds, and then a convenience member var to get the first one named "firstOrgTypeId". If there were more differences we might look into subclassing & different impl's, but since this is the only one we just check for orgTypeId first and if it's not in the JSON then we check for firstOrgTypeId.
+            let orgTypeId = json[ OrgJsonKeys.orgTypeId ] as? Int ?? json[ OrgJsonKeys.lcrOrgTypeId ] as? Int,
             let id = json[ OrgJsonKeys.id ] as? NSNumber,
             let displayOrder = json[OrgJsonKeys.displayOrder] as? Int
             else {
@@ -56,19 +57,23 @@ public struct Org : JSONParsable  {
         var orgName = json[OrgJsonKeys.customOrgName] as? String ?? json[OrgJsonKeys.orgName] as? String
         orgName = orgName ?? ""
         let childOrgs : [Org] = children.map() { childOrgJSON -> Org? in
-            return Org( childOrgJSON )
+            return Org( fromJSON: childOrgJSON )
             }.filter() { $0 != nil } as! [Org]
         
         // This initializer is a bit unorthodox where it creates an org, then sets self to it, but we need to do that because the child callings need a reference to the containing org. Although we probably could make it work by making Calling.parentOrg optional, and then filling it in after everything else is initialized, this works, so we'll stick with this method unless it causes us some other issues
         var org = Org( id: id.int64Value, orgTypeId: orgTypeId, orgName: orgName!, displayOrder: displayOrder, children: childOrgs, callings: [] )
         let parsedCallings : [Calling] = callings.map() { callingJson -> Calling? in
-            var calling = Calling( callingJson )
+            var calling = Calling( fromJSON: callingJson )
             calling?.parentOrg = org
             return calling
             }.filter() { $0 != nil } as! [Calling]
         
         org.callings = parsedCallings
         self = org
+    }
+    
+    public init( id: Int64, orgTypeId: Int ) {
+        self.init( id: id, orgTypeId: orgTypeId, orgName: "", displayOrder: 1, children: [], callings: [] )
     }
     
     public init( id: Int64, orgTypeId: Int, orgName : String, displayOrder : Int, children : [Org], callings : [Calling] ) {
@@ -108,4 +113,6 @@ private struct OrgJsonKeys {
     static let callings = "callings"
     static let orgName = "defaultOrgName"
     static let customOrgName = "customOrgName"
+    
+    static let lcrOrgTypeId = "firstOrgTypeId"
 }

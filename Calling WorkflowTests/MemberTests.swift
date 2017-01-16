@@ -36,7 +36,7 @@ class MemberTests: XCTestCase {
         }
         
         let htvtParser = HTVTMemberParser()
-        let memberList = testJSON?["members"] as? [JSONObject]
+        let memberList = testJSON?["families"] as? [JSONObject]
         memberList?.forEach() { familyJson in
             let familyMembers = htvtParser.parseFamilyFrom( json: familyJson )
             familyMembers.forEach() { member in
@@ -47,7 +47,7 @@ class MemberTests: XCTestCase {
     
     func testAgeFilter() {
         let htvtParser = HTVTMemberParser()
-        let memberJSON = testJSON?["members"] as? [JSONObject]
+        let memberJSON = testJSON?["families"] as? [JSONObject]
         [true, false].forEach() { includeChildren in
             var memberList : [Member] = []
             // parse the members, either including or excluding children

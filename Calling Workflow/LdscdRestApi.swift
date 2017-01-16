@@ -42,7 +42,7 @@ class LdscdRestApi : RestAPI {
                 return
             }
             
-            completionHandler( AppConfig( responseData.jsonDictionaryValue! ), nil )
+            completionHandler( AppConfig( fromJSON: responseData.jsonDictionaryValue! ), nil )
         })
     }
 }

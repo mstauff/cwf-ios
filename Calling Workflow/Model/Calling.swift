@@ -49,9 +49,9 @@ public struct Calling : JSONParsable {
         self.parentOrg = parentOrg
     }
     
-    public init?(_ json: JSONObject) {
+    public init?(fromJSON json: JSONObject) {
         guard
-            let validPosition = Position(json)
+            let validPosition = Position(fromJSON: json)
             else {
                 return nil
         }

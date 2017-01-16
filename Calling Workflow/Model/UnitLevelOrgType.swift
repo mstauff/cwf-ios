@@ -14,6 +14,9 @@ import Foundation
  */
 public enum UnitLevelOrgType : Int  {
     
+    case Stake = 5
+    case Ward = 7
+    
     case Bishopric = 1179
     case BranchPresidency = -1
     case HighPriests = 69

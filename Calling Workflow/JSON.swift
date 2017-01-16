@@ -12,7 +12,7 @@ import Foundation
 public typealias JSONObject = [String:AnyObject]
 
 public protocol JSONParsable {
-    init?(_ object: JSONObject)
+    init?( fromJSON: JSONObject)
     func toJSONObject() -> JSONObject
 }
 
