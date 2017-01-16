@@ -12,9 +12,11 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var globalDataSource: CWFCallingManagerService?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        setupDataSource()
         return true
     }
 
@@ -40,7 +42,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-    
+    func setupDataSource() {
+        globalDataSource = CWFCallingManagerService()
+        
+        CWFCallingManagerService.init(org: nil, iMemberArray: nil)
+        
+        
+    }
     
 
 }

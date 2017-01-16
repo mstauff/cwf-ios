@@ -8,14 +8,9 @@
 
 import Foundation
 
-class CallingDataManager {
-    var dataSource : RemoteDataSource
+class CallingDataManager : CWFBaseDataManager {
+
     let fileContents = "{ foo: 1, bar: 2}"
-    
-    
-    init( dataSource : RemoteDataSource ) {
-        self.dataSource = dataSource
-    }
     
     // TODO - this should be an Org in the completionHandler, but maybe do string for now just for testing
     // need to rework remoteData to return jsonObject rather than string
@@ -36,8 +31,6 @@ class CallingDataManager {
             completionHandler( error )
         }
     }
-    
-    
     
     private func getFileNameForOrg( org: Org ) -> String {
         // likely will end up being org-id.json. For now it's all one file
