@@ -33,12 +33,37 @@ class RootTabBarViewController: UITabBarController {
     */
     
     func signIntoLDSAPI() {
-        
-        
-       RestAPI.ldsSignin(username: "", password: "",  { (error) -> Void in
+        let ldscdApi = LdscdRestApi()
+        ldscdApi.getAppConfig() { (appConfig, error) in
+
+            // Populate these locally - Don't commit to github
+            let username = ""
+            let password = ""
+            let unitNum = 0
             
-            print( error!)
-        })
+            guard appConfig != nil else {
+                print( "No app config" )
+                return
+            }
+            let ldsApi = LdsRestApi(appConfig: appConfig!)
+            ldsApi.ldsSignin(username: username, password: password,  { (error) -> Void in
+                if error != nil {
+                    
+                    print( error!)
+                } else {
+                    ldsApi.getMemberList(unitNum: Int64(unitNum)) { (members, error) -> Void in
+                        if members != nil && !members!.isEmpty {
+                            print( members![0] )
+                            
+                        } else {
+                            print( "no user" )
+                        }
+                        
+                    }
+                }
+            })
+            
+        }
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
