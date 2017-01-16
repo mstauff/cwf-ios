@@ -43,9 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func setupDataSource() {
-        globalDataSource = CWFCallingManagerService()
-        
-        CWFCallingManagerService.init(org: nil, iMemberArray: nil)
+        globalDataSource = CWFCallingManagerService.init(org: nil, iMemberArray: nil)
         
         
     }

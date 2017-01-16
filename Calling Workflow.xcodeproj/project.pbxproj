@@ -28,6 +28,10 @@
 		3CE4C9121DCA82A000AAFB31 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9071DCA82A000AAFB31 /* JSON.swift */; };
 		3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */; };
 		3CE4C9171DCA82A000AAFB31 /* RestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */; };
+		3CE9AF5E1E2D308F00E7D823 /* UserDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE9AF5D1E2D308F00E7D823 /* UserDataManager.swift */; };
+		3CE9AF661E2D311600E7D823 /* CWFBaseDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE9AF621E2D311600E7D823 /* CWFBaseDataManager.swift */; };
+		3CE9AF671E2D311600E7D823 /* MemberDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE9AF631E2D311600E7D823 /* MemberDataManager.swift */; };
+		3CE9AF6A1E2D35E100E7D823 /* CWFCallingManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE9AF691E2D35E100E7D823 /* CWFCallingManagerService.swift */; };
 		3CEBAF411DCD0D160071BE9F /* CallingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF401DCD0D160071BE9F /* CallingsTableViewController.swift */; };
 		3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF421DCD0E010071BE9F /* DirectoryTableViewController.swift */; };
 		3CEBAF451DCD0FBF0071BE9F /* Member.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF441DCD0FBF0071BE9F /* Member.swift */; };
@@ -104,6 +108,10 @@
 		3CE4C9071DCA82A000AAFB31 /* JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
 		3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteDataSource.swift; sourceTree = "<group>"; };
 		3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestAPI.swift; sourceTree = "<group>"; };
+		3CE9AF5D1E2D308F00E7D823 /* UserDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDataManager.swift; sourceTree = "<group>"; };
+		3CE9AF621E2D311600E7D823 /* CWFBaseDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFBaseDataManager.swift; path = DataManagers/CWFBaseDataManager.swift; sourceTree = "<group>"; };
+		3CE9AF631E2D311600E7D823 /* MemberDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberDataManager.swift; path = DataManagers/MemberDataManager.swift; sourceTree = "<group>"; };
+		3CE9AF691E2D35E100E7D823 /* CWFCallingManagerService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFCallingManagerService.swift; sourceTree = "<group>"; };
 		3CEBAF401DCD0D160071BE9F /* CallingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingsTableViewController.swift; path = Controllers/CallingsTableViewController.swift; sourceTree = "<group>"; };
 		3CEBAF421DCD0E010071BE9F /* DirectoryTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DirectoryTableViewController.swift; path = Controllers/DirectoryTableViewController.swift; sourceTree = "<group>"; };
 		3CEBAF441DCD0FBF0071BE9F /* Member.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Member.swift; path = Model/Member.swift; sourceTree = "<group>"; };
@@ -204,10 +212,12 @@
 		3CE4C8D11DCA824100AAFB31 /* Calling Workflow */ = {
 			isa = PBXGroup;
 			children = (
+				3CE9AF691E2D35E100E7D823 /* CWFCallingManagerService.swift */,
 				E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */,
 				E8316CE81E26AC1E0091419D /* LdsRestApi.swift */,
 				3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */,
 				3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */,
+				3CE9AF5D1E2D308F00E7D823 /* UserDataManager.swift */,
 				3CE4C9041DCA82A000AAFB31 /* CallingDataManager.swift */,
 				3CE4C9051DCA82A000AAFB31 /* Constants.swift */,
 				3CE4C9071DCA82A000AAFB31 /* JSON.swift */,
@@ -250,6 +260,8 @@
 		3CE4C9521DCA9A6100AAFB31 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				3CE9AF621E2D311600E7D823 /* CWFBaseDataManager.swift */,
+				3CE9AF631E2D311600E7D823 /* MemberDataManager.swift */,
 				E8084F811E0476F80077FDAE /* Calling.swift */,
 				E8084F821E0476F80077FDAE /* Org.swift */,
 				E8084F831E0476F80077FDAE /* Position.swift */,
@@ -412,7 +424,7 @@
 					};
 					3CE4C8E41DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 75DK5N8LHP;
+						DevelopmentTeam = 42MR5LM3U2;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3CE4C8CE1DCA824100AAFB31;
 					};
@@ -533,7 +545,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		8E6950FB36AC6BB56B7DDA52 /* [CP] Copy Pods Resources */ = {
@@ -578,7 +590,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		A443C3EBA1237FE26A822244 /* [CP] Copy Pods Resources */ = {
@@ -608,7 +620,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -620,8 +632,10 @@
 			files = (
 				E8084F8C1E088A870077FDAE /* DataSource.swift in Sources */,
 				3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */,
+				3CE9AF671E2D311600E7D823 /* MemberDataManager.swift in Sources */,
 				E8084F7F1E0476C10077FDAE /* DataExtensions.swift in Sources */,
 				E8316CE91E26AC1E0091419D /* LdscdRestApi.swift in Sources */,
+				3CE9AF5E1E2D308F00E7D823 /* UserDataManager.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
 				E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */,
 				E8084F861E0476F80077FDAE /* Org.swift in Sources */,
@@ -629,6 +643,7 @@
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
 				3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */,
 				3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */,
+				3CE9AF6A1E2D35E100E7D823 /* CWFCallingManagerService.swift in Sources */,
 				E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */,
 				E8084F871E0476F80077FDAE /* Position.swift in Sources */,
 				3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */,
@@ -646,6 +661,7 @@
 				E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */,
 				3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */,
 				E8084F851E0476F80077FDAE /* Calling.swift in Sources */,
+				3CE9AF661E2D311600E7D823 /* CWFBaseDataManager.swift in Sources */,
 				E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */,
 				3CE4C9121DCA82A000AAFB31 /* JSON.swift in Sources */,
 				3CEBAF451DCD0FBF0071BE9F /* Member.swift in Sources */,
@@ -834,11 +850,11 @@
 		};
 		3CE4C8FD1DCA824100AAFB31 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */;
+			baseConfigurationReference = E44CDBB5DE5984D9F73C386E /* Pods-Calling WorkflowTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowTests";
@@ -854,7 +870,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowTests";
