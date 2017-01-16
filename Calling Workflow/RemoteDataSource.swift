@@ -10,17 +10,11 @@ import Foundation
 import GoogleAPIClient
 import GTMOAuth2
 
-protocol DataSource {
-    func authenticate( currentVC : UIViewController, completionHandler: @escaping (UIViewController, GTMOAuth2Authentication, NSError?) -> Void  )
-    
-    var isAuthenticated : Bool {
-        get
-    }
-    
-}
-
-// TODO - need to see what we can DI here - 
 class RemoteDataSource : NSObject, DataSource {
+    
+    //TODO: Push this up to app config so it's shared by iOS & Android
+    private let orgFileNamesMap : [UnitLevelOrgType:String] = [ .Bishopric : "BISHOPRIC", .BranchPresidency : "BRANCH_PRES", .HighPriests : "HP", .Elders : "EQ", .ReliefSociety : "RS", .YoungMen : "YM", .YoungWomen : "YW", .SundaySchool : "SS", .Primary : "PRIMARY", .WardMissionaries : "WARD_MISSIONARY", .Other : "OTHER"]
+    private let orgNameDelimiter = "-"
     
     // This is all the permissions (scopes) that the app needs
     // If modifying these scopes, delete your previously saved credentials by
@@ -39,7 +33,6 @@ class RemoteDataSource : NSObject, DataSource {
     // by calling clients
     private var authCompletionHandler : ((UIViewController, GTMOAuth2Authentication, NSError?) -> Void)? = nil
     private var fileListCompletionHandler : (([GTLDriveFile]?,NSError? ) -> Void)? = nil
-    
     
     /*************** computed props ******************/
     var isAuthenticated : Bool {
@@ -99,9 +92,39 @@ class RemoteDataSource : NSObject, DataSource {
         }
     }
     
-    // TODO - eventually this
-    func getDataForOrg( org : Org, completionHandler : @escaping (_ fileContents : String?, _ error : NSError? ) -> Void ) {
-        
+    func getDataForOrg( org : Org, completionHandler : @escaping (_ org : Org?, _ error : NSError? ) -> Void ){
+        if let orgFileName = getFileName( forOrg : org ) {
+            fetchFileContents(fileName: orgFileName ) { fileContents, error in
+                guard error == nil else {
+                    print( "Error getting data for \(orgFileName): " + error.debugDescription )
+                    completionHandler( nil, error )
+                    return
+                }
+                do {
+                    let orgJson = try JSONSerialization.jsonObject(with: fileContents!, options: [])
+                    let orgResults = Org( orgJson as! JSONObject )
+                    completionHandler( orgResults, nil )
+                } catch {
+                    completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.jsonParseError, userInfo: [:]) )
+                }
+            }
+        } else {
+            //TODO: make some standard keys - logMsg
+            completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [:] ) )
+        }
+    }
+    
+    func updateOrg( org: Org, completionHandler : (_ success : Bool, _ error: NSError? ) -> Void ) {
+        // TODO
+    }
+    
+    func getFileName( forOrg org: Org ) -> String? {
+        var orgFileName : String? = nil
+        if let orgType = UnitLevelOrgType( rawValue: org.orgTypeId ), let orgTypeStr = orgFileNamesMap[ orgType ]  {
+            let orgId = String( org.id )
+            orgFileName = orgTypeStr + orgNameDelimiter + orgId
+        }
+        return orgFileName
     }
     
     // todo - this probably needs to return a GTLServiceTicket, but not sure how that works yet
@@ -210,7 +233,7 @@ class RemoteDataSource : NSObject, DataSource {
         
     }
     
-    func fetchFileContents( fileName: String, completionHandler: @escaping( _ fileContents:String?, _ error:NSError? ) -> Void ) {
+    func fetchFileContents( fileName: String, completionHandler: @escaping( _ fileContents:Data?, _ error:NSError? ) -> Void ) {
         // if we've previously looked up the file and already have cached the ID then just
         // look it up from the cache
         if let file = filesByName[ fileName ] {
@@ -243,7 +266,7 @@ class RemoteDataSource : NSObject, DataSource {
      if the file exists it should return the contents. If the file is empty it should return an empty string
      not nil
      */
-    func fetchContents( forFile file: GTLDriveFile, completionHandler : @escaping( _ fileContents:String?, _ error:NSError? ) -> Void ) {
+    func fetchContents( forFile file: GTLDriveFile, completionHandler : @escaping( _ fileContents:Data?, _ error:NSError? ) -> Void ) {
         
         let fileUrl = String.init(format: "https://www.googleapis.com/drive/v3/files/%@?alt=media", file.identifier)
         let fetcher = driveService.fetcherService.fetcher(withURLString: fileUrl)
@@ -257,11 +280,11 @@ class RemoteDataSource : NSObject, DataSource {
             guard let responseData = data else {
                 let errorMsg = "Error: No network error, but did not recieve data from \(fileUrl)"
                 print( errorMsg )
-                completionHandler( nil, NSError( domain: ErrorConstants.domain, code: 404, userInfo: [ "error" : errorMsg ] ) )
+                completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
                 return
             }
             
-            completionHandler( String.init( data: responseData, encoding: String.Encoding.utf8 ), nil )
+            completionHandler( responseData, nil )
         }
     }
     

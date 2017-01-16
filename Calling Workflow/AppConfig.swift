@@ -14,33 +14,29 @@ struct AppConfig {
     var standardPositions : [Position] = []
     // default list of endpoints in case we can't contact the config URL
     var ldsEndpointUrls = NetworkConstants.ldsOrgEndpoints
-//    var orgTypes : [OrgType] = []
+    //    var orgTypes : [OrgType] = []
     
 }
 
 extension AppConfig : JSONParsable {
+    
     public init?(_ appConfigJSON: JSONObject) {
         
-            statuses = appConfigJSON["statuses"] as? [String] ?? []
-//        if let orgTypesJSON = appConfigJSON["orgTypes"] as? [JSONObject] {
-//            appConfig.orgTypes = orgTypesJSON.flatMap() {
-//                orgType in OrgType.parseFrom(orgType)
-//            }
-//        }
-        // todo - run this to make sure it works, finish stanford lecture then see about writing tests
-        if let endpointUrls = appConfigJSON["ldsEndpointUrls"] as? [JSONObject] {
-            // EndpointUrls are an array of dictionaries where each dictionary should only have one entry. The key is some call ID and the value is the relative URL
-            // i.e. [{"MEMBER_LIST":"/directory/list"},{"CALLING_LIST":"/directory/callings"}] so we want to loop through each element in the array, get the key/value and store it in the app config
-            for endPointUrl in endpointUrls {
-                let validEndpointKeys = NetworkConstants.ldsOrgEndpointKeys
-                let (key, value) = endPointUrl[endPointUrl.startIndex]
-                guard value is String && validEndpointKeys.contains(key) else {
-                    break
+        statuses = appConfigJSON["statuses"] as? [String] ?? []
+        //        if let orgTypesJSON = appConfigJSON["orgTypes"] as? [JSONObject] {
+        //            appConfig.orgTypes = orgTypesJSON.flatMap() {
+        //                orgType in OrgType.parseFrom(orgType)
+        //            }
+        //        }
+        if let endpointUrls = appConfigJSON["ldsEndpointUrls"] as? JSONObject {
+            // EndpointUrls is basically a dictionary. The key is some call ID and the value is the relative URL. We loop through our list of keys (in NetworkConstants) for all the web calls we need to make, if there's a URL for a given call then we'll update it in this app config. If there's not a URL for a given call then we'll leave the default (from NetworkConstants.ldsOrgEndpoints) in place. This way it only gets updated if there's an overriding value that came in the results from the server.
+            let validEndpointKeys = NetworkConstants.ldsOrgEndpointKeys
+            for endPointKey in validEndpointKeys {
+                if let endpointUrl = endpointUrls[endPointKey] as? String {
+                    ldsEndpointUrls[endPointKey] = endpointUrl
                 }
-                ldsEndpointUrls[key] = value as? String
             }
         }
-        
     }
     
     // we don't ever need to serialize this, so this method is unused

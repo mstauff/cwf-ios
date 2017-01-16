@@ -14,7 +14,7 @@ class CallingDataManager : CWFBaseDataManager {
     
     // TODO - this should be an Org in the completionHandler, but maybe do string for now just for testing
     // need to rework remoteData to return jsonObject rather than string
-    func getOrgCallings( org: Org, completionHandler: @escaping ( _ orgData: String?, _ error: NSError? ) -> Void ) {
+    func getOrgCallings( org: Org, completionHandler: @escaping ( _ orgData: Data?, _ error: NSError? ) -> Void ) {
         dataSource.fetchFileContents(fileName: getFileNameForOrg(org: org)) { fileContents, error in
             guard error == nil else {
                 print( "CallingDataManager.getOrgCallings() Error: " + error.debugDescription )

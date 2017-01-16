@@ -1,6 +1,7 @@
 Pods/
 build/
 DerivedData/
+playground/
 *.pbxuser
 !default.pbxuser
 xcuserdata/
