@@ -20,7 +20,7 @@ struct LdsUser : JSONParsable {
         self.positions = positions
     }
     
-    public init?( _ json: JSONObject ) {
+    public init?( fromJSON json: JSONObject ) {
         guard
             
         let indId = (json[ "individualId" ] as? NSNumber)?.int64Value,
@@ -32,7 +32,7 @@ struct LdsUser : JSONParsable {
         self.individualId = indId
         var userPositions : [Position] = []
         for jsonPosition in jsonPositions {
-            if let position = Position( jsonPosition ) {
+            if let position = Position( fromJSON: jsonPosition ) {
                 userPositions.append( position )
             }
         }

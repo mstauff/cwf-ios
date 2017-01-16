@@ -20,7 +20,7 @@ struct AppConfig {
 
 extension AppConfig : JSONParsable {
     
-    public init?(_ appConfigJSON: JSONObject) {
+    public init?( fromJSON appConfigJSON: JSONObject) {
         
         statuses = appConfigJSON["statuses"] as? [String] ?? []
         //        if let orgTypesJSON = appConfigJSON["orgTypes"] as? [JSONObject] {

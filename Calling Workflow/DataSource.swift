@@ -10,15 +10,12 @@ import Foundation
 import GoogleAPIClient
 import GTMOAuth2
 
-//TODO: This will eventually go in a central location where we specify all the dependencies
-struct InjectionMap {
-    static var dataSource:DataSource = RemoteDataSource()
-}
 
+// something that needs access to the datasource implements DataSourceInjected and then they can reference dataSource as a class var
 protocol DataSourceInjected { }
 
 extension DataSourceInjected {
-    var dateSource:DataSource { get { return InjectionMap.dataSource } }
+    var dataSource:DataSource { get { return InjectionMap.dataSource } }
 }
 
 protocol DataSource {

@@ -9,9 +9,9 @@
 import Foundation
 
 /* Extension of RestAPI for making calls to retrieve data for LDS.org. Calling code should start by always calling ldsSignin to make sure the user has a valid OBSSOCookie before making any other calls */
-class LdsRestApi : RestAPI {
+class LdsRestApi : RestAPI, LdsOrgApi {
     
-    let appConfig : AppConfig
+    var appConfig : AppConfig
     
     init( appConfig : AppConfig ) {
         self.appConfig = appConfig
@@ -52,8 +52,8 @@ class LdsRestApi : RestAPI {
     }
     
     /*
-        Gets the current user. This method is so we can get the callings that the current user has to grant permissions.
- */
+     Gets the current user. This method is so we can get the callings that the current user has to grant permissions.
+     */
     func getCurrentUser( _ completionHandler: @escaping ( LdsUser?, Error? ) -> Void ) {
         let url = appConfig.ldsEndpointUrls[NetworkConstants.userDataURLKey]!
         doGet(url: url ) { data, response, error in
@@ -80,12 +80,12 @@ class LdsRestApi : RestAPI {
             }
             print( "Current User: \(jsonData)" )
             
-            completionHandler( LdsUser( jsonData ), nil )
+            completionHandler( LdsUser( fromJSON: jsonData ), nil )
             
             
         }
     }
-   
+    
     /* Returns a list of members (via callback) for the given unit. This will include all members age 11+. Family structure is not preserved. */
     func getMemberList( unitNum : Int64, _ completionHandler: @escaping ( [Member]?, Error? ) -> Void ) {
         var url = appConfig.ldsEndpointUrls[NetworkConstants.memberListURLKey]!
@@ -128,6 +128,10 @@ class LdsRestApi : RestAPI {
             completionHandler( memberList, nil )
             
         }
+    }
+    
+    func getOrgWithCallings( unitNum : Int64, _ completionHandler: @escaping ( Org?, Error? ) -> Void ) {
+        // TODO - implement this
     }
     
 }

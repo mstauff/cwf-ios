@@ -43,7 +43,7 @@ class ModelTests: XCTestCase {
     }
     
     func testOrgJsonDeserialization() {
-        let org = Org( (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+        let org = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
         
         XCTAssertNotNil(org)
         XCTAssertEqual( org!.orgName, "Primary" )
@@ -55,7 +55,7 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(org!.callings.count, 0)
     }
     func testCallingsInSubOrgFromJson() {
-        let org = Org( (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+        let org = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
         
         let childOrg = org?.children[0]
         XCTAssertNotNil(childOrg)
@@ -72,7 +72,7 @@ class ModelTests: XCTestCase {
         
     }
     func testCallingsInOrgFromJson() {
-        let org = Org( (testJSON?["orgWithDirectCallings"] as? JSONObject)! )
+        let org = Org( fromJSON: (testJSON?["orgWithDirectCallings"] as? JSONObject)! )
         
         XCTAssertNotNil(org)
         let calling = org!.callings[0]
@@ -90,13 +90,13 @@ class ModelTests: XCTestCase {
     func testInvalidOrgsFromJson() {
         let orgsJSON = testJSON?["invalidOrgs"] as? [JSONObject]!
         orgsJSON?.forEach() { orgJSON in
-            let org = Org( orgJSON )
+            let org = Org( fromJSON: orgJSON )
             XCTAssertNil( org )
         }
     }
     
     func testOrgToJson() {
-        let org = Org( (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+        let org = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
         
         let orgJson = org!.toJSONObject()
         let jsonString = jsonSerializer.serialize( jsonObject: orgJson )
