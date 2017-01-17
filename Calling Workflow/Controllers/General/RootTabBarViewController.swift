@@ -9,7 +9,10 @@
 import UIKit
 
 class RootTabBarViewController: UITabBarController {
-    
+
+    // eventually this only lives in AppDelegate, but we need to figure out the communication between app delegate and VC when all the data is loaded.
+    var globalDataSource = CWFCallingManagerService()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -33,6 +36,7 @@ class RootTabBarViewController: UITabBarController {
      */
     
     func signIntoLDSAPI() {
+        // todo: put up a spinner
         let ldscdApi = LdscdRestApi()
         ldscdApi.getAppConfig() { (appConfig, error) in
             
@@ -40,45 +44,22 @@ class RootTabBarViewController: UITabBarController {
             let username = ""
             let password = ""
             let unitNum : Int64 = 0
-            
-            guard appConfig != nil else {
-                print( "No app config" )
-                return
-            }
-            let ldsApi = LdsFileApi(appConfig: appConfig!)
-            ldsApi.ldsSignin(username: username, password: password,  { (error) -> Void in
-                if error != nil {
-                    print( error!)
-                } else {
-                    ldsApi.getMemberList(unitNum: unitNum) { (members, error) -> Void in
-                        if members != nil && !members!.isEmpty {
-                            print( "First Member of unit:\(members![0])" )
-                        } else {
-                            print( "no user" )
-                        }
-                    }
+            // todo - make this weak
+            self.globalDataSource.loadData(forUnit: unitNum, username: username, password: password) { (dataLoaded, error) -> Void in
+                
+                // todo: remove spinner
+                if dataLoaded {
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
                     
-                    ldsApi.getOrgWithCallings(unitNum: unitNum ) { (org, error) -> Void in
-                        if org != nil && !org!.children.isEmpty {
-                            print( "First Org of unit:\(org!.children[0])" )
-                            
-                        } else {
-                            print( "no org" )
-                        }
-                    }
+                    let navController2 = UINavigationController()
+                    navController2.addChildViewController(loginVC)
+                    
+                    self.present(navController2, animated: false, completion: nil)
+                    
                 }
-            })
-            
+            }
         }
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
-        
-        let navController2 = UINavigationController()
-        navController2.addChildViewController(loginVC)
-        
-        self.present(navController2, animated: false, completion: nil)
-        
     }
     
 }

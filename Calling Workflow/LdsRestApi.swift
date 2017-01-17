@@ -18,6 +18,10 @@ class LdsRestApi : RestAPI, LdsOrgApi {
         super.init()
     }
     
+    func setAppConfig( appConfig : AppConfig ) {
+        self.appConfig = appConfig
+    }
+    
     // At some point it would be good to see if we can check for the cookie first - we probably need to save that manually, along with the last access time
     /*
      Method to signin with the given username and password. The completion handler only includes an error. If this method was successful the error will be nil, there's nothin else returned. It stores the OBSSOCookie, which is basically what's required for authentication with the other lds.org services.

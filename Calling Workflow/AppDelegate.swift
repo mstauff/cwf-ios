@@ -12,6 +12,7 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    // not currently being used - look to RootTabBar...Controller
     var globalDataSource: CWFCallingManagerService?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -44,14 +45,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func setupDataSource() {
-        globalDataSource = CWFCallingManagerService.init(org: nil, iMemberArray: nil)
-        
+        globalDataSource = CWFCallingManagerService()
         
     }
     
 }
+
 struct InjectionMap {
     static var dataSource:DataSource = RemoteDataSource()
-    static var ldsOrgApi:LdsOrgApi = LdsRestApi(  appConfig: AppConfig() )
+    static var ldsOrgApi:LdsOrgApi = LdsFileApi( appConfig: AppConfig() )
+    static var ldscdApi:LdscdRestApi = LdscdRestApi( )
 }
 
