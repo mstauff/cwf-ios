@@ -32,26 +32,26 @@ class FirstViewController: UIViewController {
     var dataObject = ""
     // TODO - need a constructor/init in the interface
     //    private let dataSource = RemoteDataSource()
-    private let callingMgr = CallingDataManager( initDataSource: RemoteDataSource() )
+//    private let callingMgr = CallingDataManager( initDataSource: RemoteDataSource() )
     private let eq = Org( id: 284, orgTypeId: UnitLevelOrgType.Elders.rawValue, orgName: "Elders Quorum", displayOrder: 400, children: [], callings: [] )
     
     @IBOutlet var output: UITextView!
     @IBAction func showFileClicked() {
-        callingMgr.getOrgCallings( org: eq ) {
-            ( fileContents, error ) -> Void in
-            self.output.text = fileContents != nil ? String( data: fileContents!, encoding: .utf8 ) : "No Data"
-        }
+//        callingMgr.getOrgCallings( org: eq ) {
+//            ( fileContents, error ) -> Void in
+//            self.output.text = fileContents != nil ? String( data: fileContents!, encoding: .utf8 ) : "No Data"
+//        }
     }
     @IBAction func updateClicked() {
-        callingMgr.updateOrgCallings(org: eq) { [weak weakSelf=self] error in
-            guard error == nil else {
-                print( "Error on update: " + error.debugDescription )
-                weakSelf?.showAlert(title: "Error Updating Data", message: error.debugDescription)
-                return
-            }
-            self.output.text = "Data Updated"
-            
-        }
+//        callingMgr.updateOrgCallings(org: eq) { [weak weakSelf=self] error in
+//            guard error == nil else {
+//                print( "Error on update: " + error.debugDescription )
+//                weakSelf?.showAlert(title: "Error Updating Data", message: error.debugDescription)
+//                return
+//            }
+//            self.output.text = "Data Updated"
+        
+//        }
     }
     // When the view loads, create necessary subviews
     // and initialize the Drive API service
@@ -79,18 +79,18 @@ class FirstViewController: UIViewController {
     // and perform API calls
     override func viewDidAppear(_ animated: Bool) {
         
-        if callingMgr.dataSource.isAuthenticated {
-            self.output.text = "Authenticated! Good to go"
-        } else {
-            callingMgr.dataSource.authenticate(currentVC: self) {  [weak weakSelf=self]  _,_, error in
-                if let error = error {
-                    weakSelf?.showAlert(title: "Authentication Error", message: error.localizedDescription)
-                } else {
-                    weakSelf?.dismiss(animated: true, completion: nil)
-                }
-                
-            }
-        }
+//        if callingMgr.dataSource.isAuthenticated {
+//            self.output.text = "Authenticated! Good to go"
+//        } else {
+//            callingMgr.dataSource.authenticate(currentVC: self) {  [weak weakSelf=self]  _,_, error in
+//                if let error = error {
+//                    weakSelf?.showAlert(title: "Authentication Error", message: error.localizedDescription)
+//                } else {
+//                    weakSelf?.dismiss(animated: true, completion: nil)
+//                }
+//                
+//            }
+//        }
     }
     
     // Parse results and display

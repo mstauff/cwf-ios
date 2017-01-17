@@ -10,6 +10,8 @@ import Foundation
 
 protocol LdsOrgApi {
     var appConfig : AppConfig { get set }
+    // without a dedicated setter we can't (after init) do ldsApi.appConfig = appConfig in the class that initialies the API (get a compiler error about ldsOrgApi being read only)
+    func setAppConfig( appConfig : AppConfig )
     
     func ldsSignin(username: String, password: String,_ completionHandler: @escaping ( _ error:NSError? ) -> Void)
     func getCurrentUser( _ completionHandler: @escaping ( LdsUser?, Error? ) -> Void )

@@ -20,6 +20,9 @@ class LdsFileApi : LdsOrgApi {
     init( appConfig : AppConfig ) {
         self.appConfig = appConfig
     }
+    func setAppConfig( appConfig : AppConfig ) {
+        self.appConfig = appConfig
+    }
     
     /* Simulate signin */
     func ldsSignin(username: String, password: String,_ completionHandler: @escaping ( _ error:NSError? ) -> Void) {

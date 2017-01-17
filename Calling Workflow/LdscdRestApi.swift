@@ -46,3 +46,10 @@ class LdscdRestApi : RestAPI {
         })
     }
 }
+
+protocol LdscdApiInjected { }
+
+extension LdscdApiInjected {
+    var ldscdApi:LdscdRestApi { get { return InjectionMap.ldscdApi } }
+}
+
