@@ -132,7 +132,7 @@ class RemoteDataSource : NSObject, DataSource {
         
         var originalFileContents : String? = nil
         
-        self.getFile(fileName: fileName) { (file, error) in
+        self.getFile(fileName: fileName) { [weak weakSelf=self] (file, error) in
             guard error == nil else {
                 print( "Error: " + error.debugDescription )
                 completionHandler( nil, error )
@@ -140,7 +140,7 @@ class RemoteDataSource : NSObject, DataSource {
             }
             
             if file == nil {
-                self.createFile(fileName: fileName, fileContents: fileContents) { [weak weakSelf = self] (createdFile, createFileError) in
+                weakSelf?.createFile(fileName: fileName, fileContents: fileContents) { (createdFile, createFileError) in
                     guard error == nil else {
                         print( "Error: " + error.debugDescription )
                         completionHandler( nil, error )
@@ -151,7 +151,7 @@ class RemoteDataSource : NSObject, DataSource {
                 }
             } else {
                 // update the file
-                self.updateFile( file: file!, fileContents: fileContents )
+                weakSelf?.updateFile( file: file!, fileContents: fileContents )
             }
         }
     }
