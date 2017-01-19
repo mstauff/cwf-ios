@@ -59,6 +59,7 @@
 		E8F9596B1E30129700C13EC9 /* member-objects.js in Resources */ = {isa = PBXBuildFile; fileRef = E8F959661E30129700C13EC9 /* member-objects.js */; };
 		E8F9596C1E30129700C13EC9 /* org-callings.js in Resources */ = {isa = PBXBuildFile; fileRef = E8F959671E30129700C13EC9 /* org-callings.js */; };
 		E8F9596E1E3026AC00C13EC9 /* org-callings.js in Resources */ = {isa = PBXBuildFile; fileRef = E8F9596D1E3026AC00C13EC9 /* org-callings.js */; };
+		E8F959701E3149AB00C13EC9 /* CallingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F9596F1E3149AB00C13EC9 /* CallingStatus.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -146,6 +147,7 @@
 		E8F959661E30129700C13EC9 /* member-objects.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "member-objects.js"; sourceTree = "<group>"; };
 		E8F959671E30129700C13EC9 /* org-callings.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "org-callings.js"; sourceTree = "<group>"; };
 		E8F9596D1E3026AC00C13EC9 /* org-callings.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "org-callings.js"; sourceTree = "<group>"; };
+		E8F9596F1E3149AB00C13EC9 /* CallingStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingStatus.swift; path = Model/CallingStatus.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -273,6 +275,7 @@
 				E87A9E7E1E01FC6A00A7A618 /* Utils.swift */,
 				E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */,
 				E87D00B91E26EF7000FA722B /* LdsUser.swift */,
+				E8F9596F1E3149AB00C13EC9 /* CallingStatus.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -646,6 +649,7 @@
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
 				3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */,
+				E8F959701E3149AB00C13EC9 /* CallingStatus.swift in Sources */,
 				3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */,
 				E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */,
 				E8084F871E0476F80077FDAE /* Position.swift in Sources */,
