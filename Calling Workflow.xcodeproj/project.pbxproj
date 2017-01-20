@@ -31,7 +31,6 @@
 		3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF421DCD0E010071BE9F /* DirectoryTableViewController.swift */; };
 		3CEBAF451DCD0FBF0071BE9F /* Member.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF441DCD0FBF0071BE9F /* Member.swift */; };
 		3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF471DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift */; };
-		700A6E5B82842DF518E74E10 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA5869B376DBFB3238C00FD0 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework */; };
 		7383B52A48EE9878CC51A26A /* Pods_Calling_WorkflowUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 188CFE612548010ED581E770 /* Pods_Calling_WorkflowUITests.framework */; };
 		D9B29D5CC172075896D53F87 /* Pods_Calling_Workflow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5ADD1C197D84D3D19A7A24CD /* Pods_Calling_Workflow.framework */; };
 		E8084F7C1E046D5D0077FDAE /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F7B1E046D5D0077FDAE /* DateExtensions.swift */; };
@@ -60,6 +59,7 @@
 		E8F9596B1E30129700C13EC9 /* member-objects.js in Resources */ = {isa = PBXBuildFile; fileRef = E8F959661E30129700C13EC9 /* member-objects.js */; };
 		E8F9596C1E30129700C13EC9 /* org-callings.js in Resources */ = {isa = PBXBuildFile; fileRef = E8F959671E30129700C13EC9 /* org-callings.js */; };
 		E8F9596E1E3026AC00C13EC9 /* org-callings.js in Resources */ = {isa = PBXBuildFile; fileRef = E8F9596D1E3026AC00C13EC9 /* org-callings.js */; };
+		E8F959701E3149AB00C13EC9 /* CallingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F9596F1E3149AB00C13EC9 /* CallingStatus.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,7 +84,6 @@
 		13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling Workflow.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling Workflow/Pods-Calling Workflow.debug.xcconfig"; sourceTree = "<group>"; };
 		186DC4A209D5B238D4E39AD8 /* Pods-Calling WorkflowUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowUITests/Pods-Calling WorkflowUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		188CFE612548010ED581E770 /* Pods_Calling_WorkflowUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Calling_WorkflowUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		32FFE071C73BE75A3BADD951 /* Pods-Calling Workflow-Calling WorkflowTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling Workflow-Calling WorkflowTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling Workflow-Calling WorkflowTests/Pods-Calling Workflow-Calling WorkflowTests.release.xcconfig"; sourceTree = "<group>"; };
 		3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OrgDetailTableViewController.swift; path = Controllers/OrgDetailTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsTableViewController.swift; path = Controllers/SettingsTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LDSCredentialsViewController.swift; path = Controllers/LDSCredentialsViewController.swift; sourceTree = "<group>"; };
@@ -117,7 +116,6 @@
 		403F3DEDFCDAEFE6861B2C7D /* Pods-Calling Workflow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling Workflow.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling Workflow/Pods-Calling Workflow.release.xcconfig"; sourceTree = "<group>"; };
 		5ADD1C197D84D3D19A7A24CD /* Pods_Calling_Workflow.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Calling_Workflow.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowUITests/Pods-Calling WorkflowUITests.release.xcconfig"; sourceTree = "<group>"; };
-		BA5869B376DBFB3238C00FD0 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Calling_Workflow_Calling_WorkflowTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D54A3B58DD7D62D3E57ECD6A /* Pods-Calling WorkflowTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests.release.xcconfig"; sourceTree = "<group>"; };
 		E44CDBB5DE5984D9F73C386E /* Pods-Calling WorkflowTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E8084F7B1E046D5D0077FDAE /* DateExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
@@ -149,7 +147,7 @@
 		E8F959661E30129700C13EC9 /* member-objects.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "member-objects.js"; sourceTree = "<group>"; };
 		E8F959671E30129700C13EC9 /* org-callings.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "org-callings.js"; sourceTree = "<group>"; };
 		E8F9596D1E3026AC00C13EC9 /* org-callings.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "org-callings.js"; sourceTree = "<group>"; };
-		F93C8F8D5F73DD90A85ED9A0 /* Pods-Calling Workflow-Calling WorkflowTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling Workflow-Calling WorkflowTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling Workflow-Calling WorkflowTests/Pods-Calling Workflow-Calling WorkflowTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E8F9596F1E3149AB00C13EC9 /* CallingStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingStatus.swift; path = Model/CallingStatus.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,7 +164,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F9C0A0FDCC7705330E80026 /* Pods_Calling_WorkflowTests.framework in Frameworks */,
-				700A6E5B82842DF518E74E10 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,7 +187,6 @@
 				5ADD1C197D84D3D19A7A24CD /* Pods_Calling_Workflow.framework */,
 				0EBF616855ECD1B37403E34D /* Pods_Calling_WorkflowTests.framework */,
 				188CFE612548010ED581E770 /* Pods_Calling_WorkflowUITests.framework */,
-				BA5869B376DBFB3238C00FD0 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -279,6 +275,7 @@
 				E87A9E7E1E01FC6A00A7A618 /* Utils.swift */,
 				E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */,
 				E87D00B91E26EF7000FA722B /* LdsUser.swift */,
+				E8F9596F1E3149AB00C13EC9 /* CallingStatus.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -338,8 +335,6 @@
 				D54A3B58DD7D62D3E57ECD6A /* Pods-Calling WorkflowTests.release.xcconfig */,
 				186DC4A209D5B238D4E39AD8 /* Pods-Calling WorkflowUITests.debug.xcconfig */,
 				6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */,
-				F93C8F8D5F73DD90A85ED9A0 /* Pods-Calling Workflow-Calling WorkflowTests.debug.xcconfig */,
-				32FFE071C73BE75A3BADD951 /* Pods-Calling Workflow-Calling WorkflowTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -430,12 +425,12 @@
 				TargetAttributes = {
 					3CE4C8CE1DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 42MR5LM3U2;
+						DevelopmentTeam = 75DK5N8LHP;
 						ProvisioningStyle = Automatic;
 					};
 					3CE4C8E41DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 42MR5LM3U2;
+						DevelopmentTeam = 75DK5N8LHP;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3CE4C8CE1DCA824100AAFB31;
 					};
@@ -514,7 +509,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Calling Workflow-Calling WorkflowTests/Pods-Calling Workflow-Calling WorkflowTests-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		3BD86390325DB5EA2ACA8637 /* [CP] Copy Pods Resources */ = {
@@ -529,7 +524,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Calling Workflow-Calling WorkflowTests/Pods-Calling Workflow-Calling WorkflowTests-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		5909DD1CDD9CC230ECA10EE1 /* [CP] Embed Pods Frameworks */ = {
@@ -559,7 +554,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run \'pod install\' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		8E6950FB36AC6BB56B7DDA52 /* [CP] Copy Pods Resources */ = {
@@ -604,7 +599,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run \'pod install\' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		A443C3EBA1237FE26A822244 /* [CP] Copy Pods Resources */ = {
@@ -634,7 +629,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run \'pod install\' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -654,6 +649,7 @@
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
 				3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */,
+				E8F959701E3149AB00C13EC9 /* CallingStatus.swift in Sources */,
 				3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */,
 				E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */,
 				E8084F871E0476F80077FDAE /* Position.swift in Sources */,
@@ -738,7 +734,6 @@
 		3CE4C8F71DCA824100AAFB31 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -790,7 +785,6 @@
 		3CE4C8F81DCA824100AAFB31 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -837,7 +831,7 @@
 			baseConfigurationReference = 13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 42MR5LM3U2;
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -852,7 +846,7 @@
 			baseConfigurationReference = 403F3DEDFCDAEFE6861B2C7D /* Pods-Calling Workflow.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 42MR5LM3U2;
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -864,11 +858,11 @@
 		};
 		3CE4C8FD1DCA824100AAFB31 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F93C8F8D5F73DD90A85ED9A0 /* Pods-Calling Workflow-Calling WorkflowTests.debug.xcconfig */;
+			baseConfigurationReference = 13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 42MR5LM3U2;
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowTests";
@@ -880,11 +874,11 @@
 		};
 		3CE4C8FE1DCA824100AAFB31 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 32FFE071C73BE75A3BADD951 /* Pods-Calling Workflow-Calling WorkflowTests.release.xcconfig */;
+			baseConfigurationReference = D54A3B58DD7D62D3E57ECD6A /* Pods-Calling WorkflowTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 42MR5LM3U2;
+				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowTests";
@@ -898,7 +892,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 186DC4A209D5B238D4E39AD8 /* Pods-Calling WorkflowUITests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -913,7 +907,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
