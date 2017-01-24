@@ -35,7 +35,7 @@ class CallingsTableViewController: CWFBaseTableViewController {
     func setupCallingsToDisplay() {
         
         let position = Position(positionTypeId: 2, name: "Primary Worker CTR 7", hidden: false)
-        let calling1 = Calling(id: 01, currentIndId: 01, proposedIndId: 02, status: "Interviewed", position: position, notes: nil, editableByOrg: true, parentOrg: nil)
+        let calling1 = Calling(id: 01, existingIndId: 01, existingStatus: .Active, activeDate: nil, proposedIndId: 02, status: CallingStatus(rawValue: "INTERVIEWED"), position: position, notes: nil, editableByOrg: true, parentOrg: nil)
         callingsToDisplay.append(calling1)
     }
 
@@ -62,7 +62,7 @@ class CallingsTableViewController: CWFBaseTableViewController {
         
         cell?.currentCallingLabel.text = newMember.name
         
-        cell?.callingInProcessLabel.text = callingForRow.status
+        cell?.callingInProcessLabel.text = callingForRow.proposedStatus.rawValue
 
         // Configure the cell...
 

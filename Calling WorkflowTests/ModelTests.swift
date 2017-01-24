@@ -62,12 +62,14 @@ class ModelTests: XCTestCase {
         XCTAssertEqual( childOrg!.orgName, "CTR 7" )
         XCTAssertEqual(childOrg!.callings.count, 2)
         let calling = childOrg!.callings[0]
-        XCTAssertEqual(calling.currentIndId!, 123)
+        XCTAssertEqual(calling.existingIndId!, 123)
+        XCTAssertEqual(calling.existingStatus, ExistingCallingStatus.Active)
+        XCTAssertNil( calling.activeDate )
         XCTAssertEqual(calling.id, 734829)
         XCTAssertEqual(calling.position.positionTypeId, 1481)
         XCTAssertEqual(calling.position.name, "Primary Teacher")
         XCTAssertEqual(calling.position.hidden, false)
-        XCTAssertEqual(calling.status, "PROPOSED")
+        XCTAssertEqual(calling.proposedStatus, CallingStatus.Proposed)
         XCTAssertEqual(calling.notes, "Some String")
         
     }
@@ -76,12 +78,14 @@ class ModelTests: XCTestCase {
         
         XCTAssertNotNil(org)
         let calling = org!.callings[0]
-        XCTAssertEqual(calling.currentIndId!, 123)
+        XCTAssertEqual(calling.existingIndId!, 123)
+        XCTAssertEqual(calling.existingStatus, ExistingCallingStatus.Active)
+        XCTAssertEqual( calling.activeDate, Date( year: 2015, month: 09, day: 22 ) )
         XCTAssertEqual(calling.id, 734829)
         XCTAssertEqual(calling.position.positionTypeId, 1481)
         XCTAssertEqual(calling.position.name, "Primary Teacher")
         XCTAssertEqual(calling.position.hidden, true)
-        XCTAssertEqual(calling.status, "PROPOSED")
+        XCTAssertEqual(calling.proposedStatus, CallingStatus.Proposed)
         XCTAssertEqual(calling.notes, "Some String")
         
     }
@@ -110,12 +114,26 @@ class ModelTests: XCTestCase {
         XCTAssertTrue(jsonString!.contains( "\"proposedIndId\":\"456\"" ))
         XCTAssertTrue(jsonString!.contains( "\"positionTypeId\":\"1481\"" ))
         XCTAssertTrue(jsonString!.contains( "\"notes\":\"Some String\"" ))
-        XCTAssertTrue(jsonString!.contains( "\"status\":\"PROPOSED\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"proposedStatus\":\"PROPOSED\"" ))
         XCTAssertTrue(jsonString!.contains( "\"position\":\"Primary Teacher\"" ))
         XCTAssertTrue(jsonString!.contains( "\"hidden\":\"false\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"activeDate\":\"20150922\"" ))
         print( jsonString )
         
     
+    }
+
+    func testCallingMonths() {
+        let org = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+        let callingWithNoDate = org!.children[0].callings[0]
+        XCTAssertEqual( callingWithNoDate.existingMonthsInCalling, 0 )
+
+        var callingWithDate = org!.children[0].callings[1]
+        // manual test - would need to be updated monthly if enabled
+//        XCTAssertEqual( callingWithDate.existingMonthsInCalling, 16 )
+        callingWithDate.activeDate = Date().xMonths( x: -4 )
+        XCTAssertEqual(callingWithDate.existingMonthsInCalling, 4)
+
     }
     
     func testPerformanceExample() {
