@@ -32,7 +32,7 @@ class DirectoryTableViewController: CWFBaseTableViewController {
     // MARK: - Setup
     func setupData() {
         let sunbeamTeacherPosition = Position( positionTypeId: 36, name: "Sunbeam Teacher", hidden: false )
-        let sunbeamCalling = Calling(id: 4838284, currentIndId: 1, proposedIndId: nil, status: "RECORDED", position: sunbeamTeacherPosition, notes: nil, editableByOrg: true, parentOrg: nil)
+        let sunbeamCalling = Calling(id: 4838284, existingIndId: 1, existingStatus: .Active, activeDate: nil, proposedIndId: nil, status: .Recorded, position: sunbeamTeacherPosition, notes: nil, editableByOrg: true, parentOrg: nil)
         let newMember = Member(indId: 1, name: "John Doe", indPhone: "801-801-8018", housePhone: "8108108108", indEmail: "jd@email.com", householdEmail: nil, streetAddress: [], birthdate: nil, gender: .Male, priesthood: .Elder, callings: [sunbeamCalling])
         members.append(newMember)
         
@@ -83,7 +83,7 @@ class DirectoryTableViewController: CWFBaseTableViewController {
         let position = Position(positionTypeId: 01, name: "Sunbeam Teacher", hidden: false)
         
         
-        let calling = Calling(id: 01, currentIndId: 1, proposedIndId: 123, status: "CONSIDERING", position: position, notes: nil, editableByOrg: true, parentOrg: nil)
+        let calling = Calling(id: 01, existingIndId: 1, existingStatus: .Active, activeDate: nil, proposedIndId: 123, status: CallingStatus(rawValue: "CONSIDERING"), position: position, notes: nil, editableByOrg: true, parentOrg: nil)
         
         if calling.proposedIndId == memberId {
             return calling

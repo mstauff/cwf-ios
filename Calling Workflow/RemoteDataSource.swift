@@ -12,7 +12,6 @@ import GTMOAuth2
 
 class RemoteDataSource : NSObject, DataSource {
     
-    //TODO: Push this up to app config so it's shared by iOS & Android
     private let orgFileNamesMap : [UnitLevelOrgType:String] = [ .Bishopric : "BISHOPRIC", .BranchPresidency : "BRANCH_PRES", .HighPriests : "HP", .Elders : "EQ", .ReliefSociety : "RS", .YoungMen : "YM", .YoungWomen : "YW", .SundaySchool : "SS", .Primary : "PRIMARY", .WardMissionaries : "WARD_MISSIONARY", .Other : "OTHER"]
     private let orgNameDelimiter = "-"
     
