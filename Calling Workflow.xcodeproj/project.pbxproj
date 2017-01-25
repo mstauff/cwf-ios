@@ -876,7 +876,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CBFF879F764584CB16C2DA10 /* Pods-Calling Workflow-Calling WorkflowTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
@@ -892,7 +892,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E2E80897C7B7395297FD2CE6 /* Pods-Calling Workflow-Calling WorkflowTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
@@ -908,7 +908,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 186DC4A209D5B238D4E39AD8 /* Pods-Calling WorkflowUITests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -923,7 +923,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				DEVELOPMENT_TEAM = 75DK5N8LHP;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
