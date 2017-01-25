@@ -27,17 +27,23 @@ class DirectoryTableViewController: CWFBaseTableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationItem.title = "Directiory"
+        setupData()
+        tableView.reloadData()
     }
   
     // MARK: - Setup
     func setupData() {
-        let sunbeamTeacherPosition = Position( positionTypeId: 36, name: "Sunbeam Teacher", hidden: false )
-        let sunbeamCalling = Calling(id: 4838284, currentIndId: 1, proposedIndId: nil, status: "RECORDED", position: sunbeamTeacherPosition, notes: nil, editableByOrg: true, parentOrg: nil)
-        let newMember = Member(indId: 1, name: "John Doe", indPhone: "801-801-8018", housePhone: "8108108108", indEmail: "jd@email.com", householdEmail: nil, streetAddress: [], birthdate: nil, gender: .Male, priesthood: .Elder, callings: [sunbeamCalling])
-        members.append(newMember)
+//        let sunbeamTeacherPosition = Position( positionTypeId: 36, name: "Sunbeam Teacher", hidden: false )
+//        let sunbeamCalling = Calling(id: 4838284, currentIndId: 1, proposedIndId: nil, status: "RECORDED", position: sunbeamTeacherPosition, notes: nil, editableByOrg: true, parentOrg: nil)
+//        let newMember = Member(indId: 1, name: "John Doe", indPhone: "801-801-8018", housePhone: "8108108108", indEmail: "jd@email.com", householdEmail: nil, streetAddress: [], birthdate: nil, gender: .Male, priesthood: .Elder, callings: [sunbeamCalling])
+//        members.append(newMember)
+//        
+//        let newMember2 = Member(indId: 123, name: "Adams, Steve", indPhone: "555-433-2222", housePhone: "555-433-1111", indEmail: "steve@adams.com", householdEmail: nil, streetAddress: [], birthdate: nil, gender: .Male, priesthood: nil, callings: [])
+//        members.append(newMember2)
         
-        let newMember2 = Member(indId: 123, name: "Adams, Steve", indPhone: "555-433-2222", housePhone: "555-433-1111", indEmail: "steve@adams.com", householdEmail: nil, streetAddress: [], birthdate: nil, gender: .Male, priesthood: nil, callings: [])
-        members.append(newMember2)
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            members = appDelegate.globalDataSource?.memberList
+        }
     }
   
     // MARK: - Table view data source

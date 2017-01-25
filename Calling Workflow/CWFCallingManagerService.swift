@@ -83,7 +83,31 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
         }
         
     }
+    // Used to get a member from the memberlist by memberId
+    func getMemberWithId(memberId: Int64) -> Member? {
+        var member : Member? = nil
+        for currentMember in memberList {
+            if (currentMember.individualId == memberId) {
+                member = currentMember
+            }
+        }
+        return member
+    }
     
+    // Used to get a list of all callings belonging to an org
+    func getCallingsList() -> [Calling] {
+        var callingList : [Calling] = []
+        if let callings = unitOrg?.callings {
+            callingList += callings
+        }
+        
+        if let children = unitOrg?.children {
+            for org in children {
+                callingList.append(contentsOf: org.getCallingsList())
+            }
+        }
+        return callingList
+    }
     //todo: need update org methods
 }
 

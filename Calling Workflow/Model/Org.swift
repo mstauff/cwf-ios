@@ -102,7 +102,15 @@ public struct Org : JSONParsable  {
         
         return jsonObj;
     }
-    
+    public func getCallingsList() -> [Calling] {
+        var callingList : [Calling] = []
+        callingList.append(contentsOf: callings)
+        for org in children {
+            callingList.append(contentsOf: org.getCallingsList())
+        }
+        return callingList
+    }
+
 }
 
 private struct OrgJsonKeys {

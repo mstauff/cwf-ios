@@ -7,11 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1308C050C6CA76E4398945D0 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 060B8D3E367A4A3C81570E00 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework */; };
 		1F9C0A0FDCC7705330E80026 /* Pods_Calling_WorkflowTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EBF616855ECD1B37403E34D /* Pods_Calling_WorkflowTests.framework */; };
 		3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */; };
 		3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */; };
 		3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */; };
 		3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */; };
+		3C8300F31E3698DD00FD0D34 /* CallingDetailsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */; };
+		3C8300F51E36A20400FD0D34 /* DataSubdataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */; };
 		3CA596FE1E08593C00109B27 /* CWFBaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */; };
 		3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */; };
 		3CE4C8D31DCA824100AAFB31 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */; };
@@ -80,6 +83,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		060B8D3E367A4A3C81570E00 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Calling_Workflow_Calling_WorkflowTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EBF616855ECD1B37403E34D /* Pods_Calling_WorkflowTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Calling_WorkflowTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling Workflow.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling Workflow/Pods-Calling Workflow.debug.xcconfig"; sourceTree = "<group>"; };
 		186DC4A209D5B238D4E39AD8 /* Pods-Calling WorkflowUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowUITests/Pods-Calling WorkflowUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -88,6 +92,8 @@
 		3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsTableViewController.swift; path = Controllers/SettingsTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LDSCredentialsViewController.swift; path = Controllers/LDSCredentialsViewController.swift; sourceTree = "<group>"; };
 		3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InputTableViewCell.swift; path = Controllers/TableViewCells/InputTableViewCell.swift; sourceTree = "<group>"; };
+		3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingDetailsTableViewController.swift; path = Controllers/CallingDetailsTableViewController.swift; sourceTree = "<group>"; };
+		3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataSubdataTableViewCell.swift; path = Controllers/TableViewCells/DataSubdataTableViewCell.swift; sourceTree = "<group>"; };
 		3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFBaseTableViewController.swift; path = Controllers/General/CWFBaseTableViewController.swift; sourceTree = "<group>"; };
 		3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RootTabBarViewController.swift; path = Controllers/General/RootTabBarViewController.swift; sourceTree = "<group>"; };
 		3CE4C8CF1DCA824100AAFB31 /* Calling Workflow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Calling Workflow.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -116,7 +122,9 @@
 		403F3DEDFCDAEFE6861B2C7D /* Pods-Calling Workflow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling Workflow.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling Workflow/Pods-Calling Workflow.release.xcconfig"; sourceTree = "<group>"; };
 		5ADD1C197D84D3D19A7A24CD /* Pods_Calling_Workflow.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Calling_Workflow.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowUITests/Pods-Calling WorkflowUITests.release.xcconfig"; sourceTree = "<group>"; };
+		CBFF879F764584CB16C2DA10 /* Pods-Calling Workflow-Calling WorkflowTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling Workflow-Calling WorkflowTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling Workflow-Calling WorkflowTests/Pods-Calling Workflow-Calling WorkflowTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D54A3B58DD7D62D3E57ECD6A /* Pods-Calling WorkflowTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests.release.xcconfig"; sourceTree = "<group>"; };
+		E2E80897C7B7395297FD2CE6 /* Pods-Calling Workflow-Calling WorkflowTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling Workflow-Calling WorkflowTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Calling Workflow-Calling WorkflowTests/Pods-Calling Workflow-Calling WorkflowTests.release.xcconfig"; sourceTree = "<group>"; };
 		E44CDBB5DE5984D9F73C386E /* Pods-Calling WorkflowTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E8084F7B1E046D5D0077FDAE /* DateExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
 		E8084F7D1E0476C10077FDAE /* DataExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataExtensions.swift; path = Extensions/DataExtensions.swift; sourceTree = "<group>"; };
@@ -164,6 +172,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F9C0A0FDCC7705330E80026 /* Pods_Calling_WorkflowTests.framework in Frameworks */,
+				1308C050C6CA76E4398945D0 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,6 +196,7 @@
 				5ADD1C197D84D3D19A7A24CD /* Pods_Calling_Workflow.framework */,
 				0EBF616855ECD1B37403E34D /* Pods_Calling_WorkflowTests.framework */,
 				188CFE612548010ED581E770 /* Pods_Calling_WorkflowUITests.framework */,
+				060B8D3E367A4A3C81570E00 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -216,21 +226,18 @@
 		3CE4C8D11DCA824100AAFB31 /* Calling Workflow */ = {
 			isa = PBXGroup;
 			children = (
-				E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */,
-				E8316CE81E26AC1E0091419D /* LdsRestApi.swift */,
 				3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */,
-				3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */,
+				3CE4C9051DCA82A000AAFB31 /* Constants.swift */,
 				E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */,
+				E8084F8B1E088A870077FDAE /* DataSource.swift */,
+				3CE4C9071DCA82A000AAFB31 /* JSON.swift */,
+				E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */,
 				E8F959641E30129700C13EC9 /* LdsFileApi.swift */,
 				E8F959651E30129700C13EC9 /* LdsOrgApi.swift */,
-				E8F959661E30129700C13EC9 /* member-objects.js */,
-				E8F959671E30129700C13EC9 /* org-callings.js */,
-				3CE4C9051DCA82A000AAFB31 /* Constants.swift */,
-				3CE4C9071DCA82A000AAFB31 /* JSON.swift */,
-				3CE4C8D81DCA824100AAFB31 /* Main.storyboard */,
-				E8084F8B1E088A870077FDAE /* DataSource.swift */,
+				E8316CE81E26AC1E0091419D /* LdsRestApi.swift */,
 				3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */,
 				3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */,
+				3CE4C8D81DCA824100AAFB31 /* Main.storyboard */,
 				3CE4C9531DCA9BE800AAFB31 /* Controllers */,
 				E8B6CF1A1DF8CF0C0080097F /* Extensions */,
 				3CE4C9521DCA9A6100AAFB31 /* Model */,
@@ -283,14 +290,15 @@
 		3CE4C9531DCA9BE800AAFB31 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				3CED843E1E0AEF7C0023721E /* Base Controllers */,
-				3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */,
-				3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */,
+				3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */,
 				3CEBAF401DCD0D160071BE9F /* CallingsTableViewController.swift */,
-				E8084F891E04814F0077FDAE /* OrganizationTableViewController.swift */,
 				3CEBAF421DCD0E010071BE9F /* DirectoryTableViewController.swift */,
-				3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */,
+				3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */,
 				3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */,
+				E8084F891E04814F0077FDAE /* OrganizationTableViewController.swift */,
+				3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */,
+				3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */,
+				3CED843E1E0AEF7C0023721E /* Base Controllers */,
 				3CEBAF461DD14A630071BE9F /* TableViewCells */,
 			);
 			name = Controllers;
@@ -301,6 +309,7 @@
 			children = (
 				3CEBAF471DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift */,
 				3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */,
+				3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */,
 			);
 			name = TableViewCells;
 			sourceTree = "<group>";
@@ -309,10 +318,13 @@
 			isa = PBXGroup;
 			children = (
 				E8189A921DDA74E700E983D4 /* cwf-object.js */,
+				E8F959661E30129700C13EC9 /* member-objects.js */,
+				E8F959671E30129700C13EC9 /* org-callings.js */,
 				3CE4C9061DCA82A000AAFB31 /* GoogleService-Info.plist */,
-				3CE4C8DD1DCA824100AAFB31 /* LaunchScreen.storyboard */,
 				3CE4C8E01DCA824100AAFB31 /* Info.plist */,
 				3CE4C9021DCA82A000AAFB31 /* AppConfig.swift */,
+				3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */,
+				3CE4C8DD1DCA824100AAFB31 /* LaunchScreen.storyboard */,
 			);
 			name = "Support Files";
 			sourceTree = "<group>";
@@ -335,6 +347,8 @@
 				D54A3B58DD7D62D3E57ECD6A /* Pods-Calling WorkflowTests.release.xcconfig */,
 				186DC4A209D5B238D4E39AD8 /* Pods-Calling WorkflowUITests.debug.xcconfig */,
 				6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */,
+				CBFF879F764584CB16C2DA10 /* Pods-Calling Workflow-Calling WorkflowTests.debug.xcconfig */,
+				E2E80897C7B7395297FD2CE6 /* Pods-Calling Workflow-Calling WorkflowTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -509,7 +523,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Calling Workflow-Calling WorkflowTests/Pods-Calling Workflow-Calling WorkflowTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		3BD86390325DB5EA2ACA8637 /* [CP] Copy Pods Resources */ = {
@@ -524,7 +538,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Calling Workflow-Calling WorkflowTests/Pods-Calling Workflow-Calling WorkflowTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		5909DD1CDD9CC230ECA10EE1 /* [CP] Embed Pods Frameworks */ = {
@@ -554,7 +568,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		8E6950FB36AC6BB56B7DDA52 /* [CP] Copy Pods Resources */ = {
@@ -599,7 +613,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		A443C3EBA1237FE26A822244 /* [CP] Copy Pods Resources */ = {
@@ -629,7 +643,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -653,6 +667,7 @@
 				3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */,
 				E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */,
 				E8084F871E0476F80077FDAE /* Position.swift in Sources */,
+				3C8300F51E36A20400FD0D34 /* DataSubdataTableViewCell.swift in Sources */,
 				3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */,
 				E8084F881E0476F80077FDAE /* UnitLevelOrgType.swift in Sources */,
 				3CE4C8D31DCA824100AAFB31 /* AppDelegate.swift in Sources */,
@@ -663,6 +678,7 @@
 				3CE4C9171DCA82A000AAFB31 /* RestAPI.swift in Sources */,
 				E8084F8A1E04814F0077FDAE /* OrganizationTableViewController.swift in Sources */,
 				3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */,
+				3C8300F31E3698DD00FD0D34 /* CallingDetailsTableViewController.swift in Sources */,
 				E8084F801E0476C10077FDAE /* DictionaryExtensions.swift in Sources */,
 				E8F9596A1E30129700C13EC9 /* LdsOrgApi.swift in Sources */,
 				E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */,
@@ -858,7 +874,7 @@
 		};
 		3CE4C8FD1DCA824100AAFB31 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */;
+			baseConfigurationReference = CBFF879F764584CB16C2DA10 /* Pods-Calling Workflow-Calling WorkflowTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -874,7 +890,7 @@
 		};
 		3CE4C8FE1DCA824100AAFB31 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D54A3B58DD7D62D3E57ECD6A /* Pods-Calling WorkflowTests.release.xcconfig */;
+			baseConfigurationReference = E2E80897C7B7395297FD2CE6 /* Pods-Calling Workflow-Calling WorkflowTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";

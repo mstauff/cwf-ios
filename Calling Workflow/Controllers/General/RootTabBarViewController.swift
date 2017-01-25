@@ -45,7 +45,8 @@ class RootTabBarViewController: UITabBarController {
             let password = ""
             let unitNum : Int64 = 0
             // todo - make this weak
-            self.globalDataSource.loadData(forUnit: unitNum, username: username, password: password) { (dataLoaded, error) -> Void in
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.globalDataSource?.loadData(forUnit: unitNum, username: username, password: password) { (dataLoaded, error) -> Void in
                 
                 // todo: remove spinner
                 if dataLoaded {

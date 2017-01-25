@@ -95,6 +95,10 @@ class OrgDetailTableViewController: CWFBaseTableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if (organizationToDisplay?.callings.count)! > 0 {
             if indexPath.section == 0 {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let nextVC = storyboard.instantiateViewController(withIdentifier: "CallingDetailsTableViewController") as? CallingDetailsTableViewController
+                nextVC?.callingToDisplay = organizationToDisplay?.callings[indexPath.row]
+                self.navigationController?.pushViewController(nextVC!, animated: true)
             }
             else {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -107,7 +111,7 @@ class OrgDetailTableViewController: CWFBaseTableViewController {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let nextVC = storyboard.instantiateViewController(withIdentifier: "OrgDetailTableViewController") as? OrgDetailTableViewController
             nextVC?.organizationToDisplay = organizationToDisplay?.children[indexPath.row]
-            self.navigationController?.present(nextVC!, animated: true, completion: nil)
+            self.navigationController?.pushViewController(nextVC!, animated: true)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
