@@ -93,8 +93,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController {
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            if (callingToDisplay?.currentIndId) != nil {
-                let currentMember = appDelegate?.globalDataSource?.getMemberWithId(memberId: (callingToDisplay?.currentIndId)!)
+            if (callingToDisplay?.existingIndId) != nil {
+                let currentMember = appDelegate?.globalDataSource?.getMemberWithId(memberId: (callingToDisplay?.existingIndId)!)
                 cell.textLabel?.text = currentMember?.name
             }
             return cell
@@ -111,8 +111,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController {
 
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "statusCell", for: indexPath)
-            if callingToDisplay?.status != nil {
-                cell.textLabel?.text = callingToDisplay?.status
+            if callingToDisplay?.existingStatus != nil {
+                cell.textLabel?.text = (callingToDisplay?.existingStatus)?.rawValue
             }
             else {
                 cell.textLabel?.text = "None"
