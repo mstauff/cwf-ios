@@ -17,36 +17,56 @@ public struct Calling : JSONParsable {
     let id : Int64?
     
     /// The individual ID of the member that currently holds the calling. Is optional because there may not be anyone currently serving in the calling. This is memberId in the LCR JSON
-    let currentIndId : Int64?
+    let existingIndId: Int64?
     
     /// The individual ID of the person that is being considered to hold this calling.
-    let proposedIndId : Int64?
+    var proposedIndId : Int64?
     
-    /// The current status of the calling, i.e. "PROPOSED", "ACCEPTED", etc. It's optional as a calling from LCR that is not being changed would have no status. We opted for a String rather than an enum due to the fact that the list of statuses is customizable by the user.
-    // TODO - should we make this an enum and make the customization take the form of just selecting the statuses they want to use
-    let status : String?
+    /// The current status of the proposed calling, i.e. "PROPOSED", "ACCEPTED", etc. It's optional as a calling from LCR that is not being changed would have no status. We opted for a String rather than an enum due to the fact that the list of statuses is customizable by the user.
+    var proposedStatus : CallingStatus
+
+    /// The status of the existing calling, i.e. "ACTIVE" or "NOTIFIED_OF_RELEASE". We don't currently have support for this in the app, but for units that want to track that people have been notified, or that a release has been announced over the pulpit then they could use this field
+    var existingStatus : ExistingCallingStatus
+
+    /// The date that the existing individual's calling was made active. In LCR there are 2 fields: Active date and set apart date. The set apart date is set by the users and may or may not be set. It appears that the active date is set automatically by LCR and not really visible/editable by the user, so we're going to use that date.
+    var activeDate : Date?
     
     /// The position that is being filled, i.e. Primary Teacher, RS 2nd Counselor, etc.
     let position : Position
     
     /// Optional notes about the calling. Could include other people that might be considered, or if somebody declined, etc.
-    let notes : String?
+    var notes : String?
     
-    /// I'm not 100% sure how this will be used, but the use case is that the EQ Pres. can modify anything in the EQ, but not themselves. This may actually belong on the Position object rather than the calling?
+    /// This will likely be removed and will depend on the calling of the user and the position of the calling, and we'll need to determine position privileges. So a primary pres can propose a calling, but nothing more, but an EQ Pres can propose and call teachers & HT supervisors
     let editableByOrg : Bool
     
     // reference back to the parent org that this calling is a member of. It is only optional because we create the org with the callings and then fill in the reference to the owning org afterwards.
     var parentOrg : Org?
+
+    var existingMonthsInCalling : Int {
+        get {
+            var numMonths = 0
+
+            guard activeDate != nil else {
+                return numMonths
+            }
+            numMonths = Calendar.current.dateComponents([.month], from: activeDate!, to: Date()).month ?? 0
+
+            return numMonths
+        }
+    }
     
-    init( id : Int64?, currentIndId : Int64?, proposedIndId : Int64?, status : String?, position : Position, notes : String?, editableByOrg : Bool, parentOrg : Org?) {
+    init(id : Int64?, existingIndId: Int64?, existingStatus : ExistingCallingStatus?, activeDate : Date?, proposedIndId : Int64?, status : CallingStatus?, position : Position, notes : String?, editableByOrg : Bool, parentOrg : Org?) {
         self.id = id
-        self.currentIndId = currentIndId
+        self.existingIndId = existingIndId
         self.proposedIndId = proposedIndId
-        self.status = status
+        self.proposedStatus = status ?? .Unknown
         self.position = position
         self.notes = notes
         self.editableByOrg = editableByOrg
         self.parentOrg = parentOrg
+        self.existingStatus = existingStatus ?? .Unknown
+        self.activeDate = activeDate
     }
     
     public init?(fromJSON json: JSONObject) {
@@ -57,21 +77,30 @@ public struct Calling : JSONParsable {
         }
         id = (json[CallingJsonKeys.id] as? NSNumber)?.int64Value
         position = validPosition
-        status = json[CallingJsonKeys.status] as? String
-        currentIndId = (json[CallingJsonKeys.currentIndId] as? NSNumber)?.int64Value
+        var statusStr = json[CallingJsonKeys.proposedStatus] as? String ?? ""
+        proposedStatus = CallingStatus( rawValue:statusStr ) ?? .Unknown
+
+        statusStr = json[CallingJsonKeys.existingStatus] as? String ?? ""
+        existingStatus = ExistingCallingStatus( rawValue:statusStr ) ?? .Unknown
+        
+        existingIndId = (json[CallingJsonKeys.existingIndId] as? NSNumber)?.int64Value
         proposedIndId = (json[CallingJsonKeys.proposedIndId] as? NSNumber)?.int64Value
         // if notes are "null" then it comes through as NSNull, so we need to check if it's an actual string before assigning it. If it's not a string then we just use nil
         let notesJson = json[CallingJsonKeys.notes]
         notes = notesJson is String ? notesJson as? String : nil
         editableByOrg = json[CallingJsonKeys.editableByOrg] as? Bool ?? true
         parentOrg = nil
+
+        activeDate = Date( fromLCRString: (json[CallingJsonKeys.activeDate] as? String ?? "") )
     }
     
     public func toJSONObject() -> JSONObject {
         var jsonObj = JSONObject()
         jsonObj[CallingJsonKeys.id] = self.id as AnyObject
-        jsonObj[CallingJsonKeys.status] = self.status as AnyObject
-        jsonObj[CallingJsonKeys.currentIndId] = self.currentIndId as AnyObject
+        jsonObj[CallingJsonKeys.proposedStatus] = self.proposedStatus.rawValue as AnyObject
+        jsonObj[CallingJsonKeys.existingStatus] = self.existingStatus.rawValue as AnyObject
+        jsonObj[CallingJsonKeys.existingIndId] = self.existingIndId as AnyObject
+        jsonObj[CallingJsonKeys.activeDate] = self.activeDate?.lcrDateString() as AnyObject
         jsonObj[CallingJsonKeys.proposedIndId] = self.proposedIndId as AnyObject
         jsonObj[CallingJsonKeys.notes] = self.notes as AnyObject
         jsonObj = jsonObj.merge( withDictionary: position.toJSONObject() )
@@ -82,8 +111,10 @@ public struct Calling : JSONParsable {
 
 private struct CallingJsonKeys {
     static let id = "positionId"
-    static let status = "status"
-    static let currentIndId = "memberId"
+    static let proposedStatus = "proposedStatus"
+    static let existingStatus = "existingStatus"
+    static let activeDate = "activeDate"
+    static let existingIndId = "memberId"
     static let proposedIndId = "proposedIndId"
     static let notes = "notes"
     static let editableByOrg = "editableByOrg"

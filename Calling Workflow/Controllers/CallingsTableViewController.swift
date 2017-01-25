@@ -61,7 +61,7 @@ class CallingsTableViewController: CWFBaseTableViewController {
         
         cell?.currentCallingLabel.text = newMember.name
         
-        cell?.callingInProcessLabel.text = callingForRow.status
+        cell?.callingInProcessLabel.text = callingForRow.proposedStatus.rawValue
 
         // Configure the cell...
 

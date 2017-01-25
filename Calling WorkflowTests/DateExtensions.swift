@@ -30,5 +30,13 @@ extension Date {
         components.timeZone = timeZone
         self = Calendar.current.date(from: components)!
     }
-    
+
+    func xYears(x: Int) -> Date {
+        return Calendar.current.date(byAdding: .year, value: x, to: self)!
+    }
+
+    func xMonths(x: Int) -> Date {
+        return Calendar.current.date(byAdding: .month, value: x, to: self)!
+    }
+
 }
