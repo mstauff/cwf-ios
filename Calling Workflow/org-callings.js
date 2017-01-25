@@ -67,7 +67,7 @@
                 "releasePositionIds": null,
                 "position": "Bishop",
                 "positionDisplayOrder": 1000,
-                "memberId": 222222222,
+                "memberId": 11111,
                 "mrn": "12345",
                 "nameVerificationForMrn": null,
                 "memberName": "Member, Bishop",
