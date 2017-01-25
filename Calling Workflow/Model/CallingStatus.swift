@@ -8,17 +8,30 @@
 
 import Foundation
 
-public enum CallingStatus {
+public enum CallingStatus : String {
     
-    case Considering
-    case Submitted
-    case Approved
-    case Rejected
-    case Extended
-    case Accepted
-    case Declined
-    case Announced
-    case SetApart
-    case Recorded
+    case Proposed = "PROPOSED"
+    case Submitted = "SUBMITTED"
+    case Approved = "APPROVED"
+    case Rejected = "REJECTED"
+    case OnHold = "ON_HOLD"
+    case AppointmentSet = "APPT_SET"
+    case Extended = "EXTENDED"
+    case Accepted = "ACCEPTED"
+    case Declined = "DECLINED"
+    case Sustained = "SUSTAINED"
+    case SetApart = "SET_APART"
+    case Recorded = "RECORDED"
+    case Unknown = "UNKNOWN"
+    
+    
+}
+
+public enum ExistingCallingStatus : String {
+    
+    case Unknown = "UNKNOWN"
+    case Active = "ACTIVE"
+    case NotifiedOfRelease = "NOTIFIED_OF_RELEASE"
+    case Released = "RELEASED"
     
 }
