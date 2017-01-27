@@ -58,7 +58,7 @@ public struct Org : JSONParsable  {
         orgName = orgName ?? ""
         let childOrgs : [Org] = children.map() { childOrgJSON -> Org? in
             return Org( fromJSON: childOrgJSON )
-            }.filter() { $0 != nil } as! [Org]
+            }.flatMap() { $0 } // .flatMap() will remove any nil objects
         
         // This initializer is a bit unorthodox where it creates an org, then sets self to it, but we need to do that because the child callings need a reference to the containing org. Although we probably could make it work by making Calling.parentOrg optional, and then filling it in after everything else is initialized, this works, so we'll stick with this method unless it causes us some other issues
         var org = Org( id: id.int64Value, orgTypeId: orgTypeId, orgName: orgName!, displayOrder: displayOrder, children: childOrgs, callings: [] )
@@ -66,8 +66,8 @@ public struct Org : JSONParsable  {
             var calling = Calling( fromJSON: callingJson )
             calling?.parentOrg = org
             return calling
-            }.filter() { $0 != nil } as! [Calling]
-        
+            }.flatMap() {$0} // .flatMap() will remove nil's
+
         org.callings = parsedCallings
         self = org
     }
