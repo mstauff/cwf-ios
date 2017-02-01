@@ -11,7 +11,8 @@ import UIKit
 class RootTabBarViewController: UITabBarController {
 
     // eventually this only lives in AppDelegate, but we need to figure out the communication between app delegate and VC when all the data is loaded.
-    var globalDataSource = CWFCallingManagerService()
+    var callingManager = CWFCallingManagerService()
+    var dataSource = RemoteDataSource()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,28 +40,59 @@ class RootTabBarViewController: UITabBarController {
         // todo: put up a spinner
         let ldscdApi = LdscdRestApi()
         ldscdApi.getAppConfig() { (appConfig, error) in
-            
+
             // Populate these locally - Don't commit to github
             let username = ""
             let password = ""
-            let unitNum : Int64 = 0
+            let unitNum: Int64 = 0
             // todo - make this weak
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate?.globalDataSource?.loadData(forUnit: unitNum, username: username, password: password) { (dataLoaded, error) -> Void in
-                
-                // todo: remove spinner
-                if dataLoaded {
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
-                    
-                    let navController2 = UINavigationController()
-                    navController2.addChildViewController(loginVC)
-                    
-                    self.present(navController2, animated: false, completion: nil)
-                    
-                }
+            self.callingManager.loadData(forUnit: unitNum, username: username, password: password) { [weak weakSelf = self ] (dataLoaded, error) -> Void in
+
+                    // todo: remove spinner
+                    if dataLoaded {
+                        weakSelf?.dataSource.authenticate(currentVC: self) { [weak weakSelf = self]  _, _, error in
+                            if let error = error {
+                                weakSelf?.showAlert(title: "Authentication Error", message: error.localizedDescription)
+                            } else {
+                                if let validOrg = weakSelf?.callingManager.unitOrg {
+                                    weakSelf?.dataSource.initializeDrive(forOrgs: validOrg.children) { orgsToDelete, error in
+
+                                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                                        let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
+
+                                        let navController2 = UINavigationController()
+                                        navController2.addChildViewController(loginVC)
+
+                                        weakSelf?.present(navController2, animated: false, completion: nil)
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+                    }
+//                }
             }
         }
     }
-    
+
+    func showAlert(title : String, message: String) {
+        let alert = UIAlertController(
+                title: title,
+                message: message,
+                preferredStyle: UIAlertControllerStyle.alert
+        )
+        let ok = UIAlertAction(
+                title: "OK",
+                style: UIAlertActionStyle.default,
+                handler: nil
+        )
+        alert.addAction(ok)
+        present(alert, animated: true, completion: nil)
+    }
+
+
 }

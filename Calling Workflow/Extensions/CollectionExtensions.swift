@@ -22,3 +22,12 @@ extension Dictionary {
         return mutableCopy
     }
 }
+
+/* convenience method since we usually are doing something if an array is not empty */
+extension Array {
+    var isNotEmpty : Bool {
+        get {
+            return !self.isEmpty
+        }
+    }
+}
