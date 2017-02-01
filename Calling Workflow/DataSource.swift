@@ -24,9 +24,9 @@ protocol DataSource {
         get
     }
     
-    func authenticate( currentVC : UIViewController, completionHandler: @escaping (UIViewController, GTMOAuth2Authentication, NSError?) -> Void  )
-    func getDataForOrg( org : Org, completionHandler : @escaping (_ org : Org?, _ error: NSError? ) -> Void )
+    func authenticate( currentVC : UIViewController, completionHandler: @escaping (UIViewController?, GTMOAuth2Authentication, NSError?) -> Void  )
+    func getData( forOrg : Org, completionHandler : @escaping (_ org : Org?, _ error: NSError? ) -> Void )
     
-    func updateOrg( org : Org, completionHandler : (_ success : Bool, _ error: NSError? ) -> Void )
+    func updateOrg( org : Org, completionHandler : @escaping (_ success : Bool, _ error: NSError? ) -> Void )
     
 }
