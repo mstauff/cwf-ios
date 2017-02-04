@@ -8,26 +8,38 @@
 
 import UIKit
 
-class CallingDetailsTableViewController: CWFBaseTableViewController {
+class CallingDetailsTableViewController: CWFBaseTableViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
-    var callingToDisplay : Calling? = nil
+    var callingToDisplay : Calling? = nil {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+    var statusPickerView : UIView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationController?.title = callingToDisplay?.position.name
-        
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    
+    // MARK: - Picker View Data Source
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return 4
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return "item \(row)"
     }
 
     // MARK: - Table view data source
@@ -110,9 +122,9 @@ class CallingDetailsTableViewController: CWFBaseTableViewController {
             return cell
 
         case 3:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "statusCell", for: indexPath)
-            if callingToDisplay?.existingStatus != nil {
-                cell.textLabel?.text = (callingToDisplay?.existingStatus)?.rawValue
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+            if callingToDisplay?.proposedStatus != nil {
+                cell.textLabel?.text = callingToDisplay?.proposedStatus.rawValue
             }
             else {
                 cell.textLabel?.text = "None"
@@ -129,8 +141,47 @@ class CallingDetailsTableViewController: CWFBaseTableViewController {
             return cell
         }
     }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch indexPath.section {
+        case 2:
+            let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+            let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
+            
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                nextVC?.members = (appDelegate.globalDataSource?.memberList)!
+            }
+            
+            navigationController?.pushViewController(nextVC!, animated: true)
+            
+        case 3:
+            showStatusActionSheet()
+            tableView.deselectRow(at: indexPath, animated: false)
+        default:
+            tableView.deselectRow(at: indexPath, animated: false)
+        }
+    }
     
+    func showStatusActionSheet(){
+        let actionSheet = UIAlertController(title: "Status", message: "Select calling status.", preferredStyle: UIAlertControllerStyle.actionSheet)
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
+            (alert: UIAlertAction!) -> Void in
+            print("Cancelled")
+        })
+        let statusArray = [CallingStatus.Proposed, CallingStatus.Submitted, CallingStatus.Approved, CallingStatus.Rejected, CallingStatus.OnHold, CallingStatus.AppointmentSet, CallingStatus.Extended, CallingStatus.Accepted, CallingStatus.Declined, CallingStatus.Sustained, CallingStatus.SetApart, CallingStatus.Recorded, CallingStatus.Unknown]
+        for status in statusArray {
+            let statusAction = UIAlertAction(title: status.rawValue, style: UIAlertActionStyle.default, handler:  {
+                (alert: UIAlertAction!) -> Void in
+                self.callingToDisplay?.proposedStatus = status
+                self.tableView.reloadData()
+                print(self.callingToDisplay?.proposedStatus.rawValue ?? "none")
+            })
+            actionSheet.addAction(statusAction)
+        }
+        actionSheet.addAction(cancelAction)
+        self.present(actionSheet, animated: true, completion: nil)
 
+    }
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

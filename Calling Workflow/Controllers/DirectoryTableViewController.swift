@@ -15,7 +15,6 @@ class DirectoryTableViewController: CWFBaseTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         members = []
-        
         setupData()
     }
 

@@ -31,11 +31,18 @@ class CallingsTableViewController: CWFBaseTableViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        tableView.reloadData()
+    }
+    
     // MARK: - Setup
     
     func setupCallingsToDisplay() {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        callingsToDisplay = (appDelegate?.globalDataSource?.unitOrg?.getCallingsList())!
+        if (appDelegate?.globalDataSource?.unitOrg != nil) {
+            callingsToDisplay = (appDelegate?.globalDataSource?.unitOrg?.getCallingsList())!
+        }
     }
 
     // MARK: - Table view data source

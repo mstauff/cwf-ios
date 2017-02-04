@@ -9,10 +9,14 @@
 /* Begin PBXBuildFile section */
 		1308C050C6CA76E4398945D0 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 060B8D3E367A4A3C81570E00 /* Pods_Calling_Workflow_Calling_WorkflowTests.framework */; };
 		1F9C0A0FDCC7705330E80026 /* Pods_Calling_WorkflowTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EBF616855ECD1B37403E34D /* Pods_Calling_WorkflowTests.framework */; };
+		3C0994D21E451AC500926094 /* MemberPickerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0994D11E451AC500926094 /* MemberPickerTableViewController.swift */; };
+		3C0994D41E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0994D31E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift */; };
 		3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */; };
 		3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */; };
 		3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */; };
 		3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */; };
+		3C4409C91E3BEE9400484935 /* CWFStatusPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */; };
+		3C4409CB1E3BF94500484935 /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4409CA1E3BF94500484935 /* DateExtensions.swift */; };
 		3C8300F31E3698DD00FD0D34 /* CallingDetailsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */; };
 		3C8300F51E36A20400FD0D34 /* DataSubdataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */; };
 		3CA596FE1E08593C00109B27 /* CWFBaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */; };
@@ -54,7 +58,6 @@
 		E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E7E1E01FC6A00A7A618 /* Utils.swift */; };
 		E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */; };
 		E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87D00B91E26EF7000FA722B /* LdsUser.swift */; };
-		E8B13CCA1E3BC749004FD60C /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B13CC91E3BC749004FD60C /* DateExtensions.swift */; };
 		E8CC956A1E01E722007EBA47 /* member-objects.js in Resources */ = {isa = PBXBuildFile; fileRef = E8CC95691E01E722007EBA47 /* member-objects.js */; };
 		E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC956B1E01E77F007EBA47 /* MemberTests.swift */; };
 		E8F959681E30129700C13EC9 /* CWFCallingManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */; };
@@ -89,10 +92,14 @@
 		13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling Workflow.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling Workflow/Pods-Calling Workflow.debug.xcconfig"; sourceTree = "<group>"; };
 		186DC4A209D5B238D4E39AD8 /* Pods-Calling WorkflowUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowUITests/Pods-Calling WorkflowUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		188CFE612548010ED581E770 /* Pods_Calling_WorkflowUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Calling_WorkflowUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C0994D11E451AC500926094 /* MemberPickerTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberPickerTableViewController.swift; path = Controllers/MemberPickerTableViewController.swift; sourceTree = "<group>"; };
+		3C0994D31E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TitleAdjustableSubtitleTableViewCell.swift; path = Controllers/TableViewCells/TitleAdjustableSubtitleTableViewCell.swift; sourceTree = "<group>"; };
 		3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OrgDetailTableViewController.swift; path = Controllers/OrgDetailTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsTableViewController.swift; path = Controllers/SettingsTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LDSCredentialsViewController.swift; path = Controllers/LDSCredentialsViewController.swift; sourceTree = "<group>"; };
 		3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InputTableViewCell.swift; path = Controllers/TableViewCells/InputTableViewCell.swift; sourceTree = "<group>"; };
+		3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFStatusPickerView.swift; path = Controllers/General/CWFStatusPickerView.swift; sourceTree = "<group>"; };
+		3C4409CA1E3BF94500484935 /* DateExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DateExtensions.swift; path = Extensions/DateExtensions.swift; sourceTree = "<group>"; };
 		3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingDetailsTableViewController.swift; path = Controllers/CallingDetailsTableViewController.swift; sourceTree = "<group>"; };
 		3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataSubdataTableViewCell.swift; path = Controllers/TableViewCells/DataSubdataTableViewCell.swift; sourceTree = "<group>"; };
 		3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFBaseTableViewController.swift; path = Controllers/General/CWFBaseTableViewController.swift; sourceTree = "<group>"; };
@@ -148,7 +155,6 @@
 		E87A9E7E1E01FC6A00A7A618 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HTVTMemberParser.swift; path = Model/HTVTMemberParser.swift; sourceTree = "<group>"; };
 		E87D00B91E26EF7000FA722B /* LdsUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LdsUser.swift; path = Model/LdsUser.swift; sourceTree = "<group>"; };
-		E8B13CC91E3BC749004FD60C /* DateExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DateExtensions.swift; path = Extensions/DateExtensions.swift; sourceTree = "<group>"; };
 		E8CC95691E01E722007EBA47 /* member-objects.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "member-objects.js"; sourceTree = "<group>"; };
 		E8CC956B1E01E77F007EBA47 /* MemberTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberTests.swift; sourceTree = "<group>"; };
 		E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFCallingManagerService.swift; sourceTree = "<group>"; };
@@ -297,6 +303,7 @@
 				3CEBAF421DCD0E010071BE9F /* DirectoryTableViewController.swift */,
 				3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */,
 				3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */,
+				3C0994D11E451AC500926094 /* MemberPickerTableViewController.swift */,
 				E8084F891E04814F0077FDAE /* OrganizationTableViewController.swift */,
 				3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */,
 				3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */,
@@ -312,6 +319,7 @@
 				3CEBAF471DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift */,
 				3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */,
 				3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */,
+				3C0994D31E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift */,
 			);
 			name = TableViewCells;
 			sourceTree = "<group>";
@@ -336,6 +344,7 @@
 			children = (
 				3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */,
 				3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */,
+				3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */,
 			);
 			name = "Base Controllers";
 			sourceTree = "<group>";
@@ -358,7 +367,7 @@
 		E8B6CF1A1DF8CF0C0080097F /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				E8B13CC91E3BC749004FD60C /* DateExtensions.swift */,
+				3C4409CA1E3BF94500484935 /* DateExtensions.swift */,
 				E8084F7D1E0476C10077FDAE /* DataExtensions.swift */,
 				E8084F7E1E0476C10077FDAE /* DictionaryExtensions.swift */,
 			);
@@ -657,6 +666,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8084F8C1E088A870077FDAE /* DataSource.swift in Sources */,
+				3C0994D41E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift in Sources */,
 				3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */,
 				E8084F7F1E0476C10077FDAE /* DataExtensions.swift in Sources */,
 				E8316CE91E26AC1E0091419D /* LdscdRestApi.swift in Sources */,
@@ -665,7 +675,6 @@
 				E8084F861E0476F80077FDAE /* Org.swift in Sources */,
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
-				E8B13CCA1E3BC749004FD60C /* DateExtensions.swift in Sources */,
 				3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */,
 				E8F959701E3149AB00C13EC9 /* CallingStatus.swift in Sources */,
 				3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */,
@@ -674,6 +683,7 @@
 				3C8300F51E36A20400FD0D34 /* DataSubdataTableViewCell.swift in Sources */,
 				3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */,
 				E8084F881E0476F80077FDAE /* UnitLevelOrgType.swift in Sources */,
+				3C0994D21E451AC500926094 /* MemberPickerTableViewController.swift in Sources */,
 				3CE4C8D31DCA824100AAFB31 /* AppDelegate.swift in Sources */,
 				3CA596FE1E08593C00109B27 /* CWFBaseTableViewController.swift in Sources */,
 				3CE4C9101DCA82A000AAFB31 /* Constants.swift in Sources */,
@@ -689,10 +699,12 @@
 				3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */,
 				E8084F851E0476F80077FDAE /* Calling.swift in Sources */,
 				E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */,
+				3C4409C91E3BEE9400484935 /* CWFStatusPickerView.swift in Sources */,
 				3CE4C9121DCA82A000AAFB31 /* JSON.swift in Sources */,
 				3CEBAF451DCD0FBF0071BE9F /* Member.swift in Sources */,
 				E8F959681E30129700C13EC9 /* CWFCallingManagerService.swift in Sources */,
 				E8F959691E30129700C13EC9 /* LdsFileApi.swift in Sources */,
+				3C4409CB1E3BF94500484935 /* DateExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
