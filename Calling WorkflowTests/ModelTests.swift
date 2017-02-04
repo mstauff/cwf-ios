@@ -105,20 +105,21 @@ class ModelTests: XCTestCase {
         let orgJson = org!.toJSONObject()
         let jsonString = jsonSerializer.serialize( jsonObject: orgJson )
         XCTAssertTrue(jsonString!.contains( "\"defaultOrgName\":\"Primary\"" ))
-        XCTAssertTrue(jsonString!.contains( "\"subOrgId\":\"7428354\"" ))
-        XCTAssertTrue(jsonString!.contains( "\"orgTypeId\":\"77\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"subOrgId\":7428354" ))
+        XCTAssertTrue(jsonString!.contains( "\"orgTypeId\":77" ))
         // just test that there is some object in the callings array. If it's empty it would not have the { and " after the [
         XCTAssertTrue(jsonString!.contains( "\"callings\":[{\"" ))
-        XCTAssertTrue(jsonString!.contains( "\"memberId\":\"123\"" ))
-        XCTAssertTrue(jsonString!.contains( "\"positionId\":\"734829\"" ))
-        XCTAssertTrue(jsonString!.contains( "\"proposedIndId\":\"456\"" ))
-        XCTAssertTrue(jsonString!.contains( "\"positionTypeId\":\"1481\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"memberId\":123" ))
+        XCTAssertTrue(jsonString!.contains( "\"positionId\":734829" ))
+        XCTAssertTrue(jsonString!.contains( "\"proposedIndId\":456" ))
+        XCTAssertTrue(jsonString!.contains( "\"positionTypeId\":1481" ))
         XCTAssertTrue(jsonString!.contains( "\"notes\":\"Some String\"" ))
         XCTAssertTrue(jsonString!.contains( "\"proposedStatus\":\"PROPOSED\"" ))
         XCTAssertTrue(jsonString!.contains( "\"position\":\"Primary Teacher\"" ))
         XCTAssertTrue(jsonString!.contains( "\"hidden\":\"false\"" ))
         XCTAssertTrue(jsonString!.contains( "\"activeDate\":\"20150922\"" ))
-        print( jsonString )
+        XCTAssertTrue(jsonString!.contains( "\"displayOrder\":700" ))
+        print( "JSON:" + jsonString! )
         
     
     }

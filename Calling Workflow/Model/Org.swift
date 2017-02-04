@@ -90,6 +90,7 @@ public struct Org : JSONParsable  {
         jsonObj[OrgJsonKeys.id] = self.id as AnyObject
         jsonObj[OrgJsonKeys.orgTypeId] = self.orgTypeId as AnyObject
         jsonObj[OrgJsonKeys.orgName] = self.orgName as AnyObject
+        jsonObj[OrgJsonKeys.displayOrder] = self.displayOrder as AnyObject
         let callingsJson : [JSONObject] = callings.map() { calling -> JSONObject in
             return calling.toJSONObject()
         }

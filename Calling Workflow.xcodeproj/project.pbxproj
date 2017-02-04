@@ -42,7 +42,7 @@
 		D9B29D5CC172075896D53F87 /* Pods_Calling_Workflow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5ADD1C197D84D3D19A7A24CD /* Pods_Calling_Workflow.framework */; };
 		E8084F7C1E046D5D0077FDAE /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F7B1E046D5D0077FDAE /* DateExtensions.swift */; };
 		E8084F7F1E0476C10077FDAE /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F7D1E0476C10077FDAE /* DataExtensions.swift */; };
-		E8084F801E0476C10077FDAE /* DictionaryExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F7E1E0476C10077FDAE /* DictionaryExtensions.swift */; };
+		E8084F801E0476C10077FDAE /* CollectionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F7E1E0476C10077FDAE /* CollectionExtensions.swift */; };
 		E8084F851E0476F80077FDAE /* Calling.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F811E0476F80077FDAE /* Calling.swift */; };
 		E8084F861E0476F80077FDAE /* Org.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F821E0476F80077FDAE /* Org.swift */; };
 		E8084F871E0476F80077FDAE /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F831E0476F80077FDAE /* Position.swift */; };
@@ -58,6 +58,8 @@
 		E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E7E1E01FC6A00A7A618 /* Utils.swift */; };
 		E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */; };
 		E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87D00B91E26EF7000FA722B /* LdsUser.swift */; };
+		E8B13CCA1E3BC749004FD60C /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B13CC91E3BC749004FD60C /* DateExtensions.swift */; };
+		E8B13CCC1E3BD80A004FD60C /* DataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */; };
 		E8CC956A1E01E722007EBA47 /* member-objects.js in Resources */ = {isa = PBXBuildFile; fileRef = E8CC95691E01E722007EBA47 /* member-objects.js */; };
 		E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC956B1E01E77F007EBA47 /* MemberTests.swift */; };
 		E8F959681E30129700C13EC9 /* CWFCallingManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */; };
@@ -136,7 +138,7 @@
 		E44CDBB5DE5984D9F73C386E /* Pods-Calling WorkflowTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Calling WorkflowTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Calling WorkflowTests/Pods-Calling WorkflowTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E8084F7B1E046D5D0077FDAE /* DateExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
 		E8084F7D1E0476C10077FDAE /* DataExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataExtensions.swift; path = Extensions/DataExtensions.swift; sourceTree = "<group>"; };
-		E8084F7E1E0476C10077FDAE /* DictionaryExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DictionaryExtensions.swift; path = Extensions/DictionaryExtensions.swift; sourceTree = "<group>"; };
+		E8084F7E1E0476C10077FDAE /* CollectionExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CollectionExtensions.swift; path = Extensions/CollectionExtensions.swift; sourceTree = "<group>"; };
 		E8084F811E0476F80077FDAE /* Calling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Calling.swift; path = Model/Calling.swift; sourceTree = "<group>"; };
 		E8084F821E0476F80077FDAE /* Org.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Org.swift; path = Model/Org.swift; sourceTree = "<group>"; };
 		E8084F831E0476F80077FDAE /* Position.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Position.swift; path = Model/Position.swift; sourceTree = "<group>"; };
@@ -155,6 +157,8 @@
 		E87A9E7E1E01FC6A00A7A618 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HTVTMemberParser.swift; path = Model/HTVTMemberParser.swift; sourceTree = "<group>"; };
 		E87D00B91E26EF7000FA722B /* LdsUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LdsUser.swift; path = Model/LdsUser.swift; sourceTree = "<group>"; };
+		E8B13CC91E3BC749004FD60C /* DateExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DateExtensions.swift; path = Extensions/DateExtensions.swift; sourceTree = "<group>"; };
+		E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSourceTests.swift; sourceTree = "<group>"; };
 		E8CC95691E01E722007EBA47 /* member-objects.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "member-objects.js"; sourceTree = "<group>"; };
 		E8CC956B1E01E77F007EBA47 /* MemberTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberTests.swift; sourceTree = "<group>"; };
 		E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFCallingManagerService.swift; sourceTree = "<group>"; };
@@ -266,6 +270,7 @@
 				3CE4C8E91DCA824100AAFB31 /* Calling_WorkflowTests.swift */,
 				3CE4C8EB1DCA824100AAFB31 /* Info.plist */,
 				E8CC956B1E01E77F007EBA47 /* MemberTests.swift */,
+				E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */,
 			);
 			path = "Calling WorkflowTests";
 			sourceTree = "<group>";
@@ -367,9 +372,9 @@
 		E8B6CF1A1DF8CF0C0080097F /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				3C4409CA1E3BF94500484935 /* DateExtensions.swift */,
+				E8B13CC91E3BC749004FD60C /* DateExtensions.swift */,
 				E8084F7D1E0476C10077FDAE /* DataExtensions.swift */,
-				E8084F7E1E0476C10077FDAE /* DictionaryExtensions.swift */,
+				E8084F7E1E0476C10077FDAE /* CollectionExtensions.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -675,6 +680,7 @@
 				E8084F861E0476F80077FDAE /* Org.swift in Sources */,
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
+				E8B13CCA1E3BC749004FD60C /* DateExtensions.swift in Sources */,
 				3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */,
 				E8F959701E3149AB00C13EC9 /* CallingStatus.swift in Sources */,
 				3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */,
@@ -693,7 +699,7 @@
 				E8084F8A1E04814F0077FDAE /* OrganizationTableViewController.swift in Sources */,
 				3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */,
 				3C8300F31E3698DD00FD0D34 /* CallingDetailsTableViewController.swift in Sources */,
-				E8084F801E0476C10077FDAE /* DictionaryExtensions.swift in Sources */,
+				E8084F801E0476C10077FDAE /* CollectionExtensions.swift in Sources */,
 				E8F9596A1E30129700C13EC9 /* LdsOrgApi.swift in Sources */,
 				E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */,
 				3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */,
@@ -704,7 +710,6 @@
 				3CEBAF451DCD0FBF0071BE9F /* Member.swift in Sources */,
 				E8F959681E30129700C13EC9 /* CWFCallingManagerService.swift in Sources */,
 				E8F959691E30129700C13EC9 /* LdsFileApi.swift in Sources */,
-				3C4409CB1E3BF94500484935 /* DateExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -712,6 +717,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8B13CCC1E3BD80A004FD60C /* DataSourceTests.swift in Sources */,
 				E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */,
 				3CE4C8EA1DCA824100AAFB31 /* Calling_WorkflowTests.swift in Sources */,
 				E8084F7C1E046D5D0077FDAE /* DateExtensions.swift in Sources */,
