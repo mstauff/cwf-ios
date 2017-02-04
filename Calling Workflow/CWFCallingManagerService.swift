@@ -108,6 +108,17 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
         }
         return callingList
     }
+    func getCallingsForMember(member: Member) -> [Calling] {
+        var callingsForMember : [Calling] = []
+        let callingList = getCallingsList()
+        for calling in callingList {
+            if calling.existingIndId == member.individualId {
+                callingsForMember.append(calling)
+            }
+        }
+        
+        return callingsForMember
+    }
     //todo: need update org methods
 }
 
