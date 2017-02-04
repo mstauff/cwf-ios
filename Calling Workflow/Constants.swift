@@ -42,6 +42,7 @@ struct RemoteStorageConstants {
     static let dataFileMimeType = "application/json"
     // special Application Data folder available in google drive that is not viewable by users outside the app that created it
     static let dataFileFolder = "appDataFolder"
+    static let dataFileExtension = ".json"
     
 }
 
@@ -55,4 +56,5 @@ struct ErrorConstants {
     static let networkError = 400
     static let notFound = 404
     static let jsonParseError = 450
+    static let jsonSerializeError = 455
 }

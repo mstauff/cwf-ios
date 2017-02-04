@@ -28,8 +28,10 @@ public class JSONSerializerImpl : JSONSerializer  {
             // 0/1 Int, so it gets handled by the is Int case below
             if jsonVal is String {
                 jsonDictionary[jsonKey] = jsonVal as? String
-            } else if jsonVal is Int || jsonVal is Int64  {
-                jsonDictionary[jsonKey] = String(describing: jsonVal)
+            } else if jsonVal is Int {
+                jsonDictionary[jsonKey] = jsonVal as? Int
+            } else if jsonVal is Int64 {
+                jsonDictionary[jsonKey] = NSNumber(value: (jsonVal as? Int64)!)
             } else if jsonVal is [JSONObject] {
                 jsonDictionary[jsonKey] = (jsonVal as! Array).map() { jsonObj -> NSDictionary in
                     return prepare( jsonObject: jsonObj )
@@ -37,7 +39,6 @@ public class JSONSerializerImpl : JSONSerializer  {
             } else if jsonVal is JSONObject {
                 jsonDictionary[jsonKey] = prepare( jsonObject: (jsonVal as? JSONObject)! )
             }
-            
         }
         return NSDictionary(dictionary: jsonDictionary)
     }
