@@ -110,7 +110,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 cell?.titleLabel.text = "Current:"
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
                 if (callingToDisplay?.existingIndId) != nil {
-                    let currentMember = appDelegate?.callingManager?.getMemberWithId(memberId: (callingToDisplay?.existingIndId)!)
+                    let currentMember = appDelegate?.callingManager.getMemberWithId(memberId: (callingToDisplay?.existingIndId)!)
                     cell?.dataLabel.text = currentMember?.name
                     if let months : Int = callingToDisplay?.existingMonthsInCalling {
                         cell?.subdataLabel.text = "\(months) months"
@@ -125,7 +125,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 cell?.titleLabel.text = "Proposed:"
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
                 if (callingToDisplay?.proposedIndId) != nil {
-                    let proposedMember = appDelegate?.callingManager?.getMemberWithId(memberId: (callingToDisplay?.proposedIndId)!)
+                    let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: (callingToDisplay?.proposedIndId)!)
                     cell?.dataLabel.text = proposedMember?.name
                 }
                 return cell!
@@ -169,7 +169,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
                 nextVC?.delegate = self
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                    nextVC?.members = (appDelegate.callingManager?.memberList)!
+                    nextVC?.members = appDelegate.callingManager.memberList
                 }
                 navigationController?.pushViewController(nextVC!, animated: true)
             
@@ -209,7 +209,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             //todo -- add save to calling service
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 if (self.callingToDisplay != nil) {
-                    appDelegate.callingManager?.updateCalling(callingForUpdate: self.callingToDisplay!)
+                    appDelegate.callingManager.updateCalling(callingForUpdate: self.callingToDisplay!)
                 }
             }
 

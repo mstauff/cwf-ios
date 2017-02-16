@@ -32,7 +32,7 @@ class RemoteDataSource : NSObject, DataSource {
     // that gets passed in as the selector will then invoke these callbacks when it completes. This allows us
     // to translate between the selectors used by google drive and Swift closure mechanisms used
     // by calling clients
-    private var authCompletionHandler : ((UIViewController?, GTMOAuth2Authentication, NSError?) -> Void)? = nil
+    private var authCompletionHandler : ((UIViewController?, Bool, NSError?) -> Void)? = nil
     private var fileListCompletionHandler : (([GTLDriveFile],NSError? ) -> Void)? = nil
     
     /*************** computed props ******************/
@@ -58,10 +58,10 @@ class RemoteDataSource : NSObject, DataSource {
     }
 
     /* Ensures the user is authenticated with google drive. It checks if it is already authenticated (via the keychain credentials that are queried at init), if not it presents its' own view controller to the user to authenticate with google drive.*/
-    func authenticate( currentVC : UIViewController, completionHandler: @escaping (UIViewController?, GTMOAuth2Authentication, NSError?) -> Void ) {
+    func authenticate( currentVC : UIViewController, completionHandler: @escaping (UIViewController?, Bool, NSError?) -> Void ) {
         let scopeString = scopes.joined(separator: " ")
         if isAuthenticated {
-            completionHandler( nil, driveService.authorizer as! GTMOAuth2Authentication, nil )
+            completionHandler( nil, true, nil )
         } else {
             if let googleAuthVC = GTMOAuth2ViewControllerTouch(
                     scope: scopeString,
@@ -94,7 +94,7 @@ class RemoteDataSource : NSObject, DataSource {
         }
         
         if authCompletionHandler != nil {
-            authCompletionHandler!( vc, authResult, error )
+            authCompletionHandler!( vc, authResult != nil, error )
             // once we've invoked it set it back to nil
             self.authCompletionHandler = nil
         }

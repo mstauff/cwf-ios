@@ -60,6 +60,8 @@
 		E8316CE91E26AC1E0091419D /* LdscdRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */; };
 		E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE81E26AC1E0091419D /* LdsRestApi.swift */; };
 		E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CEB1E26AD4F0091419D /* RestAPITests.swift */; };
+		E85E7EE41E49223B00CE05CD /* CallingManagerServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */; };
+		E85E7EE61E53B6D700CE05CD /* MultiValueDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */; };
 		E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E7E1E01FC6A00A7A618 /* Utils.swift */; };
 		E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */; };
 		E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87D00B91E26EF7000FA722B /* LdsUser.swift */; };
@@ -164,6 +166,8 @@
 		E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdscdRestApi.swift; sourceTree = "<group>"; };
 		E8316CE81E26AC1E0091419D /* LdsRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdsRestApi.swift; sourceTree = "<group>"; };
 		E8316CEB1E26AD4F0091419D /* RestAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestAPITests.swift; sourceTree = "<group>"; };
+		E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallingManagerServiceTests.swift; sourceTree = "<group>"; };
+		E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MultiValueDictionary.swift; path = Extensions/MultiValueDictionary.swift; sourceTree = "<group>"; };
 		E87A9E7E1E01FC6A00A7A618 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HTVTMemberParser.swift; path = Model/HTVTMemberParser.swift; sourceTree = "<group>"; };
 		E87D00B91E26EF7000FA722B /* LdsUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LdsUser.swift; path = Model/LdsUser.swift; sourceTree = "<group>"; };
@@ -289,6 +293,7 @@
 				3CE4C8EB1DCA824100AAFB31 /* Info.plist */,
 				E8CC956B1E01E77F007EBA47 /* MemberTests.swift */,
 				E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */,
+				E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */,
 			);
 			path = "Calling WorkflowTests";
 			sourceTree = "<group>";
@@ -399,6 +404,7 @@
 				E8B13CC91E3BC749004FD60C /* DateExtensions.swift */,
 				E8084F7D1E0476C10077FDAE /* DataExtensions.swift */,
 				E8084F7E1E0476C10077FDAE /* CollectionExtensions.swift */,
+				E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -700,6 +706,7 @@
 				E8084F7F1E0476C10077FDAE /* DataExtensions.swift in Sources */,
 				E8316CE91E26AC1E0091419D /* LdscdRestApi.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
+				E85E7EE61E53B6D700CE05CD /* MultiValueDictionary.swift in Sources */,
 				E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */,
 				3CBDDCAE1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift in Sources */,
 				E8084F861E0476F80077FDAE /* Org.swift in Sources */,
@@ -749,6 +756,7 @@
 			files = (
 				E8B13CCC1E3BD80A004FD60C /* DataSourceTests.swift in Sources */,
 				E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */,
+				E85E7EE41E49223B00CE05CD /* CallingManagerServiceTests.swift in Sources */,
 				3CE4C8EA1DCA824100AAFB31 /* Calling_WorkflowTests.swift in Sources */,
 				E8084F7C1E046D5D0077FDAE /* DateExtensions.swift in Sources */,
 				E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */,

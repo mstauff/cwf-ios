@@ -38,6 +38,34 @@ public struct Org : JSONParsable  {
     var children : [Org] = []
     
     var callings : [Calling] = []
+
+    var allOrgCallingIds : [Int64] {
+        get {
+            return allOrgCallings.map({ $0.id }).flatMap({$0})
+        }
+    }
+
+    var allOrgCallings : [Calling] {
+        get {
+            var callings = self.callings;
+            for subOrg in self.children {
+                callings.append( contentsOf: subOrg.allOrgCallings )
+            }
+            return callings
+        }
+    }
+
+    var allSubOrgs : [Org] {
+        get {
+            var subOrgs = self.children;
+            for subOrg in self.children {
+                subOrgs.append( contentsOf: subOrg.allSubOrgs )
+            }
+            return subOrgs
+        }
+    }
+
+    var hasUnsavedChanges = false
     
     // Do we need these? Probably not for the app, but maybe we will to be able to send necessary data to LCR for calling updates
     //    var parentOrg : Org
@@ -103,15 +131,18 @@ public struct Org : JSONParsable  {
         
         return jsonObj;
     }
-    public func getCallingsList() -> [Calling] {
-        var callingList : [Calling] = []
-        callingList.append(contentsOf: callings)
-        for org in children {
-            callingList.append(contentsOf: org.getCallingsList())
-        }
-        return callingList
+
+    public func getChildOrg( id: Int64 ) -> Org? {
+        return self.allSubOrgs.first(where: { $0.id == id })
     }
 
+}
+
+extension Org : Equatable {
+    /* Verifies that they are the same CDOL org (same ID), not that the contents are the same) */
+    public static func == ( lhs : Org, rhs: Org ) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 private struct OrgJsonKeys {
