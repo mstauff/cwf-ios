@@ -37,7 +37,8 @@ class CallingManagerServiceTests: XCTestCase {
     }
     
     func testmapForCallingsById() {
-        let callingMap = callingMgr.mapForCallingsById(org: org!)
+        // todo - this used to test a convenience method in callingMgr - needs to be moved to a new CollectionExtensionsTests
+        let callingMap = org!.allOrgCallings.toDictionaryById(transformer: {$0.id})
         var calling = callingMap[734829]!
         XCTAssertEqual( calling.existingIndId, 123 )
         calling = callingMap[734820]!
@@ -47,7 +48,7 @@ class CallingManagerServiceTests: XCTestCase {
     }
 
     func testmapForCallingsByIndId() {
-        let callingMap = callingMgr.mapForPotentilCallingsByIndId(org: org!)
+        let callingMap = callingMgr.multiValueDictionaryFromArray(array: org!.allOrgCallings, transformer: {$0.proposedIndId})
         validateCallingList(callingMap: callingMap, indId: 567, expectedNumCallings: 2, expectedCallings: [1482, 1483], shouldNotHaveCallings: [1481])
         validateCallingList(callingMap: callingMap, indId: 456, expectedNumCallings: 1, expectedCallings: [1481], shouldNotHaveCallings: [1482])
 
