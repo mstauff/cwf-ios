@@ -106,7 +106,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, UIPickerVie
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             if (callingToDisplay?.existingIndId) != nil {
-                let currentMember = appDelegate?.globalDataSource?.getMemberWithId(memberId: (callingToDisplay?.existingIndId)!)
+                let currentMember = appDelegate?.callingManager.getMemberWithId(memberId: (callingToDisplay?.existingIndId)!)
                 cell.textLabel?.text = currentMember?.name
             }
             return cell
@@ -115,7 +115,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, UIPickerVie
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             if (callingToDisplay?.proposedIndId) != nil {
-                let proposedMember = appDelegate?.globalDataSource?.getMemberWithId(memberId: (callingToDisplay?.proposedIndId)!)
+                let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: (callingToDisplay?.proposedIndId)!)
                 cell.textLabel?.text = proposedMember?.name
             }
             
@@ -148,7 +148,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, UIPickerVie
             let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
             
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                nextVC?.members = (appDelegate.globalDataSource?.memberList)!
+                nextVC?.members = appDelegate.callingManager.memberList
             }
             
             navigationController?.pushViewController(nextVC!, animated: true)

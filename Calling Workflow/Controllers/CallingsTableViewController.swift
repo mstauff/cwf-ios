@@ -35,13 +35,13 @@ class CallingsTableViewController: CWFBaseTableViewController {
         super.viewDidAppear(animated)
         tableView.reloadData()
     }
-    
+
     // MARK: - Setup
     
     func setupCallingsToDisplay() {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        if (appDelegate?.globalDataSource?.unitOrg != nil) {
-            callingsToDisplay = (appDelegate?.globalDataSource?.unitOrg?.getCallingsList())!
+        if (appDelegate?.callingManager.ldsOrgUnit != nil) {
+            callingsToDisplay = (appDelegate?.callingManager.ldsOrgUnit?.allOrgCallings)!
         }
     }
 

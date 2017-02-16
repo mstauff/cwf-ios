@@ -15,7 +15,9 @@ class ModelTests: XCTestCase {
     
     var testJSON : [String:AnyObject]? = nil
     var jsonSerializer : JSONSerializer = JSONSerializerImpl()
-    
+    private var standardOrg = Org( id: 1, orgTypeId: 1 )
+    private var multiDepthOrg = Org( id: 1, orgTypeId: 1 )
+
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -32,6 +34,9 @@ class ModelTests: XCTestCase {
             let jsonData = Data( referencing: fileData )
             print( jsonData.debugDescription )
             testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:AnyObject]
+            standardOrg = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )!
+            multiDepthOrg = Org( fromJSON: (testJSON?["orgWithMultiDepthSubOrg"] as? JSONObject)! )!
+
         } else {
             print( "No File Path found for file" )
         }
@@ -43,25 +48,25 @@ class ModelTests: XCTestCase {
     }
     
     func testOrgJsonDeserialization() {
-        let org = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+        let org = standardOrg
         
         XCTAssertNotNil(org)
-        XCTAssertEqual( org!.orgName, "Primary" )
-        XCTAssertEqual( org!.orgTypeId, 77 )
-        XCTAssertEqual( org!.displayOrder, 700 )
-        XCTAssertEqual( org!.id, 7428354 )
-        XCTAssertEqual( org!.children.count, 1 )
-        XCTAssertNotNil(org!.callings)
-        XCTAssertEqual(org!.callings.count, 0)
+        XCTAssertEqual( org.orgName, "Primary" )
+        XCTAssertEqual( org.orgTypeId, 77 )
+        XCTAssertEqual( org.displayOrder, 700 )
+        XCTAssertEqual( org.id, 7428354 )
+        XCTAssertEqual( org.children.count, 3 )
+        XCTAssertNotNil(org.callings)
+        XCTAssertEqual(org.callings.count, 0)
     }
     func testCallingsInSubOrgFromJson() {
-        let org = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+        let org = standardOrg
         
-        let childOrg = org?.children[0]
+        let childOrg = org.children[0]
         XCTAssertNotNil(childOrg)
-        XCTAssertEqual( childOrg!.orgName, "CTR 7" )
-        XCTAssertEqual(childOrg!.callings.count, 2)
-        let calling = childOrg!.callings[0]
+        XCTAssertEqual( childOrg.orgName, "CTR 7" )
+        XCTAssertEqual(childOrg.callings.count, 2)
+        let calling = childOrg.callings[0]
         XCTAssertEqual(calling.existingIndId!, 123)
         XCTAssertEqual(calling.existingStatus, ExistingCallingStatus.Active)
         XCTAssertNil( calling.activeDate )
@@ -100,9 +105,9 @@ class ModelTests: XCTestCase {
     }
     
     func testOrgToJson() {
-        let org = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+        let org = standardOrg
         
-        let orgJson = org!.toJSONObject()
+        let orgJson = org.toJSONObject()
         let jsonString = jsonSerializer.serialize( jsonObject: orgJson )
         XCTAssertTrue(jsonString!.contains( "\"defaultOrgName\":\"Primary\"" ))
         XCTAssertTrue(jsonString!.contains( "\"subOrgId\":7428354" ))
@@ -125,18 +130,45 @@ class ModelTests: XCTestCase {
     }
 
     func testCallingMonths() {
-        let org = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
-        let callingWithNoDate = org!.children[0].callings[0]
+        let org = standardOrg
+        let callingWithNoDate = org.children[0].callings[0]
         XCTAssertEqual( callingWithNoDate.existingMonthsInCalling, 0 )
 
-        var callingWithDate = org!.children[0].callings[1]
+        var callingWithDate = org.children[0].callings[1]
         // manual test - would need to be updated monthly if enabled
 //        XCTAssertEqual( callingWithDate.existingMonthsInCalling, 16 )
         callingWithDate.activeDate = Date().xMonths( x: -4 )
         XCTAssertEqual(callingWithDate.existingMonthsInCalling, 4)
 
     }
-    
+
+    func testGetChildOrg() {
+        let org = standardOrg
+        var childOrg = org.getChildOrg(id: 752892)
+        XCTAssertNotNil( childOrg )
+        XCTAssertEqual(childOrg!.orgTypeId, 40 )
+
+        childOrg = org.getChildOrg(id: 38432972)
+        XCTAssertNotNil( childOrg )
+        XCTAssertEqual(childOrg!.orgTypeId, 35 )
+
+        XCTAssertNil( org.getChildOrg( id: 17 ) )
+
+        XCTAssertEqual(multiDepthOrg.getChildOrg(id: 839500)!.orgTypeId, 739)
+        XCTAssertEqual(multiDepthOrg.getChildOrg(id: 839510)!.orgTypeId, 1700)
+
+    }
+
+    func testAllCallings() {
+        let org = standardOrg
+        XCTAssertEqual(org.allOrgCallings.count, 5)
+        XCTAssertEqual(org.allOrgCallingIds.count, 4)
+        XCTAssertEqual(org.children[0].allOrgCallings.count, 2)
+
+        XCTAssertEqual( multiDepthOrg.allOrgCallings.count, 2 )
+
+    }
+
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {

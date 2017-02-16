@@ -33,7 +33,7 @@ class DirectoryTableViewController: CWFBaseTableViewController {
     // MARK: - Setup
     func setupData() {        
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            members = appDelegate.globalDataSource?.memberList
+            members = appDelegate.callingManager.memberList
         }
     }
   
