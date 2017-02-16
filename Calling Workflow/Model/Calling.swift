@@ -17,7 +17,7 @@ public struct Calling : JSONParsable {
     let id : Int64?
     
     /// The individual ID of the member that currently holds the calling. Is optional because there may not be anyone currently serving in the calling. This is memberId in the LCR JSON
-    let existingIndId: Int64?
+    var existingIndId: Int64?
     
     /// The individual ID of the person that is being considered to hold this calling.
     var proposedIndId : Int64?
@@ -39,6 +39,9 @@ public struct Calling : JSONParsable {
     
     /// This will likely be removed and will depend on the calling of the user and the position of the calling, and we'll need to determine position privileges. So a primary pres can propose a calling, but nothing more, but an EQ Pres can propose and call teachers & HT supervisors
     let editableByOrg : Bool
+
+    /// Indicates that this calling was changed outside of the app (i.e. the calling was recorded or updated in LCR). This enum will allow us to visually mark the calling so the user can be aware of the change.
+    var conflict : Calling.ConflictCause? = nil
     
     // reference back to the parent org that this calling is a member of. It is only optional because we create the org with the callings and then fill in the reference to the owning org afterwards.
     var parentOrg : Org?
@@ -106,7 +109,47 @@ public struct Calling : JSONParsable {
         jsonObj = jsonObj.merge( withDictionary: position.toJSONObject() )
         return jsonObj;
     }
-    
+
+    public mutating func updateExistingCalling( withIndId indId : Int64?, activeDate : Date? ) {
+        self.existingIndId = indId
+        self.activeDate = activeDate
+        self.existingStatus = .Active
+    }
+
+    public mutating func clearPotentialCalling() {
+        self.notes = nil
+        self.conflict = nil
+        self.proposedIndId = nil
+        self.proposedStatus = .None
+    }
+
+    enum ConflictCause {
+        case LdsEquivalentDeleted
+        case EquivalentPotentialAndActual
+    }
+
+}
+
+extension Calling : Equatable {
+    /* This method does not compare all data in the calling objects. If the CDOL ID is the same for both they are considered equal, but it does not mean the content of the objects is equal. If the ID's are not set, or not the same then we traverse through the object looking for combinations of parentOrg, proposedIndId & positionTypeId to determine if it's the same calling */
+    static public func == (lhs : Calling, rhs : Calling ) -> Bool {
+        var result = false
+
+        // If there is an ID then that's all that matters
+        if lhs.id != nil || rhs.id != nil {
+            result = lhs.id == rhs.id
+        } else if lhs.parentOrg == rhs.parentOrg {
+            // if they don't have an ID they have to be in the same org and then either have the same proposedIndId & position type, or same position type & notes if there's not a proposed ind. ID
+            if lhs.proposedIndId != nil || rhs.proposedIndId != nil {
+                result = lhs.proposedIndId == rhs.proposedIndId && lhs.position.positionTypeId == rhs.position.positionTypeId
+            } else {
+                result = lhs.position.positionTypeId == rhs.position.positionTypeId && lhs.notes == rhs.notes
+            }
+        }
+
+        return result
+    }
+
 }
 
 private struct CallingJsonKeys {
