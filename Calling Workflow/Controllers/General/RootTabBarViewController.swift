@@ -37,6 +37,7 @@ class RootTabBarViewController: UITabBarController {
      */
     
     func signIntoLDSAPI() {
+        //startSpinner()
         // todo: put up a spinner
         let ldscdApi = LdscdRestApi()
         ldscdApi.getAppConfig() { (appConfig, error) in
@@ -47,34 +48,33 @@ class RootTabBarViewController: UITabBarController {
             let unitNum: Int64 = 0
             // todo - make this weak
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            self.callingManager.loadData(forUnit: unitNum, username: username, password: password) { [weak weakSelf = self ] (dataLoaded, error) -> Void in
+            appDelegate?.callingManager?.loadData(forUnit: unitNum, username: username, password: password) { [weak weakSelf = self ] (dataLoaded, error) -> Void in
 
-                    // todo: remove spinner
-                    if dataLoaded {
-                        weakSelf?.dataSource.authenticate(currentVC: self) { [weak weakSelf = self]  _, _, error in
-                            if let error = error {
-                                weakSelf?.showAlert(title: "Authentication Error", message: error.localizedDescription)
-                            } else {
-                                if let validOrg = weakSelf?.callingManager.unitOrg {
-                                    weakSelf?.dataSource.initializeDrive(forOrgs: validOrg.children) { orgsToDelete, error in
+                // todo: remove spinner
+                if dataLoaded {
+                    weakSelf?.dataSource.authenticate(currentVC: self) { [weak weakSelf = self]  _, _, error in
+                        if let error = error {
+                            weakSelf?.showAlert(title: "Authentication Error", message: error.localizedDescription)
+                        } else {
+                            if let validOrg = weakSelf?.callingManager.unitOrg {
+                                weakSelf?.dataSource.initializeDrive(forOrgs: validOrg.children) { orgsToDelete, error in
 
-                                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                        let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
+                                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                                    let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
 
-                                        let navController2 = UINavigationController()
-                                        navController2.addChildViewController(loginVC)
+                                    let navController2 = UINavigationController()
+                                    navController2.addChildViewController(loginVC)
 
-                                        weakSelf?.present(navController2, animated: false, completion: nil)
-
-                                    }
+                                    weakSelf?.present(navController2, animated: false, completion: nil)
 
                                 }
 
                             }
 
                         }
+
                     }
-//                }
+                }
             }
         }
     }
@@ -94,5 +94,26 @@ class RootTabBarViewController: UITabBarController {
         present(alert, animated: true, completion: nil)
     }
 
+    func startSpinner() {
+        let spinnerView = UIView(frame: self.view.frame)
+        spinnerView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.75)
+        let spinner = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
+        spinner.startAnimating()
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+
+
+        spinnerView.addSubview(spinner)
+        let views = ["spinner" : spinner]
+        let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-[spinner(==1000)]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: views)
+        spinnerView.addConstraints(hConstraint)
+        let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[spinner(==1000)]-|", options: NSLayoutFormatOptions.alignAllCenterX, metrics: nil, views: views)
+        spinnerView.addConstraints(vConstraint)
+
+        self.view.addSubview(spinnerView)
+    }
+    
+    func removeSpinner () {
+        
+    }
 
 }

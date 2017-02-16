@@ -13,7 +13,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     // not currently being used - look to RootTabBar...Controller
-    var globalDataSource: CWFCallingManagerService?
+    var callingManager: CWFCallingManagerService?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
@@ -45,7 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func setupDataSource() {
-        globalDataSource = CWFCallingManagerService()
+        callingManager = CWFCallingManagerService()
         
     }
     

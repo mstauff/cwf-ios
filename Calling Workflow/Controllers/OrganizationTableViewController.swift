@@ -26,12 +26,17 @@ class OrganizationTableViewController: CWFBaseTableViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        getOrgs()
+        tableView.reloadData()
+    }
+    
     // MARK: - Setup
     
     func getOrgs() {
         let orgTypes = UnitLevelOrgType.wardOrgTypes
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        organizationsToDisplay = appDelegate?.globalDataSource?.unitOrg?.children
+        organizationsToDisplay = appDelegate?.callingManager?.unitOrg?.children
         
 /*        var org1 = Org(id: 1, orgType: orgTypes[0], orgName: orgTypes[0].name)
         
@@ -53,7 +58,12 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return organizationsToDisplay!.count
+        if organizationsToDisplay != nil {
+            return organizationsToDisplay!.count
+        }
+        else {
+            return 0
+        }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

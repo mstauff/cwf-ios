@@ -17,11 +17,12 @@ class OrgDetailTableViewController: CWFBaseTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = organizationToDisplay?.orgName
+        if (organizationToDisplay != nil && (organizationToDisplay?.callings.count)! > 0) {
+            let addButton = UIBarButtonItem.init(image: UIImage(named: "add"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(addButtonPressed))
+            addButton.tintColor = UIColor.white
+            self.navigationItem.rightBarButtonItem = addButton
+        }
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
 
@@ -114,6 +115,13 @@ class OrgDetailTableViewController: CWFBaseTableViewController {
             self.navigationController?.pushViewController(nextVC!, animated: true)
         }
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func addButtonPressed() {
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+        let nextVC = storyboard.instantiateViewController(withIdentifier: "NewCallingTableViewController") as? NewCallingTableViewController
+        nextVC?.parentOrg = organizationToDisplay
+        self.navigationController?.pushViewController(nextVC!, animated: true)
     }
 
     /*
