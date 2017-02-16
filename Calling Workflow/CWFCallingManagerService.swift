@@ -108,6 +108,18 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
         }
         return callingList
     }
+    
+    func getCallingWithId(callingId: Int64) -> Calling? {
+        let callingList = self.getCallingsList()
+        for calling in callingList {
+            if calling.id == callingId {
+                return calling
+            }
+        }
+        return nil
+    }
+    
+    // Used to get all callings for a member
     func getCallingsForMember(member: Member) -> [Calling] {
         var callingsForMember : [Calling] = []
         let callingList = getCallingsList()
@@ -118,6 +130,16 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
         }
         
         return callingsForMember
+    }
+    
+    func updateCalling(callingForUpdate:Calling) {
+        if (callingForUpdate.id != nil) {
+            var calling = self.getCallingWithId(callingId: callingForUpdate.id!)
+            if (calling != nil) {
+                calling = callingForUpdate
+            }
+        }
+        print("updating calling")
     }
     //todo: need update org methods
 }

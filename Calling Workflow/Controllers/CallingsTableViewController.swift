@@ -21,9 +21,6 @@ class CallingsTableViewController: CWFBaseTableViewController {
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
-        let addButton = UIBarButtonItem(title: "Add", style: UIBarButtonItemStyle.plain, target: self, action: nil)
-        addButton.tintColor = UIColor.white
-        self.navigationItem.rightBarButtonItem = addButton
     }
 
     override func didReceiveMemoryWarning() {
@@ -40,8 +37,8 @@ class CallingsTableViewController: CWFBaseTableViewController {
     
     func setupCallingsToDisplay() {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        if (appDelegate?.globalDataSource?.unitOrg != nil) {
-            callingsToDisplay = (appDelegate?.globalDataSource?.unitOrg?.getCallingsList())!
+        if (appDelegate?.callingManager?.unitOrg != nil) {
+            callingsToDisplay = (appDelegate?.callingManager?.unitOrg?.getCallingsList())!
         }
     }
 

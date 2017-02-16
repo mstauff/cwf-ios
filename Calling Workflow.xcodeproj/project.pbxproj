@@ -11,16 +11,21 @@
 		1F9C0A0FDCC7705330E80026 /* Pods_Calling_WorkflowTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EBF616855ECD1B37403E34D /* Pods_Calling_WorkflowTests.framework */; };
 		3C0994D21E451AC500926094 /* MemberPickerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0994D11E451AC500926094 /* MemberPickerTableViewController.swift */; };
 		3C0994D41E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0994D31E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift */; };
+		3C0AA6E41E4A86670086525D /* OneRightTwoLeftTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0AA6E31E4A86670086525D /* OneRightTwoLeftTableViewCell.swift */; };
+		3C0E01801E4D26100014D32B /* NewCallingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0E017F1E4D26100014D32B /* NewCallingTableViewController.swift */; };
+		3C0E01821E4D42740014D32B /* ViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0E01811E4D42740014D32B /* ViewUtils.swift */; };
 		3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */; };
 		3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */; };
 		3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */; };
 		3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */; };
 		3C4409C91E3BEE9400484935 /* CWFStatusPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */; };
-		3C4409CB1E3BF94500484935 /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4409CA1E3BF94500484935 /* DateExtensions.swift */; };
+		3C76FBA11E52693B008C4A61 /* SingleFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */; };
 		3C8300F31E3698DD00FD0D34 /* CallingDetailsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */; };
 		3C8300F51E36A20400FD0D34 /* DataSubdataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */; };
 		3CA596FE1E08593C00109B27 /* CWFBaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */; };
 		3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */; };
+		3CBDDCAC1E48FC2F00F211F5 /* ControllerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBDDCAB1E48FC2F00F211F5 /* ControllerProtocols.swift */; };
+		3CBDDCAE1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBDDCAD1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift */; };
 		3CE4C8D31DCA824100AAFB31 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */; };
 		3CE4C8D51DCA824100AAFB31 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */; };
 		3CE4C8DA1DCA824100AAFB31 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D81DCA824100AAFB31 /* Main.storyboard */; };
@@ -96,16 +101,21 @@
 		188CFE612548010ED581E770 /* Pods_Calling_WorkflowUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Calling_WorkflowUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C0994D11E451AC500926094 /* MemberPickerTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberPickerTableViewController.swift; path = Controllers/MemberPickerTableViewController.swift; sourceTree = "<group>"; };
 		3C0994D31E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TitleAdjustableSubtitleTableViewCell.swift; path = Controllers/TableViewCells/TitleAdjustableSubtitleTableViewCell.swift; sourceTree = "<group>"; };
+		3C0AA6E31E4A86670086525D /* OneRightTwoLeftTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OneRightTwoLeftTableViewCell.swift; path = Controllers/TableViewCells/OneRightTwoLeftTableViewCell.swift; sourceTree = "<group>"; };
+		3C0E017F1E4D26100014D32B /* NewCallingTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NewCallingTableViewController.swift; path = Controllers/NewCallingTableViewController.swift; sourceTree = "<group>"; };
+		3C0E01811E4D42740014D32B /* ViewUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewUtils.swift; path = Controllers/General/ViewUtils.swift; sourceTree = "<group>"; };
 		3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OrgDetailTableViewController.swift; path = Controllers/OrgDetailTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsTableViewController.swift; path = Controllers/SettingsTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LDSCredentialsViewController.swift; path = Controllers/LDSCredentialsViewController.swift; sourceTree = "<group>"; };
 		3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InputTableViewCell.swift; path = Controllers/TableViewCells/InputTableViewCell.swift; sourceTree = "<group>"; };
 		3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFStatusPickerView.swift; path = Controllers/General/CWFStatusPickerView.swift; sourceTree = "<group>"; };
-		3C4409CA1E3BF94500484935 /* DateExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DateExtensions.swift; path = Extensions/DateExtensions.swift; sourceTree = "<group>"; };
+		3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SingleFieldTableViewCell.swift; path = Controllers/TableViewCells/SingleFieldTableViewCell.swift; sourceTree = "<group>"; };
 		3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingDetailsTableViewController.swift; path = Controllers/CallingDetailsTableViewController.swift; sourceTree = "<group>"; };
 		3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataSubdataTableViewCell.swift; path = Controllers/TableViewCells/DataSubdataTableViewCell.swift; sourceTree = "<group>"; };
 		3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFBaseTableViewController.swift; path = Controllers/General/CWFBaseTableViewController.swift; sourceTree = "<group>"; };
 		3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RootTabBarViewController.swift; path = Controllers/General/RootTabBarViewController.swift; sourceTree = "<group>"; };
+		3CBDDCAB1E48FC2F00F211F5 /* ControllerProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ControllerProtocols.swift; path = Controllers/ControllerProtocols.swift; sourceTree = "<group>"; };
+		3CBDDCAD1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LeftTitleRightLabelTableViewCell.swift; path = Controllers/TableViewCells/LeftTitleRightLabelTableViewCell.swift; sourceTree = "<group>"; };
 		3CE4C8CF1DCA824100AAFB31 /* Calling Workflow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Calling Workflow.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
@@ -213,6 +223,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		3CBDDCAA1E48EA1D00F211F5 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				3CBDDCAB1E48FC2F00F211F5 /* ControllerProtocols.swift */,
+			);
+			name = Protocols;
+			sourceTree = "<group>";
+		};
 		3CE4C8C61DCA824100AAFB31 = {
 			isa = PBXGroup;
 			children = (
@@ -309,10 +327,12 @@
 				3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */,
 				3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */,
 				3C0994D11E451AC500926094 /* MemberPickerTableViewController.swift */,
+				3C0E017F1E4D26100014D32B /* NewCallingTableViewController.swift */,
 				E8084F891E04814F0077FDAE /* OrganizationTableViewController.swift */,
 				3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */,
 				3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */,
 				3CED843E1E0AEF7C0023721E /* Base Controllers */,
+				3CBDDCAA1E48EA1D00F211F5 /* Protocols */,
 				3CEBAF461DD14A630071BE9F /* TableViewCells */,
 			);
 			name = Controllers;
@@ -325,6 +345,9 @@
 				3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */,
 				3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */,
 				3C0994D31E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift */,
+				3CBDDCAD1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift */,
+				3C0AA6E31E4A86670086525D /* OneRightTwoLeftTableViewCell.swift */,
+				3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */,
 			);
 			name = TableViewCells;
 			sourceTree = "<group>";
@@ -347,6 +370,7 @@
 		3CED843E1E0AEF7C0023721E /* Base Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				3C0E01811E4D42740014D32B /* ViewUtils.swift */,
 				3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */,
 				3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */,
 				3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */,
@@ -677,14 +701,18 @@
 				E8316CE91E26AC1E0091419D /* LdscdRestApi.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
 				E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */,
+				3CBDDCAE1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift in Sources */,
 				E8084F861E0476F80077FDAE /* Org.swift in Sources */,
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
+				3C0E01821E4D42740014D32B /* ViewUtils.swift in Sources */,
 				E8B13CCA1E3BC749004FD60C /* DateExtensions.swift in Sources */,
 				3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */,
+				3CBDDCAC1E48FC2F00F211F5 /* ControllerProtocols.swift in Sources */,
 				E8F959701E3149AB00C13EC9 /* CallingStatus.swift in Sources */,
 				3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */,
 				E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */,
+				3C0E01801E4D26100014D32B /* NewCallingTableViewController.swift in Sources */,
 				E8084F871E0476F80077FDAE /* Position.swift in Sources */,
 				3C8300F51E36A20400FD0D34 /* DataSubdataTableViewCell.swift in Sources */,
 				3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */,
@@ -698,8 +726,10 @@
 				3CE4C9171DCA82A000AAFB31 /* RestAPI.swift in Sources */,
 				E8084F8A1E04814F0077FDAE /* OrganizationTableViewController.swift in Sources */,
 				3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */,
+				3C76FBA11E52693B008C4A61 /* SingleFieldTableViewCell.swift in Sources */,
 				3C8300F31E3698DD00FD0D34 /* CallingDetailsTableViewController.swift in Sources */,
 				E8084F801E0476C10077FDAE /* CollectionExtensions.swift in Sources */,
+				3C0AA6E41E4A86670086525D /* OneRightTwoLeftTableViewCell.swift in Sources */,
 				E8F9596A1E30129700C13EC9 /* LdsOrgApi.swift in Sources */,
 				E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */,
 				3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */,

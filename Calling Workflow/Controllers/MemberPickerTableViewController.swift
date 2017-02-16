@@ -10,7 +10,11 @@ import UIKit
 
 class MemberPickerTableViewController: UITableViewController {
     
+    var delegate: MemberPickerDelegate?
+
     var members : [Member] = []
+    
+    var selectedMember : Member?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,8 +26,8 @@ class MemberPickerTableViewController: UITableViewController {
         //todo - Remove this. it is only here to assign a calling to a member so we can test the view
         if (members.count > 4) {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            members[1].currentCallings = (appDelegate?.globalDataSource?.getCallingsForMember(member: members[1]))!
-            members[3].currentCallings = (appDelegate?.globalDataSource?.getCallingsForMember(member: members[3]))!
+            members[1].currentCallings = (appDelegate?.callingManager?.getCallingsForMember(member: members[1]))!
+            members[3].currentCallings = (appDelegate?.callingManager?.getCallingsForMember(member: members[3]))!
 
 
         }
@@ -65,10 +69,17 @@ class MemberPickerTableViewController: UITableViewController {
         }
         return cell!
     }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selectedMember = members[indexPath.row]
+    }
 
     // MARK: - Done Button Methods
     func doneButtonPressed() {
-        print("Done Button Pressed")
+        if selectedMember != nil {
+            delegate?.setProspectiveMember(member: selectedMember!)
+        }
+        self.navigationController?.popViewController(animated: true)
     }
 
 

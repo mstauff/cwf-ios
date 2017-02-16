@@ -51,7 +51,7 @@ class TitleAdjustableSubtitleTableViewCell: UITableViewCell {
         if subtitleCount > 0 {
             for i in 0...subtitleCount-1 {
                 let newLeftLabel = UILabel()
-                newLeftLabel.frame = CGRect(x: 2 * sideMarginSize, y: titleLabel.frame.size.height + verticalMarginSize + ((spacing * CGFloat(i)) + CGFloat(i) * 20), width: 2/3*(self.frame.size.width - (2*sideMarginSize)), height: 20)
+                newLeftLabel.frame = CGRect(x: 2 * sideMarginSize, y: titleLabel.frame.size.height + verticalMarginSize + ((spacing * CGFloat(i)) + CGFloat(i) * 20), width: (2/3)*(self.frame.size.width - (2*sideMarginSize)), height: 20)
                 newLeftLabel.font = UIFont(name: newLeftLabel.font.fontName, size: 15)
                 newLeftLabel.text = "Subtitle"
                 newLeftLabel.textColor = UIColor.lightGray
@@ -59,7 +59,7 @@ class TitleAdjustableSubtitleTableViewCell: UITableViewCell {
                 self.addSubview(newLeftLabel)
                 
                 let newRightLabel = UILabel()
-                newRightLabel.frame = CGRect(x: newLeftLabel.frame.size.width + spacing, y: titleLabel.frame.size.height + verticalMarginSize + ((spacing * CGFloat(i)) + CGFloat(i) * 20), width: 1/3*(self.frame.size.width - (2*sideMarginSize)), height: 20)
+                newRightLabel.frame = CGRect(x: newLeftLabel.frame.size.width + spacing, y: titleLabel.frame.size.height + verticalMarginSize + ((spacing * CGFloat(i)) + CGFloat(i) * 20), width: (1/3)*(self.frame.size.width - (2*sideMarginSize)), height: 20)
                 newRightLabel.font = UIFont(name: newRightLabel.font.fontName, size: 15)
                 newRightLabel.text = "Subtitle"
                 newRightLabel.textColor = UIColor.lightGray
@@ -71,6 +71,7 @@ class TitleAdjustableSubtitleTableViewCell: UITableViewCell {
         }
  
     }
+    
     class func getHeightForCellForMember(member:Member) -> CGFloat {
         var cellHeight:CGFloat = 20 + 20
         cellHeight += (22 * CGFloat(member.currentCallings.count))
