@@ -23,6 +23,7 @@ public enum CallingStatus : String {
     case SetApart = "SET_APART"
     case Recorded = "RECORDED"
     case Unknown = "UNKNOWN"
+    case None = "NONE"
     
     
 }
@@ -33,5 +34,6 @@ public enum ExistingCallingStatus : String {
     case Active = "ACTIVE"
     case NotifiedOfRelease = "NOTIFIED_OF_RELEASE"
     case Released = "RELEASED"
-    
+    case None = "NONE"
+
 }
