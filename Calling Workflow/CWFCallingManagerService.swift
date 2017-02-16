@@ -161,11 +161,11 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
         var updatedOrg = appOrg
 
 
-        let appCallingsById = mapForCallingsById(org: updatedOrg)
+        let appCallingsById = updatedOrg.allOrgCallings.toDictionaryById() { $0.id }
         let appCallingIds = appCallingsById.keys
-        let appCallingsByProposedIndId = mapForPotentilCallingsByIndId(org: updatedOrg)
+        let appCallingsByProposedIndId = multiValueDictionaryFromArray(array: updatedOrg.allOrgCallings) { $0.proposedIndId }
 
-        let ldsOrgCallingsById = mapForCallingsById(org: ldsOrg)
+        let ldsOrgCallingsById = ldsOrg.allOrgCallings.toDictionaryById() { $0.id }
         let ldsOrgCallingIds = ldsOrgCallingsById.keys
 
 
@@ -223,15 +223,6 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
         }
 
         return updatedOrg
-    }
-
-    // todo - just inline these & remove
-    public func mapForCallingsById( org : Org ) -> [Int64:Calling] {
-        return org.allOrgCallings.toDictionaryById() { $0.id }
-    }
-
-    func mapForPotentilCallingsByIndId( org : Org ) -> MultiValueDictionary<Int64,Calling> {
-        return multiValueDictionaryFromArray(array: org.allOrgCallings) { $0.proposedIndId }
     }
 
     func multiValueDictionaryFromArray<T, K>(array: [T], transformer: (_: T) -> K?)
