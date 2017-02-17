@@ -36,7 +36,7 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     func getOrgs() {
         let orgTypes = UnitLevelOrgType.wardOrgTypes
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        organizationsToDisplay = appDelegate?.callingManager.ldsOrgUnit?.children
+        organizationsToDisplay = appDelegate?.callingManager.appDataOrg?.children
         
 /*        var org1 = Org(id: 1, orgType: orgTypes[0], orgName: orgTypes[0].name)
         
