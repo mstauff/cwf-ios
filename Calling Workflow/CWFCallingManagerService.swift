@@ -41,7 +41,7 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
     
     public func loadLdsData( forUnit unitNum: Int64, username: String, password: String, completionHandler: @escaping (Bool, Error?) -> Void ) {
         // todo: eventually will want to enhance this so appConfig is cached, don't need to re-read when changing units.
-        ldscdApi.getAppConfig() { [weak weakSelf = self] (appConfig, error) in
+        ldscdApi.getAppConfig() { (appConfig, error) in
             
             guard appConfig != nil else {
                 print( "No app config" )
@@ -49,7 +49,7 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
                 completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
                 return
             }
-            weakSelf?.ldsOrgApi.setAppConfig( appConfig: appConfig! )
+            self.ldsOrgApi.setAppConfig( appConfig: appConfig! )
             let ldsApi = self.ldsOrgApi
             ldsApi.ldsSignin(username: username, password: password,  { (error) -> Void in
                 if error != nil {
@@ -61,7 +61,7 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
                     restCallsGroup.enter()
                     ldsApi.getMemberList(unitNum: unitNum) { (members, error) -> Void in
                         if members != nil && !members!.isEmpty {
-                            weakSelf?.memberList = members!
+                            self.memberList = members!
                             print( "First Member of unit:\(members![0])" )
                         } else {
                             print( "no user" )
@@ -75,10 +75,10 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
                     restCallsGroup.enter()
                     ldsApi.getOrgWithCallings(unitNum: unitNum ) { (org, error) -> Void in
                         if org != nil && !org!.children.isEmpty {
-                            weakSelf?.ldsOrgUnit = org
+                            self.ldsOrgUnit = org
                             // need to put in dictionary by root level org for updating
-                            weakSelf?.ldsUnitOrgsMap.removeAll()
-                            weakSelf?.ldsUnitOrgsMap = org!.children.toDictionaryById() { $0.id }
+                            self.ldsUnitOrgsMap.removeAll()
+                            self.ldsUnitOrgsMap = org!.children.toDictionaryById() { $0.id }
                         } else {
                             print( "no org" )
                             if error != nil {
@@ -109,28 +109,28 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
         }
 
         self.appDataOrg = Org(id: ldsUnit.id, orgTypeId: ldsUnit.orgTypeId, orgName: ldsUnit.orgName, displayOrder: ldsUnit.displayOrder, children: [], callings: [])
-        dataSource.initializeDrive(forOrgs: ldsOrgUnit!.children) { [weak weakSelf=self] extraAppOrgs, error in
-            weakSelf?.extraAppOrgs = extraAppOrgs
+        dataSource.initializeDrive(forOrgs: ldsOrgUnit!.children) {  extraAppOrgs, error in
+            self.extraAppOrgs = extraAppOrgs
             let dataSourceGroup = DispatchGroup()
 
             var mergedOrgs : [Org] = []
             for ldsOrg in ldsUnit.children {
                 dataSourceGroup.enter()
-                weakSelf?.getOrgData( forOrgId: ldsOrg.id ) { org, error in
+                self.getOrgData( forOrgId: ldsOrg.id ) { org, error in
                     dataSourceGroup.leave()
 
                     guard org != nil else {
                         return // exits the callback, not loadAppData
                     }
-                    let mergedOrg  = weakSelf?.reconcileCallings( inSubOrg: org!, ldsOrgVersion: ldsOrg ) ?? ldsOrg
+                    let mergedOrg  = self.reconcileCallings( inSubOrg: org!, ldsOrgVersion: ldsOrg ) ?? ldsOrg
                     mergedOrgs.append( mergedOrg )
                 }
             }
 
             dataSourceGroup.notify( queue: DispatchQueue.main ) {
-                weakSelf?.appDataOrg!.children = mergedOrgs
+                self.appDataOrg!.children = mergedOrgs
                 // this is only actual callings. Probably will need another for proposed callings
-                weakSelf?.memberCallingsMap = weakSelf?.multiValueDictionaryFromArray(array: weakSelf!.appDataOrg!.allOrgCallings) { $0.existingIndId } ?? MultiValueDictionary()
+                self.memberCallingsMap = self.multiValueDictionaryFromArray(array: self.appDataOrg!.allOrgCallings) { $0.existingIndId } ?? MultiValueDictionary()
                 completionHandler( error == nil, extraAppOrgs.isNotEmpty, error )
             }
         }
@@ -139,7 +139,7 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
     public func getOrgData( forOrgId orgId : Int64, completionHandler: @escaping (Org?, Error?) -> Void ) {
         if let ldsOrg = self.ldsUnitOrgsMap[orgId] {
 
-            dataSource.getData(forOrg: ldsOrg) { [weak weakSelf = self] org, error in
+            dataSource.getData(forOrg: ldsOrg) {  org, error in
                 if error != nil {
                     completionHandler( nil, error )
                 } else if org == nil {
@@ -147,7 +147,7 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
                     completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
                 } else {
                     var mergedOrg : Org
-                    mergedOrg = weakSelf?.reconcileCallings( inSubOrg: org!, ldsOrgVersion: ldsOrg) ?? org!
+                    mergedOrg = self.reconcileCallings( inSubOrg: org!, ldsOrgVersion: ldsOrg) ?? org!
                     completionHandler( mergedOrg, nil )
                 }
             }
@@ -252,10 +252,20 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
         let callingList = ldsOrgUnit?.allOrgCallings ?? []
         return callingList.filter() { $0.existingIndId == member.individualId }
     }
-    
-    func updateCalling(callingForUpdate:Calling) {
+
+    func updateCalling(calling:Calling, completionHandler: @escaping (Calling?, Error?) -> Void) {
+        if let orgId = calling.parentOrg?.id {
+
+            self.getOrgData(forOrgId: orgId) { org, error in
+                guard error == nil else {
+                    completionHandler( nil, error )
+                    return
+                }
+
+                // todo - finish this
+            }
+        }
 
     }
-    //todo: need update org methods
 }
 

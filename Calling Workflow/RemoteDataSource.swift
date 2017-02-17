@@ -103,13 +103,13 @@ class RemoteDataSource : NSObject, DataSource {
     /* This method should be called after authenticate and before you try to retrieve the contents of any org. This is separate from auth or init because it needs to have the list of orgs that exist for a unit on lds.org to compare to what data we have in google drive and either create what's missing, or report what should be deleted. The callback will include a list of orgs that exist in google drive but were not passed in to the method and would be candidates for deletion. Any orgs that are passed in that don't exist in google drive will be silently created. */
     func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ remainingOrgs: [Org], _ error: NSError?) -> Void) {
         // although we could check if we already have filesByName then no need to hit goodrive, generally this should only be called once anyway so shouldn't matter. If it does get called a 2nd time then always checking goodrive allows us to grab any latest changes. Otherwise code might call this in an attempt to "refresh" but not get latest
-        fetchFiles() { [weak weakSelf = self] (driveFiles, error) in
+        fetchFiles() { (driveFiles, error) in
             var orgFileNames: Set<String> = Set()
             var orgMap = [String: Org]()
             // capture the filenames of orgs from lds.org for diffing against the goodrive contents. Also create a map of orgs by file name
             // so if we need to create any files for them we have the needed orgs
             orgs.forEach() { org in
-                if let fileName = weakSelf?.getFileName(forOrg: org) {
+                if let fileName = self.getFileName(forOrg: org) {
                     orgFileNames.insert(fileName)
                     orgMap[fileName] = org
                 }
@@ -121,7 +121,7 @@ class RemoteDataSource : NSObject, DataSource {
                 fileMap[file.name] = file
             }
 
-            weakSelf?.filesByName = fileMap
+            self.filesByName = fileMap
 
             let gooDriveFileNameSet = Set<String>(fileMap.keys)
 
@@ -129,7 +129,7 @@ class RemoteDataSource : NSObject, DataSource {
             let filesToCreate = orgFileNames.subtracting( gooDriveFileNameSet )
             filesToCreate.forEach() { fileName in
                 if let org = orgMap[fileName] {
-                    weakSelf?.updateOrg( org: org ) { _, _ in
+                    self.updateOrg( org: org ) { _, _ in
                         // nothing to do - it will be created later
                     }
                 }
@@ -212,7 +212,7 @@ class RemoteDataSource : NSObject, DataSource {
         
         var originalFileContents : String? = nil
         
-        self.getFile(fileName: fileName) { [weak weakSelf=self] (file, error) in
+        self.getFile(fileName: fileName) { (file, error) in
             guard error == nil else {
                 print( "Error: " + error.debugDescription )
                 completionHandler( nil, error )
@@ -220,18 +220,18 @@ class RemoteDataSource : NSObject, DataSource {
             }
             
             if file == nil {
-                weakSelf?.createFile(fileName: fileName, fileContents: fileContents) { (createdFile, createFileError) in
+                self.createFile(fileName: fileName, fileContents: fileContents) { (createdFile, createFileError) in
                     guard error == nil else {
                         print( "Error: " + error.debugDescription )
                         completionHandler( nil, error )
                         return
                     }
-                    weakSelf?.filesByName[fileName] = createdFile
+                    self.filesByName[fileName] = createdFile
                     completionHandler( fileContents, nil )
                 }
             } else {
                 // update the file
-                weakSelf?.updateFile( file: file!, fileContents: fileContents )
+                self.updateFile( file: file!, fileContents: fileContents )
             }
         }
     }
@@ -241,8 +241,8 @@ class RemoteDataSource : NSObject, DataSource {
         if let file = filesByName[ fileName ] {
             completionHandler( file, nil )
         } else {
-            self.initializeDrive(forOrgs: [] ) { [weak weakSelf = self] _, error in
-                if let file = weakSelf?.filesByName[ fileName ] {
+            self.initializeDrive(forOrgs: [] ) { _, error in
+                if let file = self.filesByName[ fileName ] {
                     completionHandler( file, nil )
                 } else {
                     completionHandler( nil, error )
@@ -313,9 +313,9 @@ class RemoteDataSource : NSObject, DataSource {
             self.fetchContents( forFile: file, completionHandler: completionHandler )
         } else {
             // this should have already happened by the calling code, but just in case we'll read in what data is in google drive and see if we can find the ID of the file that we need
-            self.initializeDrive(forOrgs: []) { [weak weakSelf=self] _, _ in
-                if let file = weakSelf?.filesByName[ fileName ] {
-                    weakSelf?.fetchContents(forFile: file, completionHandler: completionHandler)
+            self.initializeDrive(forOrgs: []) {  _, _ in
+                if let file = self.filesByName[ fileName ] {
+                    self.fetchContents(forFile: file, completionHandler: completionHandler)
                 } else {
                     let errorMsg = "Error: No file found for \(fileName)"
                     print( errorMsg )
