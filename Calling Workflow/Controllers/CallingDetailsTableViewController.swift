@@ -17,9 +17,12 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
     }
 
+    var originalCalling : Calling? = nil
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        originalCalling = callingToDisplay
+
         navigationController?.title = callingToDisplay?.position.name
         let saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveAndReturn))
         navigationItem.setRightBarButton(saveButton, animated: true)
@@ -209,7 +212,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             //todo -- add save to calling service
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 if (self.callingToDisplay != nil) {
-                    appDelegate.callingManager.updateCalling(calling: self.callingToDisplay!) {_,_ in }
+                    appDelegate.callingManager.updateCalling(originalCalling: self.originalCalling!, updatedCalling: self.callingToDisplay!) {_,_ in }
                 }
             }
 
