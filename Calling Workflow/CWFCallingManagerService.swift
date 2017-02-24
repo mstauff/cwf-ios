@@ -30,6 +30,9 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
     /// Map of callings by member
     private var memberCallingsMap = MultiValueDictionary<Int64, Calling>()
 
+    private var rootLevelOrgsForSubOrgs : [Int64:Int64] = [:]
+
+
     init() {
         
     }
@@ -122,15 +125,20 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
                     guard org != nil else {
                         return // exits the callback, not loadAppData
                     }
-                    let mergedOrg  = self.reconcileCallings( inSubOrg: org!, ldsOrgVersion: ldsOrg ) ?? ldsOrg
+                    let mergedOrg  = self.reconcileCallings( inSubOrg: org!, ldsOrgVersion: ldsOrg )
                     mergedOrgs.append( mergedOrg )
+                    // add all the child suborgs to a dictionary for lookup by ID
+                    let subOrgsMap = mergedOrg.allSubOrgs.toDictionary({ subOrg in
+                        return (subOrg.id, mergedOrg.id) })
+
+                    self.rootLevelOrgsForSubOrgs = self.rootLevelOrgsForSubOrgs.merged( withDictionary: subOrgsMap)
                 }
             }
 
             dataSourceGroup.notify( queue: DispatchQueue.main ) {
                 self.appDataOrg!.children = mergedOrgs
                 // this is only actual callings. Probably will need another for proposed callings
-                self.memberCallingsMap = self.multiValueDictionaryFromArray(array: self.appDataOrg!.allOrgCallings) { $0.existingIndId } ?? MultiValueDictionary()
+                self.memberCallingsMap = self.multiValueDictionaryFromArray(array: self.appDataOrg!.allOrgCallings) { $0.existingIndId } 
                 completionHandler( error == nil, extraAppOrgs.isNotEmpty, error )
             }
         }
@@ -147,7 +155,7 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
                     completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
                 } else {
                     var mergedOrg : Org
-                    mergedOrg = self.reconcileCallings( inSubOrg: org!, ldsOrgVersion: ldsOrg) ?? org!
+                    mergedOrg = self.reconcileCallings( inSubOrg: org!, ldsOrgVersion: ldsOrg)
                     completionHandler( mergedOrg, nil )
                 }
             }
@@ -253,19 +261,65 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
         return callingList.filter() { $0.existingIndId == member.individualId }
     }
 
-    func updateCalling(calling:Calling, completionHandler: @escaping (Calling?, Error?) -> Void) {
-        if let orgId = calling.parentOrg?.id {
+    func updateCalling(originalCalling: Calling, updatedCalling:Calling, completionHandler: @escaping (Bool, Error?) -> Void) {
+        if let orgId = originalCalling.parentOrg?.id, let rootLevelOrgId = self.rootLevelOrgsForSubOrgs[orgId] {
 
-            self.getOrgData(forOrgId: orgId) { org, error in
+            self.getOrgData(forOrgId: rootLevelOrgId) { org, error in
                 guard error == nil else {
-                    completionHandler( nil, error )
+                    completionHandler( false, error )
                     return
                 }
+                guard let validOrg = org else {
+                    let errorMsg = "Error: No Org data found for ID: \(orgId)"
+                    completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
+                    return
 
-                // todo - finish this
+                }
+
+                // todo - eventually we'll need to make this a queueing mechanism to handle the case where multiple updates may be called before earlier ones return. For now we're keeping it simple
+                if let updatedOrg = validOrg.updatedWithCalling(originalCalling: originalCalling, updatedCalling: updatedCalling) {
+
+                    self.dataSource.updateOrg(org: updatedOrg) { success, error in
+
+                        if success {
+                            self.updateCachedCallingData( originalCalling: originalCalling, updatedCalling: updatedCalling, rootLevelOrg: updatedOrg)
+                        }
+                        completionHandler(success, error)
+                    }
+                }
+
             }
         }
 
     }
+
+    func updateCachedCallingData( originalCalling: Calling, updatedCalling: Calling, rootLevelOrg: Org ) {
+        if self.appDataOrg != nil {
+            self.appDataOrg!.updateDirectChildOrg(org: rootLevelOrg)
+        }
+        // if we eventually add a potential Callings map we'll need to update it here
+
+        // no need to update existing callings - that should only be after we've saved a change in LCR
+    }
+
+    /* After we've finalized a calling in LCR, we need to update our cached copy of the data */
+    func updateExistingCallingsData(originalCalling: Calling, updatedCalling: Calling ) {
+        if originalCalling.existingIndId != updatedCalling.existingIndId {
+
+            // remove the calling from the list of callings held by the original member that had the calling
+            if let originalIndId = originalCalling.existingIndId, let originalCallingId = originalCalling.id {
+                let memberCallings = self.memberCallingsMap.getValues(forKey: originalIndId )
+                self.memberCallingsMap.setValues(forKey: originalIndId, values: memberCallings.filter({ $0.id != originalCallingId }))
+            }
+
+            // if someone got a new calling then we need to add the calling to their list
+            if let updatedIndId = updatedCalling.existingIndId, let _ = updatedCalling.id {
+                var memberCallings = self.memberCallingsMap.getValues(forKey: updatedIndId)
+                memberCallings.append( updatedCalling )
+                self.memberCallingsMap.setValues(forKey: updatedIndId, values: memberCallings)
+            }
+        }
+    }
+
 }
 

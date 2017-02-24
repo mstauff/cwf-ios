@@ -135,6 +135,44 @@ public struct Org : JSONParsable  {
     public func getChildOrg( id: Int64 ) -> Org? {
         return self.allSubOrgs.first(where: { $0.id == id })
     }
+    
+    public mutating func updateDirectChildOrg(org: Org ) {
+        if let childOrgIdx = self.children.index(of: org) {
+            self.children[childOrgIdx] = org
+        }
+    }
+    
+    public func getCallingDepth( calling: Calling ) -> Int? {
+        var depth : Int? = nil
+        if self.callings.contains( calling ) {
+            depth = 0
+        } else {
+            for childOrg in self.children {
+                if let childDepth = childOrg.getCallingDepth(calling: calling) {
+                    depth = childDepth + 1
+                    break;
+                }
+            }
+        }
+        
+        return depth
+    }
+    
+    public func updatedWithCalling( originalCalling: Calling, updatedCalling: Calling ) -> Org? {
+        guard (originalCalling.parentOrg?.id) != nil, let callingDepth = self.getCallingDepth(calling: originalCalling) else {
+            return nil
+        }
+        
+        var updatedOrg = self
+        if callingDepth == 0 {
+            let callingIdx = self.callings.index(of: originalCalling)
+            updatedOrg.callings[callingIdx!] = updatedCalling
+        } else {
+            updatedOrg.children = self.children.map() { $0.updatedWithCalling(originalCalling: originalCalling, updatedCalling: updatedCalling) ?? $0 }
+        }
+        
+        return updatedOrg
+    }
 
 }
 

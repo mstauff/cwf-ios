@@ -168,6 +168,70 @@ class ModelTests: XCTestCase {
         XCTAssertEqual( multiDepthOrg.allOrgCallings.count, 2 )
 
     }
+    
+    func testUpdateCalling() {
+        var org = standardOrg
+        var ctr7Org = org.getChildOrg( id: 38432972 )!
+        let callingWithId = ctr7Org.callings[1]
+        var otherCallingInOrg = ctr7Org.callings[0]
+        var updatedOrg = performCallingUpdateAndValidation(parentOrg: org, childOrg: ctr7Org, originalCalling: callingWithId, callingIdx: 1, expectedId: 734820, expectedPosition: nil, updatedIndId: 999, updatedStatus: .Accepted)
+        var otherCallingAfterUpdate = updatedOrg.getChildOrg(id: 38432972)!.callings[0]
+        // validate that other callings in the org were not affected by the update
+        validateCallingsSame(  otherCallingInOrg, otherCallingAfterUpdate )
+        // todo - check and make sure sibling orgs are not nil
+
+        var ctr8Org = org.getChildOrg( id: 752892 )!
+        let proposedCalling = ctr8Org.callings[0]
+        let ctr8Teacher = Position(positionTypeId: 1482, name: nil, hidden: false)
+        otherCallingInOrg = ctr8Org.callings[1]
+        updatedOrg = performCallingUpdateAndValidation(parentOrg: org, childOrg: ctr8Org, originalCalling: proposedCalling, callingIdx: 0, expectedId: nil, expectedPosition: ctr8Teacher, updatedIndId: 999, updatedStatus: .Rejected)
+        otherCallingAfterUpdate = updatedOrg.getChildOrg(id: 752892)!.callings[1]
+        validateCallingsSame(  otherCallingInOrg, otherCallingAfterUpdate )
+        
+        org = multiDepthOrg
+        var varsityOrg = org.getChildOrg(id: 839510)!
+        let coach = varsityOrg.callings[0]
+        performCallingUpdateAndValidation(parentOrg: org, childOrg: varsityOrg, originalCalling: coach, callingIdx: 0, expectedId: 275893, expectedPosition: nil, updatedIndId: 999, updatedStatus: .Proposed)
+        // todo - check and make sure sibling orgs are not nil
+
+        
+    }
+    
+    func validateCallingsSame( _ c1 : Calling, _ c2 : Calling ) {
+        XCTAssertEqual(c1, c2)
+        XCTAssertEqual(c1.proposedIndId, c2.proposedIndId)
+        XCTAssertEqual(c1.proposedStatus, c2.proposedStatus)
+
+    }
+    
+    func performCallingUpdateAndValidation( parentOrg: Org, childOrg: Org,  originalCalling : Calling, callingIdx : Int, expectedId : Int64?, expectedPosition : Position?, updatedIndId : Int64?, updatedStatus : CallingStatus ) -> Org {
+        // just make sure we are starting with the calling that we think we are
+        var calling = originalCalling
+        XCTAssertEqual( calling.id, expectedId )
+        if expectedId == nil {
+            // check the position
+            XCTAssertEqual(calling.position.positionTypeId, expectedPosition?.positionTypeId)
+        }
+        XCTAssertNotEqual( calling.proposedIndId, updatedIndId )
+        XCTAssertNotEqual( calling.proposedStatus, updatedStatus )
+        calling.proposedIndId = updatedIndId
+        calling.proposedStatus = updatedStatus
+        let updatedOrg = parentOrg.updatedWithCalling( originalCalling: originalCalling, updatedCalling: calling )
+        print("+++++++++++ Org:" + updatedOrg.debugDescription )
+        
+        let changedChildOrg = updatedOrg?.getChildOrg( id: childOrg.id )
+        calling = changedChildOrg!.callings[callingIdx]
+        XCTAssertEqual( calling.id, expectedId )
+        XCTAssertEqual( calling.proposedIndId, updatedIndId )
+        XCTAssertEqual( calling.proposedStatus, updatedStatus )
+        if expectedId == nil {
+            // check the position
+            XCTAssertEqual(calling.position.positionTypeId, expectedPosition?.positionTypeId)
+        }
+        
+        return updatedOrg!
+
+    }
 
     func testPerformanceExample() {
         // This is an example of a performance test case.

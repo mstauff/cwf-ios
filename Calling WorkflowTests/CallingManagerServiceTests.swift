@@ -38,13 +38,34 @@ class CallingManagerServiceTests: XCTestCase {
     
     func testmapForCallingsById() {
         // todo - this used to test a convenience method in callingMgr - needs to be moved to a new CollectionExtensionsTests
-        let callingMap = org!.allOrgCallings.toDictionaryById(transformer: {$0.id})
+        let callingMap = org!.allOrgCallings.toDictionaryById( {$0.id})
         var calling = callingMap[734829]!
         XCTAssertEqual( calling.existingIndId, 123 )
         calling = callingMap[734820]!
         XCTAssertEqual( calling.existingIndId, 234 )
         // ensure we're pulling in callings from all suborgs - test org has 6 callings total, 1 is a proposed so it won't be included in the map (no ID), another is invalid calling so it's not in the org
         XCTAssertEqual( callingMap.count, 4 )
+    }
+
+    func testToDictionary() {
+        struct MiniCalling {
+            var id : Int64
+
+            init(_ id: Int64 ) {
+                self.id = id
+            }
+        }
+        let ids  = [MiniCalling(5725983759238525), MiniCalling(63523098520934824), MiniCalling(72384029349323)]
+        let parent = MiniCalling(789)
+
+        let idMap  = ids.toDictionary({ ($0.id, parent.id) })
+
+        XCTAssertEqual(idMap.count, 3)
+        XCTAssertEqual(idMap[5725983759238525], 789)
+        XCTAssertEqual(idMap[72384029349323], 789)
+        XCTAssertNil(idMap[60])
+
+
     }
 
     func testmapForCallingsByIndId() {
