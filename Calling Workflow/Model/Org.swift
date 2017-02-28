@@ -136,15 +136,17 @@ public struct Org : JSONParsable  {
         return self.allSubOrgs.first(where: { $0.id == id })
     }
     
+    /** Updates a suborg within this org, if the org is already a child of this org. If it's not a child this method does nothing (it doesn't add it) */
     public mutating func updateDirectChildOrg(org: Org ) {
         if let childOrgIdx = self.children.index(of: org) {
             self.children[childOrgIdx] = org
         }
     }
     
+    /** Returns an optional int indicating 1) whether the given calling is a calling within this org, 2) Whether the calling is a calling of this org, or a calling of a child subOrg. If this method returns nil it indicates the calling is not found int this org at all. A return of 0 means it is a direct calling of the current org (it exists in org.callings[]). If it returns greater than 0 that indicates that it is a calling within one of the child suborgs of this org */
     public func getCallingDepth( calling: Calling ) -> Int? {
         var depth : Int? = nil
-        if self.callings.contains( calling ) {
+        if self.callings.contains( calling ) || calling.parentOrg?.id == self.id {
             depth = 0
         } else {
             for childOrg in self.children {
@@ -158,20 +160,57 @@ public struct Org : JSONParsable  {
         return depth
     }
     
-    public func updatedWithCalling( originalCalling: Calling, updatedCalling: Calling ) -> Org? {
-        guard (originalCalling.parentOrg?.id) != nil, let callingDepth = self.getCallingDepth(calling: originalCalling) else {
+    /** Returns a new org with the original calling changed to the updated calling. We have to provide the original calling because if it's just a proposed calling there is no ID to key off of. Only actual callings in LCR have an ID. So we need the original (with the proposed individual ID, position & status) to act as a pseudo-key and help us identify which calling to update  */
+    public func updatedWith( changedCalling: Calling, originalCalling: Calling ) -> Org? {
+        return updatedWithCallingChange( updatedCalling: changedCalling, originalCalling: originalCalling, operation: .Update )
+    }
+
+    /** Returns a new org with the calling added to it's list of callings */
+    public func updatedWith( newCalling: Calling ) -> Org? {
+        return self.updatedWithCallingChange(updatedCalling: newCalling, originalCalling: nil, operation: .Create )
+    }
+    
+    /** Returns a new org with the given calling removed from it's list of callings */
+    public func updatedWith( callingToDelete: Calling ) -> Org? {
+        return self.updatedWithCallingChange(updatedCalling: callingToDelete, originalCalling: nil, operation: .Delete )
+    }
+    
+    /** Does the actual work of doing the CRUD operations with callings. Because Org is a struct we have to return a new copy with the updated data, we can't just make an inline change.*/
+    func updatedWithCallingChange( updatedCalling: Calling, originalCalling: Calling?, operation : CRUDOperation) -> Org? {
+        // the calling has to be somewhere within this org for us to update it
+        guard let callingDepth = self.getCallingDepth(calling: updatedCalling) else {
+            return nil
+        }
+
+        // if we're doing an update then originalCalling can't be nil
+        if operation == .Update && originalCalling == nil {
             return nil
         }
         
         var updatedOrg = self
+        // if the calling exists in the current org (not a child org further down) then we go ahead and make a change, based on the operation
         if callingDepth == 0 {
-            let callingIdx = self.callings.index(of: originalCalling)
-            updatedOrg.callings[callingIdx!] = updatedCalling
+            switch operation {
+            case .Create:
+                updatedOrg.callings.append( updatedCalling )
+            case .Update:
+                let callingIdx = self.callings.index(of: originalCalling!)
+                updatedOrg.callings[callingIdx!] = updatedCalling
+            case .Delete:
+                updatedOrg.callings = updatedOrg.callings.filter() { $0 != updatedCalling }
+            }
         } else {
-            updatedOrg.children = self.children.map() { $0.updatedWithCalling(originalCalling: originalCalling, updatedCalling: updatedCalling) ?? $0 }
+            // otherwise the calling is in a child org, so we go through all the children and attempt to update the calling. If the calling isn't in a given child org the method will return nil in which case we just use the org as it is. If the org does contain the calling then the method returns a new copy of the org and we will place that in the list of child orgs
+            updatedOrg.children = self.children.map() { $0.updatedWithCallingChange(updatedCalling: updatedCalling, originalCalling: originalCalling, operation: operation) ?? $0 }
         }
         
         return updatedOrg
+    }
+    
+    enum CRUDOperation {
+        case Create
+        case Update
+        case Delete
     }
 
 }
