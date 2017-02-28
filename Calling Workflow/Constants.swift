@@ -57,4 +57,5 @@ struct ErrorConstants {
     static let notFound = 404
     static let jsonParseError = 450
     static let jsonSerializeError = 455
+    static let illegalArgument = 460
 }
