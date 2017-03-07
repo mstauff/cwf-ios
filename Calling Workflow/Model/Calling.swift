@@ -106,7 +106,7 @@ public struct Calling : JSONParsable {
         jsonObj[CallingJsonKeys.activeDate] = self.activeDate?.lcrDateString() as AnyObject
         jsonObj[CallingJsonKeys.proposedIndId] = self.proposedIndId as AnyObject
         jsonObj[CallingJsonKeys.notes] = self.notes as AnyObject
-        jsonObj = jsonObj.merge( withDictionary: position.toJSONObject() )
+        jsonObj = jsonObj.merged( withDictionary: position.toJSONObject() )
         return jsonObj;
     }
 
