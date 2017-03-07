@@ -23,5 +23,11 @@ class DataSubdataTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    class func calculateHeight() -> CGFloat {
+        var height: CGFloat = 0.0
+        height += 60.0
+        return height
+    }
 
 }

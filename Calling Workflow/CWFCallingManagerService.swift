@@ -252,6 +252,22 @@ class CWFCallingManagerService : DataSourceInjected, LdsOrgApiInjected, LdscdApi
         let callingList = ldsOrgUnit?.allOrgCallings ?? []
         return callingList.filter() { $0.existingIndId == member.individualId }
     }
+    
+    func getCallingsForMemberAsStringWithMonths(member: Member) -> String {
+        let callings = getCallingsForMember(member: member)
+        var callingString = ""
+        
+        for calling in callings {
+            if let nameString = calling.position.name {
+                callingString.append("\(nameString) (\(calling.existingMonthsInCalling) M)")
+                if (calling != callings[callings.count-1]) {
+                    callingString.append(",  ")
+                }
+            }
+        }
+        
+        return callingString
+    }
 
     func updateCalling(calling:Calling, completionHandler: @escaping (Calling?, Error?) -> Void) {
         if let orgId = calling.parentOrg?.id {

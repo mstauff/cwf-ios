@@ -22,6 +22,9 @@
 		3C76FBA11E52693B008C4A61 /* SingleFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */; };
 		3C8300F31E3698DD00FD0D34 /* CallingDetailsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */; };
 		3C8300F51E36A20400FD0D34 /* DataSubdataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */; };
+		3C866F011E6F681B00BD6DDA /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */; };
+		3C88170F1E68D8A10037151B /* MemberInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C88170E1E68D8A10037151B /* MemberInfoView.swift */; };
+		3C9298B21E5E314000A6339B /* NotesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */; };
 		3CA596FE1E08593C00109B27 /* CWFBaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */; };
 		3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */; };
 		3CBDDCAC1E48FC2F00F211F5 /* ControllerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBDDCAB1E48FC2F00F211F5 /* ControllerProtocols.swift */; };
@@ -114,6 +117,9 @@
 		3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SingleFieldTableViewCell.swift; path = Controllers/TableViewCells/SingleFieldTableViewCell.swift; sourceTree = "<group>"; };
 		3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingDetailsTableViewController.swift; path = Controllers/CallingDetailsTableViewController.swift; sourceTree = "<group>"; };
 		3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataSubdataTableViewCell.swift; path = Controllers/TableViewCells/DataSubdataTableViewCell.swift; sourceTree = "<group>"; };
+		3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIColorExtension.swift; path = Extensions/UIColorExtension.swift; sourceTree = "<group>"; };
+		3C88170E1E68D8A10037151B /* MemberInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberInfoView.swift; path = Controllers/General/MemberInfoView.swift; sourceTree = "<group>"; };
+		3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotesTableViewCell.swift; path = Controllers/TableViewCells/NotesTableViewCell.swift; sourceTree = "<group>"; };
 		3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFBaseTableViewController.swift; path = Controllers/General/CWFBaseTableViewController.swift; sourceTree = "<group>"; };
 		3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RootTabBarViewController.swift; path = Controllers/General/RootTabBarViewController.swift; sourceTree = "<group>"; };
 		3CBDDCAB1E48FC2F00F211F5 /* ControllerProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ControllerProtocols.swift; path = Controllers/ControllerProtocols.swift; sourceTree = "<group>"; };
@@ -353,6 +359,7 @@
 				3CBDDCAD1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift */,
 				3C0AA6E31E4A86670086525D /* OneRightTwoLeftTableViewCell.swift */,
 				3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */,
+				3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */,
 			);
 			name = TableViewCells;
 			sourceTree = "<group>";
@@ -379,6 +386,7 @@
 				3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */,
 				3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */,
 				3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */,
+				3C88170E1E68D8A10037151B /* MemberInfoView.swift */,
 			);
 			name = "Base Controllers";
 			sourceTree = "<group>";
@@ -405,6 +413,7 @@
 				E8084F7D1E0476C10077FDAE /* DataExtensions.swift */,
 				E8084F7E1E0476C10077FDAE /* CollectionExtensions.swift */,
 				E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */,
+				3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -486,7 +495,7 @@
 				TargetAttributes = {
 					3CE4C8CE1DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 75DK5N8LHP;
+						DevelopmentTeam = 42MR5LM3U2;
 						ProvisioningStyle = Automatic;
 					};
 					3CE4C8E41DCA824100AAFB31 = {
@@ -717,6 +726,7 @@
 				3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */,
 				3CBDDCAC1E48FC2F00F211F5 /* ControllerProtocols.swift in Sources */,
 				E8F959701E3149AB00C13EC9 /* CallingStatus.swift in Sources */,
+				3C866F011E6F681B00BD6DDA /* UIColorExtension.swift in Sources */,
 				3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */,
 				E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */,
 				3C0E01801E4D26100014D32B /* NewCallingTableViewController.swift in Sources */,
@@ -747,6 +757,8 @@
 				3CEBAF451DCD0FBF0071BE9F /* Member.swift in Sources */,
 				E8F959681E30129700C13EC9 /* CWFCallingManagerService.swift in Sources */,
 				E8F959691E30129700C13EC9 /* LdsFileApi.swift in Sources */,
+				3C9298B21E5E314000A6339B /* NotesTableViewCell.swift in Sources */,
+				3C88170F1E68D8A10037151B /* MemberInfoView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -907,7 +919,7 @@
 			baseConfigurationReference = 13B71D74706DCB4A0F623EBE /* Pods-Calling Workflow.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -922,7 +934,7 @@
 			baseConfigurationReference = 403F3DEDFCDAEFE6861B2C7D /* Pods-Calling Workflow.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
