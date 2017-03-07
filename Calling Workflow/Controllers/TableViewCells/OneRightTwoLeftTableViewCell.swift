@@ -59,4 +59,10 @@ class OneRightTwoLeftTableViewCell: UITableViewCell {
         self.addConstraints(vConstraint)
     }
     
+    class func calculateHeight() -> CGFloat {
+        var height : CGFloat = 0
+        height += 60
+        return height
+    }
+    
 }

@@ -26,6 +26,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         
         tableView.register(LeftTitleRightLabelTableViewCell.self, forCellReuseIdentifier: "middleCell")
         tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
+        tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "noteCell")
 
     }
 
@@ -77,13 +78,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
         case 0:
-            return 60
+            return DataSubdataTableViewCell.calculateHeight()
         case 1:
             switch indexPath.row {
             case 0:
-                return 60
+                return OneRightTwoLeftTableViewCell.calculateHeight()
             default:
-                return 44
+                return LeftTitleRightLabelTableViewCell.calculateHeight()
             }
         case 2:
             return 170
@@ -150,8 +151,12 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             }
             
         case 2:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "noteCell", for: indexPath)
-            return cell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "noteCell", for: indexPath) as? NotesTableViewCell
+            if (callingToDisplay?.notes != nil || callingToDisplay?.notes != "") {
+                cell?.noteTextView.text = callingToDisplay?.notes
+            }
+            
+            return cell!
             
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
@@ -159,6 +164,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             return cell
         }
     }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 1:
