@@ -44,6 +44,9 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             appDelegate?.callingManager.loadLdsData(forUnit: unitNum, username: username, password: password) { [weak self] (dataLoaded, loadingError) -> Void in
                 self?.removeSpinner()
+                let childView = self?.selectedViewController as? OrganizationTableViewController
+                childView?.getOrgs()
+                childView?.tableView.reloadData()
                 if dataLoaded {
                     appDelegate?.callingManager.authorizeDataSource(currentVC: self!) { _, _, error in
                         if let error = error {

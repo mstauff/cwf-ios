@@ -7,6 +7,7 @@ target 'Calling Workflow' do
   pod 'GoogleAPIClient/Drive', '~> 1.0.2'
   pod 'GTMOAuth2', '~> 1.1.0'
   pod 'Locksmith'
+  pod 'AccordionMenuSwift'
 
   # Pods for Calling Workflow
 
@@ -14,6 +15,7 @@ target 'Calling Workflow' do
       pod 'GoogleAPIClient/Drive', '~> 1.0.2'
       pod 'GTMOAuth2', '~> 1.1.0'
       pod 'Locksmith'
+      pod 'AccordionMenuSwift'
 
     # Pods for testing
   end
