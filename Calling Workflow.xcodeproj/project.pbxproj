@@ -500,13 +500,13 @@
 					};
 					3CE4C8E41DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 75DK5N8LHP;
+						DevelopmentTeam = 42MR5LM3U2;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3CE4C8CE1DCA824100AAFB31;
 					};
 					3CE4C8EF1DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 75DK5N8LHP;
+						DevelopmentTeam = 42MR5LM3U2;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3CE4C8CE1DCA824100AAFB31;
 					};
@@ -950,7 +950,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowTests";
@@ -966,7 +966,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowTests";
@@ -981,7 +981,7 @@
 			baseConfigurationReference = 186DC4A209D5B238D4E39AD8 /* Pods-Calling WorkflowUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowUITests";
@@ -996,7 +996,7 @@
 			baseConfigurationReference = 6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowUITests";
