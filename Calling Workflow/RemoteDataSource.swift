@@ -236,18 +236,13 @@ class RemoteDataSource : NSObject, DataSource {
         }
     }
 
-    /* Gets the file object (not the contents, just the object with the ID & other metadata) that exists in google drive. If the file is in google drive it will be passed to the callback. If the file doesn't currently exist in google drive then the callback will be invoked with a nil file & error */
+    /* Gets the file object (not the contents, just the object with the ID & other metadata) that exists in google drive. If the file is in google drive it will be passed to the callback. If the file doesn't currently exist in google drive then the callback will be invoked with a nil file. Currently the error in the callback is unused, but it might be in the future if we make extra calls to google drive if we don't have a cached copy of the file */
     func getFile( fileName: String, completionHandler: @escaping ( _ file: GTLDriveFile?, _ error: NSError? ) -> Void ) {
         if let file = filesByName[ fileName ] {
             completionHandler( file, nil )
         } else {
-            self.initializeDrive(forOrgs: [] ) { _, error in
-                if let file = self.filesByName[ fileName ] {
-                    completionHandler( file, nil )
-                } else {
-                    completionHandler( nil, error )
-                }
-            }
+            // just invoke callback with nil. At one point we had code to attempt to initialize the drive again here to see if the file was perhaps newly added in google drive, but that led to errors because this method itself is called from the init, so we would need to refactor things to be a little more granular so we could avoid potential recursive loop if we wanted to support that functionality
+            completionHandler( nil, nil )
         }
         
     }

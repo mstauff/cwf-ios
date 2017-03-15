@@ -67,9 +67,21 @@ public struct Org : JSONParsable  {
 
     var hasUnsavedChanges = false
     
+    /// Indicates that this org is new to our data (i.e. the org was created in LCR). This enum will allow us to visually mark the org so the user can be aware of the change.
+    var conflict : ConflictCause? = nil
+    
     // Do we need these? Probably not for the app, but maybe we will to be able to send necessary data to LCR for calling updates
     //    var parentOrg : Org
     
+    /** Function to create an array of Orgs from an array of JSON objects. When we get LCR data for a unit it comes as an array of all the root level orgs in a unit. It isn't contained in a parent Org structure, so this is a convenience method for processing those root level orgs in one call */
+    static func orgArrays( fromJSONArray json: [JSONObject]) -> [Org] {
+        let orgs : [Org] = json.flatMap() {
+            Org(fromJSON: $0)
+        }
+        return orgs
+        
+    }
+
     public init?(fromJSON json: JSONObject) {
         guard
             // currently orgType is inlined with the org object, rather than a separate JSON piece
@@ -221,6 +233,7 @@ extension Org : Equatable {
         return lhs.id == rhs.id
     }
 }
+
 
 private struct OrgJsonKeys {
     static let id = "subOrgId"

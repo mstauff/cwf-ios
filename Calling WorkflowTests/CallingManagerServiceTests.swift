@@ -13,20 +13,13 @@ class CallingManagerServiceTests: XCTestCase {
 
     var callingMgr = CWFCallingManagerService()
     var org : Org?
+    var lcrOrg = Org( id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
+    var appOrg  = Org( id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
 
     override func setUp() {
-        let bundle = Bundle( for: type(of: self) )
-        if let filePath = bundle.path(forResource: "cwf-object", ofType: "js"),
-           let fileData = NSData(contentsOfFile: filePath) {
-
-            let jsonData = Data( referencing: fileData )
-            print( jsonData.debugDescription )
-            let testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:AnyObject]
-            org = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
-
-        } else {
-            print( "No File Path found for file" )
-        }
+        org = getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithCallingsInSubOrg")!
+        lcrOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "lcrOrg")
+        appOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "appOrg")
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -36,38 +29,42 @@ class CallingManagerServiceTests: XCTestCase {
         super.tearDown()
     }
     
-    func testmapForCallingsById() {
-        // todo - this used to test a convenience method in callingMgr - needs to be moved to a new CollectionExtensionsTests
-        let callingMap = org!.allOrgCallings.toDictionaryById( {$0.id})
-        var calling = callingMap[734829]!
-        XCTAssertEqual( calling.existingIndId, 123 )
-        calling = callingMap[734820]!
-        XCTAssertEqual( calling.existingIndId, 234 )
-        // ensure we're pulling in callings from all suborgs - test org has 6 callings total, 1 is a proposed so it won't be included in the map (no ID), another is invalid calling so it's not in the org
-        XCTAssertEqual( callingMap.count, 4 )
-    }
-
-    func testToDictionary() {
-        struct MiniCalling {
-            var id : Int64
-
-            init(_ id: Int64 ) {
-                self.id = id
-            }
+    func getOrgFromFile( fileName: String, orgJsonName: String ) -> Org? {
+        var result : Org? = nil
+        let bundle = Bundle( for: type(of: self) )
+        if let filePath = bundle.path(forResource: fileName, ofType: "js"),
+            let fileData = NSData(contentsOfFile: filePath) {
+            
+            let jsonData = Data( referencing: fileData )
+            print( jsonData.debugDescription )
+            let testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:AnyObject]
+            result = Org( fromJSON: (testJSON?[orgJsonName] as? JSONObject)! )
+            
+        } else {
+            print( "No File Path found for file" )
         }
-        let ids  = [MiniCalling(5725983759238525), MiniCalling(63523098520934824), MiniCalling(72384029349323)]
-        let parent = MiniCalling(789)
 
-        let idMap  = ids.toDictionary({ ($0.id, parent.id) })
-
-        XCTAssertEqual(idMap.count, 3)
-        XCTAssertEqual(idMap[5725983759238525], 789)
-        XCTAssertEqual(idMap[72384029349323], 789)
-        XCTAssertNil(idMap[60])
-
-
+        return result
     }
-
+    
+    func getOrgsFromFile( fileName: String, orgJsonName: String ) -> [Org] {
+        var result : [Org] = []
+        let bundle = Bundle( for: type(of: self) )
+        if let filePath = bundle.path(forResource: fileName, ofType: "js"),
+            let fileData = NSData(contentsOfFile: filePath) {
+            
+            let jsonData = Data( referencing: fileData )
+            print( jsonData.debugDescription )
+            let testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:AnyObject]
+            result = Org.orgArrays( fromJSONArray: (testJSON?[orgJsonName] as? [JSONObject])! )
+            
+        } else {
+            print( "No File Path found for file" )
+        }
+        
+        return result
+    }
+    
     func testmapForCallingsByIndId() {
         let callingMap = callingMgr.multiValueDictionaryFromArray(array: org!.allOrgCallings, transformer: {$0.proposedIndId})
         validateCallingList(callingMap: callingMap, indId: 567, expectedNumCallings: 2, expectedCallings: [1482, 1483], shouldNotHaveCallings: [1481])
@@ -85,6 +82,48 @@ class CallingManagerServiceTests: XCTestCase {
         for callingId in shouldNotHaveCallings{
             XCTAssertFalse( callingIds.contains( callingId) )
         }
+    }
+    
+    func testReconcileCallings() {
+        // create a reconcileAppOrg & reconcileLdsOrg in the json file
+        // read them in, pass to reconcileCallings & validate
+            let reconciledOrg = callingMgr.reconcileOrg(appOrg: appOrg, ldsOrg: lcrOrg)
+        let primaryOrg = reconciledOrg.getChildOrg(id: 7428354)!
+        XCTAssertEqual( primaryOrg.children.count, 3 )
+        let ctr7 = reconciledOrg.getChildOrg(id: 38432972)!
+        // app & lcr both have 2 callings - make sure no changes were recorded as new callings
+        XCTAssertEqual( ctr7.callings.count, 2 )
+        let callingWithChangedIndividual = ctr7.callings[1]
+        // appOrg indId of 222 was changed to 234 in LCR
+        XCTAssertEqual( callingWithChangedIndividual.existingIndId, 234 )
+        
+        let ctr8 = reconciledOrg.getChildOrg(id: 752892)!
+        let callingReleasedInLcr = ctr8.callings[0]
+        XCTAssertEqual( callingReleasedInLcr.conflict, .LdsEquivalentDeleted )
+        
+        let ctr9 = reconciledOrg.getChildOrg(id: 750112)
+        XCTAssertNotNil( ctr9 )
+        
+        let varsityOrg = reconciledOrg.getChildOrg(id: 839510)!
+        // varsity coach was finalized outside the app. ensure that the finalized & proposed version were merged
+        XCTAssertEqual(varsityOrg.callings.count, 2)
+        var varsityCoach = varsityOrg.callings[0]
+        XCTAssertEqual(varsityCoach.position.positionTypeId, 1459)
+        XCTAssertEqual(varsityCoach.conflict, .EquivalentPotentialAndActual)
+        
+        varsityCoach = varsityOrg.callings[1]
+        XCTAssertEqual(varsityCoach.existingIndId, 890)
+        XCTAssertEqual(varsityCoach.position.positionTypeId, 1459)
+        XCTAssertEqual(varsityCoach.id, 275893)
+        
+        let scoutOrg = reconciledOrg.getChildOrg(id: 839500)!
+        XCTAssertEqual(scoutOrg.allOrgCallings.count, 3)
+        // validate that a new calling added in LCR shows up
+        XCTAssertEqual(scoutOrg.callings.count, 1)
+        let newCalling = scoutOrg.callings[0]
+        XCTAssertEqual(newCalling.id, 14727)
+        XCTAssertEqual(newCalling.existingIndId, 789)
+        
     }
 
     func testPerformanceExample() {

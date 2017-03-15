@@ -230,57 +230,5 @@
         "orgName": "Bishopric",
         "displayOrder": null
     }
-],
-    "statuses": [
-    {
-        "name": "CONSIDERING",
-        "active": true,
-        "priority": 10
-    },
-    {
-        "name": "PROPOSED",
-        "active": true,
-        "priority": 20
-    },
-    {
-        "name": "APPROVED",
-        "active": true,
-        "priority": 30
-    },
-    {
-        "name": "REJECTED",
-        "active": true,
-        "priority": 40
-    },
-    {
-        "name": "APPT_SET",
-        "active": true,
-        "priority": 50
-    },
-    {
-        "name": "ACCEPTED",
-        "active": true,
-        "priority": 60
-    },
-    {
-        "name": "DECLINED",
-        "active": true,
-        "priority": 70
-    },
-    {
-        "name": "SUSTAINED",
-        "active": true,
-        "priority": 80
-    },
-    {
-        "name": "SET_APART",
-        "active": true,
-        "priority": 90
-    },
-    {
-        "name": "RELEASED",
-        "active": true,
-        "priority": 110
-    }
 ]
 }

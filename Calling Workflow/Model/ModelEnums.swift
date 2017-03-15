@@ -37,3 +37,10 @@ public enum ExistingCallingStatus : String {
     case None = "NONE"
 
 }
+
+public enum ConflictCause {
+    case LdsEquivalentDeleted
+    case EquivalentPotentialAndActual
+}
+
+

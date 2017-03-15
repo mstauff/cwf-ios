@@ -32,7 +32,7 @@ extension Array {
             return !self.isEmpty
         }
     }
-
+    
     func toDictionary<K, V>( _ transformer: (_: Element) -> (key: K, value: V)?)
                     -> Dictionary<K, V> {
         var map = [K: V]()
@@ -55,5 +55,19 @@ extension Array {
             }
         }
         return map
+    }
+}
+
+extension Array where Element : Equatable {
+    typealias E = Element
+
+    /** Convenience version of contains method that takes an actual object search for rather than requiring a predicate closure */
+    func contains( item: E ) -> Bool {
+        return self.contains() { $0 == item }
+    }
+    
+    /** Array version of Set.subtracted */
+    func without( subtractedItems: [E] ) -> [E] {
+        return self.filter() { !subtractedItems.contains( item: $0 ) }
     }
 }
