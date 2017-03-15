@@ -53,5 +53,11 @@ class LeftTitleRightLabelTableViewCell: UITableViewCell {
         let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[titleLabel(>=20)]-5-|", options: NSLayoutFormatOptions.alignAllLeft, metrics: nil, views: views)
         self.addConstraints(vConstraint)
     }
+    
+    class func calculateHeight() -> CGFloat {
+        var height : CGFloat = 0
+        height += 44
+        return height
+    }
 
 }

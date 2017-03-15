@@ -327,6 +327,22 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             $0.existingIndId == member.individualId
         }
     }
+    
+    func getCallingsForMemberAsStringWithMonths(member: Member) -> String {
+        let callings = getCallingsForMember(member: member)
+        var callingString = ""
+        
+        for calling in callings {
+            if let nameString = calling.position.name {
+                callingString.append("\(nameString) (\(calling.existingMonthsInCalling) M)")
+                if (calling != callings[callings.count-1]) {
+                    callingString.append(",  ")
+                }
+            }
+        }
+        
+        return callingString
+    }
 
     public func addCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: calling, originalCalling: nil, operation: .Create, completionHandler: completionHandler)
