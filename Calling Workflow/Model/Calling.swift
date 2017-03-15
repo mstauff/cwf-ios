@@ -41,7 +41,7 @@ public struct Calling : JSONParsable {
     let editableByOrg : Bool
 
     /// Indicates that this calling was changed outside of the app (i.e. the calling was recorded or updated in LCR). This enum will allow us to visually mark the calling so the user can be aware of the change.
-    var conflict : Calling.ConflictCause? = nil
+    var conflict : ConflictCause? = nil
     
     // reference back to the parent org that this calling is a member of. It is only optional because we create the org with the callings and then fill in the reference to the owning org afterwards.
     var parentOrg : Org?
@@ -115,17 +115,21 @@ public struct Calling : JSONParsable {
         self.activeDate = activeDate
         self.existingStatus = .Active
     }
+    
+    /** Returns a new version of the calling with the specified changes to the actual calling */
+    public func updatedWith( indId: Int64?, activeDate: Date?) -> Calling {
+        var updatedCalling = self
+        updatedCalling.existingIndId = indId
+        updatedCalling.activeDate = activeDate
+        updatedCalling.existingStatus = .Active
+        return updatedCalling
+}
 
     public mutating func clearPotentialCalling() {
         self.notes = nil
         self.conflict = nil
         self.proposedIndId = nil
         self.proposedStatus = .None
-    }
-
-    enum ConflictCause {
-        case LdsEquivalentDeleted
-        case EquivalentPotentialAndActual
     }
 
 }
