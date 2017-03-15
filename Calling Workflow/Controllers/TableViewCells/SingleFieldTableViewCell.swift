@@ -33,7 +33,6 @@ class SingleFieldTableViewCell: UITableViewCell {
     }
 
     func setupCell() {
-        textField.backgroundColor = UIColor.purple
         textField.text = "fieldText"
         textField.translatesAutoresizingMaskIntoConstraints = false
         
@@ -49,7 +48,8 @@ class SingleFieldTableViewCell: UITableViewCell {
         let views = ["textField": textField]
         let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "|-15-[textField]-15-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: views)
         self.addConstraints(hConstraint)
-        let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "|-[textField]-|", options: NSLayoutFormatOptions.alignAllCenterX, metrics: nil, views: views)
-        self.addConstraints(vConstraint)
+        let vConstraint = NSLayoutConstraint(item: textField, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
+        //let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "|-[textField]-|", options: NSLayoutFormatOptions.alignAllCenterX, metrics: nil, views: views)
+        self.addConstraints([vConstraint])
     }
 }

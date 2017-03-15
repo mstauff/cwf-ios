@@ -15,3 +15,11 @@ protocol MemberPickerDelegate {
 protocol StatusPickerDelegate {
     func setStatusFromPicker(status: CallingStatus)
 }
+
+protocol LDSLoginDelegate {
+    func setLoginDictionary(returnedLoginDictionary: Dictionary<String, Any>)
+}
+
+protocol MemberDetailsDelegate {
+    func showMemberInfo()
+}

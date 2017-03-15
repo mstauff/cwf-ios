@@ -16,6 +16,8 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController {
     
     var keychainDataDictionary: Dictionary<String, String>?
     
+    var delegate : LDSLoginDelegate? = nil
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -151,7 +153,7 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController {
         }
         // Show alert on bad info
         else {
-            let alertview = UIAlertController(title: "Login Error", message: "Incorrect username or password.", preferredStyle: UIAlertControllerStyle.alert)
+            let alertview = UIAlertController(title: "Login Error", message: "Invalid username or password.", preferredStyle: UIAlertControllerStyle.alert)
             let alertAction = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: UIAlertActionStyle.default, handler: nil)
             alertview.addAction(alertAction)
             self.present(alertview, animated: true, completion: nil)
@@ -160,7 +162,7 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController {
     }
     
     func ldsIdIsValid(username: String, password: String) -> Bool {
-        if (username == "a" && password == "s") {
+        if (true) {
             return true
         }
         else {
