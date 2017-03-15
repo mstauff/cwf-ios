@@ -37,7 +37,7 @@ class MemberInfoView: UIView {
     
     func setupHeaderView() {
         headerView.translatesAutoresizingMaskIntoConstraints = false
-        headerView.backgroundColor = UIColor.cwfNavBarTintColor
+        headerView.backgroundColor = UIColor.CWFNavBarTintColor
         
         self.addSubview(headerView)
 

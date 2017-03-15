@@ -78,7 +78,7 @@ class TitleAdjustableSubtitleTableViewCell: UITableViewCell {
         
         self.addConstraints([titleHConstraint, titleWidthConstraint, titleVConstraint, titleHeightConstraint, buttonHConstraint, buttonHeightConstraint, buttonVConstraint, buttonWidthConstraint])
         
-        let buttonImageHeightConstraint = NSLayoutConstraint(item: buttonImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 20)
+        let buttonImageHeightConstraint = NSLayoutConstraint(item: buttonImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 30)
         let buttonImageWidthConstraint = NSLayoutConstraint(item: buttonImageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: 30)
         let buttonImageHConstraint = NSLayoutConstraint(item: buttonImageView, attribute: .centerX, relatedBy: .equal, toItem: infoButton, attribute: .centerX, multiplier: 1, constant: 0)
         let buttonImageVConstraint = NSLayoutConstraint(item: buttonImageView, attribute: .centerY, relatedBy: .equal, toItem: infoButton, attribute: .centerY, multiplier: 1, constant: 0)

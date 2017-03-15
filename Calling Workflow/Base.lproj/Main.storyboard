@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="THt-KO-N4t">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="THt-KO-N4t">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -86,7 +86,7 @@
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ohu-Fj-DTN" id="o7M-sO-PSs">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dlM-sz-mRo">
@@ -111,7 +111,7 @@
                                 <rect key="frame" x="0.0" y="72" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SRR-0M-jbL" id="L7w-1D-nD3">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sign in" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fVC-3h-mkp">
@@ -163,7 +163,7 @@
                                 <rect key="frame" x="0.0" y="72" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="n7f-g6-8L1" id="cG3-hI-rIG">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -247,7 +247,7 @@
                             <outlet property="delegate" destination="cpk-NW-Li4" id="23f-5l-cRl"/>
                         </connections>
                     </tableView>
-                    <tabBarItem key="tabBarItem" title="Directory" image="first" id="1ZI-98-qVT"/>
+                    <tabBarItem key="tabBarItem" title="Directory" image="directory" id="1ZI-98-qVT"/>
                     <navigationItem key="navigationItem" title="Directory" id="Qea-WB-9Wq"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vgn-hR-AMH" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -277,7 +277,7 @@
                             <outlet property="delegate" destination="eFz-1y-0p4" id="Q9W-Ml-lfc"/>
                         </connections>
                     </tableView>
-                    <tabBarItem key="tabBarItem" title="Organizations" image="second" id="vnL-b5-sMi"/>
+                    <tabBarItem key="tabBarItem" title="Organizations" image="org" selectedImage="org" id="vnL-b5-sMi"/>
                     <navigationItem key="navigationItem" title="Organizations" id="rQI-It-Hkd"/>
                     <connections>
                         <segue destination="NzN-eA-0Dw" kind="show" identifier="OrgList to OrgDetails" id="WPo-mB-foG"/>
@@ -587,8 +587,9 @@
         </scene>
     </scenes>
     <resources>
+        <image name="directory" width="32" height="32"/>
         <image name="first" width="30" height="30"/>
-        <image name="second" width="30" height="30"/>
-        <image name="settings" width="28" height="28"/>
+        <image name="org" width="32" height="32"/>
+        <image name="settings" width="32" height="32"/>
     </resources>
 </document>
