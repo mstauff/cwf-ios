@@ -14,10 +14,13 @@
 		3C0AA6E41E4A86670086525D /* OneRightTwoLeftTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0AA6E31E4A86670086525D /* OneRightTwoLeftTableViewCell.swift */; };
 		3C0E01801E4D26100014D32B /* NewCallingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0E017F1E4D26100014D32B /* NewCallingTableViewController.swift */; };
 		3C0E01821E4D42740014D32B /* ViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0E01811E4D42740014D32B /* ViewUtils.swift */; };
+		3C11A31F1E70C14D00EC9F38 /* CWFAccordionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C11A31E1E70C14D00EC9F38 /* CWFAccordionTableViewController.swift */; };
 		3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */; };
 		3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */; };
 		3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */; };
 		3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */; };
+		3C3CF3B61E71F20A00143868 /* CWFAccordionRootTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3CF3B51E71F20A00143868 /* CWFAccordionRootTableViewCell.swift */; };
+		3C3CF3B81E71FB2300143868 /* CWFAccordionChildTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3CF3B71E71FB2300143868 /* CWFAccordionChildTableViewCell.swift */; };
 		3C4409C91E3BEE9400484935 /* CWFStatusPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */; };
 		3C76FBA11E52693B008C4A61 /* SingleFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */; };
 		3C8300F31E3698DD00FD0D34 /* CallingDetailsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */; };
@@ -109,10 +112,13 @@
 		3C0AA6E31E4A86670086525D /* OneRightTwoLeftTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OneRightTwoLeftTableViewCell.swift; path = Controllers/TableViewCells/OneRightTwoLeftTableViewCell.swift; sourceTree = "<group>"; };
 		3C0E017F1E4D26100014D32B /* NewCallingTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NewCallingTableViewController.swift; path = Controllers/NewCallingTableViewController.swift; sourceTree = "<group>"; };
 		3C0E01811E4D42740014D32B /* ViewUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewUtils.swift; path = Controllers/General/ViewUtils.swift; sourceTree = "<group>"; };
+		3C11A31E1E70C14D00EC9F38 /* CWFAccordionTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFAccordionTableViewController.swift; path = Controllers/General/CWFAccordionTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OrgDetailTableViewController.swift; path = Controllers/OrgDetailTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsTableViewController.swift; path = Controllers/SettingsTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LDSCredentialsViewController.swift; path = Controllers/LDSCredentialsViewController.swift; sourceTree = "<group>"; };
 		3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InputTableViewCell.swift; path = Controllers/TableViewCells/InputTableViewCell.swift; sourceTree = "<group>"; };
+		3C3CF3B51E71F20A00143868 /* CWFAccordionRootTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFAccordionRootTableViewCell.swift; path = Controllers/TableViewCells/CWFAccordionRootTableViewCell.swift; sourceTree = "<group>"; };
+		3C3CF3B71E71FB2300143868 /* CWFAccordionChildTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFAccordionChildTableViewCell.swift; path = Controllers/TableViewCells/CWFAccordionChildTableViewCell.swift; sourceTree = "<group>"; };
 		3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFStatusPickerView.swift; path = Controllers/General/CWFStatusPickerView.swift; sourceTree = "<group>"; };
 		3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SingleFieldTableViewCell.swift; path = Controllers/TableViewCells/SingleFieldTableViewCell.swift; sourceTree = "<group>"; };
 		3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingDetailsTableViewController.swift; path = Controllers/CallingDetailsTableViewController.swift; sourceTree = "<group>"; };
@@ -360,6 +366,8 @@
 				3C0AA6E31E4A86670086525D /* OneRightTwoLeftTableViewCell.swift */,
 				3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */,
 				3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */,
+				3C3CF3B51E71F20A00143868 /* CWFAccordionRootTableViewCell.swift */,
+				3C3CF3B71E71FB2300143868 /* CWFAccordionChildTableViewCell.swift */,
 			);
 			name = TableViewCells;
 			sourceTree = "<group>";
@@ -387,6 +395,7 @@
 				3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */,
 				3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */,
 				3C88170E1E68D8A10037151B /* MemberInfoView.swift */,
+				3C11A31E1E70C14D00EC9F38 /* CWFAccordionTableViewController.swift */,
 			);
 			name = "Base Controllers";
 			sourceTree = "<group>";
@@ -721,7 +730,9 @@
 				E8084F861E0476F80077FDAE /* Org.swift in Sources */,
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
+				3C11A31F1E70C14D00EC9F38 /* CWFAccordionTableViewController.swift in Sources */,
 				3C0E01821E4D42740014D32B /* ViewUtils.swift in Sources */,
+				3C3CF3B81E71FB2300143868 /* CWFAccordionChildTableViewCell.swift in Sources */,
 				E8B13CCA1E3BC749004FD60C /* DateExtensions.swift in Sources */,
 				3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */,
 				3CBDDCAC1E48FC2F00F211F5 /* ControllerProtocols.swift in Sources */,
@@ -735,6 +746,7 @@
 				3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */,
 				E8084F881E0476F80077FDAE /* UnitLevelOrgType.swift in Sources */,
 				3C0994D21E451AC500926094 /* MemberPickerTableViewController.swift in Sources */,
+				3C3CF3B61E71F20A00143868 /* CWFAccordionRootTableViewCell.swift in Sources */,
 				3CE4C8D31DCA824100AAFB31 /* AppDelegate.swift in Sources */,
 				3CA596FE1E08593C00109B27 /* CWFBaseTableViewController.swift in Sources */,
 				3CE4C9101DCA82A000AAFB31 /* Constants.swift in Sources */,

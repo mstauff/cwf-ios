@@ -9,39 +9,14 @@
 import UIKit
 import AccordionMenuSwift
 
-class OrgDetailTableViewController: AccordionTableViewController {
-    
-    var organizationToDisplay : Org?
+class OrgDetailTableViewController: CWFAccordionTableViewController {
     
     // MARK: - Lyfecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = organizationToDisplay?.orgName
-        if (organizationToDisplay != nil && (organizationToDisplay?.callings.count)! > 0) {
-            //let addButton = UIBarButtonItem.init(image: UIImage(named: "add"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(addButtonPressed))
-//            addButton.tintColor = UIColor.white
-//            self.navigationItem.rightBarButtonItem = addButton
-        }
-        var items : [Parent] = []
-        for suborg in (organizationToDisplay?.children)! {
-            let tempItem = Parent(state: .collapsed, childs: getSubOrgNames(org: suborg), title: suborg.orgName)
-            items.append(tempItem)
-        }
-        dataSource = items
-        numberOfCellsExpanded = .one
-        total = dataSource.count
-
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
     
-    func getSubOrgNames(org: Org) -> [String] {
-        var strings: [String] = []
-        for organization in (organizationToDisplay?.children)! {
-            strings.append(organization.orgName)
-        }
-        return strings
-    }
 
 //    override func didReceiveMemoryWarning() {
 //        super.didReceiveMemoryWarning()

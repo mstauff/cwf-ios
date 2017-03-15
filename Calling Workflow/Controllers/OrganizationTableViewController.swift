@@ -80,7 +80,7 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let nextView = segue.destination as? OrgDetailTableViewController
-        nextView?.organizationToDisplay = organizationSelected
+        nextView?.rootOrg = organizationSelected
     }
 
 
