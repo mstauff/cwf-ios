@@ -21,16 +21,18 @@
                     "positionTypeId": 1481,
                     "position": "Primary Teacher",
                     "hidden": false,
+                    "allowMultiple": true,
 					"comment": "matches app - no calling change"
                 },
                 {
                     "memberId": 234,
                     "activeDate": "20150922",
-                    "positionId": 734820,
+                    "positionId": 734821,
                     "positionTypeId": 1481,
                     "position": "Primary Teacher",
                     "hidden": false,
-					"comment": "matches ID - person is different"
+                    "allowMultiple": true,
+					"comment": "changed ID"
                 }
             ]
         },
@@ -49,6 +51,7 @@
                     "positionTypeId": 1482,
                     "position": "Primary Teacher",
                     "hidden": false,
+                    "allowMultiple": true,
 					"comment": "They've been released outside the app"
                 }
             ]
@@ -68,6 +71,7 @@
                     "positionId": 90239,
                     "positionTypeId": 1483,
                     "hidden": false,
+                    "allowMultiple": true,
                     "notes": "should be added to app data"
                 }
             ]
@@ -104,6 +108,7 @@
                             "positionTypeId": 1459,
                             "position": "Varsity Coach",
                             "hidden": false,
+							"allowMultiple": false,
 							"notes": "was finalized outside the app - was just a proposed in app"
                         }
                     ]
@@ -116,6 +121,7 @@
                     "positionId": 14727,
                     "positionTypeId": 165,
                     "hidden": false,
+                    "allowMultiple": false,
                     "notes": "completely new - added outside app"
                 }
             ]
@@ -143,10 +149,12 @@
                     "existingStatus": "ACTIVE",
                     "activeDate": null,
                     "positionId": 734829,
+                    "cwfId": null,
                     "positionTypeId": 1481,
                     "positionTypeEnum": "PRIMARY_WORKER_CTR_7",
                     "position": "Primary Teacher",
                     "hidden": false,
+                    "allowMultiple": true,
                     "proposedStatus": null,
                     "proposedIndId": null,
                     "notes": "Some String",
@@ -158,15 +166,17 @@
                     "existingStatus": "ACTIVE",
                     "activeDate": "20150922",
                     "positionId": 734820,
+                    "cwfId": null,
                     "positionTypeId": 1481,
                     "positionTypeEnum": "PRIMARY_WORKER_CTR_7",
                     "position": "Primary Teacher",
                     "hidden": false,
+                    "allowMultiple": true,
                     "proposedStatus": null,
                     "proposedIndId": null,
                     "notes": null,
                     "editableByOrg": true,
-					"comment" : "Id matches but indId has changed from 222 to 234"
+					"comment" : "Id matches but indId has changed from 222 to 234 - can this happen, or does positionId always change????"
                 }
             ]
         },
@@ -183,10 +193,12 @@
                     "existingStatus": "ACTIVE",
                     "activeDate": "20150922",
                     "positionId": 728220,
+                    "cwfId": null,
                     "positionTypeId": 1482,
                     "positionTypeEnum": "PRIMARY_WORKER_CTR_8",
                     "position": "Primary Teacher",
                     "hidden": false,
+                    "allowMultiple": true,
                     "proposedStatus": null,
                     "proposedIndId": null,
                     "notes": null,
@@ -225,10 +237,12 @@
                             "existingStatus": null,
                             "activeDate": null,
                             "positionId": null,
+							"cwfId": "278423-384728-237482-2247",
                             "positionTypeId": 1459,
                             "positionTypeEnum": "VARSITY_COACH",
                             "position": "Varsity Coach",
                             "hidden": false,
+							"allowMultiple": false,
                             "proposedStatus": "PROPOSED",
                             "proposedIndId": 890,
                             "notes": "calling two levels deep",

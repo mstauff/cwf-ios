@@ -66,6 +66,7 @@
 		E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE81E26AC1E0091419D /* LdsRestApi.swift */; };
 		E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CEB1E26AD4F0091419D /* RestAPITests.swift */; };
 		E841701C1E79B4D600A5C049 /* ModelEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = E841701B1E79B4D600A5C049 /* ModelEnums.swift */; };
+		E841701E1E7C767A00A5C049 /* reconcile-test-orgs.js in Resources */ = {isa = PBXBuildFile; fileRef = E841701D1E7C767A00A5C049 /* reconcile-test-orgs.js */; };
 		E85E7EE41E49223B00CE05CD /* CallingManagerServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */; };
 		E85E7EE61E53B6D700CE05CD /* MultiValueDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */; };
 		E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E7E1E01FC6A00A7A618 /* Utils.swift */; };
@@ -178,6 +179,7 @@
 		E8316CE81E26AC1E0091419D /* LdsRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdsRestApi.swift; sourceTree = "<group>"; };
 		E8316CEB1E26AD4F0091419D /* RestAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestAPITests.swift; sourceTree = "<group>"; };
 		E841701B1E79B4D600A5C049 /* ModelEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ModelEnums.swift; path = Model/ModelEnums.swift; sourceTree = "<group>"; };
+		E841701D1E7C767A00A5C049 /* reconcile-test-orgs.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "reconcile-test-orgs.js"; sourceTree = "<group>"; };
 		E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallingManagerServiceTests.swift; sourceTree = "<group>"; };
 		E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MultiValueDictionary.swift; path = Extensions/MultiValueDictionary.swift; sourceTree = "<group>"; };
 		E87A9E7E1E01FC6A00A7A618 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -295,6 +297,7 @@
 			children = (
 				E8316CEB1E26AD4F0091419D /* RestAPITests.swift */,
 				E8084F7B1E046D5D0077FDAE /* DateExtensions.swift */,
+				E841701D1E7C767A00A5C049 /* reconcile-test-orgs.js */,
 				E8CC95691E01E722007EBA47 /* member-objects.js */,
 				E8189A881DDA2D4600E983D4 /* cwf-object.js */,
 				E8F9596D1E3026AC00C13EC9 /* org-callings.js */,
@@ -560,6 +563,7 @@
 			files = (
 				E8189A8A1DDA2D4600E983D4 /* cwf-object.js in Resources */,
 				E8CC956A1E01E722007EBA47 /* member-objects.js in Resources */,
+				E841701E1E7C767A00A5C049 /* reconcile-test-orgs.js in Resources */,
 				E8F9596E1E3026AC00C13EC9 /* org-callings.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -91,12 +91,23 @@ class CallingManagerServiceTests: XCTestCase {
         let primaryOrg = reconciledOrg.getChildOrg(id: 7428354)!
         XCTAssertEqual( primaryOrg.children.count, 3 )
         let ctr7 = reconciledOrg.getChildOrg(id: 38432972)!
-        // app & lcr both have 2 callings - make sure no changes were recorded as new callings
-        XCTAssertEqual( ctr7.callings.count, 2 )
-        let callingWithChangedIndividual = ctr7.callings[1]
-        // appOrg indId of 222 was changed to 234 in LCR
-        XCTAssertEqual( callingWithChangedIndividual.existingIndId, 234 )
+        // app & lcr both have 2 callings - but one of them has changed so it will appear as 3 callings, with one of them marked with a conflict for deletion
+        XCTAssertEqual( ctr7.callings.count, 3 )
         
+        // one should not have changed
+        let sameCalling = ctr7.callings.first() { $0.id == 734829 }!
+        XCTAssertEqual(sameCalling.existingIndId, 123)
+        XCTAssertNil( sameCalling.proposedIndId )
+        
+        // one should be marked for deletion
+        let oldCalling = ctr7.callings.first() { $0.id == 734820 }!
+        XCTAssertEqual( oldCalling.existingIndId, 222 )
+            XCTAssertEqual( oldCalling.conflict, ConflictCause.LdsEquivalentDeleted )
+        // the other should be the new one
+        let updatedCalling = ctr7.callings.first() { $0.id == 734821 }!
+        XCTAssertEqual( updatedCalling.existingIndId, 234 )
+        
+        // someone was released outside the app - no replacement
         let ctr8 = reconciledOrg.getChildOrg(id: 752892)!
         let callingReleasedInLcr = ctr8.callings[0]
         XCTAssertEqual( callingReleasedInLcr.conflict, .LdsEquivalentDeleted )
@@ -105,25 +116,26 @@ class CallingManagerServiceTests: XCTestCase {
         XCTAssertNotNil( ctr9 )
         
         let varsityOrg = reconciledOrg.getChildOrg(id: 839510)!
-        // varsity coach was finalized outside the app. ensure that the finalized & proposed version were merged
-        XCTAssertEqual(varsityOrg.callings.count, 2)
+        // varsity coach was finalized outside the app. ensure that the proposed version was deleted
+        XCTAssertEqual(varsityOrg.callings.count, 1)
         var varsityCoach = varsityOrg.callings[0]
         XCTAssertEqual(varsityCoach.position.positionTypeId, 1459)
-        XCTAssertEqual(varsityCoach.conflict, .EquivalentPotentialAndActual)
-        
-        varsityCoach = varsityOrg.callings[1]
         XCTAssertEqual(varsityCoach.existingIndId, 890)
-        XCTAssertEqual(varsityCoach.position.positionTypeId, 1459)
-        XCTAssertEqual(varsityCoach.id, 275893)
+        XCTAssertNil(varsityCoach.proposedIndId)
+        XCTAssertEqual(varsityCoach.proposedStatus, .Unknown)
         
         let scoutOrg = reconciledOrg.getChildOrg(id: 839500)!
-        XCTAssertEqual(scoutOrg.allOrgCallings.count, 3)
+        XCTAssertEqual(scoutOrg.allOrgCallings.count, 2)
         // validate that a new calling added in LCR shows up
         XCTAssertEqual(scoutOrg.callings.count, 1)
         let newCalling = scoutOrg.callings[0]
         XCTAssertEqual(newCalling.id, 14727)
         XCTAssertEqual(newCalling.existingIndId, 789)
         
+        // todo - outstanding test cases
+        // - proposed & actual with different person - should be merged
+        // - variations with multiple allowed
+        // - callings are same - except app has notes
     }
 
     func testPerformanceExample() {
