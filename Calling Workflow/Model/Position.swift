@@ -27,12 +27,15 @@ public struct Position : JSONParsable {
      */
     let hidden : Bool
     
+    let multiplesAllowed : Bool
+    
     // TODO: do we need something to indicate it's a custom calling? Or can we determine that from the positionTypeId????
-    init(positionTypeId : Int, name : String?, hidden : Bool) {
+    init(positionTypeId : Int, name : String?, hidden : Bool, multiplesAllowed : Bool) {
         self.positionTypeId = positionTypeId
         self.name = name
         self.hidden = hidden
         self.unitNum = nil
+        self.multiplesAllowed = multiplesAllowed
     }
     
     public init?(fromJSON json: JSONObject) {
@@ -52,6 +55,8 @@ public struct Position : JSONParsable {
             unitNum = nil
         }
         positionTypeId = validPositionTypeId
+        // TODO - short comment on default
+        multiplesAllowed = json[PositionJsonKeys.allowMultiples] as? Bool ?? true
         
         hidden = json[PositionJsonKeys.hidden] as? Bool ?? false
     }
@@ -67,15 +72,23 @@ public struct Position : JSONParsable {
         }
         // need to store this as a string rather than a bool before we cast to AnyObject, as casting a bool to AnyObject loses type info (it gets seen as Int and outputs 0/1 rather than true/false in the json
         jsonObj[PositionJsonKeys.hidden] = self.hidden.description as AnyObject
+        jsonObj[PositionJsonKeys.allowMultiples] = self.multiplesAllowed.description as AnyObject
         return jsonObj;
     }
     
+}
+
+extension Position : Equatable {
+    static public func == (lhs : Position, rhs : Position ) -> Bool {
+        return lhs.positionTypeId == rhs.positionTypeId
+    }
 }
 
 private struct PositionJsonKeys {
     static let positionTypeId = "positionTypeId"
     static let name = "position"
     static let hidden = "hidden"
+    static let allowMultiples = "allowMultiple"
     // this is not included in LCR org/calling data, but is included in current user details call and we need it to validate permissions
     static let unitNum = "unitNo"
 }
