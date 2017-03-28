@@ -13,6 +13,7 @@ class CallingManagerServiceTests: XCTestCase {
 
     var callingMgr = CWFCallingManagerService()
     var org : Org?
+    var positionsOrg : Org?
     var lcrOrg = Org( id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
     var appOrg  = Org( id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
 
@@ -20,6 +21,7 @@ class CallingManagerServiceTests: XCTestCase {
         org = getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithCallingsInSubOrg")!
         lcrOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "lcrOrg")
         appOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "appOrg")
+        positionsOrg = getSingleOrgFromFile(fileName: "org-callings")
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -44,6 +46,24 @@ class CallingManagerServiceTests: XCTestCase {
             print( "No File Path found for file" )
         }
 
+        return result
+    }
+
+    func getSingleOrgFromFile( fileName: String ) -> Org? {
+        var result = Org(id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue)
+        let bundle = Bundle( for: type(of: self) )
+        if let filePath = bundle.path(forResource: fileName, ofType: "js"),
+            let fileData = NSData(contentsOfFile: filePath) {
+            
+            let jsonData = Data( referencing: fileData )
+            print( jsonData.debugDescription )
+            let testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [AnyObject]
+            result.children = Org.orgArrays( fromJSONArray: (testJSON as? [JSONObject])! )
+            
+        } else {
+            print( "No File Path found for file" )
+        }
+        
         return result
     }
     
@@ -82,6 +102,41 @@ class CallingManagerServiceTests: XCTestCase {
         for callingId in shouldNotHaveCallings{
             XCTAssertFalse( callingIds.contains( callingId) )
         }
+    }
+    
+    func testOrgPositions() {
+        let testOrg = positionsOrg!
+        let bishopric = testOrg.getChildOrg(id: 555)!
+        let bishopricPositions = bishopric.validPositions
+        XCTAssertEqual( bishopricPositions.count, 4 )
+        XCTAssertTrue( bishopric.potentialNewPositions.isEmpty )
+        
+        
+        var hpGroup = testOrg.getChildOrg(id: 2381009)!
+        var positionTypeIds : [Int] = hpGroup.validPositions.map() {$0.positionTypeId}
+        XCTAssertEqual( positionTypeIds.count, 5 )
+        // ensure it has a position that's currently empty
+        XCTAssertTrue( positionTypeIds.contains(item: 3635) )
+        XCTAssertEqual( positionTypeIds.count, 5 )
+        // there should be one position (Asst. Sec.) that's a potential for adding.
+        XCTAssertEqual( hpGroup.potentialNewPositions.count, 1 )
+        XCTAssertEqual( hpGroup.potentialNewPositions[0].positionTypeId, 3635 )
+        // remove the president - then that position should show up in the list of potentials to be added
+        hpGroup.callings.remove( at: 0 )
+        XCTAssertEqual( hpGroup.potentialNewPositions.count, 2 )
+        XCTAssertEqual( hpGroup.potentialNewPositions[1].positionTypeId, 133 )
+        
+        
+        
+        
+        // ensure we only have one when there are multiples
+        let hpInstructors = testOrg.getChildOrg(id: 4124695)!
+        positionTypeIds = hpInstructors.validPositions.map() {$0.positionTypeId}
+        // 2 callings, but only 1 type of position
+        XCTAssertEqual( hpInstructors.callings.count, 2 )
+        XCTAssertEqual( hpInstructors.potentialNewPositions.count, 1 )
+        XCTAssertEqual( positionTypeIds.count, 1 )
+        XCTAssertTrue( positionTypeIds.contains(item: 137) )
     }
     
     func testReconcileCallings() {

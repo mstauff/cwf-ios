@@ -38,6 +38,18 @@ public struct Org : JSONParsable  {
     var children : [Org] = []
     
     var callings : [Calling] = []
+    
+    var validPositions : [Position] = []
+    
+    var potentialNewPositions : [Position] {
+        get {
+            let existingPositionIds = callings.map() { $0.position.positionTypeId }
+            return validPositions.filter() {
+                // eventually this needs to account for hidden callins as well
+                $0.multiplesAllowed || !existingPositionIds.contains(item: $0.positionTypeId)
+            }
+        }
+    }
 
     var allOrgCallingIds : [Int64] {
         get {
@@ -104,11 +116,13 @@ public struct Org : JSONParsable  {
         var org = Org( id: id.int64Value, orgTypeId: orgTypeId, orgName: orgName!, displayOrder: displayOrder, children: childOrgs, callings: [] )
         let parsedCallings : [Calling] = callings.map() { callingJson -> Calling? in
             var calling = Calling( fromJSON: callingJson )
+            // todo - at some point we need to deal with hidden callings
             calling?.parentOrg = org
             return calling
             }.flatMap() {$0} // .flatMap() will remove nil's
 
         org.callings = parsedCallings
+        org.validPositions = Array.init( Set<Position>(parsedCallings.map() { $0.position }) )
         self = org
     }
     
