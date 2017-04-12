@@ -30,6 +30,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         tableView.register(LeftTitleRightLabelTableViewCell.self, forCellReuseIdentifier: "middleCell")
         tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
         tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "noteCell")
+        tableView.register(CWFButtonTableViewCell.self, forCellReuseIdentifier: "buttonCell")
 
     }
 
@@ -38,11 +39,32 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         // Dispose of any resources that can be recreated.
     }
     
+    override func willMove(toParentViewController parent: UIViewController?)
+    {
+        if parent == nil
+        {
+            let saveAlert = UIAlertController(title: "Save Changes?", message: nil, preferredStyle: UIAlertControllerStyle.alert)
+    
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
+                (alert: UIAlertAction!) -> Void in
+                print("cancel")
+            })
+            let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.default, handler: {
+                (alert: UIAlertAction!) -> Void in
+            })
+            saveAlert.addAction(cancelAction)
+            saveAlert.addAction(saveAction)
+            present(saveAlert, animated: true, completion: nil)
+
+            print("dismiss")
+            // Back btn Event handler
+        }
+    }
     
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -72,6 +94,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         case 1:
             return 3
         case 2:
+            return 1
+        case 3:
             return 1
         default:
             return 0
@@ -161,6 +185,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             
             return cell!
             
+        case 3:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath) as? CWFButtonTableViewCell
+            cell?.cellButton.setTitle("Calling Actions", for: UIControlState.normal)
+            cell?.cellButton.addTarget(self, action: #selector(callingActionsButtonPressed), for: .touchUpInside)
+            
+            return cell!
+            
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
 
@@ -205,28 +236,52 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         tableView.reloadData()
     }
     
-    func saveAndReturn() {
-        let saveAlert = UIAlertController(title: "Save Changes?", message: nil, preferredStyle: UIAlertControllerStyle.alert)
-        
+    func callingActionsButtonPressed() {
+        print("buttonPressed")
+        let actionSheet = UIAlertController(title: "LCR Actions", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
         let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
             (alert: UIAlertAction!) -> Void in
-            print("cancel")
+            print("Cancelled")
         })
-        let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.default, handler: {
+        let deleteAction = UIAlertAction(title: "Delete Calling in LCR", style: UIAlertActionStyle.default, handler:  {
             (alert: UIAlertAction!) -> Void in
             
-            //todo -- add save to calling service
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                if (self.callingToDisplay != nil) {
-                    appDelegate.callingManager.updateCalling(originalCalling: self.originalCalling!, updatedCalling: self.callingToDisplay!) {_,_ in }
-                }
-            }
-
-            let _ = self.navigationController?.popViewController(animated: true)
-
+            print("update pressed")
+            
         })
-        saveAlert.addAction(cancelAction)
-        saveAlert.addAction(saveAction)
-        present(saveAlert, animated: true, completion: nil)
+        let releaseAction = UIAlertAction(title: "Release Current in LCR", style: UIAlertActionStyle.default, handler:  {
+            (alert: UIAlertAction!) -> Void in
+            
+            print("update pressed")
+            
+        })
+        let finalizeAction = UIAlertAction(title: "Finalize Change in LCR", style: UIAlertActionStyle.default, handler:  {
+            (alert: UIAlertAction!) -> Void in
+            
+            print("update pressed")
+            
+        })
+        actionSheet.addAction(finalizeAction)
+        actionSheet.addAction(releaseAction)
+        actionSheet.addAction(deleteAction)
+        actionSheet.addAction(cancelAction)
+        self.present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func saveAndReturn() {
+//
+        //todo -- add save to calling service
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            if (self.callingToDisplay != nil) {
+                appDelegate.callingManager.updateCalling(originalCalling: self.originalCalling!, updatedCalling: self.callingToDisplay!) {_,_ in }
+            }
+        }
+
+        let _ = self.navigationController?.popViewController(animated: true)
+
+//        })
+//        saveAlert.addAction(cancelAction)
+//        saveAlert.addAction(saveAction)
+//        present(saveAlert, animated: true, completion: nil)
     }
 }

@@ -28,6 +28,7 @@
 		3C866F011E6F681B00BD6DDA /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */; };
 		3C88170F1E68D8A10037151B /* MemberInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C88170E1E68D8A10037151B /* MemberInfoView.swift */; };
 		3C9298B21E5E314000A6339B /* NotesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */; };
+		3CA55F3A1E9D7D7400022D52 /* CWFButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA55F391E9D7D7400022D52 /* CWFButtonTableViewCell.swift */; };
 		3CA596FE1E08593C00109B27 /* CWFBaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */; };
 		3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */; };
 		3CBDDCAC1E48FC2F00F211F5 /* ControllerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBDDCAB1E48FC2F00F211F5 /* ControllerProtocols.swift */; };
@@ -126,6 +127,7 @@
 		3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIColorExtension.swift; path = Extensions/UIColorExtension.swift; sourceTree = "<group>"; };
 		3C88170E1E68D8A10037151B /* MemberInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberInfoView.swift; path = Controllers/General/MemberInfoView.swift; sourceTree = "<group>"; };
 		3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotesTableViewCell.swift; path = Controllers/TableViewCells/NotesTableViewCell.swift; sourceTree = "<group>"; };
+		3CA55F391E9D7D7400022D52 /* CWFButtonTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFButtonTableViewCell.swift; path = Controllers/TableViewCells/CWFButtonTableViewCell.swift; sourceTree = "<group>"; };
 		3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFBaseTableViewController.swift; path = Controllers/General/CWFBaseTableViewController.swift; sourceTree = "<group>"; };
 		3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RootTabBarViewController.swift; path = Controllers/General/RootTabBarViewController.swift; sourceTree = "<group>"; };
 		3CBDDCAB1E48FC2F00F211F5 /* ControllerProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ControllerProtocols.swift; path = Controllers/ControllerProtocols.swift; sourceTree = "<group>"; };
@@ -368,6 +370,7 @@
 				3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */,
 				3C3CF3B51E71F20A00143868 /* CWFAccordionRootTableViewCell.swift */,
 				3C3CF3B71E71FB2300143868 /* CWFAccordionChildTableViewCell.swift */,
+				3CA55F391E9D7D7400022D52 /* CWFButtonTableViewCell.swift */,
 			);
 			name = TableViewCells;
 			sourceTree = "<group>";
@@ -762,6 +765,7 @@
 				E8F9596A1E30129700C13EC9 /* LdsOrgApi.swift in Sources */,
 				E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */,
 				3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */,
+				3CA55F3A1E9D7D7400022D52 /* CWFButtonTableViewCell.swift in Sources */,
 				E8084F851E0476F80077FDAE /* Calling.swift in Sources */,
 				E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */,
 				3C4409C91E3BEE9400484935 /* CWFStatusPickerView.swift in Sources */,
