@@ -273,7 +273,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         //todo -- add save to calling service
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             if (self.callingToDisplay != nil) {
-                appDelegate.callingManager.updateCalling(originalCalling: self.originalCalling!, updatedCalling: self.callingToDisplay!) {_,_ in }
+                appDelegate.callingManager.updateCalling(updatedCalling: self.callingToDisplay!) {_,_ in }
             }
         }
 
