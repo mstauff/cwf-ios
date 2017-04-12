@@ -174,9 +174,9 @@ class ModelTests: XCTestCase {
         var primaryClass = org.getChildOrg(id: 752892)!
         let unchangedClass = org.getChildOrg(id: 38432972)!
         XCTAssertEqual(primaryClass.callings.count, 2)
-        let teacher = Position(positionTypeId: 1482, name: "Primary Teacher", hidden: false)
+        let teacher = Position(positionTypeId: 1482, name: "Primary Teacher", hidden: false, multiplesAllowed: true)
         
-        let newCalling = Calling(id: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 999, status: .Proposed, position: teacher, notes: nil, editableByOrg: true, parentOrg: primaryClass)
+        let newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 999, status: .Proposed, position: teacher, notes: nil, editableByOrg: true, parentOrg: primaryClass)
         
         org = org.updatedWith(newCalling: newCalling)!
         primaryClass = org.getChildOrg(id: 752892)!
@@ -204,7 +204,7 @@ class ModelTests: XCTestCase {
 
         var ctr8Org = org.getChildOrg( id: 752892 )!
         let proposedCalling = ctr8Org.callings[0]
-        let ctr8Teacher = Position(positionTypeId: 1482, name: nil, hidden: false)
+        let ctr8Teacher = Position(positionTypeId: 1482, name: nil, hidden: false, multiplesAllowed: true)
         otherCallingInOrg = ctr8Org.callings[1]
         updatedOrg = performCallingUpdateAndValidation(parentOrg: org, childOrg: ctr8Org, originalCalling: proposedCalling, callingIdx: 0, expectedId: nil, expectedPosition: ctr8Teacher, updatedIndId: 999, updatedStatus: .Rejected)
         otherCallingAfterUpdate = updatedOrg.getChildOrg(id: 752892)!.callings[1]
@@ -260,7 +260,7 @@ class ModelTests: XCTestCase {
         XCTAssertNotEqual( calling.proposedStatus, updatedStatus )
         calling.proposedIndId = updatedIndId
         calling.proposedStatus = updatedStatus
-        let updatedOrg = parentOrg.updatedWith( changedCalling: calling, originalCalling: originalCalling )
+        let updatedOrg = parentOrg.updatedWith( changedCalling: calling )
         print("+++++++++++ Org:" + updatedOrg.debugDescription )
         
         let changedChildOrg = updatedOrg?.getChildOrg( id: childOrg.id )
@@ -275,6 +275,68 @@ class ModelTests: XCTestCase {
         
         return updatedOrg!
 
+    }
+    
+    func testCallingCwfId() {
+        XCTAssertNil( Calling.generateCwfId( id: 1234, cwfId: nil ) )
+        XCTAssertEqual( Calling.generateCwfId( id: 1234, cwfId: "cwfID" ), "cwfID" )
+        XCTAssertEqual( Calling.generateCwfId( id: nil, cwfId: "cwfID" ), "cwfID" )
+        XCTAssertNotNil( Calling.generateCwfId( id: nil, cwfId: nil ) )
+    }
+    
+    func testCallingEqual() {
+        let eqPres = Position(positionTypeId: 138, name: "EQ President", hidden: false, multiplesAllowed: false)
+        let ctr7 = Position(positionTypeId: 222, name: "CTR 7 Teacher", hidden: false, multiplesAllowed: true)
+        let eqpCalling = Calling(id: 111, cwfId: "222-3434-111", existingIndId: 555, existingStatus: .Active, activeDate: nil, proposedIndId: 600, status: .Proposed, position: eqPres, notes: nil, editableByOrg: true, parentOrg: standardOrg)
+        let ctr7Calling = Calling(id: 222, cwfId: nil, existingIndId: 600, existingStatus: .Active, activeDate: nil, proposedIndId: 777, status: .Proposed, position: ctr7, notes: nil, editableByOrg: true, parentOrg: standardOrg)
+        
+        
+        // callings that has a position ID that matches
+        var callingWithMatchingId = eqpCalling
+        XCTAssertTrue( eqpCalling == callingWithMatchingId )
+        
+        // just changing the parent org should be enough to make it no longer match
+        callingWithMatchingId.parentOrg = multiDepthOrg
+        XCTAssertFalse( eqpCalling == callingWithMatchingId )
+        
+        //  diff. calling in same org doesn't match
+        XCTAssertFalse( eqpCalling == ctr7Calling )
+
+        // calling that matches only based on positionId
+        callingWithMatchingId = Calling(id: 111, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: eqPres, notes: nil, editableByOrg: true, parentOrg: standardOrg)
+        XCTAssertTrue( eqpCalling == callingWithMatchingId )
+        
+        // calling with a different ID, but the same position, multiples not allowed so should match based on position
+        let callingDiffIdSamePosition = Calling(id: 1122, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: eqPres, notes: nil, editableByOrg: true, parentOrg: standardOrg)
+        XCTAssertTrue( eqpCalling == callingDiffIdSamePosition )
+        
+        // calling with a different ID, but the same position, multiples are allowed so should not match based on position
+        let callingDiffIdSamePositionWithMulti = Calling(id: 1122, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: ctr7, notes: nil, editableByOrg: true, parentOrg: standardOrg)
+        XCTAssertFalse( ctr7Calling == callingDiffIdSamePositionWithMulti )
+        
+        // proposed callings, only with cwfId
+        let proposed = Calling(id: nil, cwfId: "11-22-33", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 555, status: .Proposed, position: ctr7, notes: nil, editableByOrg: true, parentOrg: standardOrg)
+        var changedProposed = proposed
+        changedProposed.proposedIndId = 777
+        changedProposed.proposedStatus = .Approved
+        XCTAssertTrue( proposed == changedProposed )
+        
+        // if it has a different cwfId it should not match even though it's same position (when multiples are allowed)
+        changedProposed = Calling(id: nil, cwfId: "44-55-66", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 777, status: .Approved, position: ctr7, notes: nil, editableByOrg: true, parentOrg: standardOrg)
+        XCTAssertFalse( proposed == changedProposed )
+        
+        // a proposed calling merged on another client with an active. Should match based on cwfId
+        let proposedMergedActive = Calling(id: 1122, cwfId: "11-22-33", existingIndId: 555, existingStatus: .Active, activeDate: nil, proposedIndId: 777, status: .Approved, position: ctr7, notes: nil, editableByOrg: true, parentOrg: standardOrg)
+        XCTAssertTrue( proposed == proposedMergedActive )
+        
+        //  test for same calling w/ different cwfId's (multiples not allowed - should match based on position regardless of different cwfId)
+        changedProposed = Calling(id: nil, cwfId: "44-55-66", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 777, status: .Approved, position: eqPres, notes: nil, editableByOrg: true, parentOrg: standardOrg)
+        XCTAssertTrue( eqpCalling == changedProposed )
+        
+        
+        //  test for same calling w/ different cwfId's (multiples allowed - should NOT match based on position due to different cwfId)
+        XCTAssertFalse( ctr7Calling == proposed )
+        
     }
 
     func testPerformanceExample() {

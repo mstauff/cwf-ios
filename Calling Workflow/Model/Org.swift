@@ -38,6 +38,18 @@ public struct Org : JSONParsable  {
     var children : [Org] = []
     
     var callings : [Calling] = []
+    
+    var validPositions : [Position] = []
+    
+    var potentialNewPositions : [Position] {
+        get {
+            let existingPositionIds = callings.map() { $0.position.positionTypeId }
+            return validPositions.filter() {
+                // eventually this needs to account for hidden callins as well
+                $0.multiplesAllowed || !existingPositionIds.contains(item: $0.positionTypeId)
+            }
+        }
+    }
 
     var allOrgCallingIds : [Int64] {
         get {
@@ -67,9 +79,21 @@ public struct Org : JSONParsable  {
 
     var hasUnsavedChanges = false
     
+    /// Indicates that this org is new to our data (i.e. the org was created in LCR). This enum will allow us to visually mark the org so the user can be aware of the change.
+    var conflict : ConflictCause? = nil
+    
     // Do we need these? Probably not for the app, but maybe we will to be able to send necessary data to LCR for calling updates
     //    var parentOrg : Org
     
+    /** Function to create an array of Orgs from an array of JSON objects. When we get LCR data for a unit it comes as an array of all the root level orgs in a unit. It isn't contained in a parent Org structure, so this is a convenience method for processing those root level orgs in one call */
+    static func orgArrays( fromJSONArray json: [JSONObject]) -> [Org] {
+        let orgs : [Org] = json.flatMap() {
+            Org(fromJSON: $0)
+        }
+        return orgs
+        
+    }
+
     public init?(fromJSON json: JSONObject) {
         guard
             // currently orgType is inlined with the org object, rather than a separate JSON piece
@@ -92,11 +116,13 @@ public struct Org : JSONParsable  {
         var org = Org( id: id.int64Value, orgTypeId: orgTypeId, orgName: orgName!, displayOrder: displayOrder, children: childOrgs, callings: [] )
         let parsedCallings : [Calling] = callings.map() { callingJson -> Calling? in
             var calling = Calling( fromJSON: callingJson )
+            // todo - at some point we need to deal with hidden callings
             calling?.parentOrg = org
             return calling
             }.flatMap() {$0} // .flatMap() will remove nil's
 
         org.callings = parsedCallings
+        org.validPositions = Array.init( Set<Position>(parsedCallings.map() { $0.position }) )
         self = org
     }
     
@@ -136,6 +162,10 @@ public struct Org : JSONParsable  {
         return self.allSubOrgs.first(where: { $0.id == id })
     }
     
+    public func getCalling( _ calling: Calling ) -> Calling? {
+        return self.allOrgCallings.first( where: { $0 == calling } )
+    }
+    
     /** Updates a suborg within this org, if the org is already a child of this org. If it's not a child this method does nothing (it doesn't add it) */
     public mutating func updateDirectChildOrg(org: Org ) {
         if let childOrgIdx = self.children.index(of: org) {
@@ -146,7 +176,7 @@ public struct Org : JSONParsable  {
     /** Returns an optional int indicating 1) whether the given calling is a calling within this org, 2) Whether the calling is a calling of this org, or a calling of a child subOrg. If this method returns nil it indicates the calling is not found int this org at all. A return of 0 means it is a direct calling of the current org (it exists in org.callings[]). If it returns greater than 0 that indicates that it is a calling within one of the child suborgs of this org */
     public func getCallingDepth( calling: Calling ) -> Int? {
         var depth : Int? = nil
-        if self.callings.contains( calling ) || calling.parentOrg?.id == self.id {
+        if calling.parentOrg?.id == self.id || self.callings.contains( calling ) {
             depth = 0
         } else {
             for childOrg in self.children {
@@ -161,47 +191,45 @@ public struct Org : JSONParsable  {
     }
     
     /** Returns a new org with the original calling changed to the updated calling. We have to provide the original calling because if it's just a proposed calling there is no ID to key off of. Only actual callings in LCR have an ID. So we need the original (with the proposed individual ID, position & status) to act as a pseudo-key and help us identify which calling to update  */
-    public func updatedWith( changedCalling: Calling, originalCalling: Calling ) -> Org? {
-        return updatedWithCallingChange( updatedCalling: changedCalling, originalCalling: originalCalling, operation: .Update )
+    public func updatedWith( changedCalling: Calling ) -> Org? {
+        return updatedWithCallingChange( updatedCalling: changedCalling, operation: .Update )
     }
 
     /** Returns a new org with the calling added to it's list of callings */
     public func updatedWith( newCalling: Calling ) -> Org? {
-        return self.updatedWithCallingChange(updatedCalling: newCalling, originalCalling: nil, operation: .Create )
+        return self.updatedWithCallingChange(updatedCalling: newCalling, operation: .Create )
     }
     
     /** Returns a new org with the given calling removed from it's list of callings */
     public func updatedWith( callingToDelete: Calling ) -> Org? {
-        return self.updatedWithCallingChange(updatedCalling: callingToDelete, originalCalling: nil, operation: .Delete )
+        return self.updatedWithCallingChange(updatedCalling: callingToDelete, operation: .Delete )
     }
     
     /** Does the actual work of doing the CRUD operations with callings. Because Org is a struct we have to return a new copy with the updated data, we can't just make an inline change.*/
-    func updatedWithCallingChange( updatedCalling: Calling, originalCalling: Calling?, operation : CRUDOperation) -> Org? {
+    func updatedWithCallingChange( updatedCalling: Calling, operation : CRUDOperation) -> Org? {
         // the calling has to be somewhere within this org for us to update it
         guard let callingDepth = self.getCallingDepth(calling: updatedCalling) else {
             return nil
         }
 
-        // if we're doing an update then originalCalling can't be nil
-        if operation == .Update && originalCalling == nil {
-            return nil
-        }
-        
         var updatedOrg = self
         // if the calling exists in the current org (not a child org further down) then we go ahead and make a change, based on the operation
         if callingDepth == 0 {
             switch operation {
-            case .Create:
-                updatedOrg.callings.append( updatedCalling )
-            case .Update:
-                let callingIdx = self.callings.index(of: originalCalling!)
-                updatedOrg.callings[callingIdx!] = updatedCalling
+            case .Create, .Update:
+                // look to find the match even on an add - could have been added by someone else
+                if let callingIdx = self.callings.index(of: updatedCalling) {
+                    updatedOrg.callings[callingIdx] = updatedCalling
+                } else {
+                    updatedOrg.callings.append( updatedCalling )
+                }
             case .Delete:
+                // if someone else has already deleted this will still function
                 updatedOrg.callings = updatedOrg.callings.filter() { $0 != updatedCalling }
             }
         } else {
             // otherwise the calling is in a child org, so we go through all the children and attempt to update the calling. If the calling isn't in a given child org the method will return nil in which case we just use the org as it is. If the org does contain the calling then the method returns a new copy of the org and we will place that in the list of child orgs
-            updatedOrg.children = self.children.map() { $0.updatedWithCallingChange(updatedCalling: updatedCalling, originalCalling: originalCalling, operation: operation) ?? $0 }
+            updatedOrg.children = self.children.map() { $0.updatedWithCallingChange(updatedCalling: updatedCalling, operation: operation) ?? $0 }
         }
         
         return updatedOrg
@@ -221,6 +249,7 @@ extension Org : Equatable {
         return lhs.id == rhs.id
     }
 }
+
 
 private struct OrgJsonKeys {
     static let id = "subOrgId"
