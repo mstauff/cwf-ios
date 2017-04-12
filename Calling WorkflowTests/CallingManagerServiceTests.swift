@@ -13,20 +13,15 @@ class CallingManagerServiceTests: XCTestCase {
 
     var callingMgr = CWFCallingManagerService()
     var org : Org?
+    var positionsOrg : Org?
+    var lcrOrg = Org( id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
+    var appOrg  = Org( id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
 
     override func setUp() {
-        let bundle = Bundle( for: type(of: self) )
-        if let filePath = bundle.path(forResource: "cwf-object", ofType: "js"),
-           let fileData = NSData(contentsOfFile: filePath) {
-
-            let jsonData = Data( referencing: fileData )
-            print( jsonData.debugDescription )
-            let testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:AnyObject]
-            org = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
-
-        } else {
-            print( "No File Path found for file" )
-        }
+        org = getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithCallingsInSubOrg")!
+        lcrOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "lcrOrg")
+        appOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "appOrg")
+        positionsOrg = getSingleOrgFromFile(fileName: "org-callings")
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -36,38 +31,60 @@ class CallingManagerServiceTests: XCTestCase {
         super.tearDown()
     }
     
-    func testmapForCallingsById() {
-        // todo - this used to test a convenience method in callingMgr - needs to be moved to a new CollectionExtensionsTests
-        let callingMap = org!.allOrgCallings.toDictionaryById( {$0.id})
-        var calling = callingMap[734829]!
-        XCTAssertEqual( calling.existingIndId, 123 )
-        calling = callingMap[734820]!
-        XCTAssertEqual( calling.existingIndId, 234 )
-        // ensure we're pulling in callings from all suborgs - test org has 6 callings total, 1 is a proposed so it won't be included in the map (no ID), another is invalid calling so it's not in the org
-        XCTAssertEqual( callingMap.count, 4 )
-    }
-
-    func testToDictionary() {
-        struct MiniCalling {
-            var id : Int64
-
-            init(_ id: Int64 ) {
-                self.id = id
-            }
+    func getOrgFromFile( fileName: String, orgJsonName: String ) -> Org? {
+        var result : Org? = nil
+        let bundle = Bundle( for: type(of: self) )
+        if let filePath = bundle.path(forResource: fileName, ofType: "js"),
+            let fileData = NSData(contentsOfFile: filePath) {
+            
+            let jsonData = Data( referencing: fileData )
+            print( jsonData.debugDescription )
+            let testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:AnyObject]
+            result = Org( fromJSON: (testJSON?[orgJsonName] as? JSONObject)! )
+            
+        } else {
+            print( "No File Path found for file" )
         }
-        let ids  = [MiniCalling(5725983759238525), MiniCalling(63523098520934824), MiniCalling(72384029349323)]
-        let parent = MiniCalling(789)
 
-        let idMap  = ids.toDictionary({ ($0.id, parent.id) })
-
-        XCTAssertEqual(idMap.count, 3)
-        XCTAssertEqual(idMap[5725983759238525], 789)
-        XCTAssertEqual(idMap[72384029349323], 789)
-        XCTAssertNil(idMap[60])
-
-
+        return result
     }
 
+    func getSingleOrgFromFile( fileName: String ) -> Org? {
+        var result = Org(id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue)
+        let bundle = Bundle( for: type(of: self) )
+        if let filePath = bundle.path(forResource: fileName, ofType: "js"),
+            let fileData = NSData(contentsOfFile: filePath) {
+            
+            let jsonData = Data( referencing: fileData )
+            print( jsonData.debugDescription )
+            let testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [AnyObject]
+            result.children = Org.orgArrays( fromJSONArray: (testJSON as? [JSONObject])! )
+            
+        } else {
+            print( "No File Path found for file" )
+        }
+        
+        return result
+    }
+    
+    func getOrgsFromFile( fileName: String, orgJsonName: String ) -> [Org] {
+        var result : [Org] = []
+        let bundle = Bundle( for: type(of: self) )
+        if let filePath = bundle.path(forResource: fileName, ofType: "js"),
+            let fileData = NSData(contentsOfFile: filePath) {
+            
+            let jsonData = Data( referencing: fileData )
+            print( jsonData.debugDescription )
+            let testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:AnyObject]
+            result = Org.orgArrays( fromJSONArray: (testJSON?[orgJsonName] as? [JSONObject])! )
+            
+        } else {
+            print( "No File Path found for file" )
+        }
+        
+        return result
+    }
+    
     func testmapForCallingsByIndId() {
         let callingMap = callingMgr.multiValueDictionaryFromArray(array: org!.allOrgCallings, transformer: {$0.proposedIndId})
         validateCallingList(callingMap: callingMap, indId: 567, expectedNumCallings: 2, expectedCallings: [1482, 1483], shouldNotHaveCallings: [1481])
@@ -85,6 +102,95 @@ class CallingManagerServiceTests: XCTestCase {
         for callingId in shouldNotHaveCallings{
             XCTAssertFalse( callingIds.contains( callingId) )
         }
+    }
+    
+    func testOrgPositions() {
+        let testOrg = positionsOrg!
+        let bishopric = testOrg.getChildOrg(id: 555)!
+        let bishopricPositions = bishopric.validPositions
+        XCTAssertEqual( bishopricPositions.count, 4 )
+        XCTAssertTrue( bishopric.potentialNewPositions.isEmpty )
+        
+        
+        var hpGroup = testOrg.getChildOrg(id: 2381009)!
+        var positionTypeIds : [Int] = hpGroup.validPositions.map() {$0.positionTypeId}
+        XCTAssertEqual( positionTypeIds.count, 5 )
+        // ensure it has a position that's currently empty
+        XCTAssertTrue( positionTypeIds.contains(item: 3635) )
+        XCTAssertEqual( positionTypeIds.count, 5 )
+        // there should be one position (Asst. Sec.) that's a potential for adding.
+        XCTAssertEqual( hpGroup.potentialNewPositions.count, 1 )
+        XCTAssertEqual( hpGroup.potentialNewPositions[0].positionTypeId, 3635 )
+        // remove the president - then that position should show up in the list of potentials to be added
+        hpGroup.callings.remove( at: 0 )
+        XCTAssertEqual( hpGroup.potentialNewPositions.count, 2 )
+        XCTAssertEqual( hpGroup.potentialNewPositions[1].positionTypeId, 133 )
+        
+        
+        
+        
+        // ensure we only have one when there are multiples
+        let hpInstructors = testOrg.getChildOrg(id: 4124695)!
+        positionTypeIds = hpInstructors.validPositions.map() {$0.positionTypeId}
+        // 2 callings, but only 1 type of position
+        XCTAssertEqual( hpInstructors.callings.count, 2 )
+        XCTAssertEqual( hpInstructors.potentialNewPositions.count, 1 )
+        XCTAssertEqual( positionTypeIds.count, 1 )
+        XCTAssertTrue( positionTypeIds.contains(item: 137) )
+    }
+    
+    func testReconcileCallings() {
+        // create a reconcileAppOrg & reconcileLdsOrg in the json file
+        // read them in, pass to reconcileCallings & validate
+            let reconciledOrg = callingMgr.reconcileOrg(appOrg: appOrg, ldsOrg: lcrOrg)
+        let primaryOrg = reconciledOrg.getChildOrg(id: 7428354)!
+        XCTAssertEqual( primaryOrg.children.count, 3 )
+        let ctr7 = reconciledOrg.getChildOrg(id: 38432972)!
+        // app & lcr both have 2 callings - but one of them has changed so it will appear as 3 callings, with one of them marked with a conflict for deletion
+        XCTAssertEqual( ctr7.callings.count, 3 )
+        
+        // one should not have changed
+        let sameCalling = ctr7.callings.first() { $0.id == 734829 }!
+        XCTAssertEqual(sameCalling.existingIndId, 123)
+        XCTAssertNil( sameCalling.proposedIndId )
+        
+        // one should be marked for deletion
+        let oldCalling = ctr7.callings.first() { $0.id == 734820 }!
+        XCTAssertEqual( oldCalling.existingIndId, 222 )
+            XCTAssertEqual( oldCalling.conflict, ConflictCause.LdsEquivalentDeleted )
+        // the other should be the new one
+        let updatedCalling = ctr7.callings.first() { $0.id == 734821 }!
+        XCTAssertEqual( updatedCalling.existingIndId, 234 )
+        
+        // someone was released outside the app - no replacement
+        let ctr8 = reconciledOrg.getChildOrg(id: 752892)!
+        let callingReleasedInLcr = ctr8.callings[0]
+        XCTAssertEqual( callingReleasedInLcr.conflict, .LdsEquivalentDeleted )
+        
+        let ctr9 = reconciledOrg.getChildOrg(id: 750112)
+        XCTAssertNotNil( ctr9 )
+        
+        let varsityOrg = reconciledOrg.getChildOrg(id: 839510)!
+        // varsity coach was finalized outside the app. ensure that the proposed version was deleted
+        XCTAssertEqual(varsityOrg.callings.count, 1)
+        var varsityCoach = varsityOrg.callings[0]
+        XCTAssertEqual(varsityCoach.position.positionTypeId, 1459)
+        XCTAssertEqual(varsityCoach.existingIndId, 890)
+        XCTAssertNil(varsityCoach.proposedIndId)
+        XCTAssertEqual(varsityCoach.proposedStatus, .Unknown)
+        
+        let scoutOrg = reconciledOrg.getChildOrg(id: 839500)!
+        XCTAssertEqual(scoutOrg.allOrgCallings.count, 2)
+        // validate that a new calling added in LCR shows up
+        XCTAssertEqual(scoutOrg.callings.count, 1)
+        let newCalling = scoutOrg.callings[0]
+        XCTAssertEqual(newCalling.id, 14727)
+        XCTAssertEqual(newCalling.existingIndId, 789)
+        
+        // todo - outstanding test cases
+        // - proposed & actual with different person - should be merged
+        // - variations with multiple allowed
+        // - callings are same - except app has notes
     }
 
     func testPerformanceExample() {

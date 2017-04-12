@@ -22,6 +22,7 @@
                     "positionTypeId": 1481,
                     "positionTypeEnum": "PRIMARY_WORKER_CTR_7",
                     "position": "Primary Teacher",
+					"allowMultiple": true,
                     "hidden": false,
                     "proposedStatus": "PROPOSED",
                     "proposedIndId": 456,
@@ -36,6 +37,7 @@
                     "positionTypeId": 1481,
                     "positionTypeEnum": "PRIMARY_WORKER_CTR_7",
                     "position": "Primary Teacher",
+					"allowMultiple": true,
                     "hidden": false,
                     "proposedStatus": null,
                     "proposedIndId": null,
@@ -74,6 +76,7 @@
                     "positionTypeId": 1482,
                     "positionTypeEnum": "PRIMARY_WORKER_CTR_8",
                     "position": "Primary Teacher",
+					"allowMultiple": true,
                     "hidden": false,
                     "proposedStatus": "PROPOSED",
                     "proposedIndId": 567,
@@ -88,6 +91,7 @@
                     "positionTypeId": 1482,
                     "positionTypeEnum": "PRIMARY_WORKER_CTR_8",
                     "position": "Primary Teacher",
+					"allowMultiple": true,
                     "hidden": false,
                     "proposedStatus": null,
                     "proposedIndId": null,
@@ -112,6 +116,7 @@
                     "positionTypeId": 1483,
                     "positionTypeEnum": "PRIMARY_WORKER_CTR_9",
                     "position": "Primary Teacher",
+					"allowMultiple": true,
                     "hidden": false,
                     "proposedStatus": "PROPOSED",
                     "proposedIndId": 567,
@@ -153,6 +158,7 @@
                             "positionTypeId": 1459,
                             "positionTypeEnum": "VARSITY_COACH",
                             "position": "Varsity Coach",
+							"allowMultiple": false,
                             "hidden": false,
                             "proposedStatus": null,
                             "proposedIndId": null,
@@ -171,6 +177,7 @@
                     "positionTypeId": 165,
                     "positionTypeEnum": "SCOUTMASTER",
                     "position": "Scoutmaster",
+					"allowMultiple": false,
                     "hidden": false,
                     "proposedStatus": null,
                     "proposedIndId": null,
@@ -199,6 +206,7 @@
             "positionTypeId": 1481,
             "positionTypeEnum": "PRIMARY_WORKER_CTR_7",
             "position": "Primary Teacher",
+			"allowMultiple": true,
             "hidden": true,
             "proposedStatus": "PROPOSED",
             "proposedIndId": 456,
@@ -229,58 +237,6 @@
         "orgTypeId": 1179,
         "orgName": "Bishopric",
         "displayOrder": null
-    }
-],
-    "statuses": [
-    {
-        "name": "CONSIDERING",
-        "active": true,
-        "priority": 10
-    },
-    {
-        "name": "PROPOSED",
-        "active": true,
-        "priority": 20
-    },
-    {
-        "name": "APPROVED",
-        "active": true,
-        "priority": 30
-    },
-    {
-        "name": "REJECTED",
-        "active": true,
-        "priority": 40
-    },
-    {
-        "name": "APPT_SET",
-        "active": true,
-        "priority": 50
-    },
-    {
-        "name": "ACCEPTED",
-        "active": true,
-        "priority": 60
-    },
-    {
-        "name": "DECLINED",
-        "active": true,
-        "priority": 70
-    },
-    {
-        "name": "SUSTAINED",
-        "active": true,
-        "priority": 80
-    },
-    {
-        "name": "SET_APART",
-        "active": true,
-        "priority": 90
-    },
-    {
-        "name": "RELEASED",
-        "active": true,
-        "priority": 110
     }
 ]
 }
