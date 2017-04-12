@@ -11,6 +11,8 @@ import UIKit
 enum DataItemType {
     case Parent
     case Child
+    case Calling
+    case AddCalling
 }
 
 struct AccordionDataItem {
@@ -32,22 +34,36 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
         tableView.register(CWFAccordionRootTableViewCell.self, forCellReuseIdentifier: "rootCell")
         tableView.register(CWFAccordionChildTableViewCell.self, forCellReuseIdentifier: "childCell")
         
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(filterButtonPressed))
+       
         setupView()
-        
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
 
     // MARK: - Setup
     func setupView() {
         if rootOrg != nil {
+            if (rootOrg?.callings != nil && (rootOrg?.callings.count)! > 0) {
+                let newDataItem = AccordionDataItem.init(dataItem: "Add Calling", dataItemType: .AddCalling, expanded: true)
+                dataSource.append(newDataItem)
+            }
+            
+            for calling in (rootOrg?.callings)!{
+                let newCallingDataItem = AccordionDataItem.init(dataItem: calling, dataItemType: .Calling, expanded: false)
+                dataSource.append(newCallingDataItem)
+            }
+            
             for org in (rootOrg?.children)! {
-                let newDataItem = AccordionDataItem.init(dataItem: org, dataItemType: DataItemType.Parent, expanded: false)
+                let newDataItem = AccordionDataItem.init(dataItem: org, dataItemType: .Parent, expanded: false)
                 dataSource.append(newDataItem)
             }
         }
@@ -84,10 +100,25 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: "rootCell", for: indexPath) as? CWFAccordionRootTableViewCell
             cell?.titleLabel.text = (currentDataItem.dataItem as! Org).orgName
             return cell!
-
-        default:
+            
+        case .AddCalling:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "rootCell", for: indexPath) as? CWFAccordionRootTableViewCell
+            cell?.titleLabel.text = currentDataItem.dataItem as? String
+            cell?.newButton.isHidden = false
+            cell?.newButton.addTarget(self, action: #selector(rootAddButtonPressed(sender:)), for: .touchUpInside)
+            return cell!
+        
+        case .Child:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "childCell", for: indexPath) as? CWFAccordionChildTableViewCell
+            let child = (currentDataItem.dataItem as! Org)
+            
+            cell?.title.text = child.orgName
+            
+            return cell!
+            
+        case .Calling:
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-
+            
             let cell = tableView.dequeueReusableCell(withIdentifier: "childCell", for: indexPath) as? CWFAccordionChildTableViewCell
             let calling = (currentDataItem.dataItem as! Calling)
             
@@ -102,8 +133,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
             else {
                 cell?.subtitle.isHidden = true
             }
-            if (true) { //(calling.proposedIndId != nil) { // todo - remove the true
-                if let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: 8999999998963918) { // todo - Remove the hard coded value
+            if (calling.proposedIndId != nil) {
+                if let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: calling.proposedIndId!) {
                     if let nameString = proposedMember.name {
                         cell?.rightItem.text = nameString
                     }
@@ -114,33 +145,57 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
             }
             
             return cell!
+            
+        default:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "childCell", for: indexPath) as? CWFAccordionChildTableViewCell
+            
+            return cell!
         }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let dataItem = dataSource[indexPath.row]
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        if dataItem.dataItemType == DataItemType.Parent {
-            if (dataItem.expanded) {
-                let cell = tableView.cellForRow(at: indexPath) as? CWFAccordionRootTableViewCell
-                cell?.newButton.isHidden = true
-                collapseCell(indexPath: indexPath)
+        switch dataItem.dataItemType {
+        case .Parent:
+            if (dataItem.dataItem as! Org).children.count > 0 {
+                let storyBorad = UIStoryboard.init(name: "Main", bundle: nil)
+                let nextVC = storyBorad.instantiateViewController(withIdentifier: "OrgDetailTableViewController") as? OrgDetailTableViewController
+                nextVC?.rootOrg = dataItem.dataItem as? Org
+                self.navigationController?.pushViewController(nextVC!, animated: true)
+
             }
             else {
-                let cell = tableView.cellForRow(at: indexPath) as? CWFAccordionRootTableViewCell
-                cell?.newButton.isHidden = false
-                cell?.newButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
-                cell?.tag = indexPath.row
-                expandCell(indexPath: indexPath)
+                if (dataItem.expanded) {
+                    let cell = tableView.cellForRow(at: indexPath) as? CWFAccordionRootTableViewCell
+                    cell?.newButton.isHidden = true
+                    collapseCell(indexPath: indexPath)
+                }
+                else {
+                    let cell = tableView.cellForRow(at: indexPath) as? CWFAccordionRootTableViewCell
+                    cell?.newButton.isHidden = false
+                    cell?.newButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
+                    cell?.tag = indexPath.row
+                    expandCell(indexPath: indexPath)
+                }
             }
-        }
-        else {
+        case .AddCalling:
+            print("add calling tapped")
+            
+        case .Child:
+            let storyBorad = UIStoryboard.init(name: "Main", bundle: nil)
+            let nextVC = storyBorad.instantiateViewController(withIdentifier: "OrgDetailTableViewController") as? OrgDetailTableViewController
+            nextVC?.rootOrg = dataItem.dataItem as? Org
+            self.navigationController?.pushViewController(nextVC!, animated: true)
+            
+
+        default:
             let calling = dataItem.dataItem as? Calling
             let storyBoard = UIStoryboard.init(name: "Main", bundle:nil)
             let nextVC = storyBoard.instantiateViewController(withIdentifier: "CallingDetailsTableViewController") as? CallingDetailsTableViewController
             nextVC?.callingToDisplay = calling
             self.navigationController?.pushViewController(nextVC!, animated: true)
+
         }
     }
     
@@ -158,10 +213,11 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
                 currentIndex = currentIndex + 1
             }
         }
-        
-        for i in 0...indexPaths.count - 1 {
-            let index = indexPaths[indexPaths.count-(i+1)]
-            dataSource.remove(at: index.row)
+        if (indexPaths.count > 0) {
+            for i in 0...indexPaths.count - 1 {
+                let index = indexPaths[indexPaths.count-(i+1)]
+                dataSource.remove(at: index.row)
+            }
         }
         dataSource[indexPath.row].expanded = false
         self.tableView.beginUpdates()
@@ -173,8 +229,15 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
         let rootOrg = dataSource[indexPath.row].dataItem
         var i = 0
         var indexPaths : [IndexPath] = []
-        for child in (rootOrg as! Org).callings {
+        for child in (rootOrg as! Org).children {
             let newDataItem = AccordionDataItem.init(dataItem: child, dataItemType: .Child, expanded: false)
+            dataSource.insert(newDataItem, at: indexPath.row + i+1)
+            indexPaths.append(IndexPath(row: indexPath.row + i+1, section: 0))
+            i += 1
+        }
+        
+        for calling in (rootOrg as! Org).callings {
+            let newDataItem = AccordionDataItem.init(dataItem: calling, dataItemType: .Calling, expanded: false)
             dataSource.insert(newDataItem, at: indexPath.row + i+1)
             indexPaths.append(IndexPath(row: indexPath.row + i+1, section: 0))
             i += 1
@@ -201,9 +264,22 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
         self.navigationController?.pushViewController(nextVC!, animated: true)
     }
     
+    func rootAddButtonPressed(sender: UIButton) {
+        let storyBoard = UIStoryboard.init(name: "Main", bundle:nil)
+        let nextVC = storyBoard.instantiateViewController(withIdentifier: "NewCallingTableViewController") as? NewCallingTableViewController
+        nextVC?.parentOrg = self.rootOrg
+        self.navigationController?.pushViewController(nextVC!, animated: true)
+    }
+    
     class func getCellHeight () -> CGFloat {
         return 50.0
     }
+    
+    // MARK: - Filter
+    func filterButtonPressed() {
+        print("showFilter")
+    }
+
     // MARK: - Navigation
 
 }

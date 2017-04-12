@@ -11,6 +11,8 @@ target 'Calling Workflow' do
   # Pods for Calling Workflow
 
   target 'Calling WorkflowTests' do
+#      inherit! :search_paths
+
       pod 'GoogleAPIClient/Drive', '~> 1.0.2'
       pod 'GTMOAuth2', '~> 1.1.0'
       pod 'Locksmith'

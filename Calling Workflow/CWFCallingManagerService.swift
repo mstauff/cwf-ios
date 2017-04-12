@@ -374,6 +374,23 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             }
         }
     }
+    
+    func loadOrgFromVC(orgToLoad: Org?) -> Bool {
+        guard orgToLoad != nil else {
+            return false
+        }
+        let dataSourceGroup = DispatchGroup()
+        
+        dataSourceGroup.enter()
+        self.getOrgData(forOrgId: (orgToLoad?.id)!) { org, error in
+            dataSourceGroup.leave()
+            
+            guard org != nil else {
+                return
+            }
+        }
+        return true
+    }
 
 }
 
