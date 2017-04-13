@@ -133,6 +133,8 @@ public enum Priesthood : String {
         self.init( optionalRaw: rawValue )
     }
     
+    static let allValues = [Deacon, Teacher, Priest, Elder, HighPriest, Seventy]
+    
     
 }
 
