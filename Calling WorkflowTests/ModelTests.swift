@@ -206,7 +206,7 @@ class ModelTests: XCTestCase {
         let proposedCalling = ctr8Org.callings[0]
         let ctr8Teacher = Position(positionTypeId: 1482, name: nil, hidden: false, multiplesAllowed: true)
         otherCallingInOrg = ctr8Org.callings[1]
-        updatedOrg = performCallingUpdateAndValidation(parentOrg: org, childOrg: ctr8Org, originalCalling: proposedCalling, callingIdx: 0, expectedId: nil, expectedPosition: ctr8Teacher, updatedIndId: 999, updatedStatus: .Rejected)
+        updatedOrg = performCallingUpdateAndValidation(parentOrg: org, childOrg: ctr8Org, originalCalling: proposedCalling, callingIdx: 0, expectedId: nil, expectedPosition: ctr8Teacher, updatedIndId: 999, updatedStatus: .NotApproved)
         otherCallingAfterUpdate = updatedOrg.getChildOrg(id: 752892)!.callings[1]
         validateCallingsSame(  otherCallingInOrg, otherCallingAfterUpdate )
         
@@ -338,6 +338,30 @@ class ModelTests: XCTestCase {
         XCTAssertFalse( ctr7Calling == proposed )
         
     }
+
+    // found this online as a way to count the number of enum values, so we can compare to make sure the allValues contains everything. If allValues size is different then the number of enums, an enum was likely added but left out of allValues. It's not perfect, but better than nothing
+    func enumCount<T: Hashable>(_ t: T.Type) -> Int {
+        var i = 1
+        while (withUnsafePointer(to: &i) {
+            $0.withMemoryRebound(to:t.self, capacity:1) { $0.pointee.hashValue != 0 }
+        }) {
+            i += 1
+        }
+        return i
+    }
+    
+    func testStatusEnums() {
+        // ensure that allValues has the same number of elements as the enum. This should catch the case where a we add an enum value but forget to add it to allValues
+        XCTAssertEqual(enumCount(CallingStatus.self), CallingStatus.allValues.count)
+        // basically check for any duplicates. This would catch a copy/paste error where something in allValues gets copied, but not updated to the new enum value
+        XCTAssertEqual(CallingStatus.allValues.count, Set<CallingStatus>(CallingStatus.allValues).count)
+    }
+
+    func testPriesthoodEnums() {
+        XCTAssertEqual(enumCount(Priesthood.self), Priesthood.allValues.count)
+        XCTAssertEqual(Priesthood.allValues.count, Set<Priesthood>(Priesthood.allValues).count)
+    }
+    
 
     func testPerformanceExample() {
         // This is an example of a performance test case.
