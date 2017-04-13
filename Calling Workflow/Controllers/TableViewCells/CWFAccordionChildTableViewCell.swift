@@ -40,11 +40,13 @@ class CWFAccordionChildTableViewCell: UITableViewCell {
     }
     
     func setupCell() {
+        let horizontalMargin : CGFloat = 15.0
         self.backgroundColor = UIColor.groupTableViewBackground
-        
+
         title.translatesAutoresizingMaskIntoConstraints = false
         title.adjustsFontSizeToFitWidth = true
         title.minimumScaleFactor = 0.6
+        title.lineBreakMode = .byTruncatingMiddle
         
         subtitle.translatesAutoresizingMaskIntoConstraints = false
         subtitle.font = UIFont(name: subtitle.font.fontName, size: 12.0)
@@ -52,7 +54,6 @@ class CWFAccordionChildTableViewCell: UITableViewCell {
         
         rightItem.translatesAutoresizingMaskIntoConstraints = false
         rightItem.adjustsFontSizeToFitWidth = true
-        rightItem.numberOfLines = 0
         rightItem.textColor = UIColor.CWFDarkGreenColor
         
         self.addSubview(title)
@@ -61,14 +62,14 @@ class CWFAccordionChildTableViewCell: UITableViewCell {
         
         let rightItemWidthConstraint = NSLayoutConstraint(item: rightItem, attribute: .width, relatedBy: .equal, toItem: self, attribute: .width, multiplier: (1/3), constant: 0)
         let rightItemHeightConstraint = NSLayoutConstraint(item: rightItem, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 1, constant: 0)
-        let rightItemHConstraint = NSLayoutConstraint(item: rightItem, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: -10)
+        let rightItemHConstraint = NSLayoutConstraint(item: rightItem, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: -horizontalMargin)
         let rightItemVConstraint = NSLayoutConstraint(item: rightItem, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0)
         
         self.addConstraints([rightItemWidthConstraint, rightItemHeightConstraint, rightItemHConstraint, rightItemVConstraint])
        
         let titleWidthConstraint = NSLayoutConstraint(item: title, attribute: .right, relatedBy: .equal, toItem: rightItem, attribute: .left, multiplier: 1, constant: -5)
         let titleHeightConstraint = NSLayoutConstraint(item: title, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 20)
-        let titleHConstraint = NSLayoutConstraint(item: title, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 35)
+        let titleHConstraint = NSLayoutConstraint(item: title, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 2 * horizontalMargin)
         let titleVConstraint = NSLayoutConstraint(item: title, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 5)
         
         let subWidthConstraint = NSLayoutConstraint(item: subtitle, attribute: .right, relatedBy: .equal, toItem: title, attribute: .right, multiplier: 1, constant: 0)
