@@ -8,18 +8,16 @@
 
 import UIKit
 
-class MemberPickerTableViewController: UITableViewController {
+class MemberPickerTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate {
     
     var delegate: MemberPickerDelegate?
 
     var members : [Member] = []
     var memberDetailView: MemberInfoView?
     
-    var selectedMember : Member?
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.done, target: self, action: #selector(doneButtonPressed))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: UIBarButtonItemStyle.done, target: self, action: #selector(filterButtonPressed))
 
         tableView.register(TitleAdjustableSubtitleTableViewCell.self, forCellReuseIdentifier: "cell")
         
@@ -73,15 +71,46 @@ class MemberPickerTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedMember = members[indexPath.row]
+         memberSelected(selectedMember: members[indexPath.row])
     }
-
-    // MARK: - Done Button Methods
-    func doneButtonPressed() {
+    
+    // Mark: - UIPopoverPresentationControllerDelegate
+    
+    func prepareForPopoverPresentation(_ popoverPresentationController: UIPopoverPresentationController) {
+        popoverPresentationController.permittedArrowDirections = .any
+        popoverPresentationController.barButtonItem = self.navigationItem.rightBarButtonItem
+    }
+    
+    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        return (traitCollection.horizontalSizeClass == .compact) ? .popover : .none
+    }
+    
+    // MARK: - Button Methods
+    func memberSelected(selectedMember: Member?) {
         if selectedMember != nil {
             delegate?.setProspectiveMember(member: selectedMember!)
         }
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    func filterButtonPressed(sender : UIView){
+        let mainBoard = UIStoryboard.init(name: "Main", bundle:nil)
+        let popoverContentController = mainBoard.instantiateViewController(withIdentifier: "PopoverViewController")
+        popoverContentController.popoverPresentationController?.delegate = self
+        popoverContentController.popoverPresentationController?.sourceView = sender
+        popoverContentController.popoverPresentationController?.sourceRect = sender.bounds
+        popoverContentController.view.backgroundColor = UIColor.blue
+        
+        
+        // Set the presentation style to modal so that the above methods get called.
+        popoverContentController.modalPresentationStyle = UIModalPresentationStyle.popover
+        
+        
+        // Present the popover.
+        self.present(popoverContentController, animated: true, completion: nil)
+        
+        
+        
     }
 
     func showMemberDetails(_ sender: UIButton) {
@@ -96,7 +125,7 @@ class MemberPickerTableViewController: UITableViewController {
             let constraintWidth = NSLayoutConstraint(item: memberDetailView!, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
             let constraintHeight = NSLayoutConstraint(item: memberDetailView!, attribute: .height, relatedBy: .equal, toItem: self.view, attribute: .height, multiplier: 1, constant: 0)
             let constraintV = NSLayoutConstraint(item: memberDetailView!, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 0)
-            self.view.addConstraints([constraintWidth, constraintHeight])
+            self.view.addConstraints([constraintWidth, constraintHeight, constraintV])
         }
     }
 
