@@ -15,11 +15,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // not currently being used - look to RootTabBar...Controller
     var callingManager = CWFCallingManagerService()
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-
-        // Override point for customization after application launch.
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions options: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         return true
     }
+    
+    func application(_ app : UIApplication,open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        // config for google sign in. It either needs to stay here
+        let source : String = options[UIApplicationOpenURLOptionsKey.sourceApplication] as! String
+        return GIDSignIn.sharedInstance().handle(url as URL!,
+                                                 sourceApplication: source,
+                                                 annotation: options[UIApplicationOpenURLOptionsKey.annotation])
+    }
+
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

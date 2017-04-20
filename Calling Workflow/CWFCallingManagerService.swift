@@ -107,8 +107,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     }
     
     /** Authenticate with the application's data source (currently google drive). We need to pass in the current view controller because if the user isn't already authenticated the google API will display a login screen for the user to authenticate. This should always be called before calling loadAppData() */
-    public func authorizeDataSource(currentVC: UIViewController, completionHandler: @escaping (UIViewController?, Bool, NSError?) -> Void) {
-        dataSource.authenticate(currentVC: currentVC, completionHandler: completionHandler)
+    public func hasDataSourceCredentials( forUnit unitNum: Int64, completionHandler: @escaping (Bool, Error?) -> Void ) {
+        dataSource.hasValidCredentials(forUnit: unitNum, completionHandler: completionHandler)
     }
     
     /** Reads all the unit data from the application data store (currently google drive), and also reconciles any difference between data previously retrieved from lds.org. This method should only be called after loadLDSData() & authorizeDataSource() have successfully completed. The data is not returned in the callback, it is just maintained within this service. The callback just indicates to the calling function when this method has succesfully completed.

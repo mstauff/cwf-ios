@@ -10,7 +10,7 @@ import Foundation
 import GoogleAPIClient
 import GTMOAuth2
 
-class RemoteDataSource : NSObject, DataSource {
+class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     
     private let orgFileNamesMap : [UnitLevelOrgType:String] = [ .Bishopric : "BISHOPRIC", .BranchPresidency : "BRANCH_PRES", .HighPriests : "HP", .Elders : "EQ", .ReliefSociety : "RS", .YoungMen : "YM", .YoungWomen : "YW", .SundaySchool : "SS", .Primary : "PRIMARY", .WardMissionaries : "WARD_MISSIONARY", .Other : "OTHER"]
     private let orgNameDelimiter = "-"
@@ -18,7 +18,7 @@ class RemoteDataSource : NSObject, DataSource {
     // This is all the permissions (scopes) that the app needs
     // If modifying these scopes, delete your previously saved credentials by
     // resetting the iOS simulator or uninstall the app.
-    private let scopes = [kGTLAuthScopeDriveMetadataReadonly, kGTLAuthScopeDriveAppdata]
+    private let requiredScopes = [kGTLAuthScopeDriveMetadataReadonly, kGTLAuthScopeDriveAppdata]
     
     private let driveService = GTLServiceDrive()
     private var remoteDataFile : GTLDriveFile? = nil
@@ -32,7 +32,7 @@ class RemoteDataSource : NSObject, DataSource {
     // that gets passed in as the selector will then invoke these callbacks when it completes. This allows us
     // to translate between the selectors used by google drive and Swift closure mechanisms used
     // by calling clients
-    private var authCompletionHandler : ((UIViewController?, Bool, NSError?) -> Void)? = nil
+    private var authCompletionHandler : ((Bool, Error?) -> Void)? = nil
     private var fileListCompletionHandler : (([GTLDriveFile],NSError? ) -> Void)? = nil
     
     /*************** computed props ******************/
@@ -43,62 +43,44 @@ class RemoteDataSource : NSObject, DataSource {
         
         return canAuth
     }
-    
-    /* Checks the keychain for an existing auth token */
+   
     override init() {
-        // TODO - this doesn't work locally, may be due to a bug when xcode debugger is attached to a sim.
-        // Need to try it once we're working on a device, w/o xcode debugger
-        
-        if let auth = GTMOAuth2ViewControllerTouch.authForGoogleFromKeychain( forName: RemoteStorageConstants.authTokenKeychainId, clientID: RemoteStorageConstants.oauthClientId,clientSecret: nil){
-            if( auth.canAuthorize ) {
-                driveService.authorizer = auth
-            }
-        }
         super.init()
+        // Override point for customization after application launch.
     }
-
-    /* Ensures the user is authenticated with google drive. It checks if it is already authenticated (via the keychain credentials that are queried at init), if not it presents its' own view controller to the user to authenticate with google drive.*/
-    func authenticate( currentVC : UIViewController, completionHandler: @escaping (UIViewController?, Bool, NSError?) -> Void ) {
-        let scopeString = scopes.joined(separator: " ")
-        if isAuthenticated {
-            completionHandler( nil, true, nil )
+    
+    /* Checks the keychain for an existing auth token, attempts to login if found */
+    func hasValidCredentials( forUnit unitNum : Int64, completionHandler: @escaping (Bool, Error?) -> Void ) {
+        var configureError: NSError?
+        GGLContext.sharedInstance().configureWithError(&configureError)
+        assert(configureError == nil, "Error configuring Google services: \(configureError)")
+        
+        GIDSignIn.sharedInstance().delegate = self
+        GIDSignIn.sharedInstance().scopes = requiredScopes
+        if GIDSignIn.sharedInstance().hasAuthInKeychain() {
+            self.authCompletionHandler = completionHandler
+            // todo - do we need to do this every time?? Any way to search for existing session
+            GIDSignIn.sharedInstance().signInSilently()
         } else {
-            if let googleAuthVC = GTMOAuth2ViewControllerTouch(
-                    scope: scopeString,
-                    clientID: RemoteStorageConstants.oauthClientId,
-                    clientSecret: nil,
-                    keychainItemName: RemoteStorageConstants.authTokenKeychainId,
-                    delegate: self,
-                    finishedSelector: #selector( authComplete(vc:finished:error:)) ) {
-                // store a reference to the completion handler so the authComplete() can reference it
-                // this is so we can convert between using a selector which the google drive API requires
-                // and a simple lambda from our swift code
-                self.authCompletionHandler = completionHandler
-                googleAuthVC.modalPresentationStyle = .overFullScreen
-                currentVC.present(
-                        googleAuthVC,
-                        animated: true,
-                        completion: nil
-                )
-            }
-
-        }
-    }
-
-    /* Google Drive API makes use of #selector methods rather than callbacks, so this method is essentially the callback handler for the google drive authentication. All it basically does is caches the authentication result and then calls the completion handler that was passed in to the authenticate method. */
-    func authComplete(vc : UIViewController, finished authResult : GTMOAuth2Authentication, error : NSError?) {
-        if error != nil {
-            driveService.authorizer = nil
-        } else {
-            driveService.authorizer = authResult
+            completionHandler( false, nil )
         }
         
-        if authCompletionHandler != nil {
-            authCompletionHandler!( vc, authResult != nil, error )
-            // once we've invoked it set it back to nil
-            self.authCompletionHandler = nil
-        }
     }
+
+    /** This is the callback for GIDSignIn signInSilently() attempt */
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        guard error == nil else {
+            print("\(error.localizedDescription)")
+            return
+        }
+            // Perform any operations on signed in user here.
+            //            let userId = user.userID                  // For client-side use only!
+            //            let idToken = user.authentication.idToken // Safe to send to the server
+            //            let fullName = user.profile.name
+        // todo - search profile name for the unit num
+            driveService.authorizer = user.authentication.fetcherAuthorizer()
+    }
+    
 
     /* This method should be called after authenticate and before you try to retrieve the contents of any org. This is separate from auth or init because it needs to have the list of orgs that exist for a unit on lds.org to compare to what data we have in google drive and either create what's missing, or report what should be deleted. The callback will include a list of orgs that exist in google drive but were not passed in to the method and would be candidates for deletion. Any orgs that are passed in that don't exist in google drive will be silently created. */
     func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ remainingOrgs: [Org], _ error: NSError?) -> Void) {
@@ -328,6 +310,7 @@ class RemoteDataSource : NSObject, DataSource {
     func fetchContents( forFile file: GTLDriveFile, completionHandler : @escaping( _ fileContents:Data?, _ error:NSError? ) -> Void ) {
         
         let fileUrl = String.init(format: "https://www.googleapis.com/drive/v3/files/%@?alt=media", file.identifier)
+        
         let fetcher = driveService.fetcherService.fetcher(withURLString: fileUrl)
         fetcher.beginFetch( ) { (data, error) -> Void in
             guard error == nil else {
