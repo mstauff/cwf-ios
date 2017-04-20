@@ -5,7 +5,8 @@ target 'Calling Workflow' do
   # Comment this line if you're not using Swift and don't want to use dynamic frameworks
   use_frameworks!
   pod 'GoogleAPIClient/Drive', '~> 1.0.2'
-  pod 'GTMOAuth2', '~> 1.1.0'
+  #      pod 'GTMOAuth2', '~> 1.1.0'
+  pod 'Google/SignIn'
   pod 'Locksmith'
 
   # Pods for Calling Workflow
@@ -14,7 +15,8 @@ target 'Calling Workflow' do
 #      inherit! :search_paths
 
       pod 'GoogleAPIClient/Drive', '~> 1.0.2'
-      pod 'GTMOAuth2', '~> 1.1.0'
+#      pod 'GTMOAuth2', '~> 1.1.0'
+    pod 'Google/SignIn'
       pod 'Locksmith'
 
     # Pods for testing
