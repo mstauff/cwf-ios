@@ -23,7 +23,8 @@ protocol DataSource {
     }
 
     // todo - need to tie this to a unit. HOW????
-    func authenticate( currentVC : UIViewController, completionHandler: @escaping (UIViewController?, Bool, NSError?) -> Void  )
+    func hasValidCredentials( forUnit unitNum : Int64, completionHandler: @escaping (Bool, Error?) -> Void )
+
     func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ remainingOrgs: [Org], _ error: NSError?) -> Void)
     func getData( forOrg : Org, completionHandler : @escaping (_ org : Org?, _ error: NSError? ) -> Void )
     

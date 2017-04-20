@@ -27,7 +27,7 @@ import GoogleAPIClient
 import GTMOAuth2
 import UIKit
 
-class FirstViewController: UIViewController {
+class FirstViewController: UIViewController, GIDSignInUIDelegate {
     
     var dataObject = ""
     // TODO - need a constructor/init in the interface
@@ -36,6 +36,8 @@ class FirstViewController: UIViewController {
     private let eq = Org( id: 284, orgTypeId: UnitLevelOrgType.Elders.rawValue, orgName: "Elders Quorum", displayOrder: 400, children: [], callings: [] )
     
     @IBOutlet var output: UITextView!
+//    @IBOutlet weak var signInButton: GIDSignInButton!
+    
     @IBAction func showFileClicked() {
 //        callingMgr.getOrgCallings( org: eq ) {
 //            ( fileContents, error ) -> Void in
@@ -57,21 +59,9 @@ class FirstViewController: UIViewController {
     // and initialize the Drive API service
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //        output.frame = view.bounds
-        output.isEditable = false
-        output.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
-        output.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-        
-        view.addSubview(output);
-        
-        // replaced by DataSource.init()
-        //        if let auth = GTMOAuth2ViewControllerTouch.authForGoogleFromKeychain( forName: kKeychainItemName,clientID: kClientID,clientSecret: nil) {
-        //            if( auth.canAuthorize ) {
-        //                driveService.authorizer = auth
-        //            }
-        //
-        //        }
+
+        GIDSignIn.sharedInstance().uiDelegate = self
+        // todo - should implement optional GIDSignInUIDelegate methods to handle sign in results
         
     }
     

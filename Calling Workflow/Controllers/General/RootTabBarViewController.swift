@@ -13,12 +13,13 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     
     var loginDictionary : Dictionary<String, Any>?
     var spinnerView : UIView?
-
+    
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.getLogin()
-
+        
         //signIntoLDSAPI()
     }
     
@@ -31,11 +32,11 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     func signIntoLDSAPI() {
         startSpinner()
         // todo: put up a spinner
-
+        
         let ldscdApi = LdscdRestApi()
         ldscdApi.getAppConfig() { (appConfig, error) in
             //check for valid logins on the keychain
-
+            
             // Populate these locally - Don't commit to github
             let username = self.loginDictionary?["username"] as! String
             let password = self.loginDictionary?["password"] as! String
@@ -48,43 +49,43 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
                 childView?.getOrgs()
                 childView?.tableView.reloadData()
                 if dataLoaded {
-                    appDelegate?.callingManager.authorizeDataSource(currentVC: self!) { _, _, error in
-                        if let error = error {
-                            self?.showAlert(title: "Authentication Error", message: error.localizedDescription)
-                        } else {
-                                appDelegate?.callingManager.loadAppData() { success, hasOrgsToDelete, error in
-
+                    appDelegate?.callingManager.hasDataSourceCredentials(forUnit: 0 ) { (hasCredentials, signInError) -> Void in
+                        if hasCredentials  {
+                            appDelegate?.callingManager.loadAppData() { success, hasOrgsToDelete, error in
+                                
                                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                                 let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
-
+                                
                                 let navController2 = UINavigationController()
                                 navController2.addChildViewController(loginVC)
-
+                                
                                 self?.present(navController2, animated: false, completion: nil)
-
+                                
                             }
-
+                        }else {
+                            print( "No creds - forward to settings!")
+                            
                         }
-
                     }
+                } else {
+                    print( "Error loading data from LDS.org")
+                    self?.showAlert(title: "LDS.org Authentication Error", message: (loadingError?.localizedDescription)!)
                 }
-                else {
-                    self?.showAlert(title: "Authentication Error", message: (loadingError?.localizedDescription)!)
-                }
+                
             }
         }
     }
-
+    
     func showAlert(title : String, message: String) {
         let alert = UIAlertController(
-                title: title,
-                message: message,
-                preferredStyle: UIAlertControllerStyle.alert
+            title: title,
+            message: message,
+            preferredStyle: UIAlertControllerStyle.alert
         )
         let ok = UIAlertAction(
-                title: "OK",
-                style: UIAlertActionStyle.default,
-                handler: nil
+            title: "OK",
+            style: UIAlertActionStyle.default,
+            handler: nil
         )
         alert.addAction(ok)
         present(alert, animated: true, completion: nil)
@@ -104,7 +105,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
             navController2.addChildViewController(loginVC!)
             
             self.present(navController2, animated: false, completion: nil)
-
+            
         }
         
     }
@@ -117,7 +118,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     }
     
     // MARK: - Spinner Setup
-
+    
     func startSpinner() {
         let spinnerView = UIView()
         spinnerView.translatesAutoresizingMaskIntoConstraints = false
@@ -127,7 +128,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
         textLabel.text = "Loging In"
         textLabel.textColor = UIColor.white
         textLabel.translatesAutoresizingMaskIntoConstraints = false
-
+        
         let spinner = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
         spinner.startAnimating()
         spinner.translatesAutoresizingMaskIntoConstraints = false
@@ -143,17 +144,17 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
         
         self.view.addConstraints(hConstraint)
         self.view.addConstraints(vConstraint)
-
+        
         let spinnerHConstraint = NSLayoutConstraint(item: spinner, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: spinnerView, attribute: .centerX, multiplier: 1, constant: 0)
         let textHConstraint = NSLayoutConstraint(item: textLabel, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: spinnerView, attribute: .centerX, multiplier: 1, constant: 0)
         let spinnerVConstraint = NSLayoutConstraint(item: spinner, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: spinnerView, attribute: .centerY, multiplier: 1, constant: 0)
         let textVConstraint = NSLayoutConstraint(item: textLabel, attribute: .bottom, relatedBy: .equal, toItem: spinner, attribute: .top, multiplier: 1, constant: -15)
-
+        
         self.view.addConstraints([spinnerHConstraint, textHConstraint, spinnerVConstraint, textVConstraint])
     }
     
     func removeSpinner () {
         self.spinnerView?.removeFromSuperview()
     }
-
+    
 }
