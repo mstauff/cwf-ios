@@ -15,6 +15,8 @@ class MemberInfoView: UIView {
     var infoView : UIView = UIView()
     var headerView : UIView = UIView()
 
+    var tapRecognizer: UIGestureRecognizer? = nil
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.75)
@@ -26,12 +28,16 @@ class MemberInfoView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupView(member: Member) {
+    func setupView(member: Member, parentView: UIView) {
         self.memberToView = member
         
         setupInfoView()
 
         setupHeaderView()
+        
+        tapRecognizer = UITapGestureRecognizer(target: self, action:#selector(dismissMemberDetails(_:)))
+        parentView.addGestureRecognizer(tapRecognizer!)
+
 
     }
     
@@ -131,8 +137,14 @@ class MemberInfoView: UIView {
         self.addConstraints(callingsVConstraint)
         //self.addConstraints([emailVConstraint, emailHeightConstraint])
         
-}
+    }
     
+    func dismissMemberDetails(_ sender:UITapGestureRecognizer) {
+        print("tapped")
+        tapRecognizer.rem
+        self.removeFromSuperview()
+    }
+
     /*
     // Only override draw() if you perform custom drawing.
     // An empty implementation adversely affects performance during animation.

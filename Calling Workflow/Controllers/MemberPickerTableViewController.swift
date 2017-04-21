@@ -117,7 +117,7 @@ class MemberPickerTableViewController: UITableViewController, UIPopoverPresentat
         memberDetailView = MemberInfoView()
         print(sender.tag)
         if (memberDetailView != nil) {
-            memberDetailView?.setupView(member: members[sender.tag])
+            memberDetailView?.setupView(member: members[sender.tag], parentView: self.view)
             self.view.addSubview(memberDetailView!)
             //self.tableView.isUserInteractionEnabled = false
             

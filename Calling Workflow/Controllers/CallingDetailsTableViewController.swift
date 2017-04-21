@@ -18,7 +18,9 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     }
 
     var originalCalling : Calling? = nil
-
+    var memberDetailView : MemberInfoView? = nil
+    
+    //Mark: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         originalCalling = callingToDisplay
@@ -202,8 +204,14 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 1:
+            tableView.deselectRow(at: indexPath, animated: false)
+
             switch indexPath.row {
-            
+            case 0:
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                if let currentMember = appDelegate?.callingManager.getMemberWithId(memberId: (callingToDisplay?.existingIndId)!) {
+                    displayContactInfoForMember(member:  currentMember)
+                }
             case 1:
                 let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
                 let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
@@ -216,10 +224,9 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             case 2:
                 let statusActionSheet = getStatusActionSheet(delegate: self)
                 self.present(statusActionSheet, animated: true, completion: nil)
-                
-            default:
-                tableView.deselectRow(at: indexPath, animated: false)
 
+            default:
+                print("Default to do nothing")
             }
             
         default:
@@ -235,6 +242,25 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         self.callingToDisplay?.proposedStatus = status
         tableView.reloadData()
     }
+    
+    func displayContactInfoForMember(member: Member) {
+        memberDetailView = MemberInfoView()
+        if (memberDetailView != nil) {
+            memberDetailView?.setupView(member: member, parentView: self.view)
+            
+            self.view.addSubview(memberDetailView!)
+            //self.tableView.isUserInteractionEnabled = false
+            
+            
+            let constraintWidth = NSLayoutConstraint(item: memberDetailView!, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
+            let constraintHeight = NSLayoutConstraint(item: memberDetailView!, attribute: .height, relatedBy: .equal, toItem: self.view, attribute: .height, multiplier: 1, constant: 0)
+            let constraintV = NSLayoutConstraint(item: memberDetailView!, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 0)
+            let constraintH = NSLayoutConstraint(item: memberDetailView!, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1, constant: 0)
+            self.view.addConstraints([constraintWidth, constraintHeight, constraintV, constraintH])
+        }
+
+    }
+    
     
     func callingActionsButtonPressed() {
         print("buttonPressed")
@@ -284,4 +310,6 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
 //        saveAlert.addAction(saveAction)
 //        present(saveAlert, animated: true, completion: nil)
     }
+    
+
 }
