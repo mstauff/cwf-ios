@@ -71,6 +71,8 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         guard error == nil else {
             print("\(error.localizedDescription)")
+            self.authCompletionHandler?( false, error )
+            self.authCompletionHandler = nil
             return
         }
             // Perform any operations on signed in user here.
@@ -79,6 +81,8 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             //            let fullName = user.profile.name
         // todo - search profile name for the unit num
             driveService.authorizer = user.authentication.fetcherAuthorizer()
+        self.authCompletionHandler?( true, nil )
+        self.authCompletionHandler = nil
     }
     
 
