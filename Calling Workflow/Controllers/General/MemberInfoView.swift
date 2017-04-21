@@ -141,7 +141,6 @@ class MemberInfoView: UIView {
     
     func dismissMemberDetails(_ sender:UITapGestureRecognizer) {
         print("tapped")
-        tapRecognizer.rem
         self.removeFromSuperview()
     }
 
