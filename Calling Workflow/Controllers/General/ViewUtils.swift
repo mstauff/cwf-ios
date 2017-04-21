@@ -17,7 +17,7 @@ func getStatusActionSheet(delegate: StatusPickerDelegate?) -> UIAlertController 
         print("Cancelled")
     })
     
-    let statusArray = [CallingStatus.Proposed, CallingStatus.Submitted, CallingStatus.Approved, CallingStatus.Rejected, CallingStatus.OnHold, CallingStatus.AppointmentSet, CallingStatus.Extended, CallingStatus.Accepted, CallingStatus.Declined, CallingStatus.Sustained, CallingStatus.SetApart, CallingStatus.Recorded, CallingStatus.Unknown]
+    let statusArray = CallingStatus.allValues
     
     for status in statusArray {
         let statusAction = UIAlertAction(title: status.rawValue, style: UIAlertActionStyle.default, handler:  {
