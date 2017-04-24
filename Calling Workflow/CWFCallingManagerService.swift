@@ -45,6 +45,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     /** Performs the calls that need to be made to lds.org at startup, or unit transition. First it gets the application config from our servers (which contains the lds.org endpoints to use). Next it logs in to lds.org, then it retrieves user data which includes their callings (to verify unit permissions), the unit member list and callings. Once all those have completed then we call the callback. If any one of them fails we will return an error via the callback. The data is not returned via the callback, it is just maintained internally in this class. The callback just lets the calling function know that this method has successfully completed.
      
      This method needs to be called prior to calling the authenticate() or loadAppData() methods */
+    // todo - need to pull the sign-in from here, and need to add getCurrentUser call so we have the unit# to pass in here
     public func loadLdsData(forUnit unitNum: Int64, username: String, password: String, completionHandler: @escaping (Bool, Error?) -> Void) {
         // todo: eventually will want to enhance this so appConfig is cached, don't need to re-read when changing units.
         ldscdApi.getAppConfig() { (appConfig, error) in
