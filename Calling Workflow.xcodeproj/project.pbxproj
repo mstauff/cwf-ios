@@ -70,6 +70,7 @@
 		E841701E1E7C767A00A5C049 /* reconcile-test-orgs.js in Resources */ = {isa = PBXBuildFile; fileRef = E841701D1E7C767A00A5C049 /* reconcile-test-orgs.js */; };
 		E85E7EE41E49223B00CE05CD /* CallingManagerServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */; };
 		E85E7EE61E53B6D700CE05CD /* MultiValueDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */; };
+		E875C58C1EAE7E5C00E04499 /* current-user.js in Resources */ = {isa = PBXBuildFile; fileRef = E875C58B1EAE7E5C00E04499 /* current-user.js */; };
 		E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E7E1E01FC6A00A7A618 /* Utils.swift */; };
 		E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */; };
 		E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87D00B91E26EF7000FA722B /* LdsUser.swift */; };
@@ -184,6 +185,7 @@
 		E841701D1E7C767A00A5C049 /* reconcile-test-orgs.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "reconcile-test-orgs.js"; sourceTree = "<group>"; };
 		E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallingManagerServiceTests.swift; sourceTree = "<group>"; };
 		E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MultiValueDictionary.swift; path = Extensions/MultiValueDictionary.swift; sourceTree = "<group>"; };
+		E875C58B1EAE7E5C00E04499 /* current-user.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "current-user.js"; sourceTree = "<group>"; };
 		E87A9E7E1E01FC6A00A7A618 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HTVTMemberParser.swift; path = Model/HTVTMemberParser.swift; sourceTree = "<group>"; };
 		E87D00B91E26EF7000FA722B /* LdsUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LdsUser.swift; path = Model/LdsUser.swift; sourceTree = "<group>"; };
@@ -384,6 +386,7 @@
 				E8189A921DDA74E700E983D4 /* cwf-object.js */,
 				E8F959661E30129700C13EC9 /* member-objects.js */,
 				E8F959671E30129700C13EC9 /* org-callings.js */,
+				E875C58B1EAE7E5C00E04499 /* current-user.js */,
 				3CE4C9061DCA82A000AAFB31 /* GoogleService-Info.plist */,
 				3CE4C8E01DCA824100AAFB31 /* Info.plist */,
 				3CE4C9021DCA82A000AAFB31 /* AppConfig.swift */,
@@ -554,6 +557,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CE4C8DF1DCA824100AAFB31 /* LaunchScreen.storyboard in Resources */,
+				E875C58C1EAE7E5C00E04499 /* current-user.js in Resources */,
 				3CE4C9111DCA82A000AAFB31 /* GoogleService-Info.plist in Resources */,
 				E8F9596C1E30129700C13EC9 /* org-callings.js in Resources */,
 				3CE4C8DC1DCA824100AAFB31 /* Assets.xcassets in Resources */,
