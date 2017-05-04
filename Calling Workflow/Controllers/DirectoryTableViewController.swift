@@ -77,7 +77,7 @@ class DirectoryTableViewController: CWFBaseTableViewController {
     
     func getCallingForMemberWithId(memberId: Int64) -> Calling? {
         
-        let position = Position(positionTypeId: 01, name: "Sunbeam Teacher", hidden: false, multiplesAllowed: true)
+        let position = Position(positionTypeId: 01, name: "Sunbeam Teacher", hidden: false, multiplesAllowed: true, metadata : PositionMetadata())
         
         
         let calling = Calling(id: 01, cwfId: nil, existingIndId: 1, existingStatus: .Active, activeDate: nil, proposedIndId: 123, status: CallingStatus(rawValue: "CONSIDERING"), position: position, notes: nil, editableByOrg: true, parentOrg: nil)

@@ -16,6 +16,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     var appDataOrg: Org? = nil
     private(set) var memberList: [Member] = []
     var appConfig: AppConfig? = nil
+    var positionMetadataMap : [Int:PositionMetadata] = [:]
     
     // implied ldscdApi  comes from LdscdApiInjected
     // implied ldsOrgApi  comes from LdsOrgApiInjected
@@ -32,6 +33,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     private var rootLevelOrgsForSubOrgs: [Int64: Int64] = [:]
     
+    private let jsonFileReader = JSONFileReader()
+    
     
     init() {
         
@@ -42,11 +45,20 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         memberList = iMemberArray
     }
     
+    /** Loads metadata about the different positions from the local filesystem. Eventually we'll want to enhance this so there is a companion method to load it remotely as well (at a time interval). We don't want to slow down startup, so we just read locally and after startup we can periodically check for any updates */
+    private func loadLocalPositionMetadata() {
+        let positionsMD = PositionMetadata.positionArrays(fromJSONArray: jsonFileReader.getJSONArray( fromFile: "position-metadata" ) )
+        positionMetadataMap = positionsMD.toDictionaryById( {$0.positionTypeId} )
+    }
+    
+
+    
     /** Performs the calls that need to be made to lds.org at startup, or unit transition. First it gets the application config from our servers (which contains the lds.org endpoints to use). Next it logs in to lds.org, then it retrieves user data which includes their callings (to verify unit permissions), the unit member list and callings. Once all those have completed then we call the callback. If any one of them fails we will return an error via the callback. The data is not returned via the callback, it is just maintained internally in this class. The callback just lets the calling function know that this method has successfully completed.
      
      This method needs to be called prior to calling the authenticate() or loadAppData() methods */
     // todo - need to pull the sign-in from here, and need to add getCurrentUser call so we have the unit# to pass in here
     public func loadLdsData(forUnit unitNum: Int64, username: String, password: String, completionHandler: @escaping (Bool, Error?) -> Void) {
+        loadLocalPositionMetadata()
         // todo: eventually will want to enhance this so appConfig is cached, don't need to re-read when changing units.
         ldscdApi.getAppConfig() { (appConfig, error) in
             
@@ -83,10 +95,11 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                     restCallsGroup.enter()
                     ldsApi.getOrgWithCallings(unitNum: unitNum) { (org, error) -> Void in
                         if org != nil && !org!.children.isEmpty {
-                            self.ldsOrgUnit = org
+                            
+                            self.ldsOrgUnit = org!.updatedWith(positionMetadata: self.positionMetadataMap)
                             // need to put in dictionary by root level org for updating
                             self.ldsUnitOrgsMap.removeAll()
-                            self.ldsUnitOrgsMap = org!.children.toDictionaryById() { $0.id }
+                            self.ldsUnitOrgsMap = self.ldsOrgUnit!.children.toDictionaryById() { $0.id }
                         } else {
                             print("no org")
                             if error != nil {
@@ -165,7 +178,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                     let errorMsg = "Error: No Org data found for ID: \(orgId)"
                     completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
                 } else {
-                    let mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg)
+                    let mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg).updatedWith(positionMetadata: self.positionMetadataMap)
                     completionHandler(mergedOrg, nil)
                 }
             }

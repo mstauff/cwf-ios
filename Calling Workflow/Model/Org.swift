@@ -190,7 +190,27 @@ public struct Org : JSONParsable  {
         return depth
     }
     
-    /** Returns a new org with the original calling changed to the updated calling. We have to provide the original calling because if it's just a proposed calling there is no ID to key off of. Only actual callings in LCR have an ID. So we need the original (with the proposed individual ID, position & status) to act as a pseudo-key and help us identify which calling to update  */
+    /** Returns a new org with all callings within the org updated with any new metadata contained in the dictionary passed in to the method */
+    public func updatedWith( positionMetadata: [Int:PositionMetadata] ) -> Org {
+        var updatedOrg = self
+        updatedOrg.callings = updatedOrg.callings.map() {
+            // if nothing has changed with the metadata, then do nothing, just return the existing position
+            if $0.position.metadata == positionMetadata[$0.position.positionTypeId] {
+                return $0
+            } else {
+                // if the metadata has changed we have to create a new calling with the new details & return it
+                var updatedPosition = $0.position
+                updatedPosition.metadata = positionMetadata[$0.position.positionTypeId] ?? PositionMetadata()
+                return Calling( $0, position: updatedPosition )
+            }
+        }
+        
+        updatedOrg.children = self.children.map( ) {$0.updatedWith( positionMetadata: positionMetadata )}
+        
+        return updatedOrg
+    }
+    
+    /** Returns a new org with the original calling changed to the updated calling. Returns nil if the calling isn't in this Org.  */
     public func updatedWith( changedCalling: Calling ) -> Org? {
         return updatedWithCallingChange( updatedCalling: changedCalling, operation: .Update )
     }

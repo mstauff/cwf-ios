@@ -29,13 +29,25 @@ public struct Position : JSONParsable {
     
     let multiplesAllowed : Bool
     
+    /// This should not change once set, but because it comes from a different source (not in the position JSON that comes from LCR, we need it to be var so we can set it after the position is init'ed from JSON)
+    var metadata : PositionMetadata
+
+    /// The short version of the name if it exists in the metadata, or just the regular name if there is no short name
+    var shortName : String? {
+        get  {
+            return metadata.shortName ?? name
+        }
+    }
+    
+
     // TODO: do we need something to indicate it's a custom calling? Or can we determine that from the positionTypeId????
-    init(positionTypeId : Int, name : String?, hidden : Bool, multiplesAllowed : Bool) {
+    init(positionTypeId : Int, name : String?, hidden : Bool, multiplesAllowed : Bool, metadata: PositionMetadata) {
         self.positionTypeId = positionTypeId
         self.name = name
         self.hidden = hidden
         self.unitNum = nil
         self.multiplesAllowed = multiplesAllowed
+        self.metadata = metadata
     }
     
     public init?(fromJSON json: JSONObject) {
@@ -44,11 +56,8 @@ public struct Position : JSONParsable {
             else {
                 return nil
         }
-        if let validName = json[PositionJsonKeys.name] {
-            name = validName as? String
-        } else {
-            name = nil
-        }
+        name = json[PositionJsonKeys.name] as? String
+        
         if let validUnitNum = json[PositionJsonKeys.unitNum] {
             unitNum = (validUnitNum as? NSNumber)?.int64Value
         } else {
@@ -59,6 +68,7 @@ public struct Position : JSONParsable {
         multiplesAllowed = json[PositionJsonKeys.allowMultiples] as? Bool ?? true
         
         hidden = json[PositionJsonKeys.hidden] as? Bool ?? false
+        metadata = PositionMetadata()
     }
     
     public func toJSONObject() -> JSONObject {
