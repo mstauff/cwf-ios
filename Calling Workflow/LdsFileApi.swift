@@ -16,6 +16,7 @@ class LdsFileApi : LdsOrgApi {
     private var memberJSON = JSONObject()
     private var orgJSON : [JSONObject] = []
     private var currentUserJSON = JSONObject()
+    private let jsonFileReader = JSONFileReader()
     
     init( appConfig : AppConfig ) {
         self.appConfig = appConfig
@@ -27,49 +28,13 @@ class LdsFileApi : LdsOrgApi {
     /* Simulate signin */
     func ldsSignin(username: String, password: String,_ completionHandler: @escaping ( _ error:NSError? ) -> Void) {
         
-        memberJSON = getJSON( fromFile: "member-objects" )
-        orgJSON = getJSONArray( fromFile: "org-callings" )
-        currentUserJSON = getJSON( fromFile: "current-user" )
+        memberJSON = jsonFileReader.getJSON( fromFile: "member-objects" )
+        orgJSON = jsonFileReader.getJSONArray( fromFile: "org-callings" )
+        currentUserJSON = jsonFileReader.getJSON( fromFile: "current-user" )
             signedIn = true
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
             completionHandler(nil)
         }
-        
-    }
-    
-    private func getJSON( fromFile : String ) -> JSONObject {
-        let bundle = Bundle( for: type(of: self) )
-        var result = JSONObject()
-        if let filePath = bundle.path(forResource: fromFile, ofType: "js"),
-            let fileData = NSData(contentsOfFile: filePath) {
-            
-            let jsonData = Data( referencing: fileData )
-            print( jsonData.debugDescription )
-            if let validJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? JSONObject {
-                result = validJSON
-            }
-        } else {
-            print( "No File Path found for file" )
-        }
-        return result
-
-    }
-
-    private func getJSONArray( fromFile : String ) -> [JSONObject] {
-        let bundle = Bundle( for: type(of: self) )
-        var result : [JSONObject] = []
-        if let filePath = bundle.path(forResource: fromFile, ofType: "js"),
-            let fileData = NSData(contentsOfFile: filePath) {
-            
-            let jsonData = Data( referencing: fileData )
-            print( jsonData.debugDescription )
-            if let validJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [JSONObject] {
-                result = validJSON
-            }
-        } else {
-            print( "No File Path found for file" )
-        }
-        return result
         
     }
     

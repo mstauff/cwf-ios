@@ -60,3 +60,43 @@ public class JSONSerializerImpl : JSONSerializer  {
     
 }
 
+/** Class to load a json file that is included with the app. Not sure if this will work for files that we need to write back to the filesystem. */
+public class JSONFileReader {
+    
+    /** Reads the specified JSON file from the filesystem and returns it as a JSONObject. The filename should just be the name, not the extension. The filename extension needs to be .js */
+    public  func getJSON( fromFile : String ) -> JSONObject {
+        let bundle = Bundle( for: type(of: self) )
+        var result = JSONObject()
+        if let filePath = bundle.path(forResource: fromFile, ofType: "js"),
+            let fileData = NSData(contentsOfFile: filePath) {
+            
+            let jsonData = Data( referencing: fileData )
+            print( jsonData.debugDescription )
+            if let validJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? JSONObject {
+                result = validJSON
+            }
+        } else {
+            print( "No File Path found for file" )
+        }
+        return result
+    }
+    
+    /** Reads the specified JSON file from the filesystem and returns it as an array of JSONObject. The filename should just be the name, not the extension. The filename extension needs to be .js */
+    public func getJSONArray( fromFile : String ) -> [JSONObject] {
+        let bundle = Bundle( for: type(of: self) )
+        var result : [JSONObject] = []
+        if let filePath = bundle.path(forResource: fromFile, ofType: "js"),
+            let fileData = NSData(contentsOfFile: filePath) {
+            
+            let jsonData = Data( referencing: fileData )
+            print( jsonData.debugDescription )
+            if let validJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [JSONObject] {
+                result = validJSON
+            }
+        } else {
+            print( "No File Path found for file" )
+        }
+        return result
+    }
+}
+

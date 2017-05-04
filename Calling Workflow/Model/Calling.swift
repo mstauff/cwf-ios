@@ -62,6 +62,10 @@ public struct Calling : JSONParsable {
         }
     }
     
+    init( _ calling: Calling, position: Position ) {
+        self.init( id: calling.id, cwfId: calling.cwfId, existingIndId : calling.existingIndId, existingStatus: calling.existingStatus, activeDate: calling.activeDate, proposedIndId: calling.proposedIndId, status: calling.proposedStatus, position: position, notes: calling.notes, editableByOrg: calling.editableByOrg, parentOrg : calling.parentOrg)
+    }
+    
     init(id : Int64?, cwfId : String?, existingIndId: Int64?, existingStatus : ExistingCallingStatus?, activeDate : Date?, proposedIndId : Int64?, status : CallingStatus?, position : Position, notes : String?, editableByOrg : Bool, parentOrg : Org?) {
         self.id = id
         // if ID is not set then either cwfID has to contain a value, or we'll generate a UUID.

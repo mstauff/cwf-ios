@@ -81,62 +81,6 @@ public struct Member {
     }
 }
 
-public enum Gender : String {
-    case Male = "MALE"
-    case Female = "FEMALE"
-    
-    public init?( optionalRaw: String? ) {
-        guard optionalRaw != nil
-            else {
-                return nil
-        }
-        switch(optionalRaw!) {
-        case  "MALE": self = .Male
-        case "FEMALE" : self = .Female
-        default: return nil
-        }
-    }
-    
-    // We have to write our own init as the default one apparently isn't visible outside the file the enum is declared in (everything worked fine when HTVTMemberParser was part of Member.swift, but as soon as we moved it to it's own file it could no longer use the default initializer. Since we had to write a manual one anyway I went ahead and created one to make the rawvalue optional
-    public init?( rawValue: String ) {
-        self.init( optionalRaw: rawValue )
-    }
-    
-}
-
-public enum Priesthood : String {
-    case Deacon = "DEACON"
-    case Teacher = "TEACHER"
-    case Priest = "PRIEST"
-    case Elder = "ELDER"
-    case HighPriest = "HIGH_PRIEST"
-    case Seventy = "SEVENTY"
-
-    public init?( optionalRaw: String? ) {
-        guard optionalRaw != nil
-            else {
-                return nil
-        }
-        switch(optionalRaw!) {
-        case  "DEACON": self = .Deacon
-        case "TEACHER" : self = .Teacher
-        case  "PRIEST": self = .Priest
-        case  "ELDER": self = .Elder
-        case  "HIGH_PRIEST": self = .HighPriest
-        case  "SEVENTY": self = .Seventy
-        default: return nil
-        }
-    }
-    
-    // We have to write our own init as the default one apparently isn't visible outside the file the enum is declared in (everything worked fine when HTVTMemberParser was part of Member.swift, but as soon as we moved it to it's own file it could no longer use the default initializer. Since we had to write a manual one anyway I went ahead and created one to make the rawvalue optional
-    public init?( rawValue: String ) {
-        self.init( optionalRaw: rawValue )
-    }
-    
-    static let allValues = [Deacon, Teacher, Priest, Elder, HighPriest, Seventy]
-    
-    
-}
 
 public enum MemberSource {
     case HTVT, Directory
