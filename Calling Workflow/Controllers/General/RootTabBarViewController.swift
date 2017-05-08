@@ -17,7 +17,8 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        // check the keychain for stored LDS.org credentials
         self.getLogin()
         
         //signIntoLDSAPI()
@@ -31,20 +32,17 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     // MARK: - Login to ldsapi
     func signIntoLDSAPI() {
         startSpinner()
-        // todo: put up a spinner
         
         let ldscdApi = LdscdRestApi()
         ldscdApi.getAppConfig() { (appConfig, error) in
-            //check for valid logins on the keychain
             
-            // Populate these locally - Don't commit to github
             let username = self.loginDictionary?["username"] as! String
             let password = self.loginDictionary?["password"] as! String
             let unitNum: Int64 = 0
             // todo - make this weak
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            // todo - need to break out loadLdsData into an authWithLds(), getCurrentUser(), initPermissions (once implemented) & then load data. If the auth. fails then use presentLDS..() below to login
             appDelegate?.callingManager.loadLdsData(forUnit: unitNum, username: username, password: password) { [weak self] (dataLoaded, loadingError) -> Void in
-                self?.removeSpinner()
                 let childView = self?.selectedViewController as? OrganizationTableViewController
                 childView?.getOrgs()
                 childView?.tableView.reloadData()
@@ -52,24 +50,20 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
                     appDelegate?.callingManager.hasDataSourceCredentials(forUnit: 0 ) { (hasCredentials, signInError) -> Void in
                         if hasCredentials  {
                             appDelegate?.callingManager.loadAppData() { success, hasOrgsToDelete, error in
-                                
-                                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
-                                
-                                let navController2 = UINavigationController()
-                                navController2.addChildViewController(loginVC)
-                                
-                                self?.present(navController2, animated: false, completion: nil)
-                                
+                                self?.removeSpinner()
+                                // todo - OrgTableVC.reloadData()
+                                // eventually we'll need to pull the last viewed tab from some state storage and then show that tab (and maybe reload data)
                             }
                         }else {
+                            self?.removeSpinner()
                             print( "No creds - forward to settings!")
-                            
+                            self?.presentSettingsView()
                         }
                     }
                 } else {
+                    self?.removeSpinner()
                     print( "Error loading data from LDS.org")
-                    self?.showAlert(title: "LDS.org Authentication Error", message: (loadingError?.localizedDescription)!)
+                    self?.showAlert(title: "LDS.org Communication Error", message: (loadingError?.localizedDescription)!)
                 }
                 
             }
@@ -89,6 +83,22 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
         )
         alert.addAction(ok)
         present(alert, animated: true, completion: nil)
+    }
+    
+    func presentSettingsView() {
+        // todo - like below, if we don't have google creds we need to forward to the settings screen.
+    }
+    
+    func presentLdsOrgLogin() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
+        
+        let navController2 = UINavigationController()
+        navController2.addChildViewController(loginVC)
+        
+        self.present(navController2, animated: false, completion: nil)
+        
+
     }
     
     func getLogin() {

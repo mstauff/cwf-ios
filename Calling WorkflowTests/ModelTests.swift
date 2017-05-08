@@ -17,6 +17,8 @@ class ModelTests: XCTestCase {
     var jsonSerializer : JSONSerializer = JSONSerializerImpl()
     private var standardOrg = Org( id: 1, orgTypeId: 1 )
     private var multiDepthOrg = Org( id: 1, orgTypeId: 1 )
+    private var fullLcrOrg = Org( id: 1, orgTypeId: 1 )
+    private var positionMetadata : Array<PositionMetadata> = []
 
     override func setUp() {
         super.setUp()
@@ -40,11 +42,57 @@ class ModelTests: XCTestCase {
         } else {
             print( "No File Path found for file" )
         }
+        let jsonFileReader = JSONFileReader()
+        let metadataList = jsonFileReader.getJSONArray(fromFile: "position-metadata")
+        
+//        if let positionMetadataFile = bundle.path(forResource: "position-metadata", ofType: "js"),
+//            let fileData = NSData(contentsOfFile: positionMetadataFile) {
+        
+//            let jsonData = Data( referencing: fileData )
+//            print( jsonData.debugDescription )
+//            let metadataList = try! JSONSerialization.jsonObject(with: jsonData, options: []) as! [JSONObject]
+            positionMetadata = metadataList.map() { PositionMetadata( fromJSON: $0 ) }.flatMap() {$0 }
+            print( positionMetadata.debugDescription )
+//        } else {
+//            print( "No File Path found for postionMetadata file" )
+//        }
+        fullLcrOrg.children = Org.orgArrays(fromJSONArray: jsonFileReader.getJSONArray(fromFile: "org-callings"))
     }
     
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
+    }
+    
+    func testPositionMetadataFromJson() {
+        XCTAssertGreaterThan(positionMetadata.count, 0)
+        var positionMap : [Int:PositionMetadata] = [:]
+        positionMetadata.forEach() {
+            positionMap[ $0.positionTypeId ] = $0
+        }
+        
+        let bishop = positionMap[4]!
+        XCTAssertNil( bishop.shortName)
+        let bishopPriesthood = (bishop.requirements?.priesthood)!
+        XCTAssertEqual( bishopPriesthood.count, 1 )
+        XCTAssertEqual(bishopPriesthood[0], .HighPriest)
+        XCTAssertEqual(bishop.requirements!.gender!, .Male)
+        XCTAssertNil( bishop.requirements!.age )
+        XCTAssertTrue( bishop.requirements!.memberClasses.isEmpty )
+        
+        let firstCounselor = positionMap[54]!
+        XCTAssertEqual(firstCounselor.shortName, "1st Counselor")
+        
+        let htDistLeader = positionMap[1395]!
+        XCTAssertEqual(htDistLeader.requirements?.priesthood.count, 5)
+        XCTAssertTrue( (htDistLeader.requirements?.priesthood.contains(item: .Priest))!)
+        
+        let rsPres = positionMap[143]!
+        XCTAssertEqual(rsPres.requirements?.gender, .Female)
+        XCTAssertEqual( rsPres.requirements!.memberClasses, [MemberClass.ReliefSociety] )
+        
+        let primaryPianist = positionMap[215]!
+        XCTAssertNil( primaryPianist.requirements )
     }
     
     func testOrgJsonDeserialization() {
@@ -174,7 +222,7 @@ class ModelTests: XCTestCase {
         var primaryClass = org.getChildOrg(id: 752892)!
         let unchangedClass = org.getChildOrg(id: 38432972)!
         XCTAssertEqual(primaryClass.callings.count, 2)
-        let teacher = Position(positionTypeId: 1482, name: "Primary Teacher", hidden: false, multiplesAllowed: true)
+        let teacher = Position(positionTypeId: 1482, name: "Primary Teacher", hidden: false, multiplesAllowed: true, metadata: PositionMetadata())
         
         let newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 999, status: .Proposed, position: teacher, notes: nil, editableByOrg: true, parentOrg: primaryClass)
         
@@ -204,7 +252,7 @@ class ModelTests: XCTestCase {
 
         var ctr8Org = org.getChildOrg( id: 752892 )!
         let proposedCalling = ctr8Org.callings[0]
-        let ctr8Teacher = Position(positionTypeId: 1482, name: nil, hidden: false, multiplesAllowed: true)
+        let ctr8Teacher = Position(positionTypeId: 1482, name: nil, hidden: false, multiplesAllowed: true, metadata: PositionMetadata())
         otherCallingInOrg = ctr8Org.callings[1]
         updatedOrg = performCallingUpdateAndValidation(parentOrg: org, childOrg: ctr8Org, originalCalling: proposedCalling, callingIdx: 0, expectedId: nil, expectedPosition: ctr8Teacher, updatedIndId: 999, updatedStatus: .NotApproved)
         otherCallingAfterUpdate = updatedOrg.getChildOrg(id: 752892)!.callings[1]
@@ -223,6 +271,15 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(c1, c2)
         XCTAssertEqual(c1.proposedIndId, c2.proposedIndId)
         XCTAssertEqual(c1.proposedStatus, c2.proposedStatus)
+    }
+    
+    func validatePositionSame( _ p1 : Position, _ p2 : Position ) {
+        XCTAssertEqual(p1, p2)
+        XCTAssertEqual(p1.name, p2.name)
+        XCTAssertEqual(p1.unitNum, p2.unitNum)
+        XCTAssertEqual(p1.hidden, p2.hidden)
+        XCTAssertEqual(p1.multiplesAllowed, p2.multiplesAllowed)
+        XCTAssertEqual(p1.metadata, p2.metadata)
     }
     
     func validateOrgSame( _ o1: Org, _ o2: Org ) {
@@ -246,6 +303,32 @@ class ModelTests: XCTestCase {
             validateOrgSame( childOrg, o2.children.first( where: { $0 == childOrg })!)
         }
         
+    }
+    
+    func testPositionMetadataUpdate() {
+        var org = fullLcrOrg
+        let originalPositions = org.allOrgCallings.map() { $0.position }
+        let emptyMetadata = PositionMetadata()
+        org.allOrgCallings.forEach() {
+            XCTAssertEqual( $0.position.metadata, emptyMetadata )
+        }
+
+        let jsonFileReader = JSONFileReader()
+        let positionsMD = PositionMetadata.positionArrays(fromJSONArray: jsonFileReader.getJSONArray( fromFile: "position-metadata" ) )
+        let positionMetadataMap = positionsMD.toDictionaryById( {$0.positionTypeId} )
+        org = org.updatedWith(positionMetadata: positionMetadataMap)
+        let updatedPositions = org.allOrgCallings.map() { $0.position }
+        
+        for (index, originalPosition) in originalPositions.enumerated() {
+            let updatedPosition = updatedPositions[index]
+            if let metadata = positionMetadataMap[originalPosition.positionTypeId] {
+                XCTAssertEqual( updatedPosition.metadata, metadata )
+            } else {
+                validatePositionSame(originalPosition, updatedPosition)
+            }
+        }
+        
+
     }
     
     func performCallingUpdateAndValidation( parentOrg: Org, childOrg: Org,  originalCalling : Calling, callingIdx : Int, expectedId : Int64?, expectedPosition : Position?, updatedIndId : Int64?, updatedStatus : CallingStatus ) -> Org {
@@ -285,8 +368,8 @@ class ModelTests: XCTestCase {
     }
     
     func testCallingEqual() {
-        let eqPres = Position(positionTypeId: 138, name: "EQ President", hidden: false, multiplesAllowed: false)
-        let ctr7 = Position(positionTypeId: 222, name: "CTR 7 Teacher", hidden: false, multiplesAllowed: true)
+        let eqPres = Position(positionTypeId: 138, name: "EQ President", hidden: false, multiplesAllowed: false, metadata: PositionMetadata())
+        let ctr7 = Position(positionTypeId: 222, name: "CTR 7 Teacher", hidden: false, multiplesAllowed: true, metadata: PositionMetadata())
         let eqpCalling = Calling(id: 111, cwfId: "222-3434-111", existingIndId: 555, existingStatus: .Active, activeDate: nil, proposedIndId: 600, status: .Proposed, position: eqPres, notes: nil, editableByOrg: true, parentOrg: standardOrg)
         let ctr7Calling = Calling(id: 222, cwfId: nil, existingIndId: 600, existingStatus: .Active, activeDate: nil, proposedIndId: 777, status: .Proposed, position: ctr7, notes: nil, editableByOrg: true, parentOrg: standardOrg)
         
@@ -360,6 +443,11 @@ class ModelTests: XCTestCase {
     func testPriesthoodEnums() {
         XCTAssertEqual(enumCount(Priesthood.self), Priesthood.allValues.count)
         XCTAssertEqual(Priesthood.allValues.count, Set<Priesthood>(Priesthood.allValues).count)
+    }
+    
+    func testMemberClassEnums() {
+        XCTAssertEqual(enumCount(MemberClass.self), MemberClass.allValues.count)
+        XCTAssertEqual(MemberClass.allValues.count, Set<MemberClass>(MemberClass.allValues).count)
     }
     
 

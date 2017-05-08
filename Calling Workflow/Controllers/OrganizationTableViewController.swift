@@ -38,7 +38,7 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     
     func getOrgs() {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        organizationsToDisplay = appDelegate?.callingManager.ldsOrgUnit?.children
+        organizationsToDisplay = appDelegate?.callingManager.appDataOrg?.children
         
     }
     
