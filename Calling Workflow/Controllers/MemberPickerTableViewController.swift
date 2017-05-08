@@ -13,7 +13,6 @@ class MemberPickerTableViewController: UITableViewController, UIPopoverPresentat
     var delegate: MemberPickerDelegate?
 
     var members : [Member] = []
-    var memberDetailView: MemberInfoView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -114,19 +113,11 @@ class MemberPickerTableViewController: UITableViewController, UIPopoverPresentat
     }
 
     func showMemberDetails(_ sender: UIButton) {
-        memberDetailView = MemberInfoView()
-        print(sender.tag)
-        if (memberDetailView != nil) {
-            memberDetailView?.setupView(member: members[sender.tag], parentView: self.view)
-            self.view.addSubview(memberDetailView!)
-            //self.tableView.isUserInteractionEnabled = false
-            
-            
-            let constraintWidth = NSLayoutConstraint(item: memberDetailView!, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
-            let constraintHeight = NSLayoutConstraint(item: memberDetailView!, attribute: .height, relatedBy: .equal, toItem: self.view, attribute: .height, multiplier: 1, constant: 0)
-            let constraintV = NSLayoutConstraint(item: memberDetailView!, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 0)
-            self.view.addConstraints([constraintWidth, constraintHeight, constraintV])
-        }
-    }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let memberDetailView = storyboard.instantiateViewController(withIdentifier: "MemberInfoView") as? MemberInfoView
+        memberDetailView?.memberToView = members[sender.tag]
+        memberDetailView?.modalPresentationStyle = .overCurrentContext
 
+        self.present(memberDetailView!, animated: true, completion: nil)        
+    }
 }

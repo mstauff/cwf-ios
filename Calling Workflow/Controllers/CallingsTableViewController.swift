@@ -12,6 +12,8 @@ class CallingsTableViewController: CWFBaseTableViewController {
     
     var callingsToDisplay : [Calling] = []
     
+    var delegate : CallingsTableViewControllerDelegate? = nil
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,9 +38,11 @@ class CallingsTableViewController: CWFBaseTableViewController {
     // MARK: - Setup
     
     func setupCallingsToDisplay() {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        if (appDelegate?.callingManager.ldsOrgUnit != nil) {
-            callingsToDisplay = (appDelegate?.callingManager.ldsOrgUnit?.allOrgCallings)!
+        if delegate == nil {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            if (appDelegate?.callingManager.ldsOrgUnit != nil) {
+                callingsToDisplay = (appDelegate?.callingManager.ldsOrgUnit?.allOrgCallings)!
+            }
         }
     }
 
@@ -74,22 +78,18 @@ class CallingsTableViewController: CWFBaseTableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if delegate == nil {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
-        let nextVc = storyboard.instantiateViewController(withIdentifier: "CallingDetailsTableViewController") as? CallingDetailsTableViewController
-        
-        nextVc?.callingToDisplay = callingsToDisplay[indexPath.row]
-        
-        navigationController?.pushViewController(nextVc!, animated: true)
+            let nextVc = storyboard.instantiateViewController(withIdentifier: "CallingDetailsTableViewController") as? CallingDetailsTableViewController
+            
+            nextVc?.callingToDisplay = callingsToDisplay[indexPath.row]
+            
+            navigationController?.pushViewController(nextVc!, animated: true)
+        }
+        else {
+            self.delegate?.setReturnedCalling(calling: callingsToDisplay[indexPath.row])
+            self.navigationController?.popViewController(animated: true)
+        }
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

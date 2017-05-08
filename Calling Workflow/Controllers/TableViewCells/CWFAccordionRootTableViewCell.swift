@@ -59,11 +59,13 @@ class CWFAccordionRootTableViewCell: UITableViewCell {
         
         addConstraints([buttonWidthConstraint, buttonHeightConstraint, buttonHConstraint, buttonVConstraint])
         
-        let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleLabel]-[newButton]-|", options: .alignAllFirstBaseline, metrics: nil, views: ["titleLabel" : titleLabel, "newButton" : newButton])
-        let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLabel]-|", options: .alignAllLeading, metrics: nil, views: ["titleLabel" : titleLabel])
+        let titleHeightConstraint = NSLayoutConstraint(item: titleLabel, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 1, constant: 0)
+        let titleLeftConstraint = NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 15)
+        let titleRightConstraint = NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .equal, toItem: newButton, attribute: .left, multiplier: 1, constant: -5)
+        let titleVConstraint = NSLayoutConstraint(item: titleLabel, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
         
-        addConstraints(hConstraint)
-        addConstraints(vConstraint)
+        addConstraints([titleHeightConstraint, titleLeftConstraint, titleRightConstraint, titleVConstraint])
+
     }
     
     class func getCellHeight () -> CGFloat {

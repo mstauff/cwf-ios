@@ -8,11 +8,12 @@
 
 import UIKit
 
-class NewCallingTableViewController: UITableViewController, MemberPickerDelegate, StatusPickerDelegate {
+class NewCallingTableViewController: UITableViewController, MemberPickerDelegate, StatusPickerDelegate, CallingsTableViewControllerDelegate {
     
     var parentOrg : Org?
-    var proposedMember : Member?
-    var proposedStatus : CallingStatus?
+    
+    var newCalling : Calling?
+    let appDelegate = UIApplication.shared.delegate as? AppDelegate
     
     // MARK: - Life Cycle
 
@@ -20,9 +21,13 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         super.viewDidLoad()
 
         self.navigationItem.title = "Add New Calling"
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveAndDismiss))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveNewCalling))
         
         tableView.register(SingleFieldTableViewCell.self, forCellReuseIdentifier: "SingleFieldTableViewCell")
+        tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "NoteTableViewCell")
+        let newPostiton = Position(positionTypeId: 0, name: nil, hidden: false, multiplesAllowed: true)
+        
+        newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: newPostiton, notes: nil, editableByOrg: true, parentOrg: parentOrg)
     }
 
     override func didReceiveMemoryWarning() {
@@ -39,11 +44,14 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 10
     }
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1
+    }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            return 3
+            return 1
         case 1:
             return 2
         case 2:
@@ -53,6 +61,19 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         }
     }
 
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        switch indexPath.section {
+        case 0:
+            return 44
+        case 1:
+            return 44
+        case 2:
+            return 150
+            
+        default:
+            return 0
+        }
+    }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         
@@ -76,6 +97,13 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
             switch indexPath.row {
             case 0:
                 tableView.deselectRow(at: indexPath, animated: true)
+                let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+                let nextVC = storyboard.instantiateViewController(withIdentifier: "CallingsTableViewController") as? CallingsTableViewController
+                if (parentOrg?.callings != nil) {
+                    nextVC?.callingsToDisplay = (parentOrg?.callings)!
+                }
+                nextVC?.delegate = self
+                navigationController?.pushViewController(nextVC!, animated: true)
 
             default:
                 tableView.deselectRow(at: indexPath, animated: true)
@@ -86,8 +114,8 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
                 let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
                 let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
                 nextVC?.delegate = self
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                    nextVC?.members = appDelegate.callingManager.memberList
+                if appDelegate != nil {
+                    nextVC?.members = (appDelegate?.callingManager.memberList)!
                 }
                 navigationController?.pushViewController(nextVC!, animated: true)
             
@@ -110,7 +138,13 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         switch indexPath.row {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            cell.textLabel?.text = "Select Calling"
+            if newCalling != nil && newCalling?.position.name != nil && newCalling?.position.name != "" {
+                cell.textLabel?.text = newCalling?.position.name
+            }
+            else {
+                cell.textLabel?.text = "Select Calling"
+            }
+            
             cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
             
             return cell
@@ -138,10 +172,12 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         switch indexPath.row {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            if (proposedMember == nil) {
+            if (newCalling?.proposedIndId == nil) {
+                
                 cell.textLabel?.text = "Select Person for Calling"
             }
             else {
+                let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: (newCalling?.proposedIndId)!)
                 cell.textLabel?.text = proposedMember?.name
             }
             cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
@@ -150,7 +186,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
             
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            if let statusString = proposedStatus?.rawValue{
+            if let statusString = newCalling?.proposedStatus.rawValue{
                 cell.textLabel?.text = statusString
             }
             else {
@@ -170,10 +206,16 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     func setupThirdSectionCell(indexPath : IndexPath) -> UITableViewCell {
         switch indexPath.row {
         case 0:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            cell.textLabel?.text = "Notes"
-            
-            return cell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "NoteTableViewCell", for: indexPath) as? NotesTableViewCell
+
+            if (newCalling?.notes != nil || newCalling?.notes != "") {
+                cell?.noteTextView.text = "Notes"
+            }
+            else {
+                cell?.noteTextView.text = newCalling?.notes
+            }
+
+            return cell!
             
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
@@ -184,37 +226,35 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
 
     // MARK: - MemberPickerDelegate
     func setProspectiveMember(member: Member) {
-        proposedMember = member
+        newCalling?.proposedIndId = member.individualId
         tableView.reloadData()
     }
     
     // MARK: - StatusPickerDelegate
     func setStatusFromPicker(status: CallingStatus) {
-        proposedStatus = status
+        newCalling?.proposedStatus = status
         tableView.reloadData()
     }
     
     // MARK: - Business
     
-    func saveAndDismiss() {
-        let saveAlert = UIAlertController(title: "Save Changes?", message: nil, preferredStyle: UIAlertControllerStyle.alert)
+    func saveNewCalling() {
+       
+        if (self.newCalling != nil) {
+                appDelegate?.callingManager.addCalling(calling: self.newCalling!) {_,_ in }
+            
+        }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
-            (alert: UIAlertAction!) -> Void in
-            print("cancel")
-        })
-        let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.default, handler: {
-            (alert: UIAlertAction!) -> Void in
-            
-            //todo -- add save to calling service
-            self.navigationController?.popViewController(animated: true)
-            
-        })
-        saveAlert.addAction(cancelAction)
-        saveAlert.addAction(saveAction)
-        present(saveAlert, animated: true, completion: nil)
+        let _ = self.navigationController?.popViewController(animated: true)
+
+        self.navigationController?.popViewController(animated: true)
     }
     
+    // MARK: - CallingsTableViewControllerDelegate
     
+    func setReturnedCalling(calling: Calling) {
+        newCalling = calling
+        tableView.reloadData()
+    }
 
 }

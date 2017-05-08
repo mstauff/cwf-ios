@@ -15,6 +15,9 @@ class OrganizationTableViewController: CWFBaseTableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        self.navigationItem.title = appDelegate?.callingManager.appDataOrg?.orgName
+
         organizationsToDisplay = []
         organizationSelected = nil
         getOrgs()

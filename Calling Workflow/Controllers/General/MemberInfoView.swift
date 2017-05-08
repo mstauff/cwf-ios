@@ -8,44 +8,46 @@
 
 import UIKit
 
-class MemberInfoView: UIView {
+class MemberInfoView: UIViewController {
     
     var memberToView: Member?
     
     var infoView : UIView = UIView()
     var headerView : UIView = UIView()
-
-    var tapRecognizer: UIGestureRecognizer? = nil
+    var isDown : Bool = true
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.75)
-        self.translatesAutoresizingMaskIntoConstraints = false
-        self.isUserInteractionEnabled = true
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.5)
+        self.setupView()
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
-    func setupView(member: Member, parentView: UIView) {
-        self.memberToView = member
-        
-        setupInfoView()
+    func setupView() {
+        if (isDown) {
+            setupInfoView()
 
-        setupHeaderView()
-        
-        tapRecognizer = UITapGestureRecognizer(target: self, action:#selector(dismissMemberDetails(_:)))
-        parentView.addGestureRecognizer(tapRecognizer!)
-
-
+            setupHeaderView()
+            
+            let tapRecognizer = UITapGestureRecognizer(target: self, action:#selector(dismissMemberDetails(_:)))
+            self.view.addGestureRecognizer(tapRecognizer)
+            
+            let swipeUpRecognizer = UISwipeGestureRecognizer()
+            swipeUpRecognizer.addTarget(self, action: #selector(swipeUpAction(_:)))
+            swipeUpRecognizer.direction = .up
+            headerView.addGestureRecognizer(swipeUpRecognizer)
+            headerView.isUserInteractionEnabled = true
+        }
+        else {
+            
+        }
     }
     
     func setupHeaderView() {
         headerView.translatesAutoresizingMaskIntoConstraints = false
         headerView.backgroundColor = UIColor.CWFNavBarTintColor
         
-        self.addSubview(headerView)
+        self.view.addSubview(headerView)
 
         let nameLabel = UILabel()
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -54,55 +56,100 @@ class MemberInfoView: UIView {
         
         headerView.addSubview(nameLabel)
         
-        let headerWidthConstraint = NSLayoutConstraint(item: headerView, attribute: .width, relatedBy: .equal, toItem: self, attribute: .width, multiplier: 1, constant: 0)
-        let headerHeightConstraint = NSLayoutConstraint(item: headerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
-        let headerHorizontalConstraint = NSLayoutConstraint(item: headerView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0)
-        let headerVirticalConstraint = NSLayoutConstraint(item: headerView, attribute: .bottom, relatedBy: .equal, toItem: infoView, attribute: .top, multiplier: 1, constant: 0)
-        
-        self.addConstraints([headerWidthConstraint, headerHeightConstraint, headerHorizontalConstraint, headerVirticalConstraint])
+        if isDown == false {
+            let headerWidthConstraint = NSLayoutConstraint(item: headerView, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
+            let headerHeightConstraint = NSLayoutConstraint(item: headerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
+            let headerHorizontalConstraint = NSLayoutConstraint(item: headerView, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
+            let headerVirticalConstraint = NSLayoutConstraint(item: headerView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .topMargin, multiplier: 1, constant: 0)
+            
+            self.view.addConstraints([headerWidthConstraint, headerHeightConstraint, headerHorizontalConstraint, headerVirticalConstraint])
 
+        }
+        else
+        {
+            let headerWidthConstraint = NSLayoutConstraint(item: headerView, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
+            let headerHeightConstraint = NSLayoutConstraint(item: headerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
+            let headerHorizontalConstraint = NSLayoutConstraint(item: headerView, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
+            let headerVirticalConstraint = NSLayoutConstraint(item: headerView, attribute: .bottom, relatedBy: .equal, toItem: infoView, attribute: .top, multiplier: 1, constant: 0)
+            
+            self.view.addConstraints([headerWidthConstraint, headerHeightConstraint, headerHorizontalConstraint, headerVirticalConstraint])
+        }
+        
         let hConstraint = NSLayoutConstraint(item: nameLabel, attribute: .centerX, relatedBy: .equal, toItem: headerView, attribute: .centerX, multiplier: 1, constant: 0)
         let vConstraint = NSLayoutConstraint(item: nameLabel, attribute: .centerY, relatedBy: .equal, toItem: headerView, attribute: .centerY, multiplier: 1, constant: 0)
-        self.addConstraints([hConstraint, vConstraint])
+        self.view.addConstraints([hConstraint, vConstraint])
 
     }
     
     func setupInfoView() {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
         
         infoView.translatesAutoresizingMaskIntoConstraints = false
         infoView.backgroundColor = UIColor.white
         
+        self.view.addSubview(infoView)
         
-        self.addSubview(infoView)
+        let infoHConstraint = NSLayoutConstraint(item: infoView, attribute: .height, relatedBy: .equal, toItem: self.view, attribute: .height, multiplier: 0.45, constant: 0)
+        let infoWConstraint = NSLayoutConstraint(item: infoView, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
+        let infoVConstraint = NSLayoutConstraint(item: infoView, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 0)
+        let infoHoConstraint = NSLayoutConstraint(item: infoView, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
         
-        let infoHConstraint = NSLayoutConstraint(item: infoView, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 0.5, constant: 0)
-        let infoWConstraint = NSLayoutConstraint(item: infoView, attribute: .width, relatedBy: .equal, toItem: self, attribute: .width, multiplier: 1, constant: 0)
-        let infoVConstraint = NSLayoutConstraint(item: infoView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: 0)
-        let infoHoConstraint = NSLayoutConstraint(item: infoView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0)
-        
-        self.addConstraints([infoHConstraint, infoWConstraint, infoVConstraint, infoHoConstraint])
-        
-        let callingsText = UILabel()
-        callingsText.font = UIFont(name: callingsText.font.fontName, size: 14)
-        callingsText.textColor = UIColor.gray
-        callingsText.translatesAutoresizingMaskIntoConstraints = false
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        callingsText.text = appDelegate?.callingManager.getCallingsForMemberAsStringWithMonths(member: memberToView!)
-        callingsText.numberOfLines = 0
-        
-        infoView.addSubview(callingsText)
+        self.view.addConstraints([infoHConstraint, infoWConstraint, infoVConstraint, infoHoConstraint])
 
+        let callingBar = MemberInfoBarItemView()
+        callingBar.setupInfoBarItem(dataText: (appDelegate?.callingManager.getCallingsForMemberAsStringWithMonths(member: memberToView!))!, icon: nil)
+
+        infoView.addSubview(callingBar)
+        
+        let callingBarConstraintH = NSLayoutConstraint(item: callingBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 54)
+        let callingBarConstraintW = NSLayoutConstraint(item: callingBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
+        let callingBarConstraintV = NSLayoutConstraint(item: callingBar, attribute: .top, relatedBy: .equal, toItem: infoView, attribute: .top, multiplier: 1, constant: 0)
+        let callingBarConstraintO = NSLayoutConstraint(item: callingBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
+        
+        infoView.addConstraints([callingBarConstraintH, callingBarConstraintW, callingBarConstraintO, callingBarConstraintV])
+        
         let firstBar = UIView()
         firstBar.translatesAutoresizingMaskIntoConstraints = false
         firstBar.backgroundColor = UIColor.darkGray
 
         infoView.addSubview(firstBar)
-        let phoneLabel = UILabel()
-        phoneLabel.translatesAutoresizingMaskIntoConstraints = false
-        phoneLabel.textColor = UIColor.gray
-        phoneLabel.text = memberToView?.phone
         
-        infoView.addSubview(phoneLabel)
+        let fBarConstraintH = NSLayoutConstraint(item: firstBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 3)
+        let fBarConstraintW = NSLayoutConstraint(item: firstBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
+        let fBarConstraintX = NSLayoutConstraint(item: firstBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
+        let fBarConstraintY = NSLayoutConstraint(item: firstBar, attribute: .top, relatedBy: .equal, toItem: callingBar, attribute: .bottom, multiplier: 1, constant: 0)
+        
+        infoView.addConstraints([fBarConstraintH, fBarConstraintW, fBarConstraintX, fBarConstraintY])
+        
+        // Get the phone numbers to display
+        
+        var lastView: UIView = firstBar
+        var phoneNumberAndTypeArray: [(phone: String, type: String)] = []
+       
+        if memberToView?.individualPhone != nil {
+            phoneNumberAndTypeArray.append(((memberToView?.individualPhone)!, "Individual"))
+        }
+        if memberToView?.householdPhone != nil {
+            phoneNumberAndTypeArray.append(((memberToView?.householdPhone)!, "Household"))
+        }
+        for phoneAndType in phoneNumberAndTypeArray {
+            let currentPhoneBar = MemberInfoBarItemView()
+            currentPhoneBar.setupInfoBarItem(dataText: phoneAndType.phone, icon: UIImage.init(named: "phoneIcon"))
+            
+            infoView.addSubview(currentPhoneBar)
+            
+            let phoneConstraintH = NSLayoutConstraint(item: currentPhoneBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 54.0)
+            let phoneConstraintW = NSLayoutConstraint(item: currentPhoneBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
+            let phoneConstraintX = NSLayoutConstraint(item: currentPhoneBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
+            let phoneConstraintY = NSLayoutConstraint(item: currentPhoneBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
+            
+            infoView.addConstraints([phoneConstraintH, phoneConstraintW, phoneConstraintX, phoneConstraintY])
+            
+            lastView = currentPhoneBar
+        }
+        
+        
+        
         
         let secondBar = UIView()
         secondBar.translatesAutoresizingMaskIntoConstraints = false
@@ -110,46 +157,156 @@ class MemberInfoView: UIView {
         
         infoView.addSubview(secondBar)
         
-        let emailLabel = UILabel()
-        emailLabel.translatesAutoresizingMaskIntoConstraints = false
-        emailLabel.textColor = UIColor.darkGray
-        emailLabel.text = memberToView?.email
-        infoView.addSubview(emailLabel)
+        let sBarConstraintH = NSLayoutConstraint(item: secondBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 3)
+        let sBarConstraintW = NSLayoutConstraint(item: secondBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
+        let sBarConstraintX = NSLayoutConstraint(item: secondBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
+        let sBarConstraintY = NSLayoutConstraint(item: secondBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
+        
+        infoView.addConstraints([sBarConstraintH, sBarConstraintW, sBarConstraintX, sBarConstraintY])
+        lastView = secondBar
+        
+        if let emailString = memberToView?.individualEmail {
+            let emailBar = MemberInfoBarItemView()
+            emailBar.setupInfoBarItem(dataText: emailString, icon: UIImage.init(named: "emailIcon"))
+            
+            infoView.addSubview(emailBar)
+            
+            let emailConstraintH = NSLayoutConstraint(item: emailBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 54.0)
+            let emailConstraintW = NSLayoutConstraint(item: emailBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
+            let emailConstraintX = NSLayoutConstraint(item: emailBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
+            let emailConstraintY = NSLayoutConstraint(item: emailBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
+            
+            infoView.addConstraints([emailConstraintH, emailConstraintW, emailConstraintX, emailConstraintY])
+            lastView = emailBar
+        }
+        else {
+            let emailBar = MemberInfoBarItemView()
+            emailBar.setupInfoBarItem(dataText: "No Individual Email", icon: UIImage.init(named: "emailIcon"))
+            
+            infoView.addSubview(emailBar)
+            
+            let emailConstraintH = NSLayoutConstraint(item: emailBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 54.0)
+            let emailConstraintW = NSLayoutConstraint(item: emailBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
+            let emailConstraintX = NSLayoutConstraint(item: emailBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
+            let emailConstraintY = NSLayoutConstraint(item: emailBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
+            
+            infoView.addConstraints([emailConstraintH, emailConstraintW, emailConstraintX, emailConstraintY])
+            lastView = emailBar
+        }
+        
+        let thirdBar = UIView()
+        thirdBar.translatesAutoresizingMaskIntoConstraints = false
+        thirdBar.backgroundColor = UIColor.darkGray
+        
+        infoView.addSubview(thirdBar)
+        let tBarConstraintH = NSLayoutConstraint(item: thirdBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 3)
+        let tBarConstraintW = NSLayoutConstraint(item: thirdBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
+        let tBarConstraintX = NSLayoutConstraint(item: thirdBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
+        let tBarConstraintY = NSLayoutConstraint(item: thirdBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
+        
+        infoView.addConstraints([tBarConstraintH, tBarConstraintW, tBarConstraintX, tBarConstraintY])
+        lastView = thirdBar
+        
+        let addressBar = MemberInfoBarItemView()
+        if let addressText = memberToView?.streetAddress[0] {
+            addressBar.setupInfoBarItem(dataText: addressText, icon: UIImage.init(named: "emailIcon"))// todo add Icon here
+        }
+        else {
+            addressBar.setupInfoBarItem(dataText: "No Address Available", icon: UIImage.init(named: "emailIcon"))// fix this todo
+        }
+        infoView.addSubview(addressBar)
+        
+        let addressConstraintH = NSLayoutConstraint(item: addressBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 54)
+        let addressConstraintW = NSLayoutConstraint(item: addressBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
+        let addressConstraintX = NSLayoutConstraint(item: addressBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
+        let addressConstraintY = NSLayoutConstraint(item: addressBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
+        
+        infoView.addConstraints([addressConstraintH, addressConstraintW, addressConstraintX, addressConstraintY])
 
-        let emailButton = UIButton()
-        emailButton.translatesAutoresizingMaskIntoConstraints = false
-        emailButton.backgroundColor = UIColor.green
-        //infoView.addSubview(emailButton)
-        
-        let views = ["callings": callingsText, "firstBar": firstBar, "phone": phoneLabel, "secondBar": secondBar, "emailLabel": emailLabel, "emailButton": emailButton]
-        let callingsHConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-(==15)-[callings]-(==15)-|", options: .alignAllCenterY, metrics: nil, views: views)
-        let bar1Hconstraint = NSLayoutConstraint(item: firstBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
-        let bar2Hconstraint = NSLayoutConstraint(item: secondBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
-        //let emailHConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-(==10)-[emailButton(==44)]-[emailLabel]-(==15)-|", options: .alignAllCenterY, metrics: nil, views: views)
-        
-        let callingsVConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-(==0)-[callings(==44)]-[firstBar(==2)]-[phone(==44)]-[secondBar(==2)]-[emailLabel(==44)]-(>=0)-|", options: .alignAllLeft, metrics: nil, views: views)
-//        let emailHeightConstraint = NSLayoutConstraint(item: emailButton, attribute: .height, relatedBy: .equal, toItem: emailButton, attribute: .width, multiplier: 1, constant: 0)
-//        let emailVConstraint = NSLayoutConstraint(item: emailButton, attribute: .centerY, relatedBy: .equal, toItem: emailLabel, attribute: .centerY, multiplier: 1, constant: 0)
-        
-        self.addConstraints(callingsHConstraint)
-        self.addConstraints([bar1Hconstraint, bar2Hconstraint])
-        //self.addConstraints(emailHConstraint)
-        self.addConstraints(callingsVConstraint)
-        //self.addConstraints([emailVConstraint, emailHeightConstraint])
+    }
+    
+    func addItem(dataItem: String, icon: UIImage?) {
         
     }
     
     func dismissMemberDetails(_ sender:UITapGestureRecognizer) {
         print("tapped")
-        self.removeFromSuperview()
+        self.dismiss(animated: true, completion: nil)
     }
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
+  
+    func swipeUpAction (_ gesture: UIGestureRecognizer) {
+        if (isDown) {
+            isDown = false
+            self.setupView()
+        }
+        
     }
-    */
+}
 
+
+// MARK: - Class to add memberinfoBar to memberinfoview
+class MemberInfoBarItemView : UIView {
+    
+    var iconImageView : UIImageView?
+    
+    var dataLabel : UILabel = UILabel()
+    
+    override init(frame: CGRect) {
+        
+        super.init(frame: frame)
+        self.backgroundColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.isUserInteractionEnabled = true
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupInfoBarItem(dataText: String, icon: UIImage?) {
+        
+        dataLabel.text = dataText
+        dataLabel.numberOfLines = 0
+        dataLabel.font = UIFont(name: dataLabel.font.fontName, size: 14)
+        dataLabel.textColor = UIColor.gray
+        dataLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        
+        if (icon != nil) {
+
+            iconImageView = UIImageView.init(image: icon)
+            iconImageView?.translatesAutoresizingMaskIntoConstraints = false
+
+            self.addSubview(iconImageView!)
+            
+            let iconConstraintH = NSLayoutConstraint(item: iconImageView!, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
+            let iconConstraintW = NSLayoutConstraint(item: iconImageView!, attribute: .width, relatedBy: .equal, toItem: iconImageView, attribute: .height, multiplier: 1, constant: 0)
+            let iconConstraintY = NSLayoutConstraint(item: iconImageView!, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
+            let iconConstraintX = NSLayoutConstraint(item: iconImageView!, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 15)
+            self.addConstraints([iconConstraintH, iconConstraintW, iconConstraintX, iconConstraintY])
+            
+            self.addSubview(dataLabel)
+            
+            let labelConstraintH = NSLayoutConstraint(item: dataLabel, attribute: .height, relatedBy: .equal, toItem: iconImageView, attribute: .height, multiplier: 1, constant: 0)
+            let labelConstraintL = NSLayoutConstraint(item: dataLabel, attribute: .left, relatedBy: .equal, toItem: iconImageView!, attribute: .right, multiplier: 1, constant: 10)
+            let labelConstraintR = NSLayoutConstraint(item: dataLabel, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: -15)
+            let labelConstraintY = NSLayoutConstraint(item: dataLabel, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
+            
+            self.addConstraints([labelConstraintH, labelConstraintL, labelConstraintR, labelConstraintY])
+            
+        }
+        else {
+            self.addSubview(dataLabel)
+            
+            let labelConstraintH = NSLayoutConstraint(item: dataLabel, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 0.80, constant: 0)
+            let labelConstraintL = NSLayoutConstraint(item: dataLabel, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 15)
+            let labelConstraintR = NSLayoutConstraint(item: dataLabel, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: -15)
+            let labelConstraintY = NSLayoutConstraint(item: dataLabel, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
+            
+            self.addConstraints([labelConstraintH, labelConstraintL, labelConstraintR, labelConstraintY])
+            
+        }
+    }
+    
+    
 }

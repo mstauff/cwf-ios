@@ -16,6 +16,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             tableView.reloadData()
         }
     }
+    
+    var isDirty = false
 
     var originalCalling : Calling? = nil
     var memberDetailView : MemberInfoView? = nil
@@ -43,8 +45,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     
     override func willMove(toParentViewController parent: UIViewController?)
     {
-        if parent == nil
-        {
+        if parent == nil && isDirty {
             let saveAlert = UIAlertController(title: "Save Changes?", message: nil, preferredStyle: UIAlertControllerStyle.alert)
     
             let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
@@ -53,6 +54,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             })
             let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.default, handler: {
                 (alert: UIAlertAction!) -> Void in
+                self.save()
+                
             })
             saveAlert.addAction(cancelAction)
             saveAlert.addAction(saveAction)
@@ -235,29 +238,37 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     }
     
     func setProspectiveMember(member: Member) {
+        isDirty = true
         self.callingToDisplay?.proposedIndId = member.individualId
     }
     
     func setStatusFromPicker(status: CallingStatus) {
+        isDirty = true
         self.callingToDisplay?.proposedStatus = status
         tableView.reloadData()
     }
     
     func displayContactInfoForMember(member: Member) {
-        memberDetailView = MemberInfoView()
-        if (memberDetailView != nil) {
-            memberDetailView?.setupView(member: member, parentView: self.view)
-            
-            self.view.addSubview(memberDetailView!)
-            //self.tableView.isUserInteractionEnabled = false
-            
-            
-            let constraintWidth = NSLayoutConstraint(item: memberDetailView!, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
-            let constraintHeight = NSLayoutConstraint(item: memberDetailView!, attribute: .height, relatedBy: .equal, toItem: self.view, attribute: .height, multiplier: 1, constant: 0)
-            let constraintV = NSLayoutConstraint(item: memberDetailView!, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 0)
-            let constraintH = NSLayoutConstraint(item: memberDetailView!, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1, constant: 0)
-            self.view.addConstraints([constraintWidth, constraintHeight, constraintV, constraintH])
-        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let memberDetailView = storyboard.instantiateViewController(withIdentifier: "MemberInfoView") as? MemberInfoView
+        memberDetailView?.memberToView = member
+        memberDetailView?.modalPresentationStyle = .overCurrentContext
+        
+        self.present(memberDetailView!, animated: true, completion: nil)
+
+        
+//            memberDetailView?.setupView(member: member, parentView: self.view)
+//            
+//            self.view.addSubview(memberDetailView!)
+//            //self.tableView.isUserInteractionEnabled = false
+//            
+//            
+//            let constraintWidth = NSLayoutConstraint(item: memberDetailView!, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
+//            let constraintHeight = NSLayoutConstraint(item: memberDetailView!, attribute: .height, relatedBy: .equal, toItem: self.view, attribute: .height, multiplier: 1, constant: 0)
+//            let constraintV = NSLayoutConstraint(item: memberDetailView!, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 0)
+//            let constraintH = NSLayoutConstraint(item: memberDetailView!, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1, constant: 0)
+//            self.view.addConstraints([constraintWidth, constraintHeight, constraintV, constraintH])
+//        }
 
     }
     
@@ -297,19 +308,17 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     func saveAndReturn() {
 //
         //todo -- add save to calling service
+        save()
+        isDirty = false
+        let _ = self.navigationController?.popViewController(animated: true)
+    }
+    
+    func save() {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             if (self.callingToDisplay != nil) {
                 appDelegate.callingManager.updateCalling(updatedCalling: self.callingToDisplay!) {_,_ in }
             }
         }
 
-        let _ = self.navigationController?.popViewController(animated: true)
-
-//        })
-//        saveAlert.addAction(cancelAction)
-//        saveAlert.addAction(saveAction)
-//        present(saveAlert, animated: true, completion: nil)
     }
-    
-
 }

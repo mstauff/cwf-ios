@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="THt-KO-N4t">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="THt-KO-N4t">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -264,6 +264,7 @@
                     </tableView>
                     <tabBarItem key="tabBarItem" title="Organizations" image="org" selectedImage="org" id="vnL-b5-sMi"/>
                     <navigationItem key="navigationItem" title="Organizations" id="rQI-It-Hkd"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
                         <segue destination="NzN-eA-0Dw" kind="show" identifier="OrgList to OrgDetails" id="WPo-mB-foG"/>
                     </connections>
@@ -275,7 +276,7 @@
         <!--Callings-->
         <scene sceneID="bWu-Mx-fiZ">
             <objects>
-                <tableViewController id="GOo-a7-xMm" customClass="CallingsTableViewController" customModule="Calling_Workflow" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="CallingsTableViewController" id="GOo-a7-xMm" customClass="CallingsTableViewController" customModule="Calling_Workflow" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="66" sectionHeaderHeight="28" sectionFooterHeight="28" id="BSP-Xm-e8x">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -469,28 +470,26 @@
             </objects>
             <point key="canvasLocation" x="2708" y="1121.2893553223389"/>
         </scene>
-        <!--View Controller-->
+        <!--Member Info View-->
         <scene sceneID="mhC-JS-fJZ">
             <objects>
-                <viewController storyboardIdentifier="PopoverViewController" id="rz2-7N-dC4" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MemberInfoView" id="rz2-7N-dC4" customClass="MemberInfoView" customModule="Calling_Workflow" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="9Dr-6D-x09"/>
                         <viewControllerLayoutGuide type="bottom" id="6y9-oq-fIq"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="PmX-Ri-ZPQ">
-                        <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
-                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="200" height="200"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AJk-Ii-GG7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2478" y="163"/>
+            <point key="canvasLocation" x="2749" y="49"/>
         </scene>
         <!--New Calling Table View Controller-->
         <scene sceneID="yCC-Sc-OvB">
@@ -558,7 +557,7 @@
         <scene sceneID="tYD-Oy-G3J">
             <objects>
                 <navigationController id="THt-KO-N4t" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="vw4-xs-zQe">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="vw4-xs-zQe">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -575,6 +574,7 @@
             <objects>
                 <tabBarController id="49e-Tb-3d3" customClass="RootTabBarViewController" customModule="Calling_Workflow" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="blG-17-dyh"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="W28-zg-YXA">

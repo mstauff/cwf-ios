@@ -20,6 +20,6 @@ protocol LDSLoginDelegate {
     func setLoginDictionary(returnedLoginDictionary: Dictionary<String, Any>)
 }
 
-protocol MemberDetailsDelegate {
-    func showMemberInfo()
+protocol CallingsTableViewControllerDelegate {
+    func setReturnedCalling(calling: Calling)
 }

@@ -34,6 +34,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
         tableView.register(CWFAccordionRootTableViewCell.self, forCellReuseIdentifier: "rootCell")
         tableView.register(CWFAccordionChildTableViewCell.self, forCellReuseIdentifier: "childCell")
         
+        self.navigationItem.title = rootOrg?.orgName
+        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(filterButtonPressed))
        
         setupView()
@@ -224,6 +226,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
         self.tableView.deleteRows(at: indexPaths, with: .fade)
         self.tableView.endUpdates()
     }
+    
     func expandCell(indexPath: IndexPath) {
         
         let rootOrg = dataSource[indexPath.row].dataItem
