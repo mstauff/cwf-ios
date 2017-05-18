@@ -59,19 +59,27 @@ class CallingsTableViewController: CWFBaseTableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NameCallingProposedTableViewCell
         
         let callingForRow = callingsToDisplay[indexPath.row]
         
-        let newMember = Member(indId: 1, name: "John Doe", indPhone: "801-801-8018", housePhone: "8108108108", indEmail: "jd@email.com", householdEmail: "jd@email.com", streetAddress: [], birthdate: nil, gender: nil, priesthood: nil, callings: [])
-        
         cell?.nameLabel.text = callingForRow.position.name
+        if callingForRow.existingIndId != nil {
+            let currentyCalled = appDelegate?.callingManager.getMemberWithId(memberId: callingForRow.existingIndId!)
+            cell?.currentCallingLabel.text = currentyCalled?.name
+        }
+        else {
+            cell?.currentCallingLabel.text = ""
+        }
         
-        cell?.currentCallingLabel.text = newMember.name
-        
-        cell?.callingInProcessLabel.text = callingForRow.proposedStatus.rawValue
-
-        // Configure the cell...
+        if callingForRow.proposedStatus != CallingStatus.Unknown {
+            cell?.callingInProcessLabel.text = callingForRow.proposedStatus.rawValue
+        }
+        else {
+            cell?.callingInProcessLabel.text = ""
+        }
 
         return cell!
     }

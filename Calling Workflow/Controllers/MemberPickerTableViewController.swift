@@ -8,17 +8,26 @@
 
 import UIKit
 
-class MemberPickerTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate {
+class MemberPickerTableViewController: UITableViewController {
     
     var delegate: MemberPickerDelegate?
 
     var members : [Member] = []
+
+    var filteredMembers = [Member]()
+    
+    var searchController = UISearchController(searchResultsController: nil)
+    
+    
+    //MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: UIBarButtonItemStyle.done, target: self, action: #selector(filterButtonPressed))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "filter"), style: .done, target: self, action: #selector(filterButtonPressed))
 
         tableView.register(TitleAdjustableSubtitleTableViewCell.self, forCellReuseIdentifier: "cell")
+        
+        setupSearchController()
         
         //todo - Remove this. it is only here to assign a calling to a member so we can test the view
         if (members.count > 4) {
@@ -35,6 +44,16 @@ class MemberPickerTableViewController: UITableViewController, UIPopoverPresentat
         // Dispose of any resources that can be recreated.
     }
 
+    
+    // MARK: - Setup
+    
+    func setupSearchController () {
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        definesPresentationContext = true
+        tableView.tableHeaderView = searchController.searchBar
+    }
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -43,8 +62,12 @@ class MemberPickerTableViewController: UITableViewController, UIPopoverPresentat
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return members.count
+        if searchController.isActive && searchController.searchBar.text != "" {
+            return filteredMembers.count
+        }
+        else {
+            return members.count
+        }
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -54,7 +77,16 @@ class MemberPickerTableViewController: UITableViewController, UIPopoverPresentat
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? TitleAdjustableSubtitleTableViewCell
-        let currentMember = members[indexPath.row]
+        
+        var currentMember : Member
+        
+        if searchController.isActive && searchController.searchBar.text != "" {
+            currentMember = filteredMembers[indexPath.row]
+        }
+        else {
+            currentMember = members[indexPath.row]
+        }
+        
         cell?.infoButton.addTarget(self, action: #selector(showMemberDetails(_:)), for: .touchUpInside)
         cell?.infoButton.tag = indexPath.row
 
@@ -73,18 +105,18 @@ class MemberPickerTableViewController: UITableViewController, UIPopoverPresentat
          memberSelected(selectedMember: members[indexPath.row])
     }
     
-    // Mark: - UIPopoverPresentationControllerDelegate
+    // MARK: - Search Controller
     
-    func prepareForPopoverPresentation(_ popoverPresentationController: UIPopoverPresentationController) {
-        popoverPresentationController.permittedArrowDirections = .any
-        popoverPresentationController.barButtonItem = self.navigationItem.rightBarButtonItem
+    func filterContentForSearchText(searchText: String, scope: String = "All") {
+        filteredMembers = members.filter { member in
+            return (member.name?.lowercased().contains(searchText.lowercased()))!
+        }
+        
+        tableView.reloadData()
     }
     
-    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
-        return (traitCollection.horizontalSizeClass == .compact) ? .popover : .none
-    }
     
-    // MARK: - Button Methods
+    // MARK: - Button Method
     func memberSelected(selectedMember: Member?) {
         if selectedMember != nil {
             delegate?.setProspectiveMember(member: selectedMember!)
@@ -92,24 +124,16 @@ class MemberPickerTableViewController: UITableViewController, UIPopoverPresentat
         self.navigationController?.popViewController(animated: true)
     }
     
-    func filterButtonPressed(sender : UIView){
-        let mainBoard = UIStoryboard.init(name: "Main", bundle:nil)
-        let popoverContentController = mainBoard.instantiateViewController(withIdentifier: "PopoverViewController")
-        popoverContentController.popoverPresentationController?.delegate = self
-        popoverContentController.popoverPresentationController?.sourceView = sender
-        popoverContentController.popoverPresentationController?.sourceRect = sender.bounds
-        popoverContentController.view.backgroundColor = UIColor.blue
+    func filterButtonPressed(sender : UIView) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let filterView = storyboard.instantiateViewController(withIdentifier: "FilterTableViewController") as? FilterTableViewController
+        filterView?.addCallingsFilterCell()
+        filterView?.addTimeInCallingFilterCell()
+        filterView?.addAgeFilterCell()
+        filterView?.addGenderFilterCell()
+        filterView?.addOrgFilterCell(title: "Class", upperLevelNames: ["Relief Socity"], lowerLevelNames: ["Laurel", "Mia Maid", "Bee Hive"])
         
-        
-        // Set the presentation style to modal so that the above methods get called.
-        popoverContentController.modalPresentationStyle = UIModalPresentationStyle.popover
-        
-        
-        // Present the popover.
-        self.present(popoverContentController, animated: true, completion: nil)
-        
-        
-        
+        self.navigationController?.pushViewController(filterView!, animated: true)
     }
 
     func showMemberDetails(_ sender: UIButton) {
@@ -119,5 +143,15 @@ class MemberPickerTableViewController: UITableViewController, UIPopoverPresentat
         memberDetailView?.modalPresentationStyle = .overCurrentContext
 
         self.present(memberDetailView!, animated: true, completion: nil)        
+    }
+}
+
+extension MemberPickerTableViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        filterContentForSearchText(searchText: searchController.searchBar.text!)
+    }
+    
+    func updateSearchResultsForSearchController(searchController: UISearchController) {
+        filterContentForSearchText(searchText: searchController.searchBar.text!)
     }
 }

@@ -10,7 +10,7 @@ import UIKit
 
 class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPickerDelegate, StatusPickerDelegate {
     
-    
+    //MARK: - Class Members
     var callingToDisplay : Calling? = nil {
         didSet {
             tableView.reloadData()
@@ -22,7 +22,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     var originalCalling : Calling? = nil
     var memberDetailView : MemberInfoView? = nil
     
-    //Mark: - Life Cycle
+    //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         originalCalling = callingToDisplay
@@ -212,9 +212,10 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             switch indexPath.row {
             case 0:
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                if let currentMember = appDelegate?.callingManager.getMemberWithId(memberId: (callingToDisplay?.existingIndId)!) {
-                    displayContactInfoForMember(member:  currentMember)
+                if let memberId = callingToDisplay?.existingIndId {
+                    displayContactInfoForMember(member:  (appDelegate?.callingManager.getMemberWithId(memberId: memberId))!)
                 }
+            
             case 1:
                 let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
                 let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
@@ -237,17 +238,22 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
     }
     
+    
+    //MARK: - Member Picker Delegate
     func setProspectiveMember(member: Member) {
         isDirty = true
         self.callingToDisplay?.proposedIndId = member.individualId
     }
     
+    
+    //MARK: - Status Picker Delegate
     func setStatusFromPicker(status: CallingStatus) {
         isDirty = true
         self.callingToDisplay?.proposedStatus = status
         tableView.reloadData()
     }
     
+    //MARK: - Show Contact Info
     func displayContactInfoForMember(member: Member) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let memberDetailView = storyboard.instantiateViewController(withIdentifier: "MemberInfoView") as? MemberInfoView

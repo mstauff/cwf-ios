@@ -40,12 +40,10 @@ class DirectoryTableViewController: CWFBaseTableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return members.count
     }
 
@@ -61,33 +59,16 @@ class DirectoryTableViewController: CWFBaseTableViewController {
         else {
             cell.currentCallingLabel?.text = nil
         }
-        
-        if let calling = getCallingForMemberWithId(memberId: memberForCell.individualId) {
-            cell.callingInProcessLabel?.text = calling.position.name
+       
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        if let callingsString = appDelegate?.callingManager.getCallingsForMemberAsStringWithMonths(member: memberForCell) {
+            cell.callingInProcessLabel?.text = callingsString
         }
         else {
             cell.callingInProcessLabel?.text = nil
         }
         
         return cell
-    }
-    
-
-    // MARK: - GetData
-    
-    func getCallingForMemberWithId(memberId: Int64) -> Calling? {
-        
-        let position = Position(positionTypeId: 01, name: "Sunbeam Teacher", hidden: false, multiplesAllowed: true, metadata : PositionMetadata())
-        
-        
-        let calling = Calling(id: 01, cwfId: nil, existingIndId: 1, existingStatus: .Active, activeDate: nil, proposedIndId: 123, status: CallingStatus(rawValue: "CONSIDERING"), position: position, notes: nil, editableByOrg: true, parentOrg: nil)
-        
-        if calling.proposedIndId == memberId {
-            return calling
-        }
-        else {
-            return nil
-        }
     }
     
     /*
