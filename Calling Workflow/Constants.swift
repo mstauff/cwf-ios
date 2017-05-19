@@ -48,6 +48,7 @@ struct ErrorConstants {
     static let domain = "org.ldscd"
     
     static let networkError = 400
+    static let notAuthorized = 403
     static let notFound = 404
     static let jsonParseError = 450
     static let jsonSerializeError = 455

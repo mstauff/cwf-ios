@@ -78,10 +78,15 @@
 		E87D00BA1E26EF7000FA722B /* LdsUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87D00B91E26EF7000FA722B /* LdsUser.swift */; };
 		E8A91ED11EB7C7910061EC12 /* position-metadata.js in Resources */ = {isa = PBXBuildFile; fileRef = E8A91ED01EB7C7910061EC12 /* position-metadata.js */; };
 		E8A91ED31EB7C7C90061EC12 /* position-metadata.js in Resources */ = {isa = PBXBuildFile; fileRef = E8A91ED21EB7C7C90061EC12 /* position-metadata.js */; };
+		E8A91ED71EBCF4E00061EC12 /* PermissionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A91ED61EBCF4E00061EC12 /* PermissionsTests.swift */; };
 		E8B13CCA1E3BC749004FD60C /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B13CC91E3BC749004FD60C /* DateExtensions.swift */; };
 		E8B13CCC1E3BD80A004FD60C /* DataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */; };
 		E8CC956A1E01E722007EBA47 /* member-objects.js in Resources */ = {isa = PBXBuildFile; fileRef = E8CC95691E01E722007EBA47 /* member-objects.js */; };
 		E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC956B1E01E77F007EBA47 /* MemberTests.swift */; };
+		E8E8CD311ECBB81900156450 /* PermissionEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD301ECBB81900156450 /* PermissionEnums.swift */; };
+		E8E8CD341ECBB87A00156450 /* Authorizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD331ECBB87A00156450 /* Authorizable.swift */; };
+		E8E8CD361ECBB8A800156450 /* PermissionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD351ECBB8A800156450 /* PermissionResolver.swift */; };
+		E8E8CD381ECBBCAE00156450 /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD371ECBBCAE00156450 /* PermissionManager.swift */; };
 		E8F959681E30129700C13EC9 /* CWFCallingManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */; };
 		E8F959691E30129700C13EC9 /* LdsFileApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959641E30129700C13EC9 /* LdsFileApi.swift */; };
 		E8F9596A1E30129700C13EC9 /* LdsOrgApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959651E30129700C13EC9 /* LdsOrgApi.swift */; };
@@ -198,10 +203,15 @@
 		E899562C1EA029D4001032E5 /* Calling Workflow-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Calling Workflow-Bridging-Header.h"; sourceTree = "<group>"; };
 		E8A91ED01EB7C7910061EC12 /* position-metadata.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "position-metadata.js"; sourceTree = "<group>"; };
 		E8A91ED21EB7C7C90061EC12 /* position-metadata.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "position-metadata.js"; sourceTree = "<group>"; };
+		E8A91ED61EBCF4E00061EC12 /* PermissionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissionsTests.swift; sourceTree = "<group>"; };
 		E8B13CC91E3BC749004FD60C /* DateExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DateExtensions.swift; path = Extensions/DateExtensions.swift; sourceTree = "<group>"; };
 		E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSourceTests.swift; sourceTree = "<group>"; };
 		E8CC95691E01E722007EBA47 /* member-objects.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "member-objects.js"; sourceTree = "<group>"; };
 		E8CC956B1E01E77F007EBA47 /* MemberTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberTests.swift; sourceTree = "<group>"; };
+		E8E8CD301ECBB81900156450 /* PermissionEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PermissionEnums.swift; path = Model/Permissions/PermissionEnums.swift; sourceTree = "<group>"; };
+		E8E8CD331ECBB87A00156450 /* Authorizable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Authorizable.swift; path = Model/Permissions/Authorizable.swift; sourceTree = "<group>"; };
+		E8E8CD351ECBB8A800156450 /* PermissionResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PermissionResolver.swift; path = Model/Permissions/PermissionResolver.swift; sourceTree = "<group>"; };
+		E8E8CD371ECBBCAE00156450 /* PermissionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PermissionManager.swift; path = Model/Permissions/PermissionManager.swift; sourceTree = "<group>"; };
 		E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFCallingManagerService.swift; sourceTree = "<group>"; };
 		E8F959641E30129700C13EC9 /* LdsFileApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdsFileApi.swift; sourceTree = "<group>"; };
 		E8F959651E30129700C13EC9 /* LdsOrgApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdsOrgApi.swift; sourceTree = "<group>"; };
@@ -321,6 +331,7 @@
 				E8CC956B1E01E77F007EBA47 /* MemberTests.swift */,
 				E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */,
 				E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */,
+				E8A91ED61EBCF4E00061EC12 /* PermissionsTests.swift */,
 			);
 			path = "Calling WorkflowTests";
 			sourceTree = "<group>";
@@ -337,6 +348,7 @@
 		3CE4C9521DCA9A6100AAFB31 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				E8E8CD321ECBB82300156450 /* Permissions */,
 				E841701B1E79B4D600A5C049 /* ModelEnums.swift */,
 				E8084F811E0476F80077FDAE /* Calling.swift */,
 				E8084F821E0476F80077FDAE /* Org.swift */,
@@ -446,6 +458,17 @@
 				3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */,
 			);
 			name = Extensions;
+			sourceTree = "<group>";
+		};
+		E8E8CD321ECBB82300156450 /* Permissions */ = {
+			isa = PBXGroup;
+			children = (
+				E8E8CD301ECBB81900156450 /* PermissionEnums.swift */,
+				E8E8CD331ECBB87A00156450 /* Authorizable.swift */,
+				E8E8CD351ECBB8A800156450 /* PermissionResolver.swift */,
+				E8E8CD371ECBBCAE00156450 /* PermissionManager.swift */,
+			);
+			name = Permissions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -747,6 +770,7 @@
 				E8084F8C1E088A870077FDAE /* DataSource.swift in Sources */,
 				3C0994D41E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift in Sources */,
 				3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */,
+				E8E8CD381ECBBCAE00156450 /* PermissionManager.swift in Sources */,
 				E8084F7F1E0476C10077FDAE /* DataExtensions.swift in Sources */,
 				E841701C1E79B4D600A5C049 /* ModelEnums.swift in Sources */,
 				E875C58E1EB2926800E04499 /* PositionRequirements.swift in Sources */,
@@ -755,8 +779,10 @@
 				E85E7EE61E53B6D700CE05CD /* MultiValueDictionary.swift in Sources */,
 				E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */,
 				3CBDDCAE1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift in Sources */,
+				E8E8CD341ECBB87A00156450 /* Authorizable.swift in Sources */,
 				E8084F861E0476F80077FDAE /* Org.swift in Sources */,
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
+				E8E8CD311ECBB81900156450 /* PermissionEnums.swift in Sources */,
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
 				3C11A31F1E70C14D00EC9F38 /* CWFAccordionTableViewController.swift in Sources */,
 				3C0E01821E4D42740014D32B /* ViewUtils.swift in Sources */,
@@ -772,6 +798,7 @@
 				3C8300F51E36A20400FD0D34 /* DataSubdataTableViewCell.swift in Sources */,
 				3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */,
 				E8084F881E0476F80077FDAE /* UnitLevelOrgType.swift in Sources */,
+				E8E8CD361ECBB8A800156450 /* PermissionResolver.swift in Sources */,
 				3C0994D21E451AC500926094 /* MemberPickerTableViewController.swift in Sources */,
 				3C3CF3B61E71F20A00143868 /* CWFAccordionRootTableViewCell.swift in Sources */,
 				3CE4C8D31DCA824100AAFB31 /* AppDelegate.swift in Sources */,
@@ -807,6 +834,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8A91ED71EBCF4E00061EC12 /* PermissionsTests.swift in Sources */,
 				E8B13CCC1E3BD80A004FD60C /* DataSourceTests.swift in Sources */,
 				E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */,
 				E85E7EE41E49223B00CE05CD /* CallingManagerServiceTests.swift in Sources */,

@@ -46,7 +46,7 @@ class LdsFileApi : LdsOrgApi {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
             if authenticated {
                 //todo: need current user JSON file data
-                completionHandler( LdsUser( fromJSON: JSONObject() ), nil )
+                completionHandler( LdsUser( fromJSON: self.currentUserJSON), nil )
             } else {
                 let errorMsg = "Error: Not signed in"
                 completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.networkError, userInfo: [ "error" : errorMsg ] ) )
