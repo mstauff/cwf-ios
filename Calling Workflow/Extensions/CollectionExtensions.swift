@@ -20,6 +20,10 @@ extension Dictionary {
         }
         return mutableCopy
     }
+    
+    func filteredDictionary( _ isIncluded: (Key, Value ) -> Bool ) -> [Key:Value] {
+        return self.filter(isIncluded).toDictionary( {$0} )
+    }
 }
 
 extension Array {
@@ -33,7 +37,7 @@ extension Array {
         }
     }
     
-    func toDictionary<K, V>( _ transformer: (_: Element) -> (key: K, value: V)?)
+    func toDictionary<K:Hashable, V>( _ transformer: (_: Element) -> (key: K, value: V)?)
                     -> Dictionary<K, V> {
         var map = [K: V]()
         for element in self {

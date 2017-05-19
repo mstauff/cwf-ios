@@ -38,7 +38,8 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
             
             let username = self.loginDictionary?["username"] as! String
             let password = self.loginDictionary?["password"] as! String
-            let unitNum: Int64 = 0
+            // todo - this should come from the lds current user call - we need to break loadLdsData into a signin & currentUser as one, then memberList & org callings as another
+            let unitNum: Int64 = 12345
             // todo - make this weak
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             // todo - need to break out loadLdsData into an authWithLds(), getCurrentUser(), initPermissions (once implemented) & then load data. If the auth. fails then use presentLDS..() below to login

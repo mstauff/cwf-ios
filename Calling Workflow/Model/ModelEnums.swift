@@ -128,4 +128,3 @@ public enum MemberClass : String {
 }
 
 
-

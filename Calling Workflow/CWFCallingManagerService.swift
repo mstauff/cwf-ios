@@ -31,9 +31,13 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     /// Map of callings by member
     private var memberCallingsMap = MultiValueDictionary<Int64, Calling>()
     
-    private var rootLevelOrgsForSubOrgs: [Int64: Int64] = [:]
+    private var unitLevelOrgsForSubOrgs: [Int64: Int64] = [:]
     
     private let jsonFileReader = JSONFileReader()
+    
+    private let permissionMgr = PermissionManager()
+    
+    private var userRoles : [UnitRole] = []
     
     
     init() {
@@ -74,44 +78,62 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 if error != nil {
                     print(error!)
                 } else {
-                    var ldsApiError: Error? = nil
-                    let restCallsGroup = DispatchGroup()
-                    // todo - need to add call to getUser
-                    
-                    restCallsGroup.enter()
-                    ldsApi.getMemberList(unitNum: unitNum) { (members, error) -> Void in
-                        if members != nil && !members!.isEmpty {
-                            self.memberList = members!
-                            print("First Member of unit:\(members![0])")
-                        } else {
-                            print("no user")
-                            if error != nil {
-                                ldsApiError = error
-                            }
+                    ldsApi.getCurrentUser() { (ldsUser, error) -> Void in
+                        
+                        guard error == nil, ldsUser != nil else {
+                            let errorMsg = "Error getting LDS User details: " + error.debugDescription
+                            print( errorMsg )
+                            completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
+                            return
                         }
-                        restCallsGroup.leave()
-                    }
-                    
-                    restCallsGroup.enter()
-                    ldsApi.getOrgWithCallings(unitNum: unitNum) { (org, error) -> Void in
-                        if org != nil && !org!.children.isEmpty {
+                        
+                        self.userRoles = self.permissionMgr.createUserRoles(forPositions: ldsUser!.positions, inUnit: unitNum)
+                        
+
+                        if self.permissionMgr.hasPermission(unitRoles: self.userRoles, domain: .OrgInfo, permission: .View) {
+                            var ldsApiError: Error? = nil
+                            let restCallsGroup = DispatchGroup()
+
+                            restCallsGroup.enter()
+                            ldsApi.getMemberList(unitNum: unitNum) { (members, error) -> Void in
+                                if members != nil && !members!.isEmpty {
+                                    self.memberList = members!
+                                    print("First Member of unit:\(members![0])")
+                                } else {
+                                    print("no user")
+                                    if error != nil {
+                                        ldsApiError = error
+                                    }
+                                }
+                                restCallsGroup.leave()
+                            }
                             
-                            self.ldsOrgUnit = org!.updatedWith(positionMetadata: self.positionMetadataMap)
-                            // need to put in dictionary by root level org for updating
-                            self.ldsUnitOrgsMap.removeAll()
-                            self.ldsUnitOrgsMap = self.ldsOrgUnit!.children.toDictionaryById() { $0.id }
-                        } else {
-                            print("no org")
-                            if error != nil {
-                                ldsApiError = error
+                            restCallsGroup.enter()
+                            ldsApi.getOrgWithCallings(unitNum: unitNum) { (org, error) -> Void in
+                                if org != nil && !org!.children.isEmpty {
+                                    
+                                    self.ldsOrgUnit = org!.updatedWith(positionMetadata: self.positionMetadataMap)
+                                    // need to put in dictionary by root level org for updating
+                                    self.ldsUnitOrgsMap.removeAll()
+                                    self.ldsUnitOrgsMap = self.ldsOrgUnit!.children.toDictionaryById() { $0.id }
+                                } else {
+                                    print("no org")
+                                    if error != nil {
+                                        ldsApiError = error
+                                    }
+                                }
+                                restCallsGroup.leave()
                             }
+
+                            restCallsGroup.notify(queue: DispatchQueue.main) {
+                                // once all the calls have returned then call the callback
+                                completionHandler(ldsApiError == nil, ldsApiError)
+                            }
+                        } else {
+                            let errorMsg = "No app permissions for user: " + ldsUser.debugDescription
+                            print( errorMsg )
+                            completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notAuthorized, userInfo: ["error": errorMsg]))
                         }
-                        restCallsGroup.leave()
-                    }
-                    
-                    restCallsGroup.notify(queue: DispatchQueue.main) {
-                        // once all the calls have returned then call the callback
-                        completionHandler(ldsApiError == nil, ldsApiError)
                     }
                 }
             })
@@ -145,6 +167,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                     dataSourceGroup.leave()
                     
                     guard org != nil else {
+                        print( error.debugDescription )
                         return // exits the callback, not loadAppData
                     }
                     let mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg)
@@ -154,7 +177,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                         return (subOrg.id, mergedOrg.id)
                     })
                     
-                    self.rootLevelOrgsForSubOrgs = self.rootLevelOrgsForSubOrgs.merged(withDictionary: subOrgsMap)
+                    self.unitLevelOrgsForSubOrgs = self.unitLevelOrgsForSubOrgs.merged(withDictionary: subOrgsMap)
                 }
             }
             
@@ -169,7 +192,12 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     /** Reads the given Org from google drive and calls the callback with the org converted from JSON */
     public func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
-        if let ldsOrg = self.ldsUnitOrgsMap[orgId] {
+        if let ldsOrg = self.ldsUnitOrgsMap[orgId], let orgType = UnitLevelOrgType(rawValue: ldsOrg.orgTypeId) {
+            let orgAuth = AuthorizableOrg(unitNum: self.ldsOrgUnit!.id, unitLevelOrgId:ldsOrg.id , unitLevelOrgType: orgType, orgTypeId: ldsOrg.orgTypeId)
+            guard permissionMgr.isAuthorized(unitRoles: userRoles, domain: .OrgInfo, permission: .View, targetData: orgAuth ) else  {
+                completionHandler(ldsOrg, nil)
+                return
+            }
             
             dataSource.getData(forOrg: ldsOrg) { org, error in
                 if error != nil {
@@ -178,10 +206,12 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                     let errorMsg = "Error: No Org data found for ID: \(orgId)"
                     completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
                 } else {
+                    // todo - need to strip out any org exceptions
                     let mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg).updatedWith(positionMetadata: self.positionMetadataMap)
                     completionHandler(mergedOrg, nil)
                 }
             }
+            
         } else {
             let errorMsg = "Error: No Org with ID: \(orgId)"
             completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
@@ -264,6 +294,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 var mergedProposedStatus : CallingStatus? = nil
                 var mergedNotes : String? = nil
                 
+                // xcode warning says this should be a let constant since it never gets changed, but if you make it a let then it won't compile with a "let pattern can't appear nested in already immutable context"
                 for var potentialCalling in matchingPotentialCallings {
                     // if we have an exact match - based on position w/o multiples then delete the potential (the actual will be added below when we add new callings from LCR)
                     // todo - review this - may be a better way - detect that nothing has changed so don't delete the google drive version and add the LCR version
@@ -371,11 +402,20 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     /** Performs the actual CRUD operations by reading the file for the org that the calling is in from google drive, performing the update, writing the entire org back to google drive, then updating the copy of the data that is cached locally. When this is all done we call the completion handler with the results */
     private func storeCallingChange(changedCalling: Calling, operation: Org.CRUDOperation, completionHandler: @escaping (Bool, Error?) -> Void) {
-        if let orgId = changedCalling.parentOrg?.id, let rootLevelOrgId = self.rootLevelOrgsForSubOrgs[orgId] {
+        // todo - this needs to check for root level org ID (probably include them in the map)
+        if let orgId = changedCalling.parentOrg?.id, let unitLevelOrgId = self.unitLevelOrgsForSubOrgs[orgId], let rootOrgType = unitLevelOrgType( forOrg: unitLevelOrgId ) {
 
+            let orgAuth = AuthorizableOrg(unitNum: ldsOrgUnit!.id, unitLevelOrgId: unitLevelOrgId, unitLevelOrgType: rootOrgType, orgTypeId: changedCalling.parentOrg!.orgTypeId)
+            let perm = getPermission(forCRUDOperation: operation)
+            guard permissionMgr.isAuthorized(unitRoles: userRoles, domain: .PotentialCalling, permission: perm, targetData: orgAuth) else {
+                let errorMsg = "Error: No Permission to make changes in : \(rootOrgType)"
+                completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notAuthorized, userInfo: ["error": errorMsg]))
+                return
+            }
+            
             let originalCalling = appDataOrg?.getCalling( changedCalling )
             // read the org file fresh from google drive (to make sure we have the latest data before performing the change). This reduces the chance of clobbering another change in the org recorded by another user
-            self.getOrgData(forOrgId: rootLevelOrgId) { org, error in
+            self.getOrgData(forOrgId: unitLevelOrgId) { org, error in
                 guard error == nil else {
                     completionHandler(false, error)
                     return
@@ -391,7 +431,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                         
                         if success {
                             // update the cached copy of the org, as well as the calling maps where we keep track of the callings that individuals hold
-                            self.updateCachedCallingData(rootLevelOrg: updatedOrg, originalCalling: originalCalling, changedCalling: changedCalling, operation: operation)
+                            self.updateCachedCallingData(unitLevelOrg: updatedOrg, originalCalling: originalCalling, changedCalling: changedCalling, operation: operation)
                         }
                         // if it wasn't a success we just propogate the result and any errors on to the callback
                         completionHandler(success, error)
@@ -406,13 +446,34 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     }
     
     /** Currently this method just updates the org for the unit with the updated root level org (Primary, EQ, etc.). We don't change the map of actual callings because this is currently just for potential calling changes. The update of actual callings would only be after we've made a change in LCR */
-    func updateCachedCallingData(rootLevelOrg: Org, originalCalling: Calling?, changedCalling: Calling, operation: Org.CRUDOperation) {
+    func updateCachedCallingData(unitLevelOrg: Org, originalCalling: Calling?, changedCalling: Calling, operation: Org.CRUDOperation) {
         if self.appDataOrg != nil {
-            self.appDataOrg!.updateDirectChildOrg(org: rootLevelOrg)
+            self.appDataOrg!.updateDirectChildOrg(org: unitLevelOrg)
         }
         // when we eventually add a potential Callings map we'll need to update it here - will need to switch on operation
         
         // no need to update existing callings - that should only be after we've saved a change in LCR
+    }
+    
+    /** converts a CRUD operation into a permission of the same type */
+    private func getPermission( forCRUDOperation crudOp : Org.CRUDOperation ) -> Permission {
+        switch crudOp {
+        case .Create:
+            return .Create
+        case .Update:
+            return .Update
+        case .Delete:
+            return .Delete
+        }
+    }
+    
+    /** Looks up a unit level org by its' ID and returns the type of the org. Returns nil if the org id is not in the list of unit level orgs */
+    private func unitLevelOrgType( forOrg rootOrgId: Int64 ) -> UnitLevelOrgType? {
+        var orgType : UnitLevelOrgType? = nil
+        if let rootOrgTypeId = self.ldsUnitOrgsMap[rootOrgId]?.orgTypeId {
+            orgType = UnitLevelOrgType(rawValue: rootOrgTypeId)
+        }
+        return orgType
     }
     
     /** After we've finalized a calling in LCR, we need to update our cached copy of the data */

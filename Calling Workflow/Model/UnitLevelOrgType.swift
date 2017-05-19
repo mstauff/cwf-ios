@@ -18,7 +18,7 @@ public enum UnitLevelOrgType : Int  {
     case Ward = 7
     
     case Bishopric = 1179
-    case BranchPresidency = -1
+    case BranchPresidency = 1200
     case HighPriests = 69
     case Elders = 70
     case ReliefSociety = 74
