@@ -32,13 +32,13 @@ class PermissionsTests: XCTestCase {
         let orgAdminActiveCallingPerms = Role.orgAdmin.permissions[.ActiveCalling]
         XCTAssertEqual( orgAdminActiveCallingPerms!, [.Update, .Delete, .Release] )
 
-        let unitViewActiveCallingPerms = Role.unitViewer.permissions[.ActiveCalling]
+        let unitViewActiveCallingPerms = Role.stakeAssistant.permissions[.ActiveCalling]
         XCTAssertNil( unitViewActiveCallingPerms )
         
         let unitAdminGooglePerms = Role.unitAdmin.permissions[.UnitGoogleAccount]
         XCTAssertEqual( unitAdminGooglePerms!, [.Create, .Update ] )
         
-        let orgAdminGooglePerms = Role.unitViewer.permissions[.UnitGoogleAccount]
+        let orgAdminGooglePerms = Role.stakeAssistant.permissions[.UnitGoogleAccount]
         XCTAssertNil( orgAdminGooglePerms )
         
     }
