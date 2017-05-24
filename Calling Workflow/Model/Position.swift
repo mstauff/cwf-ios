@@ -42,10 +42,14 @@ public struct Position : JSONParsable {
 
     // TODO: do we need something to indicate it's a custom calling? Or can we determine that from the positionTypeId????
     init(positionTypeId : Int, name : String?, hidden : Bool, multiplesAllowed : Bool, metadata: PositionMetadata) {
+        self.init(positionTypeId: positionTypeId, name: name, unitNum: nil, hidden: hidden, multiplesAllowed: multiplesAllowed, metadata: metadata)
+    }
+    
+    init(positionTypeId : Int, name : String?, unitNum : Int64?, hidden : Bool, multiplesAllowed : Bool, metadata: PositionMetadata) {
         self.positionTypeId = positionTypeId
         self.name = name
         self.hidden = hidden
-        self.unitNum = nil
+        self.unitNum = unitNum
         self.multiplesAllowed = multiplesAllowed
         self.metadata = metadata
     }
