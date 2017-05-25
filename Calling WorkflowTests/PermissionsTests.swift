@@ -99,7 +99,7 @@ class PermissionsTests: XCTestCase {
     
     func testUnitPermResolver() {
         
-        let posDontCare = Position(positionTypeId: 0, name: nil, hidden: false, multiplesAllowed: false, metadata: PositionMetadata())
+        let posDontCare = Position(positionTypeId: 0, name: nil, hidden: false, multiplesAllowed: false, displayOrder: nil, metadata: PositionMetadata())
         let authorizedUnit = AuthorizableUnit(unitNum: mainUnit)
         let authorizedOrg = AuthorizableOrg(unitNum: mainUnit, unitLevelOrgId: 5555, unitLevelOrgType: .Elders, orgTypeId: 66)
         
@@ -121,7 +121,7 @@ class PermissionsTests: XCTestCase {
     
     func testOrgPermResolver() {
         let eqPresOrgTypeId = 222
-        let posDontCare = Position(positionTypeId: 0, name: nil, hidden: false, multiplesAllowed: false, metadata: PositionMetadata())
+        let posDontCare = Position(positionTypeId: 0, name: nil, hidden: false, multiplesAllowed: false, displayOrder: nil, metadata: PositionMetadata())
         let eqOrg = AuthorizableOrg(unitNum: mainUnit, unitLevelOrgId: 5555, unitLevelOrgType: .Elders, orgTypeId: 66)
         let eqPresOrg = AuthorizableOrg(unitNum: mainUnit, unitLevelOrgId: 5555, unitLevelOrgType: .Elders, orgTypeId: eqPresOrgTypeId)
         
@@ -207,7 +207,7 @@ class PermissionsTests: XCTestCase {
     func createPositions( _ typeIds: Int..., inUnitNum unitNum : Int64) -> [Position] {
         var positions : [Position] = []
         for typeId in typeIds {
-            positions.append(Position(positionTypeId: typeId, name: nil, unitNum: unitNum, hidden: false, multiplesAllowed: false, metadata: PositionMetadata()) )
+            positions.append(Position(positionTypeId: typeId, name: nil, unitNum: unitNum, hidden: false, multiplesAllowed: false, displayOrder: nil, metadata: PositionMetadata()) )
         }
         
         return positions

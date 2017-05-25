@@ -40,9 +40,6 @@ public struct Calling : JSONParsable {
     /// Optional notes about the calling. Could include other people that might be considered, or if somebody declined, etc.
     var notes : String?
     
-    /// This will likely be removed and will depend on the calling of the user and the position of the calling, and we'll need to determine position privileges. So a primary pres can propose a calling, but nothing more, but an EQ Pres can propose and call teachers & HT supervisors
-    let editableByOrg : Bool
-    
     /// Indicates that this calling was changed outside of the app (i.e. the calling was recorded or updated in LCR). This enum will allow us to visually mark the calling so the user can be aware of the change.
     var conflict : ConflictCause? = nil
     
@@ -63,10 +60,10 @@ public struct Calling : JSONParsable {
     }
     
     init( _ calling: Calling, position: Position ) {
-        self.init( id: calling.id, cwfId: calling.cwfId, existingIndId : calling.existingIndId, existingStatus: calling.existingStatus, activeDate: calling.activeDate, proposedIndId: calling.proposedIndId, status: calling.proposedStatus, position: position, notes: calling.notes, editableByOrg: calling.editableByOrg, parentOrg : calling.parentOrg)
+        self.init( id: calling.id, cwfId: calling.cwfId, existingIndId : calling.existingIndId, existingStatus: calling.existingStatus, activeDate: calling.activeDate, proposedIndId: calling.proposedIndId, status: calling.proposedStatus, position: position, notes: calling.notes, parentOrg : calling.parentOrg)
     }
     
-    init(id : Int64?, cwfId : String?, existingIndId: Int64?, existingStatus : ExistingCallingStatus?, activeDate : Date?, proposedIndId : Int64?, status : CallingStatus?, position : Position, notes : String?, editableByOrg : Bool, parentOrg : Org?) {
+    init(id : Int64?, cwfId : String?, existingIndId: Int64?, existingStatus : ExistingCallingStatus?, activeDate : Date?, proposedIndId : Int64?, status : CallingStatus?, position : Position, notes : String?, parentOrg : Org?) {
         self.id = id
         // if ID is not set then either cwfID has to contain a value, or we'll generate a UUID.
         self.cwfId = Calling.generateCwfId( id: id, cwfId: cwfId )
@@ -75,7 +72,6 @@ public struct Calling : JSONParsable {
         self.proposedStatus = status ?? .Unknown
         self.position = position
         self.notes = notes
-        self.editableByOrg = editableByOrg
         self.parentOrg = parentOrg
         self.existingStatus = existingStatus ?? .Unknown
         self.activeDate = activeDate
@@ -102,7 +98,6 @@ public struct Calling : JSONParsable {
         // if notes are "null" then it comes through as NSNull, so we need to check if it's an actual string before assigning it. If it's not a string then we just use nil
         let notesJson = json[CallingJsonKeys.notes]
         notes = notesJson is String ? notesJson as? String : nil
-        editableByOrg = json[CallingJsonKeys.editableByOrg] as? Bool ?? true
         parentOrg = nil
         
         activeDate = Date( fromLCRString: (json[CallingJsonKeys.activeDate] as? String ?? "") )
@@ -180,6 +175,5 @@ private struct CallingJsonKeys {
     static let existingIndId = "memberId"
     static let proposedIndId = "proposedIndId"
     static let notes = "notes"
-    static let editableByOrg = "editableByOrg"
 }
 

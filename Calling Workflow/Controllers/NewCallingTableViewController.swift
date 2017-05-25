@@ -26,9 +26,9 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         tableView.register(SingleFieldTableViewCell.self, forCellReuseIdentifier: "SingleFieldTableViewCell")
         tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "NoteTableViewCell")
         let positionMetadata = PositionMetadata()
-        let newPostiton = Position(positionTypeId: 0, name: nil, hidden: false, multiplesAllowed: true, metadata: positionMetadata)
+        let newPostiton = Position(positionTypeId: 0, name: nil, hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: positionMetadata)
         
-        newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: newPostiton, notes: nil, editableByOrg: true, parentOrg: parentOrg)
+        newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: newPostiton, notes: nil, parentOrg: parentOrg)
     }
 
     override func didReceiveMemoryWarning() {
