@@ -34,5 +34,9 @@ class FilterBaseTableViewCell: UITableViewCell {
     func getCellHeight() -> CGFloat {
         return 44
     }
+    
+    func getSelectedOptions (filterOptions: FilterOptionsObject) -> FilterOptionsObject {
+        return filterOptions
+    }
 
 }

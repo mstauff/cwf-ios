@@ -12,6 +12,8 @@ class FilterTableViewController: UITableViewController {
 
     var filterContentArray : [FilterBaseTableViewCell] = []
     
+    var delegate : FilterTableViewControllerDelegate?
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -127,6 +129,10 @@ class FilterTableViewController: UITableViewController {
     
     func applyPressed () {
         print("Apply pressed")
+        var filterOptions : FilterOptionsObject = FilterOptionsObject()
+        //for tableView.sect
+        self.delegate?.setFilterOptions(memberFilterOptions: filterOptions)
+        self.navigationController?.popViewController(animated: true)
     }
     
 }

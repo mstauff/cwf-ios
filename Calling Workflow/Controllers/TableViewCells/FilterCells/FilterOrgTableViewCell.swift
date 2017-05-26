@@ -90,40 +90,47 @@ class FilterOrgTableViewCell: FilterBaseTableViewCell {
     }
     
     func buttonSelected (sender: FilterButton) {
-        if upperClassButtons.contains(item: sender) {
-            for button in upperClassButtons {
-                button.isSelected = false
-                button.setupForUnselected()
-            }
-            
-            if sender.isSelected == false {
-                sender.isSelected = true
-                sender.setupForSelected()
-            }
-            else {
-                sender.isSelected = false
-                sender.isSelected = true
-            }
-
+        if (sender.isSelected){
+            sender.isSelected = false
+            sender.setupForUnselected()
         }
         else {
-            for button in lowerClassButtons {
-                button.isSelected = false
-                button.setupForUnselected()
-            }
-            
-            if sender.isSelected == false {
+            if upperClassButtons.contains(item: sender) {
+                for button in upperClassButtons {
+                    button.isSelected = false
+                    button.setupForUnselected()
+                }
+                
                 sender.isSelected = true
                 sender.setupForSelected()
+                
             }
             else {
-                sender.isSelected = false
-                sender.isSelected = true
-            }
+                for button in lowerClassButtons {
+                    button.isSelected = false
+                    button.setupForUnselected()
+                }
+                
+                if sender.isSelected == false {
+                    sender.isSelected = true
+                    sender.setupForSelected()
+                }
+                else {
+                    sender.isSelected = false
+                    sender.isSelected = true
+                }
 
+            }
         }
     }
 
+    override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
+//        for button in upperClassButtons {
+//            if button.tag
+//        }
+        return filterOptions
+    }
+    
     override func getCellHeight() -> CGFloat {
         return 100
     }

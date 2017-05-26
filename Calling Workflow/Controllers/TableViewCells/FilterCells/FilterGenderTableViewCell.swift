@@ -52,6 +52,7 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
         maleButton.setTitle("Male", for: UIControlState.normal)
         maleButton.translatesAutoresizingMaskIntoConstraints = false
         maleButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
+        maleButton.tag = 1
         
         self.addSubview(maleButton)
         
@@ -65,6 +66,7 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
         femaleButton.setTitle("Female", for: UIControlState.normal)
         femaleButton.translatesAutoresizingMaskIntoConstraints = false
         femaleButton.layoutMargins = .init(top: 5, left: 5, bottom: 5, right: 5)
+        femaleButton.tag = 2
         
         femaleButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
         
@@ -79,21 +81,37 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
     }
     
     func buttonSelected (sender: FilterButton) {
-        for button in genderButtonArray {
-            button.isSelected = false
-            button.setupForUnselected()
-        }
-        
-        if sender.isSelected == false {
-            sender.isSelected = true
-            sender.setupForSelected()
+        if (sender.isSelected) {
+            sender.isSelected = false
+            sender.setupForUnselected()
         }
         else {
-            sender.isSelected = false
-            sender.isSelected = true
+            for button in genderButtonArray {
+                if button == sender {
+                    button.isSelected = true
+                    button.setupForSelected()
+                }
+                else {
+                    button.isSelected = false
+                    button.setupForUnselected()
+                }
+            }
         }
     }
     
+    override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
+        for button in genderButtonArray {
+            switch button.tag {
+            case 1:
+                filterOptions.gender = Gender.Male
+            case 2:
+                filterOptions.gender = Gender.Female
+            default:
+                filterOptions.gender = nil
+            }
+        }
+        return filterOptions
+    }
 }
 
 

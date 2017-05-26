@@ -15,8 +15,8 @@ class FilterButton: UIButton {
         setupForUnselected()
         self.layer.cornerRadius = 12.0
         self.titleLabel?.font = UIFont(name: (self.titleLabel?.font.fontName)!, size: 14)
-        self.titleEdgeInsets.left = 5
-        self.titleEdgeInsets.right = 5
+//        self.titleEdgeInsets.left = 5
+//        self.titleEdgeInsets.right = 5
         self.clipsToBounds = true
     }
     

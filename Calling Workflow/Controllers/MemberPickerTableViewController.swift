@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MemberPickerTableViewController: UITableViewController {
+class MemberPickerTableViewController: UITableViewController, FilterTableViewControllerDelegate {
     
     var delegate: MemberPickerDelegate?
 
@@ -17,8 +17,8 @@ class MemberPickerTableViewController: UITableViewController {
     var filteredMembers = [Member]()
     
     var searchController = UISearchController(searchResultsController: nil)
-    
-    
+
+    var filterViewOptions : FilterOptionsObject? = nil
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -34,8 +34,6 @@ class MemberPickerTableViewController: UITableViewController {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             members[1].currentCallings = (appDelegate?.callingManager.getCallingsForMember(member: members[1]))!
             members[3].currentCallings = (appDelegate?.callingManager.getCallingsForMember(member: members[3]))!
-
-
         }
     }
 
@@ -62,7 +60,7 @@ class MemberPickerTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searchController.isActive && searchController.searchBar.text != "" {
+        if searchController.isActive && searchController.searchBar.text != "" || filterViewOptions != nil{
             return filteredMembers.count
         }
         else {
@@ -80,7 +78,7 @@ class MemberPickerTableViewController: UITableViewController {
         
         var currentMember : Member
         
-        if searchController.isActive && searchController.searchBar.text != "" {
+        if searchController.isActive && searchController.searchBar.text != "" || filterViewOptions != nil{
             currentMember = filteredMembers[indexPath.row]
         }
         else {
@@ -144,8 +142,16 @@ class MemberPickerTableViewController: UITableViewController {
 
         self.present(memberDetailView!, animated: true, completion: nil)        
     }
+    
+    //MARK: - FilterViewDelegate
+    
+    func setFilterOptions(memberFilterOptions: FilterOptionsObject) {
+        filterViewOptions = memberFilterOptions
+        filteredMembers = (filterViewOptions?.filterMemberData(unfilteredArray: members))!
+    }
 }
 
+//MARK: - MemberPickerExtension
 extension MemberPickerTableViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         filterContentForSearchText(searchText: searchController.searchBar.text!)

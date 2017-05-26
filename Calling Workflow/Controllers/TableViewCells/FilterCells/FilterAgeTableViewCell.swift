@@ -53,6 +53,7 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
         youthButton.setTitle("12-17", for: UIControlState.normal)
         youthButton.translatesAutoresizingMaskIntoConstraints = false
         youthButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
+        youthButton.tag = 1
         
         self.addSubview(youthButton)
         
@@ -65,7 +66,7 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
         ageButtonArray.append(adultButton)
         adultButton.setTitle("18+", for: UIControlState.normal)
         adultButton.translatesAutoresizingMaskIntoConstraints = false
-        adultButton.layoutMargins = .init(top: 5, left: 5, bottom: 5, right: 5)
+        adultButton.tag = 2
         
         adultButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
         
@@ -80,19 +81,34 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
     }
     
     func buttonSelected (sender: FilterButton) {
-        for button in ageButtonArray {
-            button.isSelected = false
-            button.setupForUnselected()
+        if sender.isSelected {
+            sender.isSelected = false
+            sender.setupForUnselected()
         }
+        else {
+            for button in ageButtonArray {
+                button.isSelected = false
+                button.setupForUnselected()
+            }
         
-        if sender.isSelected == false {
             sender.isSelected = true
             sender.setupForSelected()
         }
-        else {
-            sender.isSelected = false
-            sender.isSelected = true
+    }
+    
+    override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
+        for button in ageButtonArray {
+            switch button.tag {
+            case 1:
+                filterOptions.minAge = 12
+                filterOptions.maxAge = 17
+            case 2:
+                filterOptions.minAge = 18
+            default:
+                print("button with no tag selected")
+            }
         }
+        return filterOptions
     }
 
 }

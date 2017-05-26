@@ -48,9 +48,12 @@ class FilterCallingNumberTableViewCell: FilterBaseTableViewCell {
     
     func addNumberButtons (buttonsToAdd: [Int]) {
         var lastView : UIView = titleLabel
+        var buttonTag = 0
         for button in buttonsToAdd {
             let currentButton = FilterButton()
             currentButton.translatesAutoresizingMaskIntoConstraints = false
+            currentButton.tag = buttonTag
+            buttonTag += 1
             numberButtonArray.append(currentButton)
             
             if button != buttonsToAdd[buttonsToAdd.count-1]{
@@ -79,19 +82,28 @@ class FilterCallingNumberTableViewCell: FilterBaseTableViewCell {
     }
         
     func buttonSelected (sender: FilterButton) {
-        for button in numberButtonArray {
-            button.isSelected = false
-            button.setupForUnselected()
+        if sender.isSelected {
+            sender.setupForUnselected()
+            sender.isSelected = false
         }
-        
-        if sender.isSelected == false {
+        else {
+//            for button in numberButtonArray {
+//                button.isSelected = false
+//                button.setupForUnselected()
+//            }
+//        
             sender.isSelected = true
             sender.setupForSelected()
         }
-        else {
-            sender.isSelected = false
-            sender.isSelected = true
+    }
+    
+    override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
+        for button in numberButtonArray {
+            if button.isSelected {
+                filterOptions.maxCallings = button.tag
+            }
         }
+        return filterOptions
     }
     
     override func getCellHeight() -> CGFloat {

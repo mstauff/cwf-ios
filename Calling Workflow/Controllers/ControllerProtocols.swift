@@ -23,3 +23,7 @@ protocol LDSLoginDelegate {
 protocol CallingsTableViewControllerDelegate {
     func setReturnedCalling(calling: Calling)
 }
+
+protocol FilterTableViewControllerDelegate {
+    func setFilterOptions(memberFilterOptions: FilterOptionsObject)
+}
