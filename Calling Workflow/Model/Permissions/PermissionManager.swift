@@ -99,7 +99,7 @@ public class PermissionManager {
                             let orgAdminRole = UnitRole(role: Role.orgAdmin, unitNum: currPosition.unitNum!, orgId: nil, orgType: orgType, activePosition: currPosition, orgRightsException: PermissionManager.unitLevelOrgExceptions[orgType])
                             unitRoles.append(orgAdminRole)
                         }
-                        // todo - still need to account for unit viewers
+                        // todo - still need to account for stakeAssitants
                     }
                 }
             }

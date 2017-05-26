@@ -182,7 +182,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             }
             
             dataSourceGroup.notify(queue: DispatchQueue.main) {
-                self.appDataOrg!.children = mergedOrgs
+                // sort all the unit level orgs by their display order
+                self.appDataOrg!.children = mergedOrgs.sorted(by: Org.sortByDisplayOrder)
                 // this is only actual callings. Probably will need another for proposed callings
                 self.memberCallingsMap = self.multiValueDictionaryFromArray(array: self.appDataOrg!.allOrgCallings) { $0.existingIndId }
                 completionHandler(error == nil, extraAppOrgs.isNotEmpty, error)
@@ -258,10 +259,14 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 updatedOrg.hasUnsavedChanges = true
             }
         }
-        updatedOrg.children = updatedChildren
+        // sort the child orgs by display order
+        updatedOrg.children = updatedChildren.sorted(by: Org.sortByDisplayOrder)
         
         // now reconcile the callings in the current org
         updatedOrg = reconcileCallings(inSubOrg: updatedOrg, ldsOrgVersion: ldsOrg)
+        
+        // sort any callings in the org by display order
+        updatedOrg.callings = updatedOrg.callings.sorted(by: Calling.sortByDisplayOrder)
         
         return updatedOrg
         
@@ -322,7 +327,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 
                 // Now need to add the existing calling from LCR
                 if let ldsCallingOrg = ldsCalling.parentOrg, let appCallingOrg = appOrg.id == ldsCallingOrg.id ? appOrg : appOrg.getChildOrg(id: ldsCallingOrg.id) {
-                    let callingFromLcr = Calling(id: ldsCalling.id, cwfId: nil, existingIndId: ldsCalling.existingIndId, existingStatus: .Active, activeDate: ldsCalling.activeDate, proposedIndId: mergedProposedIndId, status: mergedProposedStatus, position: ldsCalling.position, notes: mergedNotes, editableByOrg: true, parentOrg: appCallingOrg)
+                    let callingFromLcr = Calling(id: ldsCalling.id, cwfId: nil, existingIndId: ldsCalling.existingIndId, existingStatus: .Active, activeDate: ldsCalling.activeDate, proposedIndId: mergedProposedIndId, status: mergedProposedStatus, position: ldsCalling.position, notes: mergedNotes, parentOrg: appCallingOrg)
                     updatedOrg = updatedOrg.updatedWith(newCalling: callingFromLcr) ?? updatedOrg
                 }
                 updatedOrg.hasUnsavedChanges = true

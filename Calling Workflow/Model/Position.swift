@@ -29,6 +29,8 @@ public struct Position : JSONParsable {
     
     let multiplesAllowed : Bool
     
+    let displayOrder : Int?
+    
     /// This should not change once set, but because it comes from a different source (not in the position JSON that comes from LCR, we need it to be var so we can set it after the position is init'ed from JSON)
     var metadata : PositionMetadata
 
@@ -41,13 +43,18 @@ public struct Position : JSONParsable {
     
 
     // TODO: do we need something to indicate it's a custom calling? Or can we determine that from the positionTypeId????
-    init(positionTypeId : Int, name : String?, hidden : Bool, multiplesAllowed : Bool, metadata: PositionMetadata) {
+    init(positionTypeId : Int, name : String?, hidden : Bool, multiplesAllowed : Bool, displayOrder : Int?, metadata: PositionMetadata) {
+        self.init(positionTypeId: positionTypeId, name: name, unitNum: nil, hidden: hidden, multiplesAllowed: multiplesAllowed, displayOrder : displayOrder, metadata: metadata)
+    }
+    
+    init(positionTypeId : Int, name : String?, unitNum : Int64?, hidden : Bool, multiplesAllowed : Bool, displayOrder : Int?, metadata: PositionMetadata) {
         self.positionTypeId = positionTypeId
         self.name = name
         self.hidden = hidden
-        self.unitNum = nil
+        self.unitNum = unitNum
         self.multiplesAllowed = multiplesAllowed
         self.metadata = metadata
+        self.displayOrder = displayOrder
     }
     
     public init?(fromJSON json: JSONObject) {
@@ -68,6 +75,7 @@ public struct Position : JSONParsable {
         multiplesAllowed = json[PositionJsonKeys.allowMultiples] as? Bool ?? true
         
         hidden = json[PositionJsonKeys.hidden] as? Bool ?? false
+        displayOrder = json[PositionJsonKeys.displayOrder] as? Int
         metadata = PositionMetadata()
     }
     
@@ -79,6 +87,9 @@ public struct Position : JSONParsable {
         }
         if self.unitNum != nil {
             jsonObj[PositionJsonKeys.unitNum] = self.unitNum! as AnyObject
+        }
+        if self.displayOrder != nil {
+            jsonObj[PositionJsonKeys.displayOrder] = self.displayOrder! as AnyObject
         }
         // need to store this as a string rather than a bool before we cast to AnyObject, as casting a bool to AnyObject loses type info (it gets seen as Int and outputs 0/1 rather than true/false in the json
         jsonObj[PositionJsonKeys.hidden] = self.hidden.description as AnyObject
@@ -105,6 +116,7 @@ private struct PositionJsonKeys {
     static let name = "position"
     static let hidden = "hidden"
     static let allowMultiples = "allowMultiple"
+    static let displayOrder = "positionDisplayOrder"
     // this is not included in LCR org/calling data, but is included in current user details call and we need it to validate permissions
     static let unitNum = "unitNo"
 }

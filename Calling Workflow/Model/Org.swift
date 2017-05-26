@@ -260,6 +260,11 @@ public struct Org : JSONParsable  {
         case Update
         case Delete
     }
+    
+    // todo - at some point should probably move this to Comparable protocol extension
+    public static func sortByDisplayOrder( org1: Org, org2: Org ) -> Bool {
+        return org1.displayOrder < org2.displayOrder
+    }
 
 }
 
@@ -269,7 +274,6 @@ extension Org : Equatable {
         return lhs.id == rhs.id
     }
 }
-
 
 private struct OrgJsonKeys {
     static let id = "subOrgId"

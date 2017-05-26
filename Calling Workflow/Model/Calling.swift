@@ -40,9 +40,6 @@ public struct Calling : JSONParsable {
     /// Optional notes about the calling. Could include other people that might be considered, or if somebody declined, etc.
     var notes : String?
     
-    /// This will likely be removed and will depend on the calling of the user and the position of the calling, and we'll need to determine position privileges. So a primary pres can propose a calling, but nothing more, but an EQ Pres can propose and call teachers & HT supervisors
-    let editableByOrg : Bool
-    
     /// Indicates that this calling was changed outside of the app (i.e. the calling was recorded or updated in LCR). This enum will allow us to visually mark the calling so the user can be aware of the change.
     var conflict : ConflictCause? = nil
     
@@ -63,10 +60,10 @@ public struct Calling : JSONParsable {
     }
     
     init( _ calling: Calling, position: Position ) {
-        self.init( id: calling.id, cwfId: calling.cwfId, existingIndId : calling.existingIndId, existingStatus: calling.existingStatus, activeDate: calling.activeDate, proposedIndId: calling.proposedIndId, status: calling.proposedStatus, position: position, notes: calling.notes, editableByOrg: calling.editableByOrg, parentOrg : calling.parentOrg)
+        self.init( id: calling.id, cwfId: calling.cwfId, existingIndId : calling.existingIndId, existingStatus: calling.existingStatus, activeDate: calling.activeDate, proposedIndId: calling.proposedIndId, status: calling.proposedStatus, position: position, notes: calling.notes, parentOrg : calling.parentOrg)
     }
     
-    init(id : Int64?, cwfId : String?, existingIndId: Int64?, existingStatus : ExistingCallingStatus?, activeDate : Date?, proposedIndId : Int64?, status : CallingStatus?, position : Position, notes : String?, editableByOrg : Bool, parentOrg : Org?) {
+    init(id : Int64?, cwfId : String?, existingIndId: Int64?, existingStatus : ExistingCallingStatus?, activeDate : Date?, proposedIndId : Int64?, status : CallingStatus?, position : Position, notes : String?, parentOrg : Org?) {
         self.id = id
         // if ID is not set then either cwfID has to contain a value, or we'll generate a UUID.
         self.cwfId = Calling.generateCwfId( id: id, cwfId: cwfId )
@@ -75,7 +72,6 @@ public struct Calling : JSONParsable {
         self.proposedStatus = status ?? .Unknown
         self.position = position
         self.notes = notes
-        self.editableByOrg = editableByOrg
         self.parentOrg = parentOrg
         self.existingStatus = existingStatus ?? .Unknown
         self.activeDate = activeDate
@@ -102,7 +98,6 @@ public struct Calling : JSONParsable {
         // if notes are "null" then it comes through as NSNull, so we need to check if it's an actual string before assigning it. If it's not a string then we just use nil
         let notesJson = json[CallingJsonKeys.notes]
         notes = notesJson is String ? notesJson as? String : nil
-        editableByOrg = json[CallingJsonKeys.editableByOrg] as? Bool ?? true
         parentOrg = nil
         
         activeDate = Date( fromLCRString: (json[CallingJsonKeys.activeDate] as? String ?? "") )
@@ -148,6 +143,21 @@ public struct Calling : JSONParsable {
         self.proposedStatus = .None
     }
     
+    /** Method returns true if the two elements are already in order, false if they're not in order*/
+    public static func sortByDisplayOrder( c1: Calling, c2: Calling ) -> Bool {
+        var result : Bool
+        // since the displayOrder for positions can be nil we need to account for this. It will be nil for things like teachers for a specific class, HT/VT Dist. Supervisors, etc. and also for assistant secretaries (basically for anything that allows multiples, it appears). So anything that's nil needs to be sorted to the bottom of the list, if both are nil then there is no determinant order, just whichever order they're in, they stay in
+        if c1.position.displayOrder == nil || c2.position.displayOrder == nil {
+            // if either is nil (could be both) then we just look at the 2nd item. If they're both nil then they are already in order so this will return true. If the first is nil, but the 2nd isn't this will return false so they'll be switched. If the first is not nil and the 2nd is nil then this will return true.
+            result = c2.position.displayOrder == nil
+        } else {
+            // at this point we know they're both non nil, so just use the display order
+            result = c1.position.displayOrder! < c2.position.displayOrder!
+        }
+        return result
+    }
+
+    
 }
 
 extension Calling : Equatable {
@@ -180,6 +190,5 @@ private struct CallingJsonKeys {
     static let existingIndId = "memberId"
     static let proposedIndId = "proposedIndId"
     static let notes = "notes"
-    static let editableByOrg = "editableByOrg"
 }
 
