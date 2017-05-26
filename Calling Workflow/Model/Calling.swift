@@ -143,6 +143,21 @@ public struct Calling : JSONParsable {
         self.proposedStatus = .None
     }
     
+    /** Method returns true if the two elements are already in order, false if they're not in order*/
+    public static func sortByDisplayOrder( c1: Calling, c2: Calling ) -> Bool {
+        var result : Bool
+        // since the displayOrder for positions can be nil we need to account for this. It will be nil for things like teachers for a specific class, HT/VT Dist. Supervisors, etc. and also for assistant secretaries (basically for anything that allows multiples, it appears). So anything that's nil needs to be sorted to the bottom of the list, if both are nil then there is no determinant order, just whichever order they're in, they stay in
+        if c1.position.displayOrder == nil || c2.position.displayOrder == nil {
+            // if either is nil (could be both) then we just look at the 2nd item. If they're both nil then they are already in order so this will return true. If the first is nil, but the 2nd isn't this will return false so they'll be switched. If the first is not nil and the 2nd is nil then this will return true.
+            result = c2.position.displayOrder == nil
+        } else {
+            // at this point we know they're both non nil, so just use the display order
+            result = c1.position.displayOrder! < c2.position.displayOrder!
+        }
+        return result
+    }
+
+    
 }
 
 extension Calling : Equatable {
