@@ -10,8 +10,13 @@ import UIKit
 
 class OrganizationTableViewController: CWFBaseTableViewController {
     
-    var organizationsToDisplay: [Org]?
+    var organizationsToDisplay: [Org]?{
+        didSet {
+            tableView.reloadData()
+        }
+    }
     var organizationSelected: Org?
+
 
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -107,6 +107,12 @@ public class PermissionManager {
         return unitRoles
     }
     
+    /** returns a list of all the units that has a supported calling in. This is for startup purposes in trying to determine whether there's a single unit, or multiple units that would require prompting a user to choose */
+    func authorizedUnits( forUser user: LdsUser ) -> [Int64] {
+        let allUnitNums = user.positions.filter() { PositionType(rawValue: $0.positionTypeId) != nil }.flatMap() {$0.unitNum}
+        return Array( Set(allUnitNums) )
+    }
+    
     /** returns true if the role has the permission for the domain object, false otherwise. */
     public func hasPermission( unitRole: UnitRole, domain: Domain, permission: Permission ) -> Bool {
         // have to compare to true, because it could return nil as well as t/f

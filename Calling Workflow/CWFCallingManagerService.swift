@@ -55,21 +55,15 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         positionMetadataMap = positionsMD.toDictionaryById( {$0.positionTypeId} )
     }
     
-
-    
-    /** Performs the calls that need to be made to lds.org at startup, or unit transition. First it gets the application config from our servers (which contains the lds.org endpoints to use). Next it logs in to lds.org, then it retrieves user data which includes their callings (to verify unit permissions), the unit member list and callings. Once all those have completed then we call the callback. If any one of them fails we will return an error via the callback. The data is not returned via the callback, it is just maintained internally in this class. The callback just lets the calling function know that this method has successfully completed.
-     
-     This method needs to be called prior to calling the authenticate() or loadAppData() methods */
-    // todo - need to pull the sign-in from here, and need to add getCurrentUser call so we have the unit# to pass in here
-    public func loadLdsData(forUnit unitNum: Int64, username: String, password: String, completionHandler: @escaping (Bool, Error?) -> Void) {
-        loadLocalPositionMetadata()
-        // todo: eventually will want to enhance this so appConfig is cached, don't need to re-read when changing units.
+    public func getLdsUser( username: String, password: String, completionHandler: @escaping (LdsUser?, Error?) -> Void ) {
+        
         ldscdApi.getAppConfig() { (appConfig, error) in
             
             guard appConfig != nil else {
+                // todo - change this to just use default app config
                 print("No app config")
                 let errorMsg = "Error: No Application Config"
-                completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
+                completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
                 return
             }
             self.ldsOrgApi.setAppConfig(appConfig: appConfig!)
@@ -80,66 +74,79 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 } else {
                     ldsApi.getCurrentUser() { (ldsUser, error) -> Void in
                         
-                        guard error == nil, ldsUser != nil else {
+                        guard error == nil, let _ = ldsUser else {
                             let errorMsg = "Error getting LDS User details: " + error.debugDescription
                             print( errorMsg )
-                            completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
+                            completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
                             return
                         }
-                        
-                        self.userRoles = self.permissionMgr.createUserRoles(forPositions: ldsUser!.positions, inUnit: unitNum)
-                        
-
-                        if self.permissionMgr.hasPermission(unitRoles: self.userRoles, domain: .OrgInfo, permission: .View) {
-                            var ldsApiError: Error? = nil
-                            let restCallsGroup = DispatchGroup()
-
-                            restCallsGroup.enter()
-                            ldsApi.getMemberList(unitNum: unitNum) { (members, error) -> Void in
-                                if members != nil && !members!.isEmpty {
-                                    self.memberList = members!
-                                    print("First Member of unit:\(members![0])")
-                                } else {
-                                    print("no user")
-                                    if error != nil {
-                                        ldsApiError = error
-                                    }
-                                }
-                                restCallsGroup.leave()
-                            }
-                            
-                            restCallsGroup.enter()
-                            ldsApi.getOrgWithCallings(unitNum: unitNum) { (org, error) -> Void in
-                                if org != nil && !org!.children.isEmpty {
-                                    
-                                    self.ldsOrgUnit = org!.updatedWith(positionMetadata: self.positionMetadataMap)
-                                    // need to put in dictionary by root level org for updating
-                                    self.ldsUnitOrgsMap.removeAll()
-                                    self.ldsUnitOrgsMap = self.ldsOrgUnit!.children.toDictionaryById() { $0.id }
-                                } else {
-                                    print("no org")
-                                    if error != nil {
-                                        ldsApiError = error
-                                    }
-                                }
-                                restCallsGroup.leave()
-                            }
-
-                            restCallsGroup.notify(queue: DispatchQueue.main) {
-                                // once all the calls have returned then call the callback
-                                completionHandler(ldsApiError == nil, ldsApiError)
-                            }
-                        } else {
-                            let errorMsg = "No app permissions for user: " + ldsUser.debugDescription
-                            print( errorMsg )
-                            completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notAuthorized, userInfo: ["error": errorMsg]))
-                        }
+                        completionHandler( ldsUser, nil )
                     }
                 }
             })
-            
         }
+    }
+    
+    public func getUnits( forUser user: LdsUser ) -> [Int64] {
+        return permissionMgr.authorizedUnits(forUser: user)
+    }
+    
+
+    
+    /** Performs the calls that need to be made to lds.org at startup, or unit transition. First it gets the application config from our servers (which contains the lds.org endpoints to use). Next it logs in to lds.org, then it retrieves user data which includes their callings (to verify unit permissions), the unit member list and callings. Once all those have completed then we call the callback. If any one of them fails we will return an error via the callback. The data is not returned via the callback, it is just maintained internally in this class. The callback just lets the calling function know that this method has successfully completed.
+     
+     This method needs to be called prior to calling the authenticate() or loadAppData() methods */
+    public func loadLdsData(forUnit unitNum: Int64, ldsUser: LdsUser, completionHandler: @escaping (Bool, Error?) -> Void) {
+        loadLocalPositionMetadata()
+
+        self.userRoles = self.permissionMgr.createUserRoles(forPositions: ldsUser.positions, inUnit: unitNum)
         
+        if self.permissionMgr.hasPermission(unitRoles: self.userRoles, domain: .OrgInfo, permission: .View) {
+            let ldsApi = self.ldsOrgApi
+            var ldsApiError: Error? = nil
+            let restCallsGroup = DispatchGroup()
+            
+            restCallsGroup.enter()
+            ldsApi.getMemberList(unitNum: unitNum) { (members, error) -> Void in
+                if members != nil && !members!.isEmpty {
+                    self.memberList = members!
+                    print("First Member of unit:\(members![0])")
+                } else {
+                    print("no user")
+                    if error != nil {
+                        ldsApiError = error
+                    }
+                }
+                restCallsGroup.leave()
+            }
+            
+            restCallsGroup.enter()
+            ldsApi.getOrgWithCallings(unitNum: unitNum) { (org, error) -> Void in
+                if org != nil && !org!.children.isEmpty {
+                    
+                    self.ldsOrgUnit = org!.updatedWith(positionMetadata: self.positionMetadataMap)
+                    // need to put in dictionary by root level org for updating
+                    self.ldsUnitOrgsMap.removeAll()
+                    self.ldsUnitOrgsMap = self.ldsOrgUnit!.children.toDictionaryById() { $0.id }
+                } else {
+                    print("no org")
+                    if error != nil {
+                        ldsApiError = error
+                    }
+                }
+                restCallsGroup.leave()
+            }
+            
+            restCallsGroup.notify(queue: DispatchQueue.main) {
+                // once all the calls have returned then call the callback
+                completionHandler(ldsApiError == nil, ldsApiError)
+            }
+        } else {
+            let errorMsg = "No app permissions for user: " + ldsUser.description
+            print( errorMsg )
+            completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notAuthorized, userInfo: ["error": errorMsg]))
+        }
+
     }
     
     /** Authenticate with the application's data source (currently google drive). We need to pass in the current view controller because if the user isn't already authenticated the google API will display a login screen for the user to authenticate. This should always be called before calling loadAppData() */
