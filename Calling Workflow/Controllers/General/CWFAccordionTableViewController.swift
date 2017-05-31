@@ -25,7 +25,13 @@ struct AccordionDataItem {
 class CWFAccordionTableViewController: CWFBaseTableViewController {
     
     var dataSource : [AccordionDataItem] = []
-    var rootOrg : Org?
+    // the root org gets updated after the view is loaded (because we read it asynchronously - fresh from google drive) so after it gets updated we need to redraw 
+    var rootOrg : Org? {
+        didSet {
+            setupView()
+            tableView.reloadData()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,6 +60,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
     // MARK: - Setup
     func setupView() {
         if rootOrg != nil {
+            dataSource.removeAll( keepingCapacity: true )
             if (rootOrg?.callings != nil && (rootOrg?.callings.count)! > 0) {
                 let newDataItem = AccordionDataItem.init(dataItem: "Add Calling", dataItemType: .AddCalling, expanded: true)
                 dataSource.append(newDataItem)

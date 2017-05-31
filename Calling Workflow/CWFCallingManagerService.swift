@@ -176,7 +176,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                     let subOrgsMap = mergedOrg.allSubOrgs.toDictionary({ subOrg in
                         return (subOrg.id, mergedOrg.id)
                     })
-                    
+                    // todo - need to write the org back to goodrive if org.hasUnsavedChanges
                     self.unitLevelOrgsForSubOrgs = self.unitLevelOrgsForSubOrgs.merged(withDictionary: subOrgsMap)
                 }
             }
@@ -320,7 +320,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                             var updatedCalling = potentialCalling
                             updatedCalling.conflict = .EquivalentPotentialAndActual
                             updatedOrg = updatedOrg.updatedWith(changedCalling: updatedCalling) ?? updatedOrg
-                            
+                            updatedOrg.hasUnsavedChanges = true
                         }
                     }
                 }
@@ -329,8 +329,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 if let ldsCallingOrg = ldsCalling.parentOrg, let appCallingOrg = appOrg.id == ldsCallingOrg.id ? appOrg : appOrg.getChildOrg(id: ldsCallingOrg.id) {
                     let callingFromLcr = Calling(id: ldsCalling.id, cwfId: nil, existingIndId: ldsCalling.existingIndId, existingStatus: .Active, activeDate: ldsCalling.activeDate, proposedIndId: mergedProposedIndId, status: mergedProposedStatus, position: ldsCalling.position, notes: mergedNotes, parentOrg: appCallingOrg)
                     updatedOrg = updatedOrg.updatedWith(newCalling: callingFromLcr) ?? updatedOrg
-                }
-                updatedOrg.hasUnsavedChanges = true
+                    updatedOrg.hasUnsavedChanges = true
+}
             }
         }
         
@@ -500,22 +500,5 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         }
     }
     
-    func loadOrgFromVC(orgToLoad: Org?) -> Bool {
-        guard orgToLoad != nil else {
-            return false
-        }
-        let dataSourceGroup = DispatchGroup()
-        
-        dataSourceGroup.enter()
-        self.getOrgData(forOrgId: (orgToLoad?.id)!) { org, error in
-            dataSourceGroup.leave()
-            
-            guard org != nil else {
-                return
-            }
-        }
-        return true
-    }
-
 }
 
