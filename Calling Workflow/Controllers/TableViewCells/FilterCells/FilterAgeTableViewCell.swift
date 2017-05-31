@@ -104,6 +104,7 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
                 filterOptions.maxAge = 17
             case 2:
                 filterOptions.minAge = 18
+                filterOptions.maxAge = nil
             default:
                 print("button with no tag selected")
             }

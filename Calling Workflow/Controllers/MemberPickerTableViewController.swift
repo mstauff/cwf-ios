@@ -26,7 +26,8 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "filter"), style: .done, target: self, action: #selector(filterButtonPressed))
 
         tableView.register(TitleAdjustableSubtitleTableViewCell.self, forCellReuseIdentifier: "cell")
-        
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 44
         setupSearchController()
         
         //todo - Remove this. it is only here to assign a calling to a member so we can test the view
@@ -55,12 +56,11 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searchController.isActive && searchController.searchBar.text != "" || filterViewOptions != nil{
+        if (searchController.isActive && searchController.searchBar.text != "") || filterViewOptions != nil {
             return filteredMembers.count
         }
         else {
@@ -68,9 +68,14 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         }
     }
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return TitleAdjustableSubtitleTableViewCell.getHeightForCellForMember(member: members[indexPath.row])
-    }
+//    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        if searchController.isActive && searchController.searchBar.text != "" || filterViewOptions != nil{
+//            return TitleAdjustableSubtitleTableViewCell.getHeightForCellForMember(member: filteredMembers[indexPath.row])
+//        }
+//        else {
+//            return TitleAdjustableSubtitleTableViewCell.getHeightForCellForMember(member: members[indexPath.row])
+//        }
+//    }
 
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -78,7 +83,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         
         var currentMember : Member
         
-        if searchController.isActive && searchController.searchBar.text != "" || filterViewOptions != nil{
+        if searchController.isActive && searchController.searchBar.text != "" || filterViewOptions != nil {
             currentMember = filteredMembers[indexPath.row]
         }
         else {
@@ -88,19 +93,27 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         cell?.infoButton.addTarget(self, action: #selector(showMemberDetails(_:)), for: .touchUpInside)
         cell?.infoButton.tag = indexPath.row
 
-        cell?.setupCell(subtitleCount: currentMember.currentCallings.count)
         cell?.titleLabel.text = members[indexPath.row].name
+       
         if currentMember.currentCallings.count > 0 {
-            for i in 0...currentMember.currentCallings.count-1 {
-                cell?.leftSubtitles[i].text = currentMember.currentCallings[i].position.name
-                cell?.rightSubtitles[i].text = "\(currentMember.currentCallings[i].existingMonthsInCalling) Months"
-            }
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            
+            cell?.subtitle.text = appDelegate?.callingManager.getCallingsForMemberAsStringWithMonths(member: currentMember)
         }
+        else {
+            cell?.subtitle.text = nil
+        }
+
         return cell!
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-         memberSelected(selectedMember: members[indexPath.row])
+        if searchController.isActive && searchController.searchBar.text != "" || filterViewOptions != nil {
+            memberSelected(selectedMember: members[indexPath.row])
+        }
+        else {
+             memberSelected(selectedMember: members[indexPath.row])
+        }
     }
     
     // MARK: - Search Controller
@@ -130,6 +143,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         filterView?.addAgeFilterCell()
         filterView?.addGenderFilterCell()
         filterView?.addOrgFilterCell(title: "Class", upperLevelNames: ["Relief Socity"], lowerLevelNames: ["Laurel", "Mia Maid", "Bee Hive"])
+        filterView?.delegate = self
         
         self.navigationController?.pushViewController(filterView!, animated: true)
     }
@@ -148,6 +162,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     func setFilterOptions(memberFilterOptions: FilterOptionsObject) {
         filterViewOptions = memberFilterOptions
         filteredMembers = (filterViewOptions?.filterMemberData(unfilteredArray: members))!
+        tableView.reloadData()
     }
 }
 

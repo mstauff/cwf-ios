@@ -103,9 +103,15 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
         for button in genderButtonArray {
             switch button.tag {
             case 1:
-                filterOptions.gender = Gender.Male
+                if button.isSelected {
+                    filterOptions.gender = Gender.Male
+                }
+                
             case 2:
-                filterOptions.gender = Gender.Female
+                if button.isSelected {
+                    filterOptions.gender = Gender.Female
+                }
+                
             default:
                 filterOptions.gender = nil
             }

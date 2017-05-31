@@ -130,7 +130,10 @@ class FilterTableViewController: UITableViewController {
     func applyPressed () {
         print("Apply pressed")
         var filterOptions : FilterOptionsObject = FilterOptionsObject()
-        //for tableView.sect
+        for cell in tableView.visibleCells {
+            let filterCell = cell as? FilterBaseTableViewCell
+            filterOptions = (filterCell?.getSelectedOptions(filterOptions: filterOptions))!
+        }
         self.delegate?.setFilterOptions(memberFilterOptions: filterOptions)
         self.navigationController?.popViewController(animated: true)
     }

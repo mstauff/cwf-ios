@@ -43,10 +43,25 @@ class FilterOptionsObject {
     private func filterForAge(unfilteredArray: [Member]) ->[Member] {
         var arrayToReturn = unfilteredArray
         if (minAge != nil) {
-            arrayToReturn = arrayToReturn.filter() { $0.age! < minAge!}
+            arrayToReturn = arrayToReturn.filter() {
+                if $0.age != nil {
+                    return $0.age! > minAge!
+                }
+                else {
+                    print($0.name)
+                    return false
+                }
+            }
         }
         if (maxAge != nil) {
-            arrayToReturn = arrayToReturn.filter() { $0.age! > maxAge!}
+            arrayToReturn = arrayToReturn.filter() {
+                if $0.age != nil {
+                    return $0.age! < maxAge!
+                }
+                else {
+                    return false
+                }
+            }
         }
         
         return arrayToReturn
