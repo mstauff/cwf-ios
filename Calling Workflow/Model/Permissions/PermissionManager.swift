@@ -26,12 +26,30 @@ public struct Role {
     
     public static let unitAdmin = Role(type: .UnitAdmin, permissions: Domain.validDomainPermissions)
 
-    // orgAdmin has all the permissions of a unit admin, except changing the unit google account
-    public static let orgAdmin = Role(type: .OrgAdmin, permissions: Domain.validDomainPermissions.filteredDictionary( {$0.0 != .UnitGoogleAccount}))
+    // has everything of a unit admin except google account privileges. It would be shorter (in terms of code) to just exclude the UnitGoogleAccount, but then any newly added permissions this role would get by default. So we're going to explicitly include domains, so they have to be purposefully added to the role
+    public static let priesthoodOrgAdmin = Role(type: .PriesthoodOrgAdmin, permissions: Domain.validDomainPermissions.filteredDictionary( {$0.0 == .OrgInfo || $0.0 == .PriesthoodOffice || $0.0 == .PotentialCalling || $0.0 == .ActiveCalling }))
+
+    // orgAdmin has all the permissions of a unit admin, except changing the unit google account or viewing priesthood
+    public static let orgAdmin = Role(type: .OrgAdmin, permissions: Domain.validDomainPermissions.filteredDictionary( {$0.0 == .OrgInfo || $0.0 == .PotentialCalling || $0.0 == .ActiveCalling }))
     
     // stake assistants (High Councilors) can only view & update potential callings
     public static let stakeAssistant = Role( type: .StakeAssistant, permissions: Domain.validDomainPermissions.filteredDictionary({$0.0 == .OrgInfo || $0.0 == .PotentialCalling}))
-    
+
+    public static func getRole( forPositionType positionType: PositionType ) -> Role? {
+        var role : Role? = nil
+        switch positionType.roleType {
+        case .UnitAdmin :
+            role = unitAdmin
+        case .PriesthoodOrgAdmin:
+            role = priesthoodOrgAdmin
+        case .OrgAdmin:
+            role = orgAdmin
+        case .StakeAssistant:
+            role = stakeAssistant
+        }
+        return role
+        
+    }
 }
 
 /** A combination of a user position, and their role within a specific unit*/
@@ -63,16 +81,6 @@ public class PermissionManager {
     
     private let permissionResolvers : [RoleType:PermissionResolver]
     
-    public let orgAdminPositions : [UnitLevelOrgType:[PositionType]] = [.HighPriests : [.HPGroupLeader, .HP1stAssistant, .HP2ndAssistant, .HPSecretary],
-                                                                .Elders : [.EQPres, .EQ1stCounselor, .EQ2ndCounselor, .EQSecretary],
-                                                                .ReliefSociety : [.RSPres, .RS1stCounselor, .RS2ndCounselor, .RSSecretary],
-                                                                .YoungMen : [.YMPres, .YM1stCounselor, .YM2ndCounselor, .YMSecretary],
-                                                                .YoungWomen : [.YWPres, .YW1stCounselor, .YW2ndCounselor, .YWSecretary],
-                                                                .SundaySchool : [.SSPres, .SS1stCounselor, .SS2ndCounselor, .SSSecretary],
-                                                                .Primary : [.PrimaryPres, .Primary1stCounselor, .Primary2ndCounselor, .PrimarySecretary]]
-
-    let unitAdminPositions : [PositionType] = [.Bishop, .Bishopric1stCounselor, .Bishopric2ndCounselor, .WardExecSec, .WardClerk] // still need to add stake positions & branch positions
-    
     init() {
         permissionResolvers = [.UnitAdmin:unitPermResolver, .StakeAssistant:unitPermResolver, .OrgAdmin:orgPermResolver]
     }
@@ -80,27 +88,26 @@ public class PermissionManager {
     /** Method to be called once we have the users positions for lds.org getCurrentUser call to create the roles within the app associated with those positions */
     func createUserRoles( forPositions positions: [Position], inUnit unitNum: Int64 ) -> [UnitRole] {
         var unitRoles : [UnitRole] = []
-        // filter out any positions that have no relevant rights (any non aux. leader), or that are in a different unit
+        // filter out any positions that are in a different unit
         let unitPositions = positions.filter() {
-            PositionType(rawValue: $0.positionTypeId) != nil && $0.unitNum == unitNum
+            $0.unitNum == unitNum
         }
         
         // get all the roles for the positions
         for currPosition in unitPositions  {
-            if let currPositionType = PositionType( rawValue: currPosition.positionTypeId ) {
+            
+            if let positionType = PositionType(rawValue: currPosition.positionTypeId), let role = Role.getRole(forPositionType: positionType) {
+                let orgType = positionType.orgType
+                let orgRightsException : Int? = orgType == nil ? nil : PermissionManager.unitLevelOrgExceptions[orgType!]
+
+                let unitRole = UnitRole(role: role, unitNum: currPosition.unitNum!, orgId: nil, orgType: orgType, activePosition: currPosition, orgRightsException:  orgRightsException)
+                
                 // if they have a unit admin position, then that overrides anything else, set it and we break out
-                if unitAdminPositions.contains(item: currPositionType) {
-                    // todo - modify this so there's a transformer function as part of the role that can create a role from the position, that way as new roles are created we don't have to modify this code - it's contained in the role
-                    unitRoles = [UnitRole(role: Role.unitAdmin, unitNum: currPosition.unitNum!, orgId: nil, orgType: UnitLevelOrgType.Ward, activePosition: currPosition, orgRightsException: nil)]
+                if unitRole.role.type == .UnitAdmin {
+                    unitRoles = [unitRole]
                     break;
                 } else {
-                    for (orgType, positionTypes) in orgAdminPositions {
-                        if positionTypes.contains( currPositionType ) {
-                            let orgAdminRole = UnitRole(role: Role.orgAdmin, unitNum: currPosition.unitNum!, orgId: nil, orgType: orgType, activePosition: currPosition, orgRightsException: PermissionManager.unitLevelOrgExceptions[orgType])
-                            unitRoles.append(orgAdminRole)
-                        }
-                        // todo - still need to account for stakeAssitants
-                    }
+                    unitRoles.append(unitRole)
                 }
             }
         }

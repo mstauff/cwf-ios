@@ -28,7 +28,7 @@ class PermissionsTests: XCTestCase {
     }
     
     func testRolePermissions() {
-        XCTAssertEqual( Role.unitAdmin.permissions.count, 4 )
+        XCTAssertEqual( Role.unitAdmin.permissions.count, 5 )
         let unitAdminActiveCallingPerms = Role.unitAdmin.permissions[.ActiveCalling]
         XCTAssertEqual( unitAdminActiveCallingPerms!, [.Update, .Delete, .Release] )
         
@@ -59,8 +59,9 @@ class PermissionsTests: XCTestCase {
         let ywPosIds = [183,184,185,186]
         let ssPosIds = [204,205,206,207]
         let priPosIds = [210,211,212,213]
-        let orgAdminPositionIds = hpPosIds + eqPosIds + rsPosIds + ymPosIds + ywPosIds + ssPosIds + priPosIds
-        let validPositionIds = unitAdminPositionIds + orgAdminPositionIds
+        let priesthoodAdminPositionIds = hpPosIds + eqPosIds + ymPosIds
+        let orgAdminPositionIds = rsPosIds + ywPosIds + ssPosIds + priPosIds
+        let validPositionIds = unitAdminPositionIds + orgAdminPositionIds + priesthoodAdminPositionIds
         // make sure we don't accidentally remove any rights
         validPositionIds.forEach() {
             XCTAssertNotNil(PositionType(rawValue: $0))
@@ -73,15 +74,15 @@ class PermissionsTests: XCTestCase {
             }
         }
         
-        let testCases : [(posIds: [Int], orgType: UnitLevelOrgType, expectedRoleType: RoleType)] =
-        [ (hpPosIds, .HighPriests, .OrgAdmin),
-          (eqPosIds, .Elders, .OrgAdmin),
+        let testCases : [(posIds: [Int], orgType: UnitLevelOrgType?, expectedRoleType: RoleType)] =
+        [ (hpPosIds, .HighPriests, .PriesthoodOrgAdmin),
+          (eqPosIds, .Elders, .PriesthoodOrgAdmin),
           (rsPosIds, .ReliefSociety, .OrgAdmin),
-          (ymPosIds, .YoungMen, .OrgAdmin),
+          (ymPosIds, .YoungMen, .PriesthoodOrgAdmin),
           (ywPosIds, .YoungWomen, .OrgAdmin),
           (ssPosIds, .SundaySchool, .OrgAdmin),
           (priPosIds, .Primary, .OrgAdmin),
-          (bishopricPosIds, .Ward, .UnitAdmin),
+          (bishopricPosIds, nil, .UnitAdmin),
           // todo - need to add support for branch and stake positions before we can test for them
 //          (branchPresPosIds, .Ward, .UnitAdmin),
         ]
@@ -89,7 +90,7 @@ class PermissionsTests: XCTestCase {
         testCases.forEach() {
             for posId in $0.posIds {
                 let unitRoles = permMgr.createUserRoles(forPositions: createPositions(posId, inUnitNum: mainUnit), inUnit: mainUnit)
-                
+                print( $0.posIds.description + " expected role: "  )
                 XCTAssertEqual(unitRoles[0].role.type, $0.expectedRoleType)
                 XCTAssertEqual(unitRoles[0].orgType, $0.orgType)
             }
@@ -151,8 +152,8 @@ class PermissionsTests: XCTestCase {
         let eqPresPos = createPositions(138, inUnitNum: mainUnit)
         let ssPresPos = createPositions(205, inUnitNum: mainUnit)
         
-        let unitAdminRole = UnitRole(role: .unitAdmin, unitNum: mainUnit, orgId: nil, orgType: .Ward, activePosition: unitAdmin[0], orgRightsException: nil )
-        let eqAdminRole = UnitRole(role: .orgAdmin, unitNum: mainUnit, orgId: nil, orgType: .Elders, activePosition: eqPresPos[0], orgRightsException: nil) // an org admin will have a rights exception, but we're not validating that in this test, so no need to set it
+        let unitAdminRole = UnitRole(role: .unitAdmin, unitNum: mainUnit, orgId: nil, orgType: nil, activePosition: unitAdmin[0], orgRightsException: nil )
+        let eqAdminRole = UnitRole(role: .priesthoodOrgAdmin, unitNum: mainUnit, orgId: nil, orgType: .Elders, activePosition: eqPresPos[0], orgRightsException: nil) // an org admin will have a rights exception, but we're not validating that in this test, so no need to set it
         let ssAdminRole = UnitRole(role: .orgAdmin, unitNum: mainUnit, orgId: nil, orgType: .SundaySchool, activePosition: ssPresPos[0], orgRightsException: nil) // an org admin will have a rights exception, but we're not validating that in this test, so no need to set it
         
         // all these positions should result in no roles for the given unit
@@ -219,22 +220,28 @@ class PermissionsTests: XCTestCase {
     
     func testHasPermission() {
         let unitAdmin = createPositions( 4, inUnitNum: mainUnit )
-        let orgAdmin = createPositions(138, inUnitNum: mainUnit)
+        let priesthoodOrgAdmin = createPositions(138, inUnitNum: mainUnit)
+        let orgAdmin = createPositions(204, inUnitNum: mainUnit)
 
-        let unitAdminRole = UnitRole(role: .unitAdmin, unitNum: mainUnit, orgId: nil, orgType: .Ward, activePosition: unitAdmin[0], orgRightsException: nil )
+        let unitAdminRole = UnitRole(role: .unitAdmin, unitNum: mainUnit, orgId: nil, orgType: nil, activePosition: unitAdmin[0], orgRightsException: nil )
         let orgAdminRole = UnitRole(role: .orgAdmin, unitNum: mainUnit, orgId: nil, orgType: .Elders, activePosition: orgAdmin[0], orgRightsException: nil) // an org admin will have a rights
+        let priesthoodOrgAdminRole = UnitRole(role: .priesthoodOrgAdmin, unitNum: mainUnit, orgId: nil, orgType: .Elders, activePosition: priesthoodOrgAdmin[0], orgRightsException: nil) // an org admin will have a rights
         
         let testCases : [( unitRoles: [UnitRole], domain: Domain, perm: Permission, expectedResult: Bool)] = [
             ([unitAdminRole], .OrgInfo, .View, true), // valid permissions the role should have
             ([orgAdminRole], Domain.PotentialCalling, .Update, true),
+            ([priesthoodOrgAdminRole], Domain.PotentialCalling, .Delete, true),
+            ([priesthoodOrgAdminRole], Domain.PriesthoodOffice, .View, true),
             ([unitAdminRole], Domain.UnitGoogleAccount, .Update, true), // permission that is valid, but restricted to certain roles
             ([orgAdminRole], Domain.UnitGoogleAccount, .Update, false),
+            ([orgAdminRole], Domain.PriesthoodOffice, .View, false),
             ([unitAdminRole], Domain.OrgInfo, .Update, false),// invalid permission - not available regardless of role
             ([unitAdminRole,orgAdminRole], Domain.PotentialCalling, .Update, true),
             ([orgAdminRole, unitAdminRole], Domain.UnitGoogleAccount, .Update, true),// perm that orgAdmin doesn't have, but unit admin does
         ]
 
         testCases.forEach() {
+            
             XCTAssertEqual(permMgr.hasPermission(unitRoles: $0.unitRoles, domain: $0.domain, permission: $0.perm), $0.expectedResult)
         }
         
