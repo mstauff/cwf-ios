@@ -93,4 +93,9 @@ class FilterTimeTableViewCell: FilterBaseTableViewCell {
     override func getCellHeight() -> CGFloat {
         return 85
     }
+    
+    override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
+        filterOptions.minMonthsInCalling = Int(sliderView.value)
+        return filterOptions
+    }
 }

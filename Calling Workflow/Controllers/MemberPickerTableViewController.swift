@@ -93,12 +93,13 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         cell?.infoButton.addTarget(self, action: #selector(showMemberDetails(_:)), for: .touchUpInside)
         cell?.infoButton.tag = indexPath.row
 
-        cell?.titleLabel.text = members[indexPath.row].name
-       
-        if currentMember.currentCallings.count > 0 {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        cell?.titleLabel.text = currentMember.name
+        
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+
+        if let callingsString = appDelegate?.callingManager.getCallingsForMemberAsStringWithMonths(member: currentMember) {
             
-            cell?.subtitle.text = appDelegate?.callingManager.getCallingsForMemberAsStringWithMonths(member: currentMember)
+            cell?.subtitle.text = callingsString
         }
         else {
             cell?.subtitle.text = nil

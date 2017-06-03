@@ -12,6 +12,8 @@ class FilterTableViewController: UITableViewController {
 
     var filterContentArray : [FilterBaseTableViewCell] = []
     
+    var filterObject : FilterOptionsObject = FilterOptionsObject()
+    
     var delegate : FilterTableViewControllerDelegate?
     
     // MARK: - Life Cycle

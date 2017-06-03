@@ -98,6 +98,9 @@ class MemberInfoView: UIViewController {
 
         let callingBar = MemberInfoBarItemView()
         callingBar.setupInfoBarItem(dataText: (appDelegate?.callingManager.getCallingsForMemberAsStringWithMonths(member: memberToView!))!, icon: nil)
+        if callingBar.dataLabel.text == "" {
+            callingBar.backgroundColor = UIColor.lightGray
+        }
 
         infoView.addSubview(callingBar)
         
@@ -208,11 +211,11 @@ class MemberInfoView: UIViewController {
         lastView = thirdBar
         
         let addressBar = MemberInfoBarItemView()
-        if let addressText = memberToView?.streetAddress[0] {
+        if let addressText = memberToView?.getAddressForMemberAsString() {
             addressBar.setupInfoBarItem(dataText: addressText, icon: UIImage.init(named: "emailIcon"))// todo add Icon here
         }
         else {
-            addressBar.setupInfoBarItem(dataText: "No Address Available", icon: UIImage.init(named: "emailIcon"))// fix this todo
+            addressBar.setupInfoBarItem(dataText: "No Address Available", icon: nil)
         }
         infoView.addSubview(addressBar)
         

@@ -12,7 +12,7 @@ class FilterOptionsObject {
     var minAge : Int?
     var maxAge : Int?
     var gender : Gender?
-    var maxCallings : Int?
+    var callings : [Int:Bool]?
     var minMonthsInCalling : Int?
     var priesthood : [Priesthood: Bool]?
     var memberClass : [MemberClass: Bool]?
@@ -21,7 +21,7 @@ class FilterOptionsObject {
         minAge = nil
         maxAge = nil
         gender = nil
-        maxCallings = nil
+        callings = nil
         minMonthsInCalling = nil
         priesthood = nil
         memberClass = nil
@@ -45,10 +45,10 @@ class FilterOptionsObject {
         if (minAge != nil) {
             arrayToReturn = arrayToReturn.filter() {
                 if $0.age != nil {
-                    return $0.age! > minAge!
+                    return $0.age! >= minAge!
                 }
                 else {
-                    print($0.name)
+                    print("\(String(describing: $0.name))")
                     return false
                 }
             }
@@ -56,7 +56,7 @@ class FilterOptionsObject {
         if (maxAge != nil) {
             arrayToReturn = arrayToReturn.filter() {
                 if $0.age != nil {
-                    return $0.age! < maxAge!
+                    return $0.age! <= maxAge!
                 }
                 else {
                     return false
@@ -71,7 +71,10 @@ class FilterOptionsObject {
         var arrayToReturn = unfilteredArray
         if (gender != nil) {
             if gender == Gender.Male {
-                arrayToReturn = arrayToReturn.filter() { $0.gender == Gender.Male }
+                arrayToReturn = arrayToReturn.filter() {
+                    print("\(String(describing: $0.name!)) : \(String(describing: $0.gender!)) : \($0.gender == Gender.Male)")
+                    return $0.gender == Gender.Male
+                }
             }
             else {
                 arrayToReturn = arrayToReturn.filter() { $0.gender == Gender.Female }
@@ -83,8 +86,27 @@ class FilterOptionsObject {
     private func filterForCallings (unfilteredArray: [Member]) -> [Member] {
         var arrayToReturn = unfilteredArray
         
-        if (maxCallings != nil) {
-            arrayToReturn = arrayToReturn.filter() { $0.currentCallings.count <= maxCallings! }
+        if (callings != nil) {
+            arrayToReturn = arrayToReturn.filter() {
+                var returnValue = false
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                if let callingList = appDelegate?.callingManager.getCallingsForMember(member: $0) {
+                    print(callingList.count)
+                    if (callings?[0])! && callingList.count == 0 {
+                        returnValue = true
+                    }
+                    if (callings?[1]!)! && callingList.count == 1 {
+                        returnValue = true
+                    }
+                    if (callings?[2]!)! && callingList.count == 2 {
+                        returnValue = true
+                    }
+                    if (callings?[3]!)! && callingList.count >= 3 {
+                        returnValue = true
+                    }
+                }
+                return returnValue
+            }
         }
         
         return arrayToReturn
@@ -95,10 +117,13 @@ class FilterOptionsObject {
         
         if (minMonthsInCalling != nil) {
             arrayToReturn = arrayToReturn.filter() {
-                var greaterThanTime = true
-                for calling in $0.currentCallings {
-                    if calling.existingMonthsInCalling < minMonthsInCalling! {
-                        greaterThanTime = false
+                var greaterThanTime = false
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                if let callingList = appDelegate?.callingManager.getCallingsForMember(member: $0) {
+                    for calling in callingList {
+                        if calling.existingMonthsInCalling > minMonthsInCalling! {
+                            greaterThanTime = true
+                        }
                     }
                 }
                 return greaterThanTime

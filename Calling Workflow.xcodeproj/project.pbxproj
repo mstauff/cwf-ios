@@ -17,6 +17,7 @@
 		3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */; };
 		3C20DF651DD3A4C400F9847E /* LDSCredentialsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */; };
 		3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */; };
+		3C2428221EE1D848006DA7E8 /* MemberExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2428211EE1D848006DA7E8 /* MemberExtensions.swift */; };
 		3C2D0C521ECCFA39009A1511 /* FilterApplyButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2D0C511ECCFA39009A1511 /* FilterApplyButtonTableViewCell.swift */; };
 		3C3C10971ED37CB100B72B2D /* FilterOptionsObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3C10961ED37CB100B72B2D /* FilterOptionsObject.swift */; };
 		3C3CF3B61E71F20A00143868 /* CWFAccordionRootTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3CF3B51E71F20A00143868 /* CWFAccordionRootTableViewCell.swift */; };
@@ -140,6 +141,7 @@
 		3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsTableViewController.swift; path = Controllers/SettingsTableViewController.swift; sourceTree = "<group>"; };
 		3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LDSCredentialsViewController.swift; path = Controllers/LDSCredentialsViewController.swift; sourceTree = "<group>"; };
 		3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InputTableViewCell.swift; path = Controllers/TableViewCells/InputTableViewCell.swift; sourceTree = "<group>"; };
+		3C2428211EE1D848006DA7E8 /* MemberExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberExtensions.swift; path = Extensions/MemberExtensions.swift; sourceTree = "<group>"; };
 		3C2D0C511ECCFA39009A1511 /* FilterApplyButtonTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterApplyButtonTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterApplyButtonTableViewCell.swift; sourceTree = "<group>"; };
 		3C3C10961ED37CB100B72B2D /* FilterOptionsObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterOptionsObject.swift; path = Controllers/General/FilterOptionsObject.swift; sourceTree = "<group>"; };
 		3C3CF3B51E71F20A00143868 /* CWFAccordionRootTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFAccordionRootTableViewCell.swift; path = Controllers/TableViewCells/CWFAccordionRootTableViewCell.swift; sourceTree = "<group>"; };
@@ -500,6 +502,7 @@
 				E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */,
 				3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */,
 				3CB191FE1EC67E330098AD1C /* UIButtonExtensions.swift */,
+				3C2428211EE1D848006DA7E8 /* MemberExtensions.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -815,6 +818,7 @@
 				3C0994D41E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift in Sources */,
 				3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */,
 				E8E8CD381ECBBCAE00156450 /* PermissionManager.swift in Sources */,
+				3C2428221EE1D848006DA7E8 /* MemberExtensions.swift in Sources */,
 				E8084F7F1E0476C10077FDAE /* DataExtensions.swift in Sources */,
 				E841701C1E79B4D600A5C049 /* ModelEnums.swift in Sources */,
 				E875C58E1EB2926800E04499 /* PositionRequirements.swift in Sources */,

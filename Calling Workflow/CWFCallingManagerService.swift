@@ -392,7 +392,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         
         return callingString
     }
-    
+        
     public func addCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: calling, operation: .Create, completionHandler: completionHandler)
     }

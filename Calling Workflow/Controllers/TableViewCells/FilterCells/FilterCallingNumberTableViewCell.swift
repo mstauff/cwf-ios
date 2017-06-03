@@ -100,7 +100,13 @@ class FilterCallingNumberTableViewCell: FilterBaseTableViewCell {
     override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
         for button in numberButtonArray {
             if button.isSelected {
-                filterOptions.maxCallings = button.tag
+                if filterOptions.callings == nil {
+                    filterOptions.callings = [0: false, 1: false, 2: false, 3: false,]
+                }
+                filterOptions.callings?[button.tag] = true
+            }
+            else {
+                filterOptions.callings?[button.tag] = false
             }
         }
         return filterOptions

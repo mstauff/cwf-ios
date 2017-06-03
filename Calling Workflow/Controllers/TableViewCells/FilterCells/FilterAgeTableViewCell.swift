@@ -50,7 +50,7 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
         
         let youthButton = FilterButton()
         ageButtonArray.append(youthButton)
-        youthButton.setTitle("12-17", for: UIControlState.normal)
+        youthButton.setTitle("12-18", for: UIControlState.normal)
         youthButton.translatesAutoresizingMaskIntoConstraints = false
         youthButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
         youthButton.tag = 1
@@ -100,11 +100,15 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
         for button in ageButtonArray {
             switch button.tag {
             case 1:
-                filterOptions.minAge = 12
-                filterOptions.maxAge = 17
+                if (button.isSelected) {
+                    filterOptions.minAge = 12
+                    filterOptions.maxAge = 18
+                }
             case 2:
-                filterOptions.minAge = 18
-                filterOptions.maxAge = nil
+                if button.isSelected {
+                    filterOptions.minAge = 18
+                    filterOptions.maxAge = nil
+                }
             default:
                 print("button with no tag selected")
             }
