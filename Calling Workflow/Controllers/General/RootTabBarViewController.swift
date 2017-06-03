@@ -38,35 +38,59 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
             
             let username = self.loginDictionary?["username"] as! String
             let password = self.loginDictionary?["password"] as! String
-            // todo - this should come from the lds current user call - we need to break loadLdsData into a signin & currentUser as one, then memberList & org callings as another
-            let unitNum: Int64 = 12345
+            var unitNum: Int64?
             // todo - make this weak
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            // todo - need to break out loadLdsData into an authWithLds(), getCurrentUser(), initPermissions (once implemented) & then load data. If the auth. fails then use presentLDS..() below to login
-            appDelegate?.callingManager.loadLdsData(forUnit: unitNum, username: username, password: password) { [weak self] (dataLoaded, loadingError) -> Void in
-                let childView = self?.selectedViewController as? OrganizationTableViewController
-                childView?.getOrgs()
-                childView?.tableView.reloadData()
-                if dataLoaded {
-                    appDelegate?.callingManager.hasDataSourceCredentials(forUnit: 0 ) { (hasCredentials, signInError) -> Void in
-                        if hasCredentials  {
-                            appDelegate?.callingManager.loadAppData() { success, hasOrgsToDelete, error in
-                                self?.removeSpinner()
-                                // todo - OrgTableVC.reloadData()
-                                // eventually we'll need to pull the last viewed tab from some state storage and then show that tab (and maybe reload data)
-                            }
-                        }else {
-                            self?.removeSpinner()
-                            print( "No creds - forward to settings!")
-                            self?.presentSettingsView()
-                        }
-                    }
-                } else {
+            appDelegate?.callingManager.getLdsUser(username: username, password: password) { [weak self] (ldsUser, error) in
+                guard error == nil, let validUser = ldsUser else {
+                    // todo - check error for bad username/password vs. network failure (on our end or lds.org end)
+                    print( "Error logging in to lds.org: " + error.debugDescription )
                     self?.removeSpinner()
-                    print( "Error loading data from LDS.org")
-                    self?.showAlert(title: "LDS.org Communication Error", message: (loadingError?.localizedDescription)!)
+                    self?.presentSettingsView()
+                    return
                 }
                 
+                let potentialUnitNums = appDelegate?.callingManager.getUnits(forUser: validUser) ?? []
+                if potentialUnitNums.isEmpty {
+                    let errorMsg = "Error: No Permissions for app"
+                    print( errorMsg )
+                    self?.removeSpinner()
+                    // todo - pop a warning about user requirements
+                } else if potentialUnitNums.count == 1 {
+                    unitNum = potentialUnitNums[0]
+                } else {
+                    // todo - need to disambiguate
+                    // there are unit names in the current-user.json, we're just not doing anything with them right now.
+                }
+                
+                // todo - need to figure out a way to reconcile lds.org unit is same as google drive credentials
+                if let validUnitNum = unitNum {
+                    appDelegate?.callingManager.loadLdsData(forUnit: validUnitNum, ldsUser: validUser) { [weak self] (dataLoaded, loadingError) -> Void in
+                        let childView = self?.selectedViewController as? OrganizationTableViewController
+                        if dataLoaded {
+                            appDelegate?.callingManager.hasDataSourceCredentials(forUnit: 0 ) { (hasCredentials, signInError) -> Void in
+                                if hasCredentials  {
+                                    appDelegate?.callingManager.loadAppData() { success, hasOrgsToDelete, error in
+                                        self?.removeSpinner()
+                                        if success {
+                                            childView?.organizationsToDisplay = appDelegate?.callingManager.appDataOrg?.children
+                                        }
+                                        // eventually we'll need to pull the last viewed tab from some state storage and then show that tab (and maybe reload data)
+                                    }
+                                }else {
+                                    self?.removeSpinner()
+                                    print( "No creds - forward to settings!")
+                                    self?.presentSettingsView()
+                                }
+                            }
+                        } else {
+                            self?.removeSpinner()
+                            print( "Error loading data from LDS.org")
+                            self?.showAlert(title: "LDS.org Communication Error", message: (loadingError?.localizedDescription)!)
+                        }
+                    
+                    }
+                }
             }
         }
     }

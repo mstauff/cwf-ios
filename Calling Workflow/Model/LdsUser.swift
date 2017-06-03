@@ -46,3 +46,9 @@ struct LdsUser : JSONParsable {
     }
 
 }
+
+extension LdsUser : CustomStringConvertible {
+    var description : String {
+        return "LdsUser: {IndId:" + individualId.description + ", positions: " + positions.description
+    }
+}

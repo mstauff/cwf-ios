@@ -10,11 +10,11 @@ import Foundation
 
 public enum RoleType {
     case UnitAdmin
+    case PriesthoodOrgAdmin
     case OrgAdmin
-    // todo - name??? this is for HC
     case StakeAssistant
     
-    static let allValues : [RoleType] = [.UnitAdmin, .OrgAdmin, .StakeAssistant]
+    static let allValues : [RoleType] = [.UnitAdmin, .PriesthoodOrgAdmin, .OrgAdmin, .StakeAssistant]
 }
 
 /** The different objects that can be acted upon. Without splitting into permissions and domain we have a lot of repeat type permissions (i.e. updatePotentialCalling, updateActiveCalling, updateGoogleAcctSeetings, etc.), by splitting them into Domain (objects) and Permission (actions) we can then combine the object with the relevant set of actions to get our total permissions. Not all actions can be performed on every object. validDomainPermissions contains the total valid actions for each domain */
@@ -23,8 +23,10 @@ public enum Domain {
     case PotentialCalling
     case ActiveCalling
     case UnitGoogleAccount
+    case PriesthoodOffice
     
     static let validDomainPermissions : [Domain: [Permission]] = [ .OrgInfo : [.View],
+                                                                   .PriesthoodOffice: [.View],
                                                                    .PotentialCalling : [.Create, .Update, .Delete],
                                                                    .ActiveCalling : [.Update, .Delete, .Release],
                                                                    .UnitGoogleAccount: [.Create, .Update]]
@@ -100,6 +102,60 @@ public enum PositionType : Int {
     case Primary1stCounselor = 211
     case Primary2ndCounselor = 212
     case PrimarySecretary = 213
+    
+    var roleType : RoleType {
+        switch self {
+        case .Bishop, .Bishopric1stCounselor, .Bishopric2ndCounselor, .WardExecSec, .WardClerk :
+            return RoleType.UnitAdmin
+        case .BranchPres, .Branch1stCounselor, .Branch2ndCounselor, .BranchExecSec, .BranchClerk :
+            return RoleType.UnitAdmin
+        case .HPGroupLeader, .HP1stAssistant, .HP2ndAssistant, .HPSecretary :
+            return .PriesthoodOrgAdmin
+        case .EQPres, .EQ1stCounselor, .EQ2ndCounselor, .EQSecretary :
+            return .PriesthoodOrgAdmin
+        case .YMPres, .YM1stCounselor, .YM2ndCounselor, .YMSecretary :
+            return .PriesthoodOrgAdmin
+        case .RSPres, .RS1stCounselor, .RS2ndCounselor, .RSSecretary :
+            return .OrgAdmin
+        case .YWPres, .YW1stCounselor, .YW2ndCounselor, .YWSecretary :
+            return .OrgAdmin
+        case .SSPres, .SS1stCounselor, .SS2ndCounselor, .SSSecretary :
+            return .OrgAdmin
+        case .PrimaryPres, .Primary1stCounselor, .Primary2ndCounselor, .PrimarySecretary :
+            return .OrgAdmin
+        case .StakePres, .Stake1stCounselor, .Stake2ndCounselor, .StakeExecSec, .StakeClerk :
+            return .UnitAdmin
+        case .StakeHighCouncilor :
+            return .StakeAssistant
+        }
+    }
+    
+    var orgType : UnitLevelOrgType? {
+        switch self {
+        case .Bishop, .Bishopric1stCounselor, .Bishopric2ndCounselor, .WardExecSec, .WardClerk :
+            return nil
+        case .BranchPres, .Branch1stCounselor, .Branch2ndCounselor, .BranchExecSec, .BranchClerk :
+            return nil
+        case .HPGroupLeader, .HP1stAssistant, .HP2ndAssistant, .HPSecretary :
+            return .HighPriests
+        case .EQPres, .EQ1stCounselor, .EQ2ndCounselor, .EQSecretary :
+            return .Elders
+        case .YMPres, .YM1stCounselor, .YM2ndCounselor, .YMSecretary :
+            return .YoungMen
+        case .RSPres, .RS1stCounselor, .RS2ndCounselor, .RSSecretary :
+            return .ReliefSociety
+        case .YWPres, .YW1stCounselor, .YW2ndCounselor, .YWSecretary :
+            return .YoungWomen
+        case .SSPres, .SS1stCounselor, .SS2ndCounselor, .SSSecretary :
+            return .SundaySchool
+        case .PrimaryPres, .Primary1stCounselor, .Primary2ndCounselor, .PrimarySecretary :
+            return .Primary
+        case .StakePres, .Stake1stCounselor, .Stake2ndCounselor, .StakeExecSec, .StakeClerk :
+            return nil
+        case .StakeHighCouncilor :
+            return nil
+        }
+    }
 }
 
 
