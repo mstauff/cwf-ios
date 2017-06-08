@@ -166,6 +166,8 @@ class CallingManagerServiceTests: XCTestCase {
         let ctr8 = reconciledOrg.getChildOrg(id: 752892)!
         let callingReleasedInLcr = ctr8.callings[0]
         XCTAssertEqual( callingReleasedInLcr.conflict, .LdsEquivalentDeleted )
+        let callingDeletedInLcr = ctr8.callings[1]
+        XCTAssertEqual( callingDeletedInLcr.conflict, .LdsEquivalentDeleted )
         
         let ctr9 = reconciledOrg.getChildOrg(id: 750112)
         XCTAssertNotNil( ctr9 )

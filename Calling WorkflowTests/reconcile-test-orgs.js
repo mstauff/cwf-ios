@@ -204,7 +204,25 @@
                     "notes": null,
                     "editableByOrg": true,
 					"comment" : "released oustide the app"
-                }
+                },
+                         {
+                         "memberId": 222,
+                         "existingStatus": "ACTIVE",
+                         "activeDate": "20150922",
+                         "positionId": 728250,
+                         "cwfId": null,
+                         "positionTypeId": 1482,
+                         "positionTypeEnum": "PRIMARY_WORKER_CTR_8",
+                         "position": "Primary Teacher",
+                         "hidden": false,
+                         "allowMultiple": true,
+                         "proposedStatus": null,
+                         "proposedIndId": null,
+                         "notes": null,
+                         "editableByOrg": true,
+                         "comment" : "deleted oustide the app - calling doesn't exist in lcr"
+                         }
+
             ]
         }
     ],

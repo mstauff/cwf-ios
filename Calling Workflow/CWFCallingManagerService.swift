@@ -109,8 +109,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             restCallsGroup.enter()
             ldsApi.getMemberList(unitNum: unitNum) { (members, error) -> Void in
                 if members != nil && !members!.isEmpty {
-                    self.memberList = members!
-                    print("First Member of unit:\(members![0])")
+                    // filter out any non members
+                    self.memberList = members!.filter() {$0.individualId > 0}
                 } else {
                     print("no user")
                     if error != nil {
