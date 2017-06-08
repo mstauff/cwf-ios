@@ -22,8 +22,22 @@ struct AccordionDataItem {
     
 }
 
-class CWFAccordionTableViewController: CWFBaseTableViewController {
+class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTableViewControllerDelegate {
     
+    var updatedCalling : Calling? {
+        didSet {
+            if let validCalling = updatedCalling {
+                self.rootOrg = self.rootOrg?.updatedWith(changedCalling: validCalling)
+            }
+        }
+    }
+    
+    func setReturnedCalling(calling: Calling) {
+        self.updatedCalling = calling
+    }
+    
+
+
     var dataSource : [AccordionDataItem] = []
     // the root org gets updated after the view is loaded (because we read it asynchronously - fresh from google drive) so after it gets updated we need to redraw 
     var rootOrg : Org? {
@@ -54,7 +68,6 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tableView.reloadData()
     }
 
     // MARK: - Setup
@@ -203,6 +216,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
             let storyBoard = UIStoryboard.init(name: "Main", bundle:nil)
             let nextVC = storyBoard.instantiateViewController(withIdentifier: "CallingDetailsTableViewController") as? CallingDetailsTableViewController
             nextVC?.callingToDisplay = calling
+            nextVC?.delegate = self
             self.navigationController?.pushViewController(nextVC!, animated: true)
 
         }

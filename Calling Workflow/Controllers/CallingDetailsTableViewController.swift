@@ -22,6 +22,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     var originalCalling : Calling? = nil
     var memberDetailView : MemberInfoView? = nil
     
+    var delegate : CallingsTableViewControllerDelegate?
+    
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -316,7 +318,9 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         //todo -- add save to calling service
         save()
         isDirty = false
+        delegate?.setReturnedCalling(calling: self.callingToDisplay!)
         let _ = self.navigationController?.popViewController(animated: true)
+        
     }
     
     func save() {
