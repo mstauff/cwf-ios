@@ -28,7 +28,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         let positionMetadata = PositionMetadata()
         let newPostiton = Position(positionTypeId: 0, name: nil, hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: positionMetadata)
         
-        newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: newPostiton, notes: nil, parentOrg: parentOrg)
+        newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: .Proposed, position: newPostiton, notes: nil, parentOrg: parentOrg)
     }
 
     override func didReceiveMemoryWarning() {
@@ -187,7 +187,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
             
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            if let statusString = newCalling?.proposedStatus.rawValue{
+            if let statusString = newCalling?.proposedStatus.description{
                 cell.textLabel?.text = statusString
             }
             else {

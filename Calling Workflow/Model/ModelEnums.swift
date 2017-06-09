@@ -10,13 +10,17 @@ import Foundation
 
 public enum CallingStatus : String {
     
+    var description : String {
+        return CallingStatus.descriptionDictionary[self] ?? "Unknown"
+    }
+    
     case Proposed = "PROPOSED"
     case Submitted = "SUBMITTED"
     case Approved = "APPROVED"
     case ReSubmit = "RE_SUBMIT"
     case NotApproved = "NOT_APPROVED"
     case OnHold = "ON_HOLD"
-    case AppointmentSet = "APPT_SET"
+    case AppointmentSet = "APPOINTMENT_SET"
     case Extended = "EXTENDED"
     case Accepted = "ACCEPTED"
     case Refused = "REFUSED"
@@ -28,6 +32,11 @@ public enum CallingStatus : String {
     case None = "NONE"
     
     static let allValues = [ Proposed, Submitted, Approved, ReSubmit, NotApproved, OnHold, AppointmentSet, Extended, Accepted, Refused, ReadyToSustain, Sustained, SetApart, Recorded, Unknown, None]
+    // Unknown is reserved for system use - cannot be selected by the user
+    static let userValues = allValues.filter() {$0 != .Unknown}
+    static let descriptionDictionary : [CallingStatus:String] = allValues.toDictionary() {
+        return ($0, $0.rawValue.replacingOccurrences(of: "_", with: " ").localizedCapitalized)
+    }
     
 }
 

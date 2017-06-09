@@ -222,6 +222,16 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         }
     }
     
+    func isRootCell(indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    class func getCellHeight () -> CGFloat {
+        return 50.0
+    }
+    
+
+    // MARK: - Event Handlers
     func collapseCell(indexPath: IndexPath) {
         var indexPaths : [IndexPath] = []
         var foundParent = false
@@ -270,14 +280,10 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         dataSource[indexPath.row].expanded = true
         
         self.tableView.beginUpdates()
-
+        
         tableView.insertRows(at: indexPaths, with: .fade)
-
+        
         self.tableView.endUpdates()
-    }
-    
-    func isRootCell(indexPath: IndexPath) -> Bool {
-        return true
     }
     
     func addButtonPressed(sender: UIButton) {
@@ -293,10 +299,6 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         let nextVC = storyBoard.instantiateViewController(withIdentifier: "NewCallingTableViewController") as? NewCallingTableViewController
         nextVC?.parentOrg = self.rootOrg
         self.navigationController?.pushViewController(nextVC!, animated: true)
-    }
-    
-    class func getCellHeight () -> CGFloat {
-        return 50.0
     }
     
     // MARK: - Filter

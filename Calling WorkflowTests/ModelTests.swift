@@ -328,8 +328,6 @@ class ModelTests: XCTestCase {
                 validatePositionSame(originalPosition, updatedPosition)
             }
         }
-        
-
     }
     
     func performCallingUpdateAndValidation( parentOrg: Org, childOrg: Org,  originalCalling : Calling, callingIdx : Int, expectedId : Int64?, expectedPosition : Position?, updatedIndId : Int64?, updatedStatus : CallingStatus ) -> Org {
@@ -358,7 +356,6 @@ class ModelTests: XCTestCase {
         }
         
         return updatedOrg!
-
     }
     
     func testCallingCwfId() {
@@ -439,6 +436,13 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(enumCount(CallingStatus.self), CallingStatus.allValues.count)
         // basically check for any duplicates. This would catch a copy/paste error where something in allValues gets copied, but not updated to the new enum value
         XCTAssertEqual(CallingStatus.allValues.count, Set<CallingStatus>(CallingStatus.allValues).count)
+        
+        // test the descriptions
+        // ensure that the basic status is capitalized
+        XCTAssertEqual( CallingStatus.Accepted.description, "Accepted" )
+        // ensure where there is a _ it gets changed to a space
+        XCTAssertEqual( CallingStatus.OnHold.description, "On Hold" )
+        
     }
 
     func testPriesthoodEnums() {

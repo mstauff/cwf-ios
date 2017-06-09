@@ -171,7 +171,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 cell?.titleLabel.text = "Status:"
                 
                 if callingToDisplay?.proposedStatus != nil {
-                    cell?.dataLabel.text = callingToDisplay?.proposedStatus.rawValue
+                    cell?.dataLabel.text = callingToDisplay?.proposedStatus.description
                 }
                 else {
                     cell?.dataLabel.text = "None"

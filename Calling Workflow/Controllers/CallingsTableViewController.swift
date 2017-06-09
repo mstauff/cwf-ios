@@ -75,7 +75,7 @@ class CallingsTableViewController: CWFBaseTableViewController {
         }
         
         if callingForRow.proposedStatus != CallingStatus.Unknown {
-            cell?.callingInProcessLabel.text = callingForRow.proposedStatus.rawValue
+            cell?.callingInProcessLabel.text = callingForRow.proposedStatus.description
         }
         else {
             cell?.callingInProcessLabel.text = ""
