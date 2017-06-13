@@ -90,7 +90,7 @@ class FilterOptionsObject {
             arrayToReturn = arrayToReturn.filter() {
                 var returnValue = false
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                if let callingList = appDelegate?.callingManager.getCallingsForMember(member: $0) {
+                if let callingList = appDelegate?.callingManager.getCallings(forMember: $0) {
                     print(callingList.count)
                     if (callings?[0])! && callingList.count == 0 {
                         returnValue = true
@@ -119,7 +119,7 @@ class FilterOptionsObject {
             arrayToReturn = arrayToReturn.filter() {
                 var greaterThanTime = false
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                if let callingList = appDelegate?.callingManager.getCallingsForMember(member: $0) {
+                if let callingList = appDelegate?.callingManager.getCallings(forMember: $0) {
                     for calling in callingList {
                         if calling.existingMonthsInCalling > minMonthsInCalling! {
                             greaterThanTime = true

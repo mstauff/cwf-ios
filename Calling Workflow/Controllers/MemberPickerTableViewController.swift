@@ -33,8 +33,8 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         //todo - Remove this. it is only here to assign a calling to a member so we can test the view
         if (members.count > 4) {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            members[1].currentCallings = (appDelegate?.callingManager.getCallingsForMember(member: members[1]))!
-            members[3].currentCallings = (appDelegate?.callingManager.getCallingsForMember(member: members[3]))!
+            members[1].currentCallings = (appDelegate?.callingManager.getCallings(forMember: members[1]))!
+            members[3].currentCallings = (appDelegate?.callingManager.getCallings(forMember: members[3]))!
         }
     }
 
@@ -97,13 +97,8 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
-        if let callingsString = appDelegate?.callingManager.getCallingsForMemberAsStringWithMonths(member: currentMember) {
-            
-            cell?.subtitle.text = callingsString
-        }
-        else {
-            cell?.subtitle.text = nil
-        }
+        cell?.subtitle.text = (appDelegate?.callingManager.getCallings(forMember: currentMember).namesWithTime() ?? "") + (appDelegate?.callingManager.getPotentialCallings(forMember: currentMember).namesWithStatus() ?? "")
+
 
         return cell!
     }

@@ -57,10 +57,6 @@ extension MultiValueDictionary {
         self.dictionary.removeAll()
     }
 
-    mutating func removeValue( forKey key : K, value : V ) {
-        // todo
-    }
-
     func getValues( forKey key: K ) -> [V] {
         return self.dictionary[key] ?? []
     }
@@ -77,6 +73,16 @@ extension MultiValueDictionary {
     func contains( key: K ) -> Bool {
         return self.dictionary[key] != nil && self.dictionary[key]!.isNotEmpty
     }
+}
+
+extension MultiValueDictionary where V : Equatable {
+    mutating func removeValue( forKey key : K, value : V ) {
+        if let valsForKey = self.dictionary[key] {
+            self.setValues(forKey: key, values: valsForKey.filter({ $0 != value }) )
+        }
+    }
+    
+    
 }
 
 

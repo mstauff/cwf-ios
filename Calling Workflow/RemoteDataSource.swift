@@ -33,7 +33,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     // to translate between the selectors used by google drive and Swift closure mechanisms used
     // by calling clients
     private var authCompletionHandler : ((Bool, Error?) -> Void)? = nil
-    private var fileListCompletionHandler : (([GTLDriveFile],NSError? ) -> Void)? = nil
+    private var fileListCompletionHandler : (([GTLDriveFile],Error? ) -> Void)? = nil
     
     /*************** computed props ******************/
     var isAuthenticated : Bool {
@@ -53,7 +53,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     func hasValidCredentials( forUnit unitNum : Int64, completionHandler: @escaping (Bool, Error?) -> Void ) {
         var configureError: NSError?
         GGLContext.sharedInstance().configureWithError(&configureError)
-        assert(configureError == nil, "Error configuring Google services: \(configureError)")
+        assert(configureError == nil, "Error configuring Google services: \(configureError!)")
         
         GIDSignIn.sharedInstance().delegate = self
         GIDSignIn.sharedInstance().scopes = requiredScopes
@@ -87,7 +87,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     
 
     /* This method should be called after authenticate and before you try to retrieve the contents of any org. This is separate from auth or init because it needs to have the list of orgs that exist for a unit on lds.org to compare to what data we have in google drive and either create what's missing, or report what should be deleted. The callback will include a list of orgs that exist in google drive but were not passed in to the method and would be candidates for deletion. Any orgs that are passed in that don't exist in google drive will be silently created. */
-    func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ remainingOrgs: [Org], _ error: NSError?) -> Void) {
+    func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ remainingOrgs: [Org], _ error: Error?) -> Void) {
         // although we could check if we already have filesByName then no need to hit goodrive, generally this should only be called once anyway so shouldn't matter. If it does get called a 2nd time then always checking goodrive allows us to grab any latest changes. Otherwise code might call this in an attempt to "refresh" but not get latest
         fetchFiles() { (driveFiles, error) in
             var orgFileNames: Set<String> = Set()
@@ -130,7 +130,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     }
 
     /* Gets the contents for the org out of google drive. The org from lds.org is required as a param because we need both the org ID and the org type to get the correct data out of google drive */
-    func getData(forOrg org : Org, completionHandler : @escaping (_ org : Org?, _ error : NSError? ) -> Void ){
+    func getData(forOrg org : Org, completionHandler : @escaping (_ org : Org?, _ error : Error? ) -> Void ){
         if let orgFileName = getFileName( forOrg : org ) {
             fetchFileContents(fileName: orgFileName ) { fileContents, error in
                 guard error == nil else {
@@ -153,9 +153,9 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     }
 
     // todo - need to change the callback to take an conflict resolution object  - in case there were conflicts that had to be resolved
-    func updateOrg( org: Org, completionHandler : @escaping (_ success : Bool, _ error: NSError? ) -> Void ) {
+    func updateOrg( org: Org, completionHandler : @escaping (_ success : Bool, _ error: Error? ) -> Void ) {
         // todo - need to check for conflicts first
-        var updateError : NSError? = nil
+        var updateError : Error? = nil
         if let orgFileName = getFileName(forOrg: org ) {
             let orgJSONObj = org.toJSONObject()
             if let orgJSON = jsonSerializer.serialize(jsonObject: orgJSONObj) {
@@ -194,14 +194,14 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
 
     // todo - this probably needs to return a GTLServiceTicket, but not sure how that works yet
     /* Updates a file in google drive to contain the given string data (should be JSON). If the file does not exist it will be created. This is a lower level method that just performs the actual create/update. It doesn't do any diff'ing of contents, etc. That would need to be done prior to calling this method */
-    func addOrUpdateFile( fileName : String, fileContents : String, completionHandler : @escaping (_ fileContents : String?, _ error : NSError? ) -> Void ) {
+    func addOrUpdateFile( fileName : String, fileContents : String, completionHandler : @escaping (_ success : Bool, _ error : Error? ) -> Void ) {
         
         var originalFileContents : String? = nil
         
         self.getFile(fileName: fileName) { (file, error) in
             guard error == nil else {
                 print( "Error: " + error.debugDescription )
-                completionHandler( nil, error )
+                completionHandler( false, error )
                 return
             }
             
@@ -209,21 +209,23 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
                 self.createFile(fileName: fileName, fileContents: fileContents) { (createdFile, createFileError) in
                     guard error == nil else {
                         print( "Error: " + error.debugDescription )
-                        completionHandler( nil, error )
+                        completionHandler( false, error )
                         return
                     }
                     self.filesByName[fileName] = createdFile
-                    completionHandler( fileContents, nil )
+                    completionHandler( true, nil )
                 }
             } else {
                 // update the file
-                self.updateFile( file: file!, fileContents: fileContents )
+                self.updateFile( file: file!, fileContents: fileContents ) { (success, error) in
+                    completionHandler( success, error )
+                }
             }
         }
     }
 
     /* Gets the file object (not the contents, just the object with the ID & other metadata) that exists in google drive. If the file is in google drive it will be passed to the callback. If the file doesn't currently exist in google drive then the callback will be invoked with a nil file. Currently the error in the callback is unused, but it might be in the future if we make extra calls to google drive if we don't have a cached copy of the file */
-    func getFile( fileName: String, completionHandler: @escaping ( _ file: GTLDriveFile?, _ error: NSError? ) -> Void ) {
+    func getFile( fileName: String, completionHandler: @escaping ( _ file: GTLDriveFile?, _ error: Error? ) -> Void ) {
         if let file = filesByName[ fileName ] {
             completionHandler( file, nil )
         } else {
@@ -234,7 +236,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     }
 
     /* Performs the actual update in google drive that will update the contents of the file with the JSON that is provided in this call */
-    func updateFile( file: GTLDriveFile, fileContents: String ) {
+    func updateFile( file: GTLDriveFile, fileContents: String, completionHandler: @escaping (_ success: Bool, _ error: Error? ) -> Void ) {
         let newFileHack = GTLDriveFile()
         
         let encodedData = Data(fileContents.utf8)
@@ -243,15 +245,17 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             driveService.executeQuery(query) { (ticket, response, error) in
                 guard error == nil else {
                     print( "Update Error: " + error.debugDescription )
+                    completionHandler( false, error )
                     return
                 }
                 print( "Update Result:" + response.debugDescription )
+                completionHandler( true, nil )
             }
         }
     }
 
     /* creates a file in google drive */
-    func createFile( fileName: String, fileContents: String, completionHandler:@escaping ( _ file: GTLDriveFile?, _ error: NSError? ) -> Void) {
+    func createFile( fileName: String, fileContents: String, completionHandler:@escaping ( _ file: GTLDriveFile?, _ error: Error? ) -> Void) {
         let file = GTLDriveFile()
         
         file.name = fileName
@@ -266,7 +270,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             print( "Response: \(response.debugDescription) Data: " + data.debugDescription + " Error: " + error.debugDescription )
             guard error == nil else {
                 print( "Error: " + error.debugDescription )
-                completionHandler( nil, error as NSError? )
+                completionHandler( nil, error )
                 return
             }
             
@@ -287,7 +291,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     }
 
     /* Looks up a file object from the cache and retrieves its' contents from google drive */
-    func fetchFileContents( fileName: String, completionHandler: @escaping( _ fileContents:Data?, _ error:NSError? ) -> Void ) {
+    func fetchFileContents( fileName: String, completionHandler: @escaping( _ fileContents:Data?, _ error:Error? ) -> Void ) {
         // if we've previously looked up the file and already have cached the ID then just
         // look it up from the cache
         if let file = filesByName[ fileName ] {
@@ -311,7 +315,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
      if the file exists it should return the contents. If the file is empty it should return an empty string
      not nil
      */
-    func fetchContents( forFile file: GTLDriveFile, completionHandler : @escaping( _ fileContents:Data?, _ error:NSError? ) -> Void ) {
+    func fetchContents( forFile file: GTLDriveFile, completionHandler : @escaping( _ fileContents:Data?, _ error:Error? ) -> Void ) {
         
         let fileUrl = String.init(format: "https://www.googleapis.com/drive/v3/files/%@?alt=media", file.identifier)
         
@@ -319,7 +323,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         fetcher.beginFetch( ) { (data, error) -> Void in
             guard error == nil else {
                 print( "Error: " + error.debugDescription )
-                completionHandler( nil, error as NSError? )
+                completionHandler( nil, error )
                 return
             }
             
@@ -335,7 +339,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     }
     
     /* Fetches all the files from the google drive appDataFolder and saves off the callback to be called by fileListComplete (since google drive api uses #selector methods for callbacks */
-    private func fetchFiles( completionHandler: @escaping ([GTLDriveFile],NSError? ) -> Void) {
+    private func fetchFiles( completionHandler: @escaping ([GTLDriveFile],Error? ) -> Void) {
         let query = GTLQueryDrive.queryForFilesList()
         query?.spaces = "appDataFolder"
         
@@ -354,7 +358,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     /* Invoked by google drive when the fetching of files from appDataFolder is complete. This method just invokes the callback that was stored in fetchFiles with the result from the google drive operation */
     func fileListComplete(ticket : GTLServiceTicket,
                                 finishedWithObject response : GTLDriveFileList,
-                                error : NSError?) {
+                                error : Error?) {
         guard error == nil else {
             //            showAlert(title: "Error", message: error.localizedDescription)
             // if there's a completionHandler, call it, then set it to nil to avoid memory cycle

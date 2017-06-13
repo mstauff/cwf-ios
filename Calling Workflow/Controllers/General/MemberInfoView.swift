@@ -97,7 +97,8 @@ class MemberInfoView: UIViewController {
         self.view.addConstraints([infoHConstraint, infoWConstraint, infoVConstraint, infoHoConstraint])
 
         let callingBar = MemberInfoBarItemView()
-        callingBar.setupInfoBarItem(dataText: (appDelegate?.callingManager.getCallingsForMemberAsStringWithMonths(member: memberToView!))!, icon: nil)
+        let callingText = (appDelegate?.callingManager.getCallings(forMember: memberToView!).namesWithTime() ?? "") + (appDelegate?.callingManager.getPotentialCallings(forMember: memberToView!).namesWithStatus() ?? "")
+        callingBar.setupInfoBarItem(dataText: callingText, icon: nil)
         if callingBar.dataLabel.text == "" {
             callingBar.backgroundColor = UIColor.lightGray
         }
