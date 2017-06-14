@@ -67,13 +67,8 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
         }
        
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        if let callingsString = appDelegate?.callingManager.getCallingsForMemberAsStringWithMonths(member: memberForCell) {
-            cell.callingInProcessLabel.text = callingsString
-        }
-        else {
-            cell.callingInProcessLabel.text = nil
-        }
-        
+        cell.callingInProcessLabel?.text = (appDelegate?.callingManager.getCallings(forMember: memberForCell).namesWithTime() ?? "") + (appDelegate?.callingManager.getPotentialCallings(forMember: memberForCell).namesWithStatus() ?? "")
+
         return cell
     }
     

@@ -30,6 +30,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     /// Map of callings by member
     private var memberCallingsMap = MultiValueDictionary<Int64, Calling>()
+    private var memberPotentialCallingsMap = MultiValueDictionary<Int64, Calling>()
     
     private var unitLevelOrgsForSubOrgs: [Int64: Int64] = [:]
     
@@ -109,8 +110,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             restCallsGroup.enter()
             ldsApi.getMemberList(unitNum: unitNum) { (members, error) -> Void in
                 if members != nil && !members!.isEmpty {
-                    self.memberList = members!
-                    print("First Member of unit:\(members![0])")
+                    // filter out any non members
+                    self.memberList = members!.filter() {$0.individualId > 0}
                 } else {
                     print("no user")
                     if error != nil {
@@ -156,7 +157,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     /** Reads all the unit data from the application data store (currently google drive), and also reconciles any difference between data previously retrieved from lds.org. This method should only be called after loadLDSData() & authorizeDataSource() have successfully completed. The data is not returned in the callback, it is just maintained within this service. The callback just indicates to the calling function when this method has succesfully completed.
      The parameters for the callback indicate if all the data was loaded successfully, and whether there were extra orgs in the application data that were not in the lds.org data that potentially need to be removed or merged. This would be rare, but in cases where there were multiple EQ or RS groups, and then one gets removed in LCR we would still have the extra in our application data store*/
-    public func loadAppData(completionHandler: @escaping(Bool, Bool, NSError?) -> Void) {
+    public func loadAppData(completionHandler: @escaping(Bool, Bool, Error?) -> Void) {
         guard let ldsUnit = self.ldsOrgUnit else {
             // todo - callback w/error
             return
@@ -191,8 +192,10 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             dataSourceGroup.notify(queue: DispatchQueue.main) {
                 // sort all the unit level orgs by their display order
                 self.appDataOrg!.children = mergedOrgs.sorted(by: Org.sortByDisplayOrder)
-                // this is only actual callings. Probably will need another for proposed callings
+                // this is only actual callings.
                 self.memberCallingsMap = self.multiValueDictionaryFromArray(array: self.appDataOrg!.allOrgCallings) { $0.existingIndId }
+                // Now proposed callings
+                self.memberPotentialCallingsMap = self.multiValueDictionaryFromArray(array: self.appDataOrg!.allOrgCallings) { $0.proposedIndId }
                 completionHandler(error == nil, extraAppOrgs.isNotEmpty, error)
             }
         }
@@ -377,29 +380,14 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         return member
     }
     
-    func getCallingsForMember(member: Member) -> [Calling] {
-        let callingList = ldsOrgUnit?.allOrgCallings ?? []
-        return callingList.filter() {
-            $0.existingIndId == member.individualId
-        }
+    func getCallings(forMember member: Member) -> [Calling] {
+        return self.memberCallingsMap.getValues(forKey: member.individualId)
     }
     
-    func getCallingsForMemberAsStringWithMonths(member: Member) -> String {
-        let callings = getCallingsForMember(member: member)
-        var callingString = ""
-        
-        for calling in callings {
-            if let nameString = calling.position.name {
-                callingString.append("\(nameString) (\(calling.existingMonthsInCalling) M)")
-                if (calling != callings[callings.count-1]) {
-                    callingString.append(",  ")
-                }
-            }
-        }
-        
-        return callingString
+    func getPotentialCallings( forMember member: Member ) -> [Calling] {
+        return self.memberPotentialCallingsMap.getValues(forKey: member.individualId)
     }
-        
+    
     public func addCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: calling, operation: .Create, completionHandler: completionHandler)
     }
@@ -462,7 +450,22 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         if self.appDataOrg != nil {
             self.appDataOrg!.updateDirectChildOrg(org: unitLevelOrg)
         }
-        // when we eventually add a potential Callings map we'll need to update it here - will need to switch on operation
+        // update potential Callings map - will need to switch on operation
+        if let indId = changedCalling.proposedIndId {
+            
+            switch operation {
+            case .Create:
+                self.memberPotentialCallingsMap.addValue(forKey: indId, value: changedCalling)
+            case .Delete:
+                self.memberPotentialCallingsMap.removeValue(forKey: indId, value: changedCalling)
+            case .Update:
+                if let oldIndId = originalCalling?.proposedIndId {
+                    // if originalCalling is nil, there's no way to get here, so safe to ! it
+                    self.memberPotentialCallingsMap.removeValue(forKey: oldIndId, value: originalCalling!)
+                }
+                self.memberPotentialCallingsMap.addValue(forKey: indId, value: changedCalling)
+            }
+        }
         
         // no need to update existing callings - that should only be after we've saved a change in LCR
     }

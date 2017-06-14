@@ -81,15 +81,8 @@ class CallingsTableViewController: CWFBaseTableViewController {
             cell?.currentCallingLabel.text = ""
         }
         
-        if callingForRow.proposedIndId != nil {
-            var nameAndMonthsString : String? = nil
-            
-            if let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: callingForRow.proposedIndId!) {
-                nameAndMonthsString = proposedMember.name!
-                nameAndMonthsString?.append(" - \(callingForRow.proposedStatus.rawValue)")
-            }
-            
-            cell?.callingInProcessLabel.text = nameAndMonthsString
+        if callingForRow.proposedStatus != CallingStatus.Unknown {
+            cell?.callingInProcessLabel.text = callingForRow.proposedStatus.description
         }
         else {
             cell?.callingInProcessLabel.text = ""

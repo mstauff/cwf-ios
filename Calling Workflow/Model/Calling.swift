@@ -59,6 +59,27 @@ public struct Calling : JSONParsable {
         }
     }
     
+    var nameWithTime : String {
+        get {
+            var result = ""
+            if let nameString = self.position.name  {
+                result = nameString +  "(" + self.existingMonthsInCalling.description + "M)"
+            }
+            return result
+        }
+    }
+    
+    var nameWithStatus : String {
+        get {
+            var result = ""
+            if let nameString = self.position.name  {
+                result = nameString +  "(" + self.proposedStatus.description + ")"
+            }
+            return result
+            
+        }
+    }
+    
     init( _ calling: Calling, position: Position ) {
         self.init( id: calling.id, cwfId: calling.cwfId, existingIndId : calling.existingIndId, existingStatus: calling.existingStatus, activeDate: calling.activeDate, proposedIndId: calling.proposedIndId, status: calling.proposedStatus, position: position, notes: calling.notes, parentOrg : calling.parentOrg)
     }
@@ -178,6 +199,16 @@ extension Calling : Equatable {
         
         return result
         
+    }
+}
+
+extension Array where Iterator.Element == Calling {
+    public func namesWithTime() -> String {
+        return self.map({$0.nameWithTime}).joined(separator: ", ")
+    }
+    
+    public func namesWithStatus() -> String {
+        return self.map( {$0.nameWithStatus} ).joined( separator: ", " )
     }
 }
 

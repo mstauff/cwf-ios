@@ -22,8 +22,22 @@ struct AccordionDataItem {
     
 }
 
-class CWFAccordionTableViewController: CWFBaseTableViewController {
+class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTableViewControllerDelegate {
     
+    var updatedCalling : Calling? {
+        didSet {
+            if let validCalling = updatedCalling {
+                self.rootOrg = self.rootOrg?.updatedWith(changedCalling: validCalling)
+            }
+        }
+    }
+    
+    func setReturnedCalling(calling: Calling) {
+        self.updatedCalling = calling
+    }
+    
+
+
     var dataSource : [AccordionDataItem] = []
     // the root org gets updated after the view is loaded (because we read it asynchronously - fresh from google drive) so after it gets updated we need to redraw 
     var rootOrg : Org? {
@@ -54,7 +68,6 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tableView.reloadData()
     }
 
     // MARK: - Setup
@@ -203,11 +216,22 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
             let storyBoard = UIStoryboard.init(name: "Main", bundle:nil)
             let nextVC = storyBoard.instantiateViewController(withIdentifier: "CallingDetailsTableViewController") as? CallingDetailsTableViewController
             nextVC?.callingToDisplay = calling
+            nextVC?.delegate = self
             self.navigationController?.pushViewController(nextVC!, animated: true)
 
         }
     }
     
+    func isRootCell(indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    class func getCellHeight () -> CGFloat {
+        return 50.0
+    }
+    
+
+    // MARK: - Event Handlers
     func collapseCell(indexPath: IndexPath) {
         var indexPaths : [IndexPath] = []
         var foundParent = false
@@ -256,14 +280,10 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
         dataSource[indexPath.row].expanded = true
         
         self.tableView.beginUpdates()
-
+        
         tableView.insertRows(at: indexPaths, with: .fade)
-
+        
         self.tableView.endUpdates()
-    }
-    
-    func isRootCell(indexPath: IndexPath) -> Bool {
-        return true
     }
     
     func addButtonPressed(sender: UIButton) {
@@ -279,10 +299,6 @@ class CWFAccordionTableViewController: CWFBaseTableViewController {
         let nextVC = storyBoard.instantiateViewController(withIdentifier: "NewCallingTableViewController") as? NewCallingTableViewController
         nextVC?.parentOrg = self.rootOrg
         self.navigationController?.pushViewController(nextVC!, animated: true)
-    }
-    
-    class func getCellHeight () -> CGFloat {
-        return 50.0
     }
     
     // MARK: - Filter

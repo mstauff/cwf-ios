@@ -17,10 +17,10 @@ func getStatusActionSheet(delegate: StatusPickerDelegate?) -> UIAlertController 
         print("Cancelled")
     })
     
-    let statusArray = CallingStatus.allValues
+    let statusArray = CallingStatus.userValues
     
     for status in statusArray {
-        let statusAction = UIAlertAction(title: status.rawValue, style: UIAlertActionStyle.default, handler:  {
+        let statusAction = UIAlertAction(title: status.description, style: UIAlertActionStyle.default, handler:  {
             (alert: UIAlertAction!) -> Void in
             if (delegate != nil){
                 delegate?.setStatusFromPicker(status: status)
