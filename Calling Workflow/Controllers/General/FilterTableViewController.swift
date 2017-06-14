@@ -8,11 +8,32 @@
 
 import UIKit
 
-class FilterTableViewController: UITableViewController {
+class FilterTableViewController: UITableViewController, FilterTableViewCellDelegate {
 
     var filterContentArray : [FilterBaseTableViewCell] = []
     
-    var filterObject : FilterOptionsObject = FilterOptionsObject()
+    var filterObject : FilterOptionsObject = FilterOptionsObject(){
+        didSet {
+            if let gender = filterObject.gender {
+                
+                filterContentArray = filterContentArray.filter() {
+                    if $0 is FilterOrgTableViewCell {
+                        return false
+                    }
+                    return true
+                }
+                
+                if gender == Gender.Female {
+                    addOrgFilterCell(title: "Class", upperLevelNames: ["Relief Socity"], lowerLevelNames: ["Laurel", "Mia Maid", "Bee Hive"])
+                } else {
+                    addOrgFilterCell(title: "Priesthood", upperLevelNames: ["High Priest", "Elder"], lowerLevelNames: ["Priest", "Teacher", "Deacon"])
+                }
+                
+                tableView.reloadData()
+            }
+        }
+    }
+
     
     var delegate : FilterTableViewControllerDelegate?
     
@@ -42,7 +63,6 @@ class FilterTableViewController: UITableViewController {
         tableView.register(FilterApplyButtonTableViewCell.self, forCellReuseIdentifier: "FilterApplyCell")
     }
     
-
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -97,29 +117,29 @@ class FilterTableViewController: UITableViewController {
 
     func addCallingsFilterCell() {
         let cell = FilterCallingNumberTableViewCell(style: .default, reuseIdentifier: "FilterCallingNumberCell", numbers: [0, 1, 2, 3])
-        
+        cell.filterDelegate = self
         filterContentArray.append(cell)
     }
     
     func addTimeInCallingFilterCell () {
         let cell = FilterTimeTableViewCell(style: .default, reuseIdentifier: "FilterTimeCell")
-        
+        cell.filterDelegate = self
         filterContentArray.append(cell)
     }
     
     func addAgeFilterCell() {
         let cell = FilterAgeTableViewCell(style: .default, reuseIdentifier: "FilterAgeCell")
-        
+        cell.filterDelegate = self
         filterContentArray.append(cell)
     }
     
     func addGenderFilterCell() {
         let cell = FilterGenderTableViewCell(style: .default, reuseIdentifier: "FilterGenderCell")
-        
+        cell.filterDelegate = self
         filterContentArray.append(cell)
     }
     
-    func addOrgFilterCell(title: String, upperLevelNames: [String]?, lowerLevelNames: [String]?) {
+    private func addOrgFilterCell(title: String, upperLevelNames: [String]?, lowerLevelNames: [String]?) {
         let cell = FilterOrgTableViewCell(style: .default, reuseIdentifier: "FilterOrgCell", title: "Class", upperClasses: upperLevelNames, lowerClasses: lowerLevelNames)
         
         filterContentArray.append(cell)
@@ -131,13 +151,20 @@ class FilterTableViewController: UITableViewController {
     
     func applyPressed () {
         print("Apply pressed")
+        self.delegate?.setFilterOptions(memberFilterOptions: self.getUpdatedFilterObject())
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    func getUpdatedFilterObject() -> FilterOptionsObject {
         var filterOptions : FilterOptionsObject = FilterOptionsObject()
         for cell in tableView.visibleCells {
             let filterCell = cell as? FilterBaseTableViewCell
             filterOptions = (filterCell?.getSelectedOptions(filterOptions: filterOptions))!
         }
-        self.delegate?.setFilterOptions(memberFilterOptions: filterOptions)
-        self.navigationController?.popViewController(animated: true)
+        return filterOptions
     }
     
+    func updateFilterOptionsForFilterView() {
+        self.filterObject = getUpdatedFilterObject()
+    }
 }

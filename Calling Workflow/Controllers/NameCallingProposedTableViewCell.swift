@@ -10,11 +10,21 @@ import UIKit
 
 class NameCallingProposedTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var nameLabel: UILabel!
+    var nameLabel: UILabel = UILabel()
     
-    @IBOutlet weak var currentCallingLabel: UILabel!
+    var currentCallingLabel: UILabel = UILabel()
     
-    @IBOutlet weak var callingInProcessLabel: UILabel!
+    var callingInProcessLabel: UILabel = UILabel()
+    
+    //MARK: - Life Cycle
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupCell()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -27,4 +37,47 @@ class NameCallingProposedTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
+    func setupCell() {
+        let horizontalMargin : CGFloat = 15.0
+        let verticalMargin : CGFloat = 10.0
+        
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.addSubview(nameLabel)
+
+        let nameLConstraint = NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: horizontalMargin)
+        let nameRConstraint = NSLayoutConstraint(item: nameLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: -horizontalMargin)
+        let nameYConstraint = NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: verticalMargin)
+        let nameHConstraint = NSLayoutConstraint(item: nameLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 22)
+        
+        self.addConstraints([nameLConstraint, nameRConstraint, nameYConstraint, nameHConstraint])
+        
+        callingInProcessLabel.translatesAutoresizingMaskIntoConstraints = false
+        callingInProcessLabel.numberOfLines = 0
+        callingInProcessLabel.font = UIFont(name: callingInProcessLabel.font.fontName, size: 14)
+        
+        self.addSubview(callingInProcessLabel)
+        
+        let inProcessXConstraint = NSLayoutConstraint(item: callingInProcessLabel, attribute: .leading, relatedBy: .equal, toItem: nameLabel, attribute: .leading, multiplier: 1, constant: horizontalMargin)
+        let inProcessYConstraint = NSLayoutConstraint(item: callingInProcessLabel, attribute: .top, relatedBy: .equal, toItem: nameLabel, attribute: .bottom, multiplier: 1, constant: 0)
+        let inProcessWConstraint = NSLayoutConstraint(item: callingInProcessLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: -horizontalMargin)
+        let inProcessHConstraint = NSLayoutConstraint(item: callingInProcessLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 20)
+        
+        self.addConstraints([inProcessXConstraint, inProcessYConstraint, inProcessWConstraint, inProcessHConstraint])
+        
+        currentCallingLabel.translatesAutoresizingMaskIntoConstraints = false
+        currentCallingLabel.numberOfLines = 0
+        currentCallingLabel.font = UIFont(name: currentCallingLabel.font.fontName, size: 14)
+        
+        self.addSubview(currentCallingLabel)
+
+        let currentXConstraint = NSLayoutConstraint(item: currentCallingLabel, attribute: .leading, relatedBy: .equal, toItem: callingInProcessLabel, attribute: .leading, multiplier: 1, constant: 0)
+        let currentYConstraint = NSLayoutConstraint(item: currentCallingLabel, attribute: .top, relatedBy: .equal, toItem: callingInProcessLabel, attribute: .bottom, multiplier: 1, constant: 0)
+        let currentWConstraint = NSLayoutConstraint(item: currentCallingLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: -horizontalMargin)
+        let currentHConstraint = NSLayoutConstraint(item: currentCallingLabel, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: -verticalMargin)
+        
+        self.addConstraints([currentXConstraint, currentYConstraint, currentWConstraint, currentHConstraint])
+        
+    }
+    
 }

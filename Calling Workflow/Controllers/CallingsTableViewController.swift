@@ -10,7 +10,7 @@ import UIKit
 
 class CallingsTableViewController: CWFBaseTableViewController {
     
-    var callingsToDisplay : [Calling] = []
+    var inProgressCallingsToDisplay : [Calling] = []
     
     var delegate : CallingsTableViewControllerDelegate? = nil
     
@@ -18,8 +18,11 @@ class CallingsTableViewController: CWFBaseTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCallingsToDisplay()
-        self.title = "Callings"
+      
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 44
 
+        tableView.register(NameCallingProposedTableViewCell.self, forCellReuseIdentifier: "cell")
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -30,8 +33,11 @@ class CallingsTableViewController: CWFBaseTableViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.title = "In Progress"
+        self.tabBarController?.navigationItem.rightBarButtonItem = nil
+
         tableView.reloadData()
     }
 
@@ -41,7 +47,7 @@ class CallingsTableViewController: CWFBaseTableViewController {
         if delegate == nil {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             if (appDelegate?.callingManager.ldsOrgUnit != nil) {
-                callingsToDisplay = (appDelegate?.callingManager.ldsOrgUnit?.allOrgCallings)!
+                inProgressCallingsToDisplay = (appDelegate?.callingManager.ldsOrgUnit?.allOrgCallings)!
             }
         }
     }
@@ -55,7 +61,7 @@ class CallingsTableViewController: CWFBaseTableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-        return callingsToDisplay.count
+        return inProgressCallingsToDisplay.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -63,19 +69,27 @@ class CallingsTableViewController: CWFBaseTableViewController {
     
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NameCallingProposedTableViewCell
         
-        let callingForRow = callingsToDisplay[indexPath.row]
+        let callingForRow = inProgressCallingsToDisplay[indexPath.row]
         
         cell?.nameLabel.text = callingForRow.position.name
+       
         if callingForRow.existingIndId != nil {
             let currentyCalled = appDelegate?.callingManager.getMemberWithId(memberId: callingForRow.existingIndId!)
-            cell?.currentCallingLabel.text = currentyCalled?.name
+            cell?.currentCallingLabel.text = (currentyCalled?.name)! + " (\(callingForRow.existingMonthsInCalling) Months)"
         }
         else {
             cell?.currentCallingLabel.text = ""
         }
         
-        if callingForRow.proposedStatus != CallingStatus.Unknown {
-            cell?.callingInProcessLabel.text = callingForRow.proposedStatus.rawValue
+        if callingForRow.proposedIndId != nil {
+            var nameAndMonthsString : String? = nil
+            
+            if let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: callingForRow.proposedIndId!) {
+                nameAndMonthsString = proposedMember.name!
+                nameAndMonthsString?.append(" - \(callingForRow.proposedStatus.rawValue)")
+            }
+            
+            cell?.callingInProcessLabel.text = nameAndMonthsString
         }
         else {
             cell?.callingInProcessLabel.text = ""
@@ -91,12 +105,12 @@ class CallingsTableViewController: CWFBaseTableViewController {
 
             let nextVc = storyboard.instantiateViewController(withIdentifier: "CallingDetailsTableViewController") as? CallingDetailsTableViewController
             
-            nextVc?.callingToDisplay = callingsToDisplay[indexPath.row]
+            nextVc?.callingToDisplay = inProgressCallingsToDisplay[indexPath.row]
             
             navigationController?.pushViewController(nextVc!, animated: true)
         }
         else {
-            self.delegate?.setReturnedCalling(calling: callingsToDisplay[indexPath.row])
+            self.delegate?.setReturnedCalling(calling: inProgressCallingsToDisplay[indexPath.row])
             self.navigationController?.popViewController(animated: true)
         }
     }

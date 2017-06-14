@@ -20,8 +20,6 @@ class OrganizationTableViewController: CWFBaseTableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        self.navigationItem.title = appDelegate?.callingManager.appDataOrg?.orgName
 
         organizationsToDisplay = []
         organizationSelected = nil
@@ -34,7 +32,13 @@ class OrganizationTableViewController: CWFBaseTableViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        self.tabBarController?.title = appDelegate?.callingManager.appDataOrg?.orgName
+
+        self.tabBarController?.navigationItem.rightBarButtonItem = nil
         getOrgs()
         tableView.reloadData()
     }

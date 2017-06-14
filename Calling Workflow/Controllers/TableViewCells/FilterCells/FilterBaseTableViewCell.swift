@@ -9,6 +9,8 @@
 import UIKit
 
 class FilterBaseTableViewCell: UITableViewCell {
+    
+    var filterDelegate : FilterTableViewCellDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()

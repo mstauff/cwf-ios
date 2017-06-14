@@ -13,12 +13,12 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     var delegate: MemberPickerDelegate?
 
     var members : [Member] = []
-
-    var filteredMembers = [Member]()
     
     var searchController = UISearchController(searchResultsController: nil)
 
+    var filteredMembers = [Member]()
     var filterViewOptions : FilterOptionsObject? = nil
+    
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -143,7 +143,6 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         filterView?.addTimeInCallingFilterCell()
         filterView?.addAgeFilterCell()
         filterView?.addGenderFilterCell()
-        filterView?.addOrgFilterCell(title: "Class", upperLevelNames: ["Relief Socity"], lowerLevelNames: ["Laurel", "Mia Maid", "Bee Hive"])
         filterView?.delegate = self
         
         self.navigationController?.pushViewController(filterView!, animated: true)

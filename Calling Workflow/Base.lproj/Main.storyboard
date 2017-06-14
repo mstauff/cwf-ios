@@ -288,52 +288,7 @@
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="PkC-aE-hx3" id="DRS-rt-XH2">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="65.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Calling" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zxp-7y-UDH">
-                                            <rect key="frame" x="23" y="36" width="159" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="JuE-BS-Pid"/>
-                                                <constraint firstAttribute="width" constant="159" id="mAS-xc-axG"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="In Process" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="07p-17-8fD">
-                                            <rect key="frame" x="190" y="36" width="177" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="7P1-cD-lwJ"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <color key="textColor" red="0.27044101729999998" green="0.67858573720000004" blue="0.01513764559" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YeX-by-gMl">
-                                            <rect key="frame" x="8" y="8" width="359" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="6X9-A1-Jvl"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="07p-17-8fD" firstAttribute="top" secondItem="YeX-by-gMl" secondAttribute="bottom" constant="7" id="1fO-MA-SaI"/>
-                                        <constraint firstItem="07p-17-8fD" firstAttribute="leading" secondItem="Zxp-7y-UDH" secondAttribute="trailing" constant="8" id="IZH-Gt-8oi"/>
-                                        <constraint firstItem="YeX-by-gMl" firstAttribute="trailing" secondItem="DRS-rt-XH2" secondAttribute="trailingMargin" id="Vyj-8X-Vzi"/>
-                                        <constraint firstItem="Zxp-7y-UDH" firstAttribute="leading" secondItem="DRS-rt-XH2" secondAttribute="leadingMargin" constant="15" id="ZSW-pA-Adj"/>
-                                        <constraint firstItem="YeX-by-gMl" firstAttribute="leading" secondItem="DRS-rt-XH2" secondAttribute="leadingMargin" id="f6B-KK-wxC"/>
-                                        <constraint firstItem="Zxp-7y-UDH" firstAttribute="top" secondItem="YeX-by-gMl" secondAttribute="bottom" constant="7" id="l8i-NA-D3V"/>
-                                        <constraint firstItem="YeX-by-gMl" firstAttribute="top" secondItem="DRS-rt-XH2" secondAttribute="topMargin" id="ydq-kX-Uyk"/>
-                                        <constraint firstItem="07p-17-8fD" firstAttribute="trailing" secondItem="DRS-rt-XH2" secondAttribute="trailingMargin" id="zBx-P4-M9o"/>
-                                    </constraints>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <outlet property="callingInProcessLabel" destination="07p-17-8fD" id="aNX-eN-qRC"/>
-                                    <outlet property="currentCallingLabel" destination="Zxp-7y-UDH" id="4iT-k3-hOB"/>
-                                    <outlet property="nameLabel" destination="YeX-by-gMl" id="eWa-aE-w4V"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -341,7 +296,7 @@
                             <outlet property="delegate" destination="GOo-a7-xMm" id="9c7-oy-m1h"/>
                         </connections>
                     </tableView>
-                    <tabBarItem key="tabBarItem" title="Callings" image="first" id="0IG-Uj-QTq"/>
+                    <tabBarItem key="tabBarItem" title="In Progress" image="first" id="0IG-Uj-QTq"/>
                     <navigationItem key="navigationItem" title="Callings" id="Sye-c3-P4Y"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="i76-df-TMl" userLabel="First Responder" sceneMemberID="firstResponder"/>

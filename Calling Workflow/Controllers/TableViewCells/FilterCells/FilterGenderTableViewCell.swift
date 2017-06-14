@@ -97,6 +97,7 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
                 }
             }
         }
+        filterDelegate?.updateFilterOptionsForFilterView()
     }
     
     override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {

@@ -24,6 +24,10 @@ protocol CallingsTableViewControllerDelegate {
     func setReturnedCalling(calling: Calling)
 }
 
+protocol FilterTableViewCellDelegate {
+    func updateFilterOptionsForFilterView()
+}
+
 protocol FilterTableViewControllerDelegate {
     func setFilterOptions(memberFilterOptions: FilterOptionsObject)
 }

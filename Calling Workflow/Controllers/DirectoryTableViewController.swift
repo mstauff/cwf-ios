@@ -8,13 +8,18 @@
 
 import UIKit
 
-class DirectoryTableViewController: CWFBaseTableViewController {
+class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewControllerDelegate {
 
     var members : [Member]!
 
+    var filteredMembers = [Member]()
+    var filterViewOptions : FilterOptionsObject? = nil
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         members = []
+        
         setupData()
     }
 
@@ -23,9 +28,10 @@ class DirectoryTableViewController: CWFBaseTableViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        self.navigationItem.title = "Directiory"
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.title = "Directory"
+        self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "filter"), style: .done, target: self, action: #selector(filterButtonPressed))
         setupData()
         tableView.reloadData()
     }
@@ -51,26 +57,48 @@ class DirectoryTableViewController: CWFBaseTableViewController {
         let cell: NameCallingProposedTableViewCell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! NameCallingProposedTableViewCell
         let memberForCell = members[indexPath.row]
         
-        cell.nameLabel?.text = memberForCell.name
+        cell.nameLabel.text = memberForCell.name
         
         if memberForCell.currentCallings.count > 0 {
-            cell.currentCallingLabel?.text = memberForCell.currentCallings[0].position.name
+            cell.currentCallingLabel.text = memberForCell.currentCallings[0].position.name
         }
         else {
-            cell.currentCallingLabel?.text = nil
+            cell.currentCallingLabel.text = nil
         }
        
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         if let callingsString = appDelegate?.callingManager.getCallingsForMemberAsStringWithMonths(member: memberForCell) {
-            cell.callingInProcessLabel?.text = callingsString
+            cell.callingInProcessLabel.text = callingsString
         }
         else {
-            cell.callingInProcessLabel?.text = nil
+            cell.callingInProcessLabel.text = nil
         }
         
         return cell
     }
     
+    
+    //MARK: - FilterViewDelegate
+    
+    func setFilterOptions(memberFilterOptions: FilterOptionsObject) {
+        filterViewOptions = memberFilterOptions
+        filteredMembers = (filterViewOptions?.filterMemberData(unfilteredArray: members))!
+        tableView.reloadData()
+    }
+
+    func filterButtonPressed(sender : UIView) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let filterView = storyboard.instantiateViewController(withIdentifier: "FilterTableViewController") as? FilterTableViewController
+        filterView?.addCallingsFilterCell()
+        filterView?.addTimeInCallingFilterCell()
+        filterView?.addAgeFilterCell()
+        filterView?.addGenderFilterCell()
+        filterView?.delegate = self
+        
+        self.navigationController?.pushViewController(filterView!, animated: true)
+    }
+
+
     /*
     // MARK: - Navigation
 

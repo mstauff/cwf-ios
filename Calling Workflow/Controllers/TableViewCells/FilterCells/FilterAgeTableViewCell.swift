@@ -94,6 +94,7 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
             sender.isSelected = true
             sender.setupForSelected()
         }
+        filterDelegate?.updateFilterOptionsForFilterView() 
     }
     
     override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
