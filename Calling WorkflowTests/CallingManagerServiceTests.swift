@@ -11,19 +11,71 @@ import XCTest
 
 class CallingManagerServiceTests: XCTestCase {
 
-    var callingMgr = CWFCallingManagerService()
+    var callingMgr : PartialMockCallingManager = PartialMockCallingManager()
+    let mockDataSource = MockDataSource()
     var org : Org?
     var positionsOrg : Org?
     var lcrOrg = Org( id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
     var appOrg  = Org( id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
 
+    class MockPermissionMgr : PermissionManager {
+        override func isAuthorized(unitRoles: [UnitRole], domain: Domain, permission: Permission, targetData: Authorizable) -> Bool {
+            return true
+        }
+    }
+    
+    class PartialMockCallingManager : CWFCallingManagerService {
+        var mockGoogleOrg : Org? = nil
+        
+        override func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                completionHandler(self.mockGoogleOrg, nil)
+            }
+
+            return
+        }
+        
+        override func unitLevelOrgType( forOrg: Int64 ) -> UnitLevelOrgType? {
+            return .Primary
+        }
+    }
+    
+    class MockDataSource : DataSource {
+        var isAuthenticated: Bool {
+            get {
+                return true
+            }
+        }
+        func hasValidCredentials( forUnit unitNum : Int64, completionHandler: @escaping (Bool, Error?) -> Void ) {
+            completionHandler( true, nil )
+        }
+        
+        func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ remainingOrgs: [Org], _ error: Error?) -> Void) {
+            completionHandler( [], nil )
+        }
+        
+        func getData( forOrg : Org, completionHandler : @escaping (_ org : Org?, _ error: Error? ) -> Void ) {
+            completionHandler( forOrg, nil )
+        }
+        
+        func updateOrg( org : Org, completionHandler : @escaping (_ success : Bool, _ error: Error? ) -> Void ) {
+            completionHandler( true, nil )
+        }
+        
+    }
+
     override func setUp() {
+        // Put setup code here. This method is called before the invocation of each test method in the class.
         org = getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithCallingsInSubOrg")!
         lcrOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "lcrOrg")
         appOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "appOrg")
         positionsOrg = getSingleOrgFromFile(fileName: "org-callings")
+        
+        callingMgr = PartialMockCallingManager(org: nil, iMemberArray: [], permissionMgr: MockPermissionMgr() )
+        InjectionMap.dataSource = mockDataSource
+        
+        callingMgr.mockGoogleOrg = org
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
     }
     
     override func tearDown() {
@@ -175,7 +227,7 @@ class CallingManagerServiceTests: XCTestCase {
         let varsityOrg = reconciledOrg.getChildOrg(id: 839510)!
         // varsity coach was finalized outside the app. ensure that the proposed version was deleted
         XCTAssertEqual(varsityOrg.callings.count, 1)
-        var varsityCoach = varsityOrg.callings[0]
+        let varsityCoach = varsityOrg.callings[0]
         XCTAssertEqual(varsityCoach.position.positionTypeId, 1459)
         XCTAssertEqual(varsityCoach.existingIndId, 890)
         XCTAssertNil(varsityCoach.proposedIndId)
@@ -193,6 +245,103 @@ class CallingManagerServiceTests: XCTestCase {
         // - proposed & actual with different person - should be merged
         // - variations with multiple allowed
         // - callings are same - except app has notes
+    }
+    
+    func testAddCalling() {
+        let primaryOrg = org!
+        let unitOrg = Org(id: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [primaryOrg], callings: [])
+        callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
+        callingMgr.initDatasourceData(fromOrg: unitOrg, extraOrgs: [])
+        // todo - need a mock callingMgr.dataSource with mocked updateOrg() method
+        let ctr8 = primaryOrg.getChildOrg(id: 752892)!
+
+        let primaryTeacherPos = Position(positionTypeId: 1481, name: "Primary Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata())
+        
+        // Add a calling for a member with a calling - see if we correctly get both active callings
+        // NOTE: currently not a valid test case, you only add a proposed calling, not an active callings. Active callings go through the update to LCR
+        var calling = Calling(id: 123, cwfId: nil, existingIndId: 123, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
+//        let memberWithMultipleActiveCallings = createMember(withId: 123)
+//        
+//        let addActiveCallingExpectation = self.expectation(description: "Add an active calling for a member that already has a different calling")
+//        callingMgr.addCalling(calling: calling ) { success, error in
+//            let memberCallings = self.callingMgr.getCallings(forMember: memberWithMultipleActiveCallings)
+//            XCTAssert( success )
+//            XCTAssertNil( error )
+//            XCTAssertEqual( memberCallings.count, 2 )
+//            XCTAssertEqual( self.callingMgr.getPotentialCallings(forMember: memberWithMultipleActiveCallings).count, 0)
+//            addActiveCallingExpectation.fulfill()
+//        }
+        
+        // Add a calling for a member with a potential calling - see if we correctly get both potential callings
+        calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
+        let memberWithMultipleProposedCallings = createMember(withId: 456)
+        let addPotentialCallingExpectation = self.expectation( description: "Add a potential calling for a member that already has a potential calling")
+        
+        callingMgr.addCalling(calling: calling) { _, _ in
+            XCTAssertEqual( self.callingMgr.getCallings(forMember: memberWithMultipleProposedCallings).count, 0 )
+            XCTAssertEqual( self.callingMgr.getPotentialCallings(forMember: memberWithMultipleProposedCallings).count, 2)
+            addPotentialCallingExpectation.fulfill()
+        }
+        
+        // add a potential calling for a member with an active calling, make sure we get both
+        calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 678, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
+        let memberWithBothTypesCallings = createMember(withId: 678)
+        let addPotentialToActiveExpectation = self.expectation(description: "Add a potential calling to a member that has an active calling")
+        callingMgr.addCalling(calling: calling) { _, _ in
+            XCTAssertEqual( self.callingMgr.getCallings(forMember: memberWithBothTypesCallings).count, 2 )
+            XCTAssertEqual( self.callingMgr.getPotentialCallings(forMember: memberWithBothTypesCallings).count, 1)
+            addPotentialToActiveExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: 5)        
+       
+    }
+
+    func testDeleteCalling() {
+        let primaryOrg = org!
+        let unitOrg = Org(id: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [primaryOrg], callings: [])
+        callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
+        callingMgr.initDatasourceData(fromOrg: unitOrg, extraOrgs: [])
+        // todo - need a mock callingMgr.dataSource with mocked updateOrg() method
+        let ctr8 = primaryOrg.getChildOrg(id: 752892)!
+        
+        let primaryTeacherPos = Position(positionTypeId: 1481, name: "Primary Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata())
+        
+        // Add a second calling for a member with a potential calling, so we can delete and make sure we still have at least one
+        let calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
+        let memberWithMultipleProposedCallings = createMember(withId: 456)
+        let deleteValidCallingExpectation = self.expectation( description: "Add a potential calling for a member that already has a potential calling")
+        
+        callingMgr.addCalling(calling: calling) { _, _ in
+            XCTAssertEqual( self.callingMgr.getCallings(forMember: memberWithMultipleProposedCallings).count, 0 )
+            XCTAssertEqual( self.callingMgr.getPotentialCallings(forMember: memberWithMultipleProposedCallings).count, 2)
+            self.callingMgr.deleteCalling(calling: calling ) { success, error in
+                XCTAssert( success )
+                XCTAssertNil( error )
+                XCTAssertEqual( self.callingMgr.getPotentialCallings(forMember: memberWithMultipleProposedCallings).count, 1)
+                deleteValidCallingExpectation.fulfill()
+            }
+        }
+        
+        // try a delete for a calling that doesn't exist
+//        calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: ctr9TeacherPos, notes: nil, parentOrg: ctr8)
+//        let deleteInvalidExpectation = self.expectation(description: "remove a calling that doesn't exist")
+//        callingMgr.deleteCalling(calling: calling) { success, error in
+//            // make sure we got an error, and that the calling they do have was not affected
+//            XCTAssert( success )
+//            XCTAssertNil( error )
+//            XCTAssertEqual( self.callingMgr.getPotentialCallings(forMember: memberWithMultipleProposedCallings).count, 1 )
+//            deleteInvalidExpectation.fulfill()
+//        }
+        
+        waitForExpectations(timeout: 500)
+        
+    }
+    
+
+    func createMember( withId id: Int64 ) -> Member {
+        return Member(indId: id, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil, callings: [])
+        
     }
 
     func testPerformanceExample() {

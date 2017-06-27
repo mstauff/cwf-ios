@@ -67,10 +67,10 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
                 if let validUnitNum = unitNum {
                     appDelegate?.callingManager.loadLdsData(forUnit: validUnitNum, ldsUser: validUser) { [weak self] (dataLoaded, loadingError) -> Void in
                         let childView = self?.selectedViewController as? OrganizationTableViewController
-                        if dataLoaded {
-                            appDelegate?.callingManager.hasDataSourceCredentials(forUnit: 0 ) { (hasCredentials, signInError) -> Void in
+                        if dataLoaded, let callingMgr = appDelegate?.callingManager, let ldsOrg = callingMgr.ldsOrgUnit {
+                            callingMgr.hasDataSourceCredentials(forUnit: 0 ) { (hasCredentials, signInError) -> Void in
                                 if hasCredentials  {
-                                    appDelegate?.callingManager.loadAppData() { success, hasOrgsToDelete, error in
+                                    callingMgr.loadAppData(ldsUnit: ldsOrg ) { success, hasOrgsToDelete, error in
                                         self?.removeSpinner()
                                         if success {
                                             childView?.organizationsToDisplay = appDelegate?.callingManager.appDataOrg?.children

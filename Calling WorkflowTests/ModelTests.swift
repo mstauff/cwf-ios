@@ -303,7 +303,53 @@ class ModelTests: XCTestCase {
         for childOrg in o1.children {
             validateOrgSame( childOrg, o2.children.first( where: { $0 == childOrg })!)
         }
+    }
+    
+    func testCallingComputedVarNames() {
+        let eqPresPos = Position(positionTypeId: 138, name: "EQ Pres", hidden: false, multiplesAllowed: false, displayOrder: nil, metadata: PositionMetadata() )
+        let teacherPos = Position(positionTypeId: 200, name: "Primary Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata() )
+        let eqPresCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: Date().xMonths(x: -15), proposedIndId: nil, status: .Proposed, position: eqPresPos, notes: nil, parentOrg: nil)
+        var callingText = eqPresCalling.nameWithTime
+        // should contain the name of the calling
+        // should contain the time in calling
+        assert(sourceText: callingText, containsText: ["EQ Pres", "(15M)"])
+
+        callingText = eqPresCalling.nameWithStatus
+        // should contain the name of the calling
+        // should contain the time in calling
+        assert(sourceText: callingText, containsText: ["EQ Pres", "Proposed"])
+
+        var callings = [eqPresCalling]
+        // single calling in array - should not have a ,
+        XCTAssertFalse(callings.namesWithTime().contains( "," ))
+        XCTAssertFalse(callings.namesWithStatus().contains( "," ))
         
+        let teacherCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: Date().xMonths(x: -6), proposedIndId: nil, status: .Accepted, position: teacherPos, notes: nil, parentOrg: nil)
+        callings = [eqPresCalling, teacherCalling]
+
+        callingText = callings.namesWithTime()
+        // should contain the names of both the callings
+        // should contain the time for both callings
+        // should  have a ,
+        assert(sourceText: callingText, containsText: ["EQ Pres", "Primary Teacher", "(15M)", "(6M)", ","])
+        
+        // but should not end with one
+        XCTAssertNotEqual(callingText.characters.last, ",")
+        
+        callingText = callings.namesWithStatus()
+        // should contain the name of the calling
+        // should contain the time in calling
+        assert(sourceText: callingText, containsText: ["EQ Pres", "Primary Teacher", "Proposed", "Accepted", ","])
+        
+        // but should not end with one
+        XCTAssertNotEqual(callingText.characters.last, ",")
+        
+    }
+    
+    func assert( sourceText: String, containsText: [String] ) {
+        for text in containsText {
+            XCTAssert(sourceText.contains( text ))
+        }
     }
     
     func testPositionMetadataUpdate() {
