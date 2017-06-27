@@ -213,7 +213,7 @@ class MemberInfoView: UIViewController {
         
         let addressBar = MemberInfoBarItemView()
         if let addressText = memberToView?.getAddressForMemberAsString() {
-            addressBar.setupInfoBarItem(dataText: addressText, icon: UIImage.init(named: "emailIcon"))// todo add Icon here
+            addressBar.setupInfoBarItem(dataText: addressText, icon: UIImage.init(named: "gps"))
         }
         else {
             addressBar.setupInfoBarItem(dataText: "No Address Available", icon: nil)
@@ -251,7 +251,7 @@ class MemberInfoView: UIViewController {
 // MARK: - Class to add memberinfoBar to memberinfoview
 class MemberInfoBarItemView : UIView {
     
-    var iconImageView : UIImageView?
+    var iconImageView : UIButton?
     
     var dataLabel : UILabel = UILabel()
     
@@ -278,7 +278,8 @@ class MemberInfoBarItemView : UIView {
         
         if (icon != nil) {
 
-            iconImageView = UIImageView.init(image: icon)
+            iconImageView = UIButton()
+            iconImageView?.setImage(icon, for: .normal)
             iconImageView?.translatesAutoresizingMaskIntoConstraints = false
 
             self.addSubview(iconImageView!)

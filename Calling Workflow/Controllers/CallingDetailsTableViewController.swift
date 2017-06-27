@@ -263,21 +263,6 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         memberDetailView?.modalPresentationStyle = .overCurrentContext
         
         self.present(memberDetailView!, animated: true, completion: nil)
-
-        
-//            memberDetailView?.setupView(member: member, parentView: self.view)
-//            
-//            self.view.addSubview(memberDetailView!)
-//            //self.tableView.isUserInteractionEnabled = false
-//            
-//            
-//            let constraintWidth = NSLayoutConstraint(item: memberDetailView!, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
-//            let constraintHeight = NSLayoutConstraint(item: memberDetailView!, attribute: .height, relatedBy: .equal, toItem: self.view, attribute: .height, multiplier: 1, constant: 0)
-//            let constraintV = NSLayoutConstraint(item: memberDetailView!, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 0)
-//            let constraintH = NSLayoutConstraint(item: memberDetailView!, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1, constant: 0)
-//            self.view.addConstraints([constraintWidth, constraintHeight, constraintV, constraintH])
-//        }
-
     }
     
     

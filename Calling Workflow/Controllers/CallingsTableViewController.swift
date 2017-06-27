@@ -8,11 +8,13 @@
 
 import UIKit
 
-class CallingsTableViewController: CWFBaseTableViewController {
+class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewControllerDelegate {
     
     var inProgressCallingsToDisplay : [Calling] = []
     
     var delegate : CallingsTableViewControllerDelegate? = nil
+    
+    var filterObject : FilterOptionsObject?
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -36,8 +38,14 @@ class CallingsTableViewController: CWFBaseTableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.title = "In Progress"
-        self.tabBarController?.navigationItem.rightBarButtonItem = nil
-
+        
+        if delegate == nil {
+            self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "filter"), style: .done, target: self, action: #selector(filterButtonPressed))
+        }
+        else {
+            self.tabBarController?.navigationItem.rightBarButtonItem = nil
+        }
+        
         tableView.reloadData()
     }
 
@@ -48,6 +56,7 @@ class CallingsTableViewController: CWFBaseTableViewController {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             if (appDelegate?.callingManager.ldsOrgUnit != nil) {
                 inProgressCallingsToDisplay = (appDelegate?.callingManager.ldsOrgUnit?.allOrgCallings)!
+                inProgressCallingsToDisplay = inProgressCallingsToDisplay.filter() { $0.proposedIndId != nil }
             }
         }
     }
@@ -107,4 +116,22 @@ class CallingsTableViewController: CWFBaseTableViewController {
             self.navigationController?.popViewController(animated: true)
         }
     }
+    
+    func filterButtonPressed(sender : UIView) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let filterView = storyboard.instantiateViewController(withIdentifier: "FilterTableViewController") as? FilterTableViewController
+        filterView?.addCallingStatusFilterCell()
+        filterView?.addCallingOrgFilterCell()
+        filterView?.delegate = self
+        
+        self.navigationController?.pushViewController(filterView!, animated: true)
+    }
+    
+    //MARK: - FilterDelegate
+    func setFilterOptions(memberFilterOptions: FilterOptionsObject) {
+        filterObject = memberFilterOptions
+        //filteredMembers = (filterObject?.filterMemberData(unfilteredArray: inProgressCallingsToDisplay))!
+        tableView.reloadData()
+    }
+
 }

@@ -44,9 +44,10 @@ class FilterApplyButtonTableViewCell: FilterBaseTableViewCell {
         self.addSubview(applyButton)
         
         let applyRConstraint = NSLayoutConstraint(item: applyButton, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: -15)
-        let applyYConstraint = NSLayoutConstraint(item: applyButton, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 2)
+        let applyYConstraint = NSLayoutConstraint(item: applyButton, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 5)
+        let applyHConstraint = NSLayoutConstraint(item: applyButton, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: -5)
         
-        self.addConstraints([applyRConstraint, applyYConstraint])
+        self.addConstraints([applyRConstraint, applyYConstraint, applyHConstraint])
         
         cancelButton.setTitle(NSLocalizedString("Cancel", comment: "cancel"), for: .normal)
         cancelButton.setTitleColor(UIColor.gray, for: .normal)
@@ -55,11 +56,9 @@ class FilterApplyButtonTableViewCell: FilterBaseTableViewCell {
         self.addSubview(cancelButton)
         
         let cancelRConstraint = NSLayoutConstraint(item: cancelButton, attribute: .right, relatedBy: .equal, toItem: applyButton, attribute: .left, multiplier: 1, constant: -15)
-        let cancelYConstraint = NSLayoutConstraint(item: cancelButton, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 2)
-        
-        self.addConstraints([cancelRConstraint, cancelYConstraint])
-        
-        
+        let cancelYConstraint = NSLayoutConstraint(item: cancelButton, attribute: .top, relatedBy: .equal, toItem: applyButton, attribute: .top, multiplier: 1, constant: 0)
+        let cancelWConstraint = NSLayoutConstraint(item: cancelButton, attribute: .width, relatedBy: .equal, toItem: applyButton, attribute: .width, multiplier: 1, constant: 0)
+        self.addConstraints([cancelRConstraint, cancelYConstraint, cancelWConstraint])
     }
     
     class func getClassCellHeight() -> CGFloat {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="THt-KO-N4t">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="THt-KO-N4t">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -173,58 +173,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" rowHeight="66" id="gpU-X3-wAS" customClass="NameCallingProposedTableViewCell" customModule="Calling_Workflow" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="gpU-X3-wAS">
                                 <rect key="frame" x="0.0" y="28" width="375" height="66"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gpU-X3-wAS" id="HQr-j8-htz">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="65.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gs2-H2-UzS">
-                                            <rect key="frame" x="8" y="8" width="359" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="EDG-dZ-23T"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Calling" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FNZ-U4-2iE">
-                                            <rect key="frame" x="23" y="37" width="159" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="Ftd-33-0yc"/>
-                                                <constraint firstAttribute="width" constant="159" id="hrY-02-p1m"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="In Process" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SNt-l1-jdp">
-                                            <rect key="frame" x="190" y="37" width="177" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="Lue-24-ch7"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <color key="textColor" red="0.27044101734160209" green="0.67858573717948723" blue="0.015137645591894991" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="FNZ-U4-2iE" firstAttribute="top" secondItem="gs2-H2-UzS" secondAttribute="bottom" constant="8" id="5WB-l9-vpr"/>
-                                        <constraint firstItem="gs2-H2-UzS" firstAttribute="top" secondItem="HQr-j8-htz" secondAttribute="topMargin" id="ChN-TU-CEJ"/>
-                                        <constraint firstItem="gs2-H2-UzS" firstAttribute="leading" secondItem="HQr-j8-htz" secondAttribute="leadingMargin" id="LM4-g4-GFO"/>
-                                        <constraint firstItem="gs2-H2-UzS" firstAttribute="trailing" secondItem="HQr-j8-htz" secondAttribute="trailingMargin" id="P45-Z5-7NC"/>
-                                        <constraint firstItem="SNt-l1-jdp" firstAttribute="leading" secondItem="FNZ-U4-2iE" secondAttribute="trailing" constant="8" id="SA1-2l-i03"/>
-                                        <constraint firstItem="FNZ-U4-2iE" firstAttribute="leading" secondItem="HQr-j8-htz" secondAttribute="leading" constant="23" id="gFN-e1-t5V"/>
-                                        <constraint firstItem="SNt-l1-jdp" firstAttribute="top" secondItem="gs2-H2-UzS" secondAttribute="bottom" constant="8" id="vY5-Qu-TJi"/>
-                                        <constraint firstAttribute="trailing" secondItem="SNt-l1-jdp" secondAttribute="trailing" constant="8" id="w0J-Hi-ClL"/>
-                                    </constraints>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <outlet property="callingInProcessLabel" destination="SNt-l1-jdp" id="l5h-e3-HNS"/>
-                                    <outlet property="currentCallingLabel" destination="FNZ-U4-2iE" id="cY7-WY-bph"/>
-                                    <outlet property="nameLabel" destination="gs2-H2-UzS" id="emV-wp-Vlg"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -296,7 +251,7 @@
                             <outlet property="delegate" destination="GOo-a7-xMm" id="9c7-oy-m1h"/>
                         </connections>
                     </tableView>
-                    <tabBarItem key="tabBarItem" title="In Progress" image="first" id="0IG-Uj-QTq"/>
+                    <tabBarItem key="tabBarItem" title="In Progress" image="inProcess" id="0IG-Uj-QTq"/>
                     <navigationItem key="navigationItem" title="Callings" id="Sye-c3-P4Y"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="i76-df-TMl" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -579,7 +534,7 @@
     </scenes>
     <resources>
         <image name="directory" width="32" height="32"/>
-        <image name="first" width="30" height="30"/>
+        <image name="inProcess" width="26" height="26"/>
         <image name="org" width="32" height="32"/>
         <image name="settings" width="32" height="32"/>
     </resources>

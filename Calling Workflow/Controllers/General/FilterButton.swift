@@ -9,6 +9,7 @@
 import UIKit
 
 class FilterButton: UIButton {
+    var callingStatusOption : CallingStatus? = nil
 
     required init() {
         super.init(frame: .zero)
@@ -18,6 +19,8 @@ class FilterButton: UIButton {
 //        self.titleEdgeInsets.left = 5
 //        self.titleEdgeInsets.right = 5
         self.clipsToBounds = true
+        self.translatesAutoresizingMaskIntoConstraints = false
+
     }
     
     required init?(coder aDecoder: NSCoder) {

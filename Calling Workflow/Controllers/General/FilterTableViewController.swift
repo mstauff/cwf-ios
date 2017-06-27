@@ -11,7 +11,7 @@ import UIKit
 class FilterTableViewController: UITableViewController, FilterTableViewCellDelegate {
 
     var filterContentArray : [FilterBaseTableViewCell] = []
-    
+    var titleString : String?
     var filterObject : FilterOptionsObject = FilterOptionsObject(){
         didSet {
             if let gender = filterObject.gender {
@@ -40,9 +40,11 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        titleString = "Search Filter"
         self.tableView.alwaysBounceVertical = false
         self.tableView.separatorStyle = .none
         self.clearsSelectionOnViewWillAppear = false
+        
         regesterTableViewCells()
         addTitleCell()
     }
@@ -61,6 +63,8 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
         tableView.register(FilterAgeTableViewCell.self, forCellReuseIdentifier: "FilterAgeCell")
         tableView.register(FilterGenderTableViewCell.self, forCellReuseIdentifier: "FilterGenderCell")
         tableView.register(FilterApplyButtonTableViewCell.self, forCellReuseIdentifier: "FilterApplyCell")
+        tableView.register(FilterCallingStatusTableViewCell.self, forCellReuseIdentifier: "FilterCallingStatusCell")
+        tableView.register(FilterCallingOrgTableViewCell.self, forCellReuseIdentifier: "FilterCallingOrgCell")
     }
     
     // MARK: - Table view data source
@@ -103,7 +107,7 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
     // MARK: - Cell Add Methods
     
     private func addTitleCell() {
-        let cell = FilterTitleTableViewCell(style: .default, reuseIdentifier: "filterTitleCell", title: "Search Filter")
+        let cell = FilterTitleTableViewCell(style: .default, reuseIdentifier: "filterTitleCell", title: titleString)
         
         filterContentArray.insert(cell, at: 0)
     }
@@ -139,6 +143,17 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
         filterContentArray.append(cell)
     }
     
+    func addCallingStatusFilterCell() {
+        let cell = FilterCallingStatusTableViewCell(style: .default, reuseIdentifier: "FilterCallingStatusCell")
+        cell.filterDelegate = self
+        filterContentArray.append(cell)
+    }
+    
+    func addCallingOrgFilterCell() {
+        let cell = FilterCallingOrgTableViewCell(style: .default, reuseIdentifier: "FilterCallingOrgCell")
+        cell.filterDelegate = self
+        filterContentArray.append(cell)
+    }
     private func addOrgFilterCell(title: String, upperLevelNames: [String]?, lowerLevelNames: [String]?) {
         let cell = FilterOrgTableViewCell(style: .default, reuseIdentifier: "FilterOrgCell", title: "Class", upperClasses: upperLevelNames, lowerClasses: lowerLevelNames)
         

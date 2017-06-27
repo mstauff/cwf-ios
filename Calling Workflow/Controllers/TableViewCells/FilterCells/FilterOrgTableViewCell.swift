@@ -61,7 +61,6 @@ class FilterOrgTableViewCell: FilterBaseTableViewCell {
         
         for buttonName in classNames {
             let currentButton = FilterButton()
-            currentButton.translatesAutoresizingMaskIntoConstraints = false
             currentButton.setTitle(buttonName, for: .normal)
             currentButton.addTarget(self, action: #selector(buttonSelected(sender:)), for: .touchUpInside)
             self.addSubview(currentButton)

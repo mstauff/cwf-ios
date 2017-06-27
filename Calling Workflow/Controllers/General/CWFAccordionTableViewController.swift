@@ -53,8 +53,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
 
         tableView.register(CWFAccordionRootTableViewCell.self, forCellReuseIdentifier: "rootCell")
         tableView.register(CWFAccordionChildTableViewCell.self, forCellReuseIdentifier: "childCell")
-        
-        self.navigationItem.title = rootOrg?.orgName
+        tableView.estimatedRowHeight = 44
+        tableView.rowHeight = UITableViewAutomaticDimension
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(filterButtonPressed))
        
@@ -73,6 +73,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     // MARK: - Setup
     func setupView() {
         if rootOrg != nil {
+            self.navigationItem.title = rootOrg?.orgName
+
             dataSource.removeAll( keepingCapacity: true )
             if (rootOrg?.callings != nil && (rootOrg?.callings.count)! > 0) {
                 let newDataItem = AccordionDataItem.init(dataItem: "Add Calling", dataItemType: .AddCalling, expanded: true)
@@ -104,16 +106,17 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         return dataSource.count
     }
 
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let currentDataItem = dataSource[indexPath.row]
-        if currentDataItem.dataItemType == .Parent{
-            return CWFAccordionRootTableViewCell.getCellHeight()
-        }
-        else {
-            return CWFAccordionChildTableViewCell.getCellHeight()  
-        }
-        
-    }
+//    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        let currentDataItem = dataSource[indexPath.row]
+//        if currentDataItem.dataItemType == .Parent{
+//            return CWFAccordionRootTableViewCell.getCellHeight()
+//        }
+//        else {
+//            return CWFAccordionChildTableViewCell.getCellHeight()  
+//        }
+//        
+//    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let currentDataItem = self.dataSource[indexPath.row]
@@ -148,22 +151,22 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             if (calling.existingIndId != nil) {
                 if let existingMember = appDelegate?.callingManager.getMemberWithId(memberId: calling.existingIndId!) {
                     if let nameString = existingMember.name {
-                        cell?.subtitle.text = "(\(nameString))"
+                        cell?.second_subtitle.text = "(\(nameString))"
                     }
                 }
             }
             else {
-                cell?.subtitle.isHidden = true
+                cell?.second_subtitle.isHidden = true
             }
             if (calling.proposedIndId != nil) {
                 if let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: calling.proposedIndId!) {
                     if let nameString = proposedMember.name {
-                        cell?.rightItem.text = nameString
+                        cell?.first_subtitle.text = nameString
                     }
                 }
             }
             else {
-                cell?.rightItem.isHidden = true
+                cell?.first_subtitle.isHidden = true
             }
             
             return cell!

@@ -40,7 +40,6 @@ class CWFAccordionRootTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     func setupCell () {
-        
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.adjustsFontSizeToFitWidth = true
         
@@ -59,7 +58,7 @@ class CWFAccordionRootTableViewCell: UITableViewCell {
         
         addConstraints([buttonWidthConstraint, buttonHeightConstraint, buttonHConstraint, buttonVConstraint])
         
-        let titleHeightConstraint = NSLayoutConstraint(item: titleLabel, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 1, constant: 0)
+        let titleHeightConstraint = NSLayoutConstraint(item: titleLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
         let titleLeftConstraint = NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 15)
         let titleRightConstraint = NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .equal, toItem: newButton, attribute: .left, multiplier: 1, constant: -5)
         let titleVConstraint = NSLayoutConstraint(item: titleLabel, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)

@@ -36,7 +36,7 @@ class OrganizationTableViewController: CWFBaseTableViewController {
         super.viewWillAppear(animated)
 
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        self.tabBarController?.title = appDelegate?.callingManager.appDataOrg?.orgName
+        self.tabBarController?.title = appDelegate?.callingManager.ldsOrgUnit?.orgName
 
         self.tabBarController?.navigationItem.rightBarButtonItem = nil
         getOrgs()
@@ -47,8 +47,8 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     
     func getOrgs() {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        organizationsToDisplay = appDelegate?.callingManager.appDataOrg?.children
-        
+        organizationsToDisplay = appDelegate?.callingManager.ldsOrgUnit?.children // todo - Change this back
+        //organizationsToDisplay = appDelegate?.callingManager.appDataOrg?.children
     }
     
     // MARK: - Table View Delegate/DataSource

@@ -51,7 +51,6 @@ class FilterCallingNumberTableViewCell: FilterBaseTableViewCell {
         var buttonTag = 0
         for button in buttonsToAdd {
             let currentButton = FilterButton()
-            currentButton.translatesAutoresizingMaskIntoConstraints = false
             currentButton.tag = buttonTag
             buttonTag += 1
             numberButtonArray.append(currentButton)

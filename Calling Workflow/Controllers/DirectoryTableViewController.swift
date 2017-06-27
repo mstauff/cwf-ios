@@ -18,6 +18,9 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tableView.register(DirectoryTableViewCell.self, forCellReuseIdentifier: "directioryCell")
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 44
         members = []
         
         setupData()
@@ -54,24 +57,25 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: NameCallingProposedTableViewCell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! NameCallingProposedTableViewCell
         let memberForCell = members[indexPath.row]
         
+        let cell = tableView.dequeueReusableCell(withIdentifier: "directioryCell", for: indexPath) as! DirectoryTableViewCell
         cell.nameLabel.text = memberForCell.name
-        
-        if memberForCell.currentCallings.count > 0 {
-            cell.currentCallingLabel.text = memberForCell.currentCallings[0].position.name
-        }
-        else {
-            cell.currentCallingLabel.text = nil
-        }
-       
+
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        cell.callingInProcessLabel?.text = (appDelegate?.callingManager.getCallings(forMember: memberForCell).namesWithTime() ?? "") + (appDelegate?.callingManager.getPotentialCallings(forMember: memberForCell).namesWithStatus() ?? "")
+        if let callings = appDelegate?.callingManager.getCallings(forMember: memberForCell){
+            cell.setupCallingLabels(callings:callings, member: memberForCell)
+        }
 
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let member = members[indexPath.row]
+       
+        displayContactInfoForMember(member:  member)
+        
+    }
     
     //MARK: - FilterViewDelegate
     
@@ -91,6 +95,16 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
         filterView?.delegate = self
         
         self.navigationController?.pushViewController(filterView!, animated: true)
+    }
+    
+    //MARK: - Show Contact Info
+    func displayContactInfoForMember(member: Member) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let memberDetailView = storyboard.instantiateViewController(withIdentifier: "MemberInfoView") as? MemberInfoView
+        memberDetailView?.memberToView = member
+        memberDetailView?.modalPresentationStyle = .overCurrentContext
+        
+        self.present(memberDetailView!, animated: true, completion: nil)
     }
 
 

@@ -51,7 +51,6 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
         let youthButton = FilterButton()
         ageButtonArray.append(youthButton)
         youthButton.setTitle("12-18", for: UIControlState.normal)
-        youthButton.translatesAutoresizingMaskIntoConstraints = false
         youthButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
         youthButton.tag = 1
         
@@ -65,9 +64,7 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
         let adultButton = FilterButton()
         ageButtonArray.append(adultButton)
         adultButton.setTitle("18+", for: UIControlState.normal)
-        adultButton.translatesAutoresizingMaskIntoConstraints = false
         adultButton.tag = 2
-        
         adultButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
         
         self.addSubview(adultButton)

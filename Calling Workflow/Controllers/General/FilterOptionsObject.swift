@@ -17,6 +17,9 @@ class FilterOptionsObject {
     var priesthood : [Priesthood: Bool]?
     var memberClass : [MemberClass: Bool]?
     
+    var callingStatuses : [CallingStatus: Bool]?
+    var callingOrg : [Int : Bool]?
+    
     init () {
         minAge = nil
         maxAge = nil
@@ -25,8 +28,11 @@ class FilterOptionsObject {
         minMonthsInCalling = nil
         priesthood = nil
         memberClass = nil
+        callingStatuses = nil
+        callingOrg = nil
     }
     
+    //MARK: - Filter Member
     func filterMemberData(unfilteredArray: [Member]) -> [Member] {
         var arrayToReturn = unfilteredArray
         
@@ -192,5 +198,29 @@ class FilterOptionsObject {
         }
         
         return arrayToReturn
+    }
+    
+    //MARK: - Filter Org
+    func filterOrgData(unfilteredArray: [Calling]) -> [Calling] {
+        var arrayToReturn = unfilteredArray
+        if (callingOrg != nil) {
+            arrayToReturn = arrayToReturn.filter() {
+                if ($0.parentOrg != nil && (callingOrg?[Int(($0.parentOrg?.id)!)])! == true) {
+                    return true
+                }
+                else {
+                    return false
+                }
+            }
+        }
+        return arrayToReturn
+    }
+    
+    private func filterForCallingStatus() {
+        
+    }
+    
+    private func filterForCallingOrg() {
+        
     }
 }

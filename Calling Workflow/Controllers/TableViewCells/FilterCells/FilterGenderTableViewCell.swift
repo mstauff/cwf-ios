@@ -50,7 +50,6 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
         let maleButton = FilterButton()
         genderButtonArray.append(maleButton)
         maleButton.setTitle("Male", for: UIControlState.normal)
-        maleButton.translatesAutoresizingMaskIntoConstraints = false
         maleButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
         maleButton.tag = 1
         
@@ -64,7 +63,6 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
         let femaleButton = FilterButton()
         genderButtonArray.append(femaleButton)
         femaleButton.setTitle("Female", for: UIControlState.normal)
-        femaleButton.translatesAutoresizingMaskIntoConstraints = false
         femaleButton.layoutMargins = .init(top: 5, left: 5, bottom: 5, right: 5)
         femaleButton.tag = 2
         
