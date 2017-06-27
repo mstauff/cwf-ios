@@ -36,18 +36,19 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     private let jsonFileReader = JSONFileReader()
     
-    private let permissionMgr = PermissionManager()
+    private let permissionMgr : PermissionManager
     
     private var userRoles : [UnitRole] = []
     
     
     init() {
-        
+        permissionMgr = PermissionManager()
     }
     
-    init(org: Org?, iMemberArray: [Member]) {
-        ldsOrgUnit = org
-        memberList = iMemberArray
+    init(org: Org?, iMemberArray: [Member], permissionMgr: PermissionManager) {
+        self.ldsOrgUnit = org
+        self.memberList = iMemberArray
+        self.permissionMgr = permissionMgr
     }
     
     /** Loads metadata about the different positions from the local filesystem. Eventually we'll want to enhance this so there is a companion method to load it remotely as well (at a time interval). We don't want to slow down startup, so we just read locally and after startup we can periodically check for any updates */
@@ -98,6 +99,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
      
      This method needs to be called prior to calling the authenticate() or loadAppData() methods */
     public func loadLdsData(forUnit unitNum: Int64, ldsUser: LdsUser, completionHandler: @escaping (Bool, Error?) -> Void) {
+        var members : [Member] = []
+        var ldsOrg : Org? = nil
         loadLocalPositionMetadata()
 
         self.userRoles = self.permissionMgr.createUserRoles(forPositions: ldsUser.positions, inUnit: unitNum)
@@ -108,12 +111,10 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             let restCallsGroup = DispatchGroup()
             
             restCallsGroup.enter()
-            ldsApi.getMemberList(unitNum: unitNum) { (members, error) -> Void in
-                if members != nil && !members!.isEmpty {
-                    // filter out any non members
-                    self.memberList = members!.filter() {$0.individualId > 0}
+            ldsApi.getMemberList(unitNum: unitNum) { (memberList, error) -> Void in
+                if memberList != nil && !memberList!.isEmpty {
+                    members = memberList!
                 } else {
-                    print("no user")
                     if error != nil {
                         ldsApiError = error
                     }
@@ -123,12 +124,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             
             restCallsGroup.enter()
             ldsApi.getOrgWithCallings(unitNum: unitNum) { (org, error) -> Void in
-                if org != nil && !org!.children.isEmpty {
-                    
-                    self.ldsOrgUnit = org!.updatedWith(positionMetadata: self.positionMetadataMap)
-                    // need to put in dictionary by root level org for updating
-                    self.ldsUnitOrgsMap.removeAll()
-                    self.ldsUnitOrgsMap = self.ldsOrgUnit!.children.toDictionaryById() { $0.id }
+                if let validOrg = org, !validOrg.children.isEmpty {
+                    ldsOrg = validOrg
                 } else {
                     print("no org")
                     if error != nil {
@@ -139,6 +136,9 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             }
             
             restCallsGroup.notify(queue: DispatchQueue.main) {
+                if let validOrg = ldsOrg {
+                    self.initLdsOrgData(memberList: members, org: validOrg, positionMetadata: self.positionMetadataMap)
+                }
                 // once all the calls have returned then call the callback
                 completionHandler(ldsApiError == nil, ldsApiError)
             }
@@ -147,7 +147,14 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             print( errorMsg )
             completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notAuthorized, userInfo: ["error": errorMsg]))
         }
-
+    }
+    
+    func initLdsOrgData( memberList : [Member], org : Org, positionMetadata : [Int:PositionMetadata] ) {
+                            self.memberList = memberList.filter() {$0.individualId > 0}
+        self.ldsOrgUnit = org.updatedWith(positionMetadata: positionMetadata)
+        // need to put in dictionary by root level org for updating
+        self.ldsUnitOrgsMap.removeAll()
+        self.ldsUnitOrgsMap = org.children.toDictionaryById() { $0.id }
     }
     
     /** Authenticate with the application's data source (currently google drive). We need to pass in the current view controller because if the user isn't already authenticated the google API will display a login screen for the user to authenticate. This should always be called before calling loadAppData() */
@@ -157,15 +164,10 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     /** Reads all the unit data from the application data store (currently google drive), and also reconciles any difference between data previously retrieved from lds.org. This method should only be called after loadLDSData() & authorizeDataSource() have successfully completed. The data is not returned in the callback, it is just maintained within this service. The callback just indicates to the calling function when this method has succesfully completed.
      The parameters for the callback indicate if all the data was loaded successfully, and whether there were extra orgs in the application data that were not in the lds.org data that potentially need to be removed or merged. This would be rare, but in cases where there were multiple EQ or RS groups, and then one gets removed in LCR we would still have the extra in our application data store*/
-    public func loadAppData(completionHandler: @escaping(Bool, Bool, Error?) -> Void) {
-        guard let ldsUnit = self.ldsOrgUnit else {
-            // todo - callback w/error
-            return
-        }
+    public func loadAppData( ldsUnit: Org, completionHandler: @escaping(Bool, Bool, Error?) -> Void) {
         
-        self.appDataOrg = Org(id: ldsUnit.id, orgTypeId: ldsUnit.orgTypeId, orgName: ldsUnit.orgName, displayOrder: ldsUnit.displayOrder, children: [], callings: [])
+        var org = Org(id: ldsUnit.id, orgTypeId: ldsUnit.orgTypeId, orgName: ldsUnit.orgName, displayOrder: ldsUnit.displayOrder, children: [], callings: [])
         dataSource.initializeDrive(forOrgs: ldsOrgUnit!.children) { extraAppOrgs, error in
-            self.extraAppOrgs = extraAppOrgs
             let dataSourceGroup = DispatchGroup()
             
             var mergedOrgs: [Org] = []
@@ -180,25 +182,36 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                     }
                     let mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg)
                     mergedOrgs.append(mergedOrg)
-                    // add all the child suborgs to a dictionary for lookup by ID
-                    let subOrgsMap = mergedOrg.allSubOrgs.toDictionary({ subOrg in
-                        return (subOrg.id, mergedOrg.id)
-                    })
                     // todo - need to write the org back to goodrive if org.hasUnsavedChanges
-                    self.unitLevelOrgsForSubOrgs = self.unitLevelOrgsForSubOrgs.merged(withDictionary: subOrgsMap)
                 }
             }
             
             dataSourceGroup.notify(queue: DispatchQueue.main) {
                 // sort all the unit level orgs by their display order
-                self.appDataOrg!.children = mergedOrgs.sorted(by: Org.sortByDisplayOrder)
-                // this is only actual callings.
-                self.memberCallingsMap = self.multiValueDictionaryFromArray(array: self.appDataOrg!.allOrgCallings) { $0.existingIndId }
-                // Now proposed callings
-                self.memberPotentialCallingsMap = self.multiValueDictionaryFromArray(array: self.appDataOrg!.allOrgCallings) { $0.proposedIndId }
+                org.children = mergedOrgs
+                self.initDatasourceData(fromOrg: org, extraOrgs: extraAppOrgs)
                 completionHandler(error == nil, extraAppOrgs.isNotEmpty, error)
             }
         }
+    }
+    
+    func initDatasourceData( fromOrg org: Org, extraOrgs: [Org] ) {
+        self.appDataOrg = org
+        self.appDataOrg!.children = org.children.sorted(by: Org.sortByDisplayOrder)
+        // add all the child suborgs to a dictionary for lookup by ID
+        for childOrg in org.children {
+            let subOrgsMap = childOrg.allSubOrgs.toDictionary({ subOrg in
+                return (subOrg.id, childOrg.id)
+            })
+            self.unitLevelOrgsForSubOrgs = self.unitLevelOrgsForSubOrgs.merged(withDictionary: subOrgsMap)
+        }
+
+        // this is only actual callings.
+        self.memberCallingsMap = self.multiValueDictionaryFromArray(array: org.allOrgCallings) { $0.existingIndId }
+        // Now proposed callings
+        self.memberPotentialCallingsMap = self.multiValueDictionaryFromArray(array: org.allOrgCallings) { $0.proposedIndId }
+        self.extraAppOrgs = extraOrgs
+        
     }
     
     /** Reads the given Org from google drive and calls the callback with the org converted from JSON */
@@ -442,6 +455,11 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                     completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: ["error": errorMsg]))
                 }
             }
+        } else {
+            // either there was an error with the calling object (didn't have a parent), or the org data is wrong (i.e. the root org isn't in the dictionary) - shouldn't really happen outside of testing env.
+            let errorMsg = "Error: Calling data incomplete, unable to update. Problem with containing org: " + (changedCalling.parentOrg?.id.description ?? " no org")
+            completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: ["error": errorMsg]))
+
         }
     }
     
@@ -483,7 +501,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     }
     
     /** Looks up a unit level org by its' ID and returns the type of the org. Returns nil if the org id is not in the list of unit level orgs */
-    private func unitLevelOrgType( forOrg rootOrgId: Int64 ) -> UnitLevelOrgType? {
+     func unitLevelOrgType( forOrg rootOrgId: Int64 ) -> UnitLevelOrgType? {
         var orgType : UnitLevelOrgType? = nil
         if let rootOrgTypeId = self.ldsUnitOrgsMap[rootOrgId]?.orgTypeId {
             orgType = UnitLevelOrgType(rawValue: rootOrgTypeId)

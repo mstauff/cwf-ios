@@ -86,6 +86,7 @@
 		E841701E1E7C767A00A5C049 /* reconcile-test-orgs.js in Resources */ = {isa = PBXBuildFile; fileRef = E841701D1E7C767A00A5C049 /* reconcile-test-orgs.js */; };
 		E85E7EE41E49223B00CE05CD /* CallingManagerServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */; };
 		E85E7EE61E53B6D700CE05CD /* MultiValueDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */; };
+		E873609D1EF1AE3F00032750 /* MultiValueDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E873609C1EF1AE3F00032750 /* MultiValueDictionaryTests.swift */; };
 		E875C58C1EAE7E5C00E04499 /* current-user.js in Resources */ = {isa = PBXBuildFile; fileRef = E875C58B1EAE7E5C00E04499 /* current-user.js */; };
 		E875C58E1EB2926800E04499 /* PositionRequirements.swift in Sources */ = {isa = PBXBuildFile; fileRef = E875C58D1EB2926800E04499 /* PositionRequirements.swift */; };
 		E875C5901EB3BC8300E04499 /* PositionMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = E875C58F1EB3BC8300E04499 /* PositionMetadata.swift */; };
@@ -226,6 +227,7 @@
 		E841701D1E7C767A00A5C049 /* reconcile-test-orgs.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "reconcile-test-orgs.js"; sourceTree = "<group>"; };
 		E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallingManagerServiceTests.swift; sourceTree = "<group>"; };
 		E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MultiValueDictionary.swift; path = Extensions/MultiValueDictionary.swift; sourceTree = "<group>"; };
+		E873609C1EF1AE3F00032750 /* MultiValueDictionaryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiValueDictionaryTests.swift; sourceTree = "<group>"; };
 		E875C58B1EAE7E5C00E04499 /* current-user.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "current-user.js"; sourceTree = "<group>"; };
 		E875C58D1EB2926800E04499 /* PositionRequirements.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PositionRequirements.swift; path = Model/PositionRequirements.swift; sourceTree = "<group>"; };
 		E875C58F1EB3BC8300E04499 /* PositionMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PositionMetadata.swift; path = Model/PositionMetadata.swift; sourceTree = "<group>"; };
@@ -381,6 +383,7 @@
 				E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */,
 				E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */,
 				E8A91ED61EBCF4E00061EC12 /* PermissionsTests.swift */,
+				E873609C1EF1AE3F00032750 /* MultiValueDictionaryTests.swift */,
 			);
 			path = "Calling WorkflowTests";
 			sourceTree = "<group>";
@@ -913,6 +916,7 @@
 				3CE4C8EA1DCA824100AAFB31 /* Calling_WorkflowTests.swift in Sources */,
 				E8084F7C1E046D5D0077FDAE /* DateExtensions.swift in Sources */,
 				E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */,
+				E873609D1EF1AE3F00032750 /* MultiValueDictionaryTests.swift in Sources */,
 				E8189A8B1DDA2D4600E983D4 /* ModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
