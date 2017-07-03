@@ -66,6 +66,15 @@ public struct Org : JSONParsable  {
             return callings
         }
     }
+    
+    var allInProcessCallings : [Calling] {
+        get {
+            return allOrgCallings.filter() {
+                // we may want to check status as well - but need to decide business rules.
+                $0.proposedIndId != nil
+            }
+        }
+    }
 
     var allSubOrgs : [Org] {
         get {

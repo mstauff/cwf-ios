@@ -26,8 +26,7 @@
                     "hidden": false,
                     "proposedStatus": "PROPOSED",
                     "proposedIndId": 456,
-                    "notes": "Some String",
-                    "editableByOrg": true
+                    "notes": "Some String"
                 },
                 {
                     "memberId": 234,
@@ -41,8 +40,7 @@
                     "hidden": false,
                     "proposedStatus": null,
                     "proposedIndId": null,
-                    "notes": null,
-                    "editableByOrg": true
+                    "notes": null
                 },
                 {
                     "memberId": 345,
@@ -55,8 +53,7 @@
                     "hidden": false,
                     "proposedStatus": null,
                     "proposedIndId": null,
-                    "notes": null,
-                    "editableByOrg": true
+                    "notes": null
                 }
             ]
         },
@@ -80,8 +77,7 @@
                     "hidden": false,
                     "proposedStatus": "PROPOSED",
                     "proposedIndId": 567,
-                    "notes": "A proposed calling without an existing calling",
-                    "editableByOrg": true
+                    "notes": "A proposed calling without an existing calling"
                 },
                 {
                     "memberId": 678,
@@ -95,8 +91,7 @@
                     "hidden": false,
                     "proposedStatus": null,
                     "proposedIndId": null,
-                    "notes": null,
-                    "editableByOrg": true
+                    "notes": null
                 }
             ]
         },
@@ -120,8 +115,7 @@
                     "hidden": false,
                     "proposedStatus": "PROPOSED",
                     "proposedIndId": 567,
-                    "notes": "multiple callings for one individual",
-                    "editableByOrg": true
+                    "notes": "multiple callings for one individual"
                 }
             ]
         }
@@ -162,8 +156,7 @@
                             "hidden": false,
                             "proposedStatus": null,
                             "proposedIndId": null,
-                            "notes": "calling two levels deep",
-                            "editableByOrg": true
+                            "notes": "calling two levels deep"
                         }
                     ]
                 }
@@ -181,8 +174,7 @@
                     "hidden": false,
                     "proposedStatus": null,
                     "proposedIndId": null,
-                    "notes": "Callings & Org at same level of structure",
-                    "editableByOrg": true
+                    "notes": "Callings & Org at same level of structure"
                 }
             ]
         }
@@ -203,15 +195,14 @@
             "existingStatus": "ACTIVE",
             "activeDate": "20150922",
             "positionId": 734829,
-            "positionTypeId": 1481,
-            "positionTypeEnum": "PRIMARY_WORKER_CTR_7",
-            "position": "Primary Teacher",
-			"allowMultiple": true,
-            "hidden": true,
+            "positionTypeId": 4,
+            "positionTypeEnum": "BISHOP",
+            "position": "Bishop",
+			"allowMultiple": false,
+            "hidden": false,
             "proposedStatus": "PROPOSED",
             "proposedIndId": 456,
-            "notes": "Some String",
-            "editableByOrg": true
+            "notes": "Some String"
         }
     ]
 },

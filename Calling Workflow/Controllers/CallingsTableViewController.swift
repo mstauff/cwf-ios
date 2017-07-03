@@ -19,7 +19,6 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupCallingsToDisplay()
       
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 44
@@ -45,7 +44,7 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
         else {
             self.tabBarController?.navigationItem.rightBarButtonItem = nil
         }
-        
+        setupCallingsToDisplay()
         tableView.reloadData()
     }
 
@@ -54,9 +53,8 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     func setupCallingsToDisplay() {
         if delegate == nil {
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            if (appDelegate?.callingManager.ldsOrgUnit != nil) {
-                inProgressCallingsToDisplay = (appDelegate?.callingManager.ldsOrgUnit?.allOrgCallings)!
-                inProgressCallingsToDisplay = inProgressCallingsToDisplay.filter() { $0.proposedIndId != nil }
+            if let unit = appDelegate?.callingManager.appDataOrg {
+                inProgressCallingsToDisplay = unit.allInProcessCallings
             }
         }
     }
