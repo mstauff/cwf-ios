@@ -260,17 +260,6 @@ class CallingManagerServiceTests: XCTestCase {
         // Add a calling for a member with a calling - see if we correctly get both active callings
         // NOTE: currently not a valid test case, you only add a proposed calling, not an active callings. Active callings go through the update to LCR
         var calling = Calling(id: 123, cwfId: nil, existingIndId: 123, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
-//        let memberWithMultipleActiveCallings = createMember(withId: 123)
-//        
-//        let addActiveCallingExpectation = self.expectation(description: "Add an active calling for a member that already has a different calling")
-//        callingMgr.addCalling(calling: calling ) { success, error in
-//            let memberCallings = self.callingMgr.getCallings(forMember: memberWithMultipleActiveCallings)
-//            XCTAssert( success )
-//            XCTAssertNil( error )
-//            XCTAssertEqual( memberCallings.count, 2 )
-//            XCTAssertEqual( self.callingMgr.getPotentialCallings(forMember: memberWithMultipleActiveCallings).count, 0)
-//            addActiveCallingExpectation.fulfill()
-//        }
         
         // Add a calling for a member with a potential calling - see if we correctly get both potential callings
         calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
@@ -310,7 +299,7 @@ class CallingManagerServiceTests: XCTestCase {
         // Add a second calling for a member with a potential calling, so we can delete and make sure we still have at least one
         let calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
         let memberWithMultipleProposedCallings = createMember(withId: 456)
-        let deleteValidCallingExpectation = self.expectation( description: "Add a potential calling for a member that already has a potential calling")
+        let deleteValidCallingExpectation = self.expectation( description: "delete a potential calling for a member that has multiple potential calling")
         
         callingMgr.addCalling(calling: calling) { _, _ in
             XCTAssertEqual( self.callingMgr.getCallings(forMember: memberWithMultipleProposedCallings).count, 0 )
@@ -323,21 +312,75 @@ class CallingManagerServiceTests: XCTestCase {
             }
         }
         
-        // try a delete for a calling that doesn't exist
-//        calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: ctr9TeacherPos, notes: nil, parentOrg: ctr8)
-//        let deleteInvalidExpectation = self.expectation(description: "remove a calling that doesn't exist")
-//        callingMgr.deleteCalling(calling: calling) { success, error in
-//            // make sure we got an error, and that the calling they do have was not affected
-//            XCTAssert( success )
-//            XCTAssertNil( error )
-//            XCTAssertEqual( self.callingMgr.getPotentialCallings(forMember: memberWithMultipleProposedCallings).count, 1 )
-//            deleteInvalidExpectation.fulfill()
-//        }
-        
-        waitForExpectations(timeout: 500)
+        waitForExpectations(timeout: 5)
         
     }
-    
+
+    func testDeleteNonCalling() {
+        let primaryOrg = org!
+        let unitOrg = Org(id: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [primaryOrg], callings: [])
+        callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
+        callingMgr.initDatasourceData(fromOrg: unitOrg, extraOrgs: [])
+        // todo - need a mock callingMgr.dataSource with mocked updateOrg() method
+        let ctr8 = primaryOrg.getChildOrg(id: 752892)!
+        let originalCallings = primaryOrg.allOrgCallings
+        
+        let ctr9TeacherPos = Position(positionTypeId: 1485, name: "Some other Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata())
+        let member = createMember(withId: 456)
+        
+        // try a delete for a calling that doesn't exist
+        let calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: ctr9TeacherPos, notes: nil, parentOrg: ctr8)
+        let deleteInvalidExpectation = self.expectation(description: "remove a calling that doesn't exist")
+        callingMgr.deleteCalling(calling: calling) { success, error in
+            // make sure that the calling they do have was not affected
+            XCTAssertEqual( self.callingMgr.getPotentialCallings(forMember: member).count, 1 )
+            let postChangeCallings = self.callingMgr.appDataOrg?.getChildOrg(id: primaryOrg.id)!.allOrgCallings
+            // todo - validate this test is correct
+            XCTAssertEqual(originalCallings, postChangeCallings!)
+            deleteInvalidExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: 5)
+        
+    }
+
+    func testUpdateCalling() {
+        let bishopric = getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithDirectCallings")!
+
+        let unitOrg = Org(id: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [bishopric], callings: [])
+        callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
+        callingMgr.initDatasourceData(fromOrg: unitOrg, extraOrgs: [])
+        callingMgr.mockGoogleOrg = bishopric
+        
+        var bishopCalling = bishopric.callings[0]
+        let originalProposed = bishopCalling.proposedIndId!
+        let updatedProposed = originalProposed + 111
+        let updateCallingExpectation = self.expectation( description: "update a potential calling")
+        
+        bishopCalling.proposedIndId = updatedProposed
+        
+        callingMgr.updateCalling(updatedCalling: bishopCalling ) { success, error in
+            XCTAssert( success )
+            XCTAssertNil( error )
+            // make sure the potential calling cache has the new calling
+            bishopCalling = self.callingMgr.getPotentialCallings(forMember: self.createMember(withId: updatedProposed))[0]
+            XCTAssertEqual( bishopCalling.proposedIndId, updatedProposed )
+            
+            // and the old calling doesn't have the proposed any more
+            let oldMemberCallings = self.callingMgr.getPotentialCallings(forMember: self.createMember(withId: originalProposed))
+            XCTAssert( oldMemberCallings.isEmpty )
+            
+            // the org data
+            bishopCalling = (self.callingMgr.appDataOrg?.children[0].callings[0])!
+            XCTAssertEqual( bishopCalling.proposedIndId, updatedProposed )
+
+            updateCallingExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: 5)
+        
+    }
+
 
     func createMember( withId id: Int64 ) -> Member {
         return Member(indId: id, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil, callings: [])

@@ -30,12 +30,6 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         tableView.estimatedRowHeight = 44
         setupSearchController()
         
-        //todo - Remove this. it is only here to assign a calling to a member so we can test the view
-        if (members.count > 4) {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            members[1].currentCallings = (appDelegate?.callingManager.getCallings(forMember: members[1]))!
-            members[3].currentCallings = (appDelegate?.callingManager.getCallings(forMember: members[3]))!
-        }
     }
 
     override func didReceiveMemoryWarning() {

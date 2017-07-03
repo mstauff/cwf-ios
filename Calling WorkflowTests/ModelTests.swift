@@ -135,9 +135,9 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(calling.existingStatus, ExistingCallingStatus.Active)
         XCTAssertEqual( calling.activeDate, Date( year: 2015, month: 09, day: 22 ) )
         XCTAssertEqual(calling.id, 734829)
-        XCTAssertEqual(calling.position.positionTypeId, 1481)
-        XCTAssertEqual(calling.position.name, "Primary Teacher")
-        XCTAssertEqual(calling.position.hidden, true)
+        XCTAssertEqual(calling.position.positionTypeId, 4)
+        XCTAssertEqual(calling.position.name, "Bishop")
+        XCTAssertEqual(calling.position.hidden, false)
         XCTAssertEqual(calling.proposedStatus, CallingStatus.Proposed)
         XCTAssertEqual(calling.notes, "Some String")
         
@@ -217,6 +217,14 @@ class ModelTests: XCTestCase {
 
     }
     
+    func testAllInProcessCallings() {
+        let org = standardOrg
+        XCTAssertEqual(org.allInProcessCallings.count, 3)
+        
+        XCTAssertEqual( multiDepthOrg.allInProcessCallings.count, 0 )
+        
+    }
+    
     // todo - need to review these in light of displayOrder, anything else to test
     func testAddCalling() {
         var org = standardOrg
@@ -264,7 +272,18 @@ class ModelTests: XCTestCase {
         let coach = varsityOrg.callings[0]
         performCallingUpdateAndValidation(parentOrg: org, childOrg: varsityOrg, originalCalling: coach, callingIdx: 0, expectedId: 275893, expectedPosition: nil, updatedIndId: 999, updatedStatus: .Proposed)
         
+    }
+    
+    func testDeleteCallingFromOrg() {
+        var org = standardOrg
+        var ctr7Org = org.getChildOrg( id: 38432972 )!
+//        let siblingOrg = org.getChildOrg( id: 752892 )!
+        let callingWithId = ctr7Org.callings[1]
+        XCTAssert(ctr7Org.allOrgCallings.contains( callingWithId ))
 
+        var orgWithCallingRemoved = ctr7Org.updatedWith(callingToDelete: callingWithId)!
+        XCTAssertFalse(orgWithCallingRemoved.allOrgCallings.contains( callingWithId ))
+        // todo - need variants of org (root org with direct callings), also need variations of attempting to delete calling not in org, and different types of callings (some where multiples are allowed and there's no ID)
         
     }
     

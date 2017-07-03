@@ -150,7 +150,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     }
     
     func initLdsOrgData( memberList : [Member], org : Org, positionMetadata : [Int:PositionMetadata] ) {
-                            self.memberList = memberList.filter() {$0.individualId > 0}
+        self.memberList = memberList.filter() {$0.individualId > 0}
         self.ldsOrgUnit = org.updatedWith(positionMetadata: positionMetadata)
         // need to put in dictionary by root level org for updating
         self.ldsUnitOrgsMap.removeAll()
@@ -200,9 +200,11 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         self.appDataOrg!.children = org.children.sorted(by: Org.sortByDisplayOrder)
         // add all the child suborgs to a dictionary for lookup by ID
         for childOrg in org.children {
-            let subOrgsMap = childOrg.allSubOrgs.toDictionary({ subOrg in
+            var subOrgsMap = childOrg.allSubOrgs.toDictionary({ subOrg in
                 return (subOrg.id, childOrg.id)
             })
+            // need to add the actual owning org as well, just so we don't have to do special case handling later if the calling is directly on a root org (i.e. bishopric calling)
+            subOrgsMap[childOrg.id] = childOrg.id
             self.unitLevelOrgsForSubOrgs = self.unitLevelOrgsForSubOrgs.merged(withDictionary: subOrgsMap)
         }
 
@@ -415,10 +417,10 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     /** Performs the actual CRUD operations by reading the file for the org that the calling is in from google drive, performing the update, writing the entire org back to google drive, then updating the copy of the data that is cached locally. When this is all done we call the completion handler with the results */
     private func storeCallingChange(changedCalling: Calling, operation: Org.CRUDOperation, completionHandler: @escaping (Bool, Error?) -> Void) {
-        // todo - this needs to check for root level org ID (probably include them in the map)
-        if let orgId = changedCalling.parentOrg?.id, let unitLevelOrgId = self.unitLevelOrgsForSubOrgs[orgId], let rootOrgType = unitLevelOrgType( forOrg: unitLevelOrgId ) {
+        if let callingOrg = changedCalling.parentOrg, let unitLevelOrgId = self.unitLevelOrgsForSubOrgs[callingOrg.id], let unitLevelOrg = appDataOrg?.getChildOrg(id: unitLevelOrgId), let rootOrgType = UnitLevelOrgType(rawValue: unitLevelOrg.orgTypeId) {
 
             let orgAuth = AuthorizableOrg(unitNum: ldsOrgUnit!.id, unitLevelOrgId: unitLevelOrgId, unitLevelOrgType: rootOrgType, orgTypeId: changedCalling.parentOrg!.orgTypeId)
+            
             let perm = getPermission(forCRUDOperation: operation)
             guard permissionMgr.isAuthorized(unitRoles: userRoles, domain: .PotentialCalling, permission: perm, targetData: orgAuth) else {
                 let errorMsg = "Error: No Permission to make changes in : \(rootOrgType)"
@@ -427,14 +429,29 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             }
             
             let originalCalling = appDataOrg?.getCalling( changedCalling )
+            // need to update appDataOrg with changes before we make asynch call - so whatever view gets drawn will have the changes
+
+            var shouldRevert = false
+            // update the cached copy of the org, as well as the calling maps where we keep track of the callings that individuals hold. We do this before going to google drive because we need the data to be updated in the UI. If we get an error we'll revert
+            if let updatedRootOrg = unitLevelOrg.updatedWithCallingChange(updatedCalling: changedCalling, operation: operation) {
+                self.updateCachedCallingData(unitLevelOrg: updatedRootOrg, originalCalling: originalCalling, changedCalling: changedCalling, operation: operation)
+                shouldRevert = true
+            }
+            
             // read the org file fresh from google drive (to make sure we have the latest data before performing the change). This reduces the chance of clobbering another change in the org recorded by another user
             self.getOrgData(forOrgId: unitLevelOrgId) { org, error in
                 guard error == nil else {
+                    if shouldRevert {
+                        self.revertCachedCallingData(unitLevelOrg: unitLevelOrg, originalCalling: originalCalling, changedCalling: changedCalling, originalOperation: operation)
+                    }
                     completionHandler(false, error)
                     return
                 }
                 guard let validOrg = org else {
-                    let errorMsg = "Error: No Org data found for ID: \(orgId)"
+                    if shouldRevert {
+                        self.revertCachedCallingData(unitLevelOrg: unitLevelOrg, originalCalling: originalCalling, changedCalling: changedCalling, originalOperation: operation)
+                    }
+                    let errorMsg = "Error: No Org data found for ID: \(callingOrg.id)"
                     completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
                     return
                 }
@@ -442,19 +459,29 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 if let updatedOrg = validOrg.updatedWithCallingChange(updatedCalling: changedCalling, operation: operation) {
                     self.dataSource.updateOrg(org: updatedOrg) { success, error in
                         
+                        // we've already updated with the user change, but this will integrate any changes that have happened by other users outside the app. Not critical, but we have the data so might as well update. This won't change anything in the user's current view, but will show up next time they change a view
                         if success {
-                            // update the cached copy of the org, as well as the calling maps where we keep track of the callings that individuals hold
-                            self.updateCachedCallingData(unitLevelOrg: updatedOrg, originalCalling: originalCalling, changedCalling: changedCalling, operation: operation)
+                            self.appDataOrg!.updateDirectChildOrg(org: updatedOrg)
+                        } else {
+                            if shouldRevert {
+                                self.revertCachedCallingData(unitLevelOrg: updatedOrg, originalCalling: originalCalling, changedCalling: changedCalling, originalOperation: operation)
+                            }
+
                         }
                         // if it wasn't a success we just propogate the result and any errors on to the callback
                         completionHandler(success, error)
                     }
                 } else {
                     // updatedOrg came back nil (either the calling wasn't really in the org, or originalCalling was nil on an update, Shouldn't ever happen).
+                    if shouldRevert {
+                        self.revertCachedCallingData(unitLevelOrg: unitLevelOrg, originalCalling: originalCalling, changedCalling: changedCalling, originalOperation: operation)
+                    }
                     let errorMsg = "Error: Calling data incomplete, unable to update. Calling was not found in org."
                     completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: ["error": errorMsg]))
                 }
             }
+            
+
         } else {
             // either there was an error with the calling object (didn't have a parent), or the org data is wrong (i.e. the root org isn't in the dictionary) - shouldn't really happen outside of testing env.
             let errorMsg = "Error: Calling data incomplete, unable to update. Problem with containing org: " + (changedCalling.parentOrg?.id.description ?? " no org")
@@ -463,28 +490,62 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         }
     }
     
+    func revertCachedCallingData(unitLevelOrg: Org, originalCalling: Calling?, changedCalling: Calling, originalOperation: Org.CRUDOperation) {
+        if self.appDataOrg != nil {
+            self.appDataOrg!.updateDirectChildOrg(org: unitLevelOrg)
+        }
+        // update potential Callings map -  switch on operation. Although we could have a copy of this same calling object in the memberCallingsMap, the only thing we display from that map is the name of the calling and duration, so doesn't matter if any proposed details are stale, we never read any potentially stale data from the callings in member callings map.
+        
+        switch originalOperation {
+        case .Create:
+            // if it was a create then we need to remove the added calling
+            if let newProposedIndId = changedCalling.proposedIndId {
+                self.memberPotentialCallingsMap.removeValue(forKey: newProposedIndId, value: changedCalling)
+            }
+        case .Delete:
+            // if it was a delete then need to add the calling back in
+            if let newProposedIndId = changedCalling.proposedIndId {
+                self.memberPotentialCallingsMap.addValue(forKey: newProposedIndId, value: changedCalling)
+            }
+        case .Update:
+            // the existing ID can't change on any proposed calling changes - we just need to update the cache of the propsed callings with the changes
+            if let newProposedIndId = changedCalling.proposedIndId {
+                self.memberPotentialCallingsMap.removeValue(forKey: newProposedIndId, value: changedCalling)
+            }
+            if let oldProposedIndId = originalCalling?.proposedIndId {
+                self.memberPotentialCallingsMap.addValue(forKey: oldProposedIndId, value: originalCalling!)
+            }
+        }
+        
+    }
+    
     /** Currently this method just updates the org for the unit with the updated root level org (Primary, EQ, etc.). We don't change the map of actual callings because this is currently just for potential calling changes. The update of actual callings would only be after we've made a change in LCR */
     func updateCachedCallingData(unitLevelOrg: Org, originalCalling: Calling?, changedCalling: Calling, operation: Org.CRUDOperation) {
         if self.appDataOrg != nil {
             self.appDataOrg!.updateDirectChildOrg(org: unitLevelOrg)
         }
-        // update potential Callings map - will need to switch on operation
-        if let indId = changedCalling.proposedIndId {
-            
-            switch operation {
-            case .Create:
-                self.memberPotentialCallingsMap.addValue(forKey: indId, value: changedCalling)
-            case .Delete:
-                self.memberPotentialCallingsMap.removeValue(forKey: indId, value: changedCalling)
-            case .Update:
-                if let oldIndId = originalCalling?.proposedIndId {
-                    // if originalCalling is nil, there's no way to get here, so safe to ! it
-                    self.memberPotentialCallingsMap.removeValue(forKey: oldIndId, value: originalCalling!)
-                }
-                self.memberPotentialCallingsMap.addValue(forKey: indId, value: changedCalling)
+        // update potential Callings map -  switch on operation. Although we could have a copy of this same calling object in the memberCallingsMap, the only thing we display from that map is the name of the calling and duration, so doesn't matter if any proposed details are stale, we never read any potentially stale data from the callings in member callings map.
+        
+        switch operation {
+        case .Create:
+            // if it's a create there is no existing calling to potetially update, or any old callings that need to be removed, just add it if it has a proposed person
+            if let newProposedIndId = changedCalling.proposedIndId {
+                self.memberPotentialCallingsMap.addValue(forKey: newProposedIndId, value: changedCalling)
+            }
+        case .Delete:
+            // if it's a delete there is no existing calling to potetially update (if there's an existing calling you have to delete via LCR options, so it will go a different code path),  just remove it from the map if it had a proposed person
+            if let newProposedIndId = changedCalling.proposedIndId {
+                self.memberPotentialCallingsMap.removeValue(forKey: newProposedIndId, value: changedCalling)
+            }
+        case .Update:
+            // the existing ID can't change on any proposed calling changes - we just need to update the cache of the propsed callings with the changes
+            if let oldProposedIndId = originalCalling?.proposedIndId {
+                self.memberPotentialCallingsMap.removeValue(forKey: oldProposedIndId, value: originalCalling!)
+            }
+            if let newProposedIndId = changedCalling.proposedIndId {
+                self.memberPotentialCallingsMap.addValue(forKey: newProposedIndId, value: changedCalling)
             }
         }
-        
         // no need to update existing callings - that should only be after we've saved a change in LCR
     }
     
