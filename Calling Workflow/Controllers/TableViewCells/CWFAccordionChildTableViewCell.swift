@@ -49,35 +49,37 @@ class CWFAccordionChildTableViewCell: UITableViewCell {
         title.lineBreakMode = .byTruncatingMiddle
         
         first_subtitle.translatesAutoresizingMaskIntoConstraints = false
-        first_subtitle.font = UIFont(name: first_subtitle.font.fontName, size: 12.0)
+        first_subtitle.font = UIFont(name: first_subtitle.font.fontName, size: 14.0)
         first_subtitle.adjustsFontSizeToFitWidth = true
         first_subtitle.textColor = UIColor.CWFDarkGreenColor
 
         second_subtitle.translatesAutoresizingMaskIntoConstraints = false
         second_subtitle.adjustsFontSizeToFitWidth = true
-        
+        second_subtitle.font = UIFont(name: second_subtitle.font.fontName, size: 14.0)
+
         self.addSubview(title)
         self.addSubview(first_subtitle)
         self.addSubview(second_subtitle)
         
        
+        let titleHConstraint = NSLayoutConstraint(item: title, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 2 * horizontalMargin)
         let titleWidthConstraint = NSLayoutConstraint(item: title, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: -15)
         let titleHeightConstraint = NSLayoutConstraint(item: title, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 20)
-        let titleHConstraint = NSLayoutConstraint(item: title, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 2 * horizontalMargin)
-        let titleVConstraint = NSLayoutConstraint(item: title, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 5)
-        let titleBConstraint = NSLayoutConstraint(item: title, attribute: .bottom, relatedBy: .greaterThanOrEqual, toItem: self, attribute: .bottom, multiplier: 1, constant: -5)
         
-        self.addConstraints([titleWidthConstraint, titleHeightConstraint, titleHConstraint, titleVConstraint, titleBConstraint])
+        let titleVConstraint = NSLayoutConstraint(item: title, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 5)
+        //let titleBConstraint = NSLayoutConstraint(item: title, attribute: .bottom, relatedBy: .greaterThanOrEqual, toItem: self, attribute: .bottom, multiplier: 1, constant: -5)
+        
+        self.addConstraints([titleWidthConstraint, titleHeightConstraint, titleHConstraint, titleVConstraint])
 
         let subWidthConstraint = NSLayoutConstraint(item: first_subtitle, attribute: .right, relatedBy: .equal, toItem: title, attribute: .right, multiplier: 1, constant: 0)
-        let subHeightConstraint = NSLayoutConstraint(item: first_subtitle, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 15)
-        let subHConstraint = NSLayoutConstraint(item: first_subtitle, attribute: .leading, relatedBy: .equal, toItem: title, attribute: .leading, multiplier: 1, constant: 0)
-        let subVConstraint = NSLayoutConstraint(item: first_subtitle, attribute: .top, relatedBy: .equal, toItem: title, attribute: .bottom, multiplier: 1, constant: 2)
+//        let subHeightConstraint = NSLayoutConstraint(item: first_subtitle, attribute: .bottom, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 20)
+        let subHConstraint = NSLayoutConstraint(item: first_subtitle, attribute: .leading, relatedBy: .equal, toItem: title, attribute: .leading, multiplier: 1, constant: horizontalMargin*2)
+        let subVConstraint = NSLayoutConstraint(item: first_subtitle, attribute: .top, relatedBy: .equal, toItem: title, attribute: .bottom, multiplier: 1, constant: 5)
         
-        self.addConstraints([subWidthConstraint, subHeightConstraint, subHConstraint, subVConstraint])
+        self.addConstraints([subWidthConstraint, subHConstraint, subVConstraint])
         
         let secondSubWConstraint = NSLayoutConstraint(item: second_subtitle, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: -horizontalMargin)
-        let secondSubHConstraint = NSLayoutConstraint(item: second_subtitle, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 20)
+        let secondSubHConstraint = NSLayoutConstraint(item: second_subtitle, attribute: .top, relatedBy: .equal, toItem: first_subtitle, attribute: .bottom, multiplier: 1, constant: 5)
         let secondSubXConstraint = NSLayoutConstraint(item: second_subtitle, attribute: .leading, relatedBy: .equal, toItem: first_subtitle, attribute: .leading, multiplier: 1, constant: 0)
         let secondSubYConstraint = NSLayoutConstraint(item: second_subtitle, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: -5)
         

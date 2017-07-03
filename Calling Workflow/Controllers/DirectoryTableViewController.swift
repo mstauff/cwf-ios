@@ -61,10 +61,10 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "directioryCell", for: indexPath) as! DirectoryTableViewCell
         cell.nameLabel.text = memberForCell.name
-
+        
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         if let callings = appDelegate?.callingManager.getCallings(forMember: memberForCell){
-            cell.setupCallingLabels(callings:callings, member: memberForCell)
+            cell.setupCellLabels(callings:callings, member: memberForCell)
         }
 
         return cell

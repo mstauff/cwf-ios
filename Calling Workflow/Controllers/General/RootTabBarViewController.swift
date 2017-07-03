@@ -18,6 +18,8 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.tabBar.isTranslucent = false
+        
         // check the keychain for stored LDS.org credentials
         self.getLogin()
         

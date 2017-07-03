@@ -56,7 +56,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         tableView.estimatedRowHeight = 44
         tableView.rowHeight = UITableViewAutomaticDimension
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(filterButtonPressed))
+        //self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(filterButtonPressed))
        
         setupView()
     }
@@ -151,22 +151,23 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             if (calling.existingIndId != nil) {
                 if let existingMember = appDelegate?.callingManager.getMemberWithId(memberId: calling.existingIndId!) {
                     if let nameString = existingMember.name {
-                        cell?.second_subtitle.text = "(\(nameString))"
+                        cell?.second_subtitle.text = "\(nameString) (\(calling.existingMonthsInCalling) months)"
                     }
                 }
             }
             else {
-                cell?.second_subtitle.isHidden = true
+                cell?.second_subtitle.text = "--"
+                //cell?.second_subtitle.isHidden = true
             }
             if (calling.proposedIndId != nil) {
                 if let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: calling.proposedIndId!) {
                     if let nameString = proposedMember.name {
-                        cell?.first_subtitle.text = nameString
+                        cell?.first_subtitle.text = "\(nameString) - \(calling.proposedStatus.description)"
                     }
                 }
             }
             else {
-                cell?.first_subtitle.isHidden = true
+                cell?.first_subtitle.text = nil
             }
             
             return cell!
