@@ -11,7 +11,9 @@ import UIKit
 class DirectoryTableViewCell: UITableViewCell {
     
     let nameLabel : UILabel = UILabel()
-    let callingLabels : [UILabel] = []
+    var firstSubviewLabel : UILabel = UILabel()
+    var secondSubviewLabel : UILabel = UILabel()
+    let thirdSubviewLabel : UILabel = UILabel()
 
     //MARK: - Life Cycle
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -25,6 +27,7 @@ class DirectoryTableViewCell: UITableViewCell {
     
     //MARK: - Setup
     func setupCell() {
+        
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         
         addSubview(nameLabel)
@@ -36,34 +39,64 @@ class DirectoryTableViewCell: UITableViewCell {
         
         self.addConstraints([nameXConstraint, nameYConstraint, nameWConstraint, nameHConstraint])
         
-        var lastView = nameLabel
         
-        for callingLabel in callingLabels {
-            callingLabel.translatesAutoresizingMaskIntoConstraints = false
+        firstSubviewLabel.translatesAutoresizingMaskIntoConstraints = false
+        firstSubviewLabel.lineBreakMode = .byTruncatingMiddle
             
-            addSubview(callingLabel)
-            
-            let xConstraint = NSLayoutConstraint(item: callingLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 30)
-            let yConstraint = NSLayoutConstraint(item: callingLabel, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 4)
-            let wConstraint = NSLayoutConstraint(item: callingLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: -15)
-            let hConstraint = NSLayoutConstraint(item: callingLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 17)
-            
-            self.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
-            
-            lastView = callingLabel
-        }
+        addSubview(firstSubviewLabel)
+        
+        let firstXConstraint = NSLayoutConstraint(item: firstSubviewLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 30)
+        let firstYConstraint = NSLayoutConstraint(item: firstSubviewLabel, attribute: .top, relatedBy: .equal, toItem: nameLabel, attribute: .bottom, multiplier: 1, constant: 4)
+        let firstWConstraint = NSLayoutConstraint(item: firstSubviewLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: -15)
+        let firstHConstraint = NSLayoutConstraint(item: firstSubviewLabel, attribute: .bottom, relatedBy: .lessThanOrEqual, toItem: self, attribute: .bottom, multiplier: 1, constant: -5)
+        
+        self.addConstraints([firstXConstraint, firstYConstraint, firstWConstraint, firstHConstraint])
+
+        secondSubviewLabel.translatesAutoresizingMaskIntoConstraints = false
+        secondSubviewLabel.lineBreakMode = .byTruncatingMiddle
+        addSubview(secondSubviewLabel)
+        
+        let xConstraint = NSLayoutConstraint(item: secondSubviewLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 30)
+        let yConstraint = NSLayoutConstraint(item: secondSubviewLabel, attribute: .top, relatedBy: .equal, toItem: firstSubviewLabel, attribute: .bottom, multiplier: 1, constant: 4)
+        let wConstraint = NSLayoutConstraint(item: secondSubviewLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: -15)
+        let hConstraint = NSLayoutConstraint(item: secondSubviewLabel, attribute: .bottom, relatedBy: .lessThanOrEqual, toItem: self, attribute: .bottom, multiplier: 1, constant: -5)
+        
+        self.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
+
+        thirdSubviewLabel.translatesAutoresizingMaskIntoConstraints = false
+        thirdSubviewLabel.lineBreakMode = .byTruncatingMiddle
+        
+        addSubview(thirdSubviewLabel)
+        
+        let thirdXConstraint = NSLayoutConstraint(item: thirdSubviewLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 30)
+        let thirdYConstraint = NSLayoutConstraint(item: thirdSubviewLabel, attribute: .top, relatedBy: .equal, toItem: secondSubviewLabel, attribute: .bottom, multiplier: 1, constant: 4)
+        let thirdWConstraint = NSLayoutConstraint(item: thirdSubviewLabel, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: -15)
+        let thirdHConstraint = NSLayoutConstraint(item: thirdSubviewLabel, attribute: .bottom, relatedBy: .lessThanOrEqual, toItem: self, attribute: .bottom, multiplier: 1, constant: -5)
+        
+        self.addConstraints([thirdXConstraint, thirdYConstraint, thirdWConstraint, thirdHConstraint])
     }
-    func setupCallingLabels(member: MemberCallings) {
-        let currentLabel = UILabel()
-        currentLabel.translatesAutoresizingMaskIntoConstraints = false
-        for calling in member.callings{
-            currentLabel.text = calling.nameWithTime
+    
+    func setupCellLabels(member: MemberCallings) {
+        nameLabel.text = member.member.name
+      let callings = member.callings + member.proposedCallings
+      // todo - need to revisit this and handle actual & proposed callings differently. Even if we don't do different text colors we at least display the time in calling for actual and the status for proposed
+        switch callings.count {
+        case 0:
+            print("no callings")
+        case 1:
+            firstSubviewLabel.text = "\(callings[0].position.name) (\(callings[0].existingMonthsInCalling) months)"
+        case 2:
+            firstSubviewLabel.text = callings[0].position.name
+            secondSubviewLabel.text = callings[1].position.name
+        case 3:
+            firstSubviewLabel.text = callings[0].position.name
+            secondSubviewLabel.text = callings[2].position.name
+            thirdSubviewLabel.text = callings[3].position.name
+
+        default:
+            firstSubviewLabel.text = callings[0].position.name
+            secondSubviewLabel.text = callings[1].position.name
+            thirdSubviewLabel.text = "\(callings.count - 2) more..."
         }
-        for calling in member.proposedCallings {
-            currentLabel.text = calling.nameWithStatus
-            currentLabel.textColor = UIColor.green
-        }
-        
-        setupCell()
     }
 }
