@@ -62,7 +62,7 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
         let cell = tableView.dequeueReusableCell(withIdentifier: "directioryCell", for: indexPath) as! DirectoryTableViewCell
         cell.nameLabel.text = memberForCell.member.name
 
-        cell.setupCallingLabels(member: memberForCell)
+        cell.setupCellLabels(member: memberForCell)
 
         return cell
     }
