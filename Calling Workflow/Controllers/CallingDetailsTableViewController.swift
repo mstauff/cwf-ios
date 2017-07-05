@@ -215,7 +215,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             case 0:
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
                 if let memberId = callingToDisplay?.existingIndId {
-                    displayContactInfoForMember(member:  (appDelegate?.callingManager.getMemberWithId(memberId: memberId))!)
+                    displayContactInfoForMember(member:  (appDelegate?.callingManager.getMemberCallings(forMemberId: memberId))!)
                 }
             
             case 1:
@@ -223,7 +223,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
                 nextVC?.delegate = self
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                    nextVC?.members = appDelegate.callingManager.memberList
+                    nextVC?.members = appDelegate.callingManager.memberCallings
                 }
                 navigationController?.pushViewController(nextVC!, animated: true)
             
@@ -256,7 +256,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     }
     
     //MARK: - Show Contact Info
-    func displayContactInfoForMember(member: Member) {
+    func displayContactInfoForMember(member: MemberCallings) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let memberDetailView = storyboard.instantiateViewController(withIdentifier: "MemberInfoView") as? MemberInfoView
         memberDetailView?.memberToView = member

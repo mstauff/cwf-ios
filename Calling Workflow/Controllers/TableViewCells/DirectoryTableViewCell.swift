@@ -76,8 +76,10 @@ class DirectoryTableViewCell: UITableViewCell {
         self.addConstraints([thirdXConstraint, thirdYConstraint, thirdWConstraint, thirdHConstraint])
     }
     
-    func setupCellLabels(callings: [Calling], member: Member) {
-        nameLabel.text = member.name
+    func setupCellLabels(member: MemberCallings) {
+        nameLabel.text = member.member.name
+      let callings = member.callings + member.proposedCallings
+      // todo - need to revisit this and handle actual & proposed callings differently. Even if we don't do different text colors we at least display the time in calling for actual and the status for proposed
         switch callings.count {
         case 0:
             print("no callings")

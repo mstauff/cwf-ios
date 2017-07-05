@@ -9,21 +9,13 @@
 import Foundation
 
 extension Member {
-    func getAddressForMemberAsString () -> String? {
+    func getAddressAsString () -> String? {
         if self.streetAddress.count == 0 {
             return nil
         }
         else {
-            var stringToReturn = ""
-            for currentString in self.streetAddress {
-                stringToReturn += "\(currentString), "
-            }
-            if stringToReturn != "" {
-                return stringToReturn
-            }
-            else {
-                return nil
-            }
+            let stringToReturn = self.streetAddress.joined(separator: ", ")
+            return stringToReturn != "" ?  stringToReturn : nil
         }
     }
 

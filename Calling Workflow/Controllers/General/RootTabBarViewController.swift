@@ -68,6 +68,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
                 // todo - need to figure out a way to reconcile lds.org unit is same as google drive credentials
                 if let validUnitNum = unitNum {
                     appDelegate?.callingManager.loadLdsData(forUnit: validUnitNum, ldsUser: validUser) { [weak self] (dataLoaded, loadingError) -> Void in
+                        // todo - if we change this callback to provide the unitdata then ldsOrgUnit could be made private. Will that work????
                         let childView = self?.selectedViewController as? OrganizationTableViewController
                         if dataLoaded, let callingMgr = appDelegate?.callingManager, let ldsOrg = callingMgr.ldsOrgUnit {
                             callingMgr.hasDataSourceCredentials(forUnit: 0 ) { (hasCredentials, signInError) -> Void in

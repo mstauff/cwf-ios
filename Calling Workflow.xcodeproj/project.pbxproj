@@ -100,6 +100,7 @@
 		E8B13CCC1E3BD80A004FD60C /* DataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */; };
 		E8CC956A1E01E722007EBA47 /* member-objects.js in Resources */ = {isa = PBXBuildFile; fileRef = E8CC95691E01E722007EBA47 /* member-objects.js */; };
 		E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC956B1E01E77F007EBA47 /* MemberTests.swift */; };
+		E8D51E751F0AC370009F87DC /* MemberCallings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D51E741F0AC370009F87DC /* MemberCallings.swift */; };
 		E8E8CD311ECBB81900156450 /* PermissionEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD301ECBB81900156450 /* PermissionEnums.swift */; };
 		E8E8CD341ECBB87A00156450 /* Authorizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD331ECBB87A00156450 /* Authorizable.swift */; };
 		E8E8CD361ECBB8A800156450 /* PermissionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD351ECBB8A800156450 /* PermissionResolver.swift */; };
@@ -242,6 +243,7 @@
 		E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSourceTests.swift; sourceTree = "<group>"; };
 		E8CC95691E01E722007EBA47 /* member-objects.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "member-objects.js"; sourceTree = "<group>"; };
 		E8CC956B1E01E77F007EBA47 /* MemberTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberTests.swift; sourceTree = "<group>"; };
+		E8D51E741F0AC370009F87DC /* MemberCallings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberCallings.swift; path = Model/MemberCallings.swift; sourceTree = "<group>"; };
 		E8E8CD301ECBB81900156450 /* PermissionEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PermissionEnums.swift; path = Model/Permissions/PermissionEnums.swift; sourceTree = "<group>"; };
 		E8E8CD331ECBB87A00156450 /* Authorizable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Authorizable.swift; path = Model/Permissions/Authorizable.swift; sourceTree = "<group>"; };
 		E8E8CD351ECBB8A800156450 /* PermissionResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PermissionResolver.swift; path = Model/Permissions/PermissionResolver.swift; sourceTree = "<group>"; };
@@ -412,6 +414,7 @@
 				E87D00B91E26EF7000FA722B /* LdsUser.swift */,
 				E875C58D1EB2926800E04499 /* PositionRequirements.swift */,
 				E875C58F1EB3BC8300E04499 /* PositionMetadata.swift */,
+				E8D51E741F0AC370009F87DC /* MemberCallings.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -876,6 +879,7 @@
 				3CE4C8D51DCA824100AAFB31 /* FirstViewController.swift in Sources */,
 				3CEBAF411DCD0D160071BE9F /* CallingsTableViewController.swift in Sources */,
 				3CE4C9171DCA82A000AAFB31 /* RestAPI.swift in Sources */,
+				E8D51E751F0AC370009F87DC /* MemberCallings.swift in Sources */,
 				E8084F8A1E04814F0077FDAE /* OrganizationTableViewController.swift in Sources */,
 				3C20DF631DD399C600F9847E /* SettingsTableViewController.swift in Sources */,
 				3C76FBA11E52693B008C4A61 /* SingleFieldTableViewCell.swift in Sources */,
