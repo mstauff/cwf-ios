@@ -10,9 +10,9 @@ import UIKit
 
 class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewControllerDelegate {
 
-    var members : [Member]!
+    var members : [MemberCallings] = []
 
-    var filteredMembers = [Member]()
+    var filteredMembers = [MemberCallings]()
     var filterViewOptions : FilterOptionsObject? = nil
 
     override func viewDidLoad() {
@@ -42,7 +42,7 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     // MARK: - Setup
     func setupData() {        
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            members = appDelegate.callingManager.memberList
+            members = appDelegate.callingManager.memberCallings
         }
     }
   
@@ -60,12 +60,9 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
         let memberForCell = members[indexPath.row]
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "directioryCell", for: indexPath) as! DirectoryTableViewCell
-        cell.nameLabel.text = memberForCell.name
+        cell.nameLabel.text = memberForCell.member.name
 
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        if let callings = appDelegate?.callingManager.getCallings(forMember: memberForCell){
-            cell.setupCallingLabels(callings:callings, member: memberForCell)
-        }
+        cell.setupCallingLabels(member: memberForCell)
 
         return cell
     }
@@ -73,7 +70,7 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let member = members[indexPath.row]
        
-        displayContactInfoForMember(member:  member)
+        displayContactInfoForMember(member: member)
         
     }
     
@@ -98,7 +95,7 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     }
     
     //MARK: - Show Contact Info
-    func displayContactInfoForMember(member: Member) {
+    func displayContactInfoForMember(member: MemberCallings) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let memberDetailView = storyboard.instantiateViewController(withIdentifier: "MemberInfoView") as? MemberInfoView
         memberDetailView?.memberToView = member

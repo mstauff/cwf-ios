@@ -12,11 +12,11 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     
     var delegate: MemberPickerDelegate?
 
-    var members : [Member] = []
+    var members : [MemberCallings] = []
     
     var searchController = UISearchController(searchResultsController: nil)
 
-    var filteredMembers = [Member]()
+    var filteredMembers = [MemberCallings]()
     var filterViewOptions : FilterOptionsObject? = nil
     
     //MARK: - Lifecycle
@@ -75,7 +75,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? TitleAdjustableSubtitleTableViewCell
         
-        var currentMember : Member
+        var currentMember : MemberCallings
         
         if searchController.isActive && searchController.searchBar.text != "" || filterViewOptions != nil {
             currentMember = filteredMembers[indexPath.row]
@@ -87,12 +87,9 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         cell?.infoButton.addTarget(self, action: #selector(showMemberDetails(_:)), for: .touchUpInside)
         cell?.infoButton.tag = indexPath.row
 
-        cell?.titleLabel.text = currentMember.name
+        cell?.titleLabel.text = currentMember.member.name
         
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-
-        cell?.subtitle.text = (appDelegate?.callingManager.getCallings(forMember: currentMember).namesWithTime() ?? "") + (appDelegate?.callingManager.getPotentialCallings(forMember: currentMember).namesWithStatus() ?? "")
-
+        cell?.subtitle.text = (currentMember.callings.namesWithTime() ) + (currentMember.proposedCallings.namesWithStatus() )
 
         return cell!
     }
@@ -110,7 +107,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         filteredMembers = members.filter { member in
-            return (member.name?.lowercased().contains(searchText.lowercased()))!
+            return (member.member.name?.lowercased().contains(searchText.lowercased()))!
         }
         
         tableView.reloadData()
@@ -118,9 +115,9 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     
     
     // MARK: - Button Method
-    func memberSelected(selectedMember: Member?) {
+    func memberSelected(selectedMember: MemberCallings?) {
         if selectedMember != nil {
-            delegate?.setProspectiveMember(member: selectedMember!)
+            delegate?.setProspectiveMember(member: selectedMember!.member)
         }
         self.navigationController?.popViewController(animated: true)
     }

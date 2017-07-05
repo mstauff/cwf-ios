@@ -53,19 +53,17 @@ class DirectoryTableViewCell: UITableViewCell {
             lastView = callingLabel
         }
     }
-    func setupCallingLabels(callings: [Calling], member: Member) {
-        for calling in callings{
-            let currentLabel = UILabel()
-            currentLabel.translatesAutoresizingMaskIntoConstraints = false
-            
-            if calling.existingIndId == member.individualId {
-                currentLabel.text = calling.nameWithTime
-            }
-            else if calling.proposedIndId == member.individualId {
-                currentLabel.text = calling.nameWithStatus
-                currentLabel.textColor = UIColor.green
-            }
+    func setupCallingLabels(member: MemberCallings) {
+        let currentLabel = UILabel()
+        currentLabel.translatesAutoresizingMaskIntoConstraints = false
+        for calling in member.callings{
+            currentLabel.text = calling.nameWithTime
         }
+        for calling in member.proposedCallings {
+            currentLabel.text = calling.nameWithStatus
+            currentLabel.textColor = UIColor.green
+        }
+        
         setupCell()
     }
 }
