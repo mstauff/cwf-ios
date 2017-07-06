@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPickerDelegate, StatusPickerDelegate {
+class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPickerDelegate, StatusPickerDelegate, UITextViewDelegate {
     
     //MARK: - Class Members
     var callingToDisplay : Calling? = nil {
@@ -23,6 +23,9 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     var memberDetailView : MemberInfoView? = nil
     
     var delegate : CallingsTableViewControllerDelegate?
+
+    var debouncedNotesChange : Debouncer? = nil
+    let textViewDebounceTime = 0.8
     
     //MARK: - Life Cycle
     override func viewDidLoad() {
@@ -37,6 +40,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
         tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "noteCell")
         tableView.register(CWFButtonTableViewCell.self, forCellReuseIdentifier: "buttonCell")
+
 
     }
 
@@ -189,6 +193,10 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             if (callingToDisplay?.notes != nil || callingToDisplay?.notes != "") {
                 cell?.noteTextView.text = callingToDisplay?.notes
             }
+            cell?.noteTextView.delegate = self
+            debouncedNotesChange = Debouncer(delay: textViewDebounceTime) { [weak self] in
+                self?.updateNotes( cell?.noteTextView )
+            }
             
             return cell!
             
@@ -255,6 +263,18 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         tableView.reloadData()
     }
     
+    //MARK: - UI Text View Delegate
+    func textViewDidChange(_ textView: UITextView) {
+        debouncedNotesChange?.call()
+    }
+    
+    func updateNotes(_ textView : UITextView?) {
+        if let validTextView = textView {
+            isDirty = true
+            self.callingToDisplay?.notes = validTextView.text
+        }
+    }
+
     //MARK: - Show Contact Info
     func displayContactInfoForMember(member: MemberCallings) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
