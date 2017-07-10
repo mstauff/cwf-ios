@@ -102,6 +102,7 @@
 		E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC956B1E01E77F007EBA47 /* MemberTests.swift */; };
 		E8D51E751F0AC370009F87DC /* MemberCallings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D51E741F0AC370009F87DC /* MemberCallings.swift */; };
 		E8D51E771F0E94DC009F87DC /* Debounce.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D51E761F0E94DC009F87DC /* Debounce.swift */; };
+		E8D51E791F0E9C88009F87DC /* FilterOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D51E781F0E9C88009F87DC /* FilterOptionsTests.swift */; };
 		E8E8CD311ECBB81900156450 /* PermissionEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD301ECBB81900156450 /* PermissionEnums.swift */; };
 		E8E8CD341ECBB87A00156450 /* Authorizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD331ECBB87A00156450 /* Authorizable.swift */; };
 		E8E8CD361ECBB8A800156450 /* PermissionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD351ECBB8A800156450 /* PermissionResolver.swift */; };
@@ -246,6 +247,7 @@
 		E8CC956B1E01E77F007EBA47 /* MemberTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberTests.swift; sourceTree = "<group>"; };
 		E8D51E741F0AC370009F87DC /* MemberCallings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberCallings.swift; path = Model/MemberCallings.swift; sourceTree = "<group>"; };
 		E8D51E761F0E94DC009F87DC /* Debounce.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Debounce.swift; sourceTree = "<group>"; };
+		E8D51E781F0E9C88009F87DC /* FilterOptionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterOptionsTests.swift; sourceTree = "<group>"; };
 		E8E8CD301ECBB81900156450 /* PermissionEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PermissionEnums.swift; path = Model/Permissions/PermissionEnums.swift; sourceTree = "<group>"; };
 		E8E8CD331ECBB87A00156450 /* Authorizable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Authorizable.swift; path = Model/Permissions/Authorizable.swift; sourceTree = "<group>"; };
 		E8E8CD351ECBB8A800156450 /* PermissionResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PermissionResolver.swift; path = Model/Permissions/PermissionResolver.swift; sourceTree = "<group>"; };
@@ -389,6 +391,7 @@
 				E85E7EE31E49223B00CE05CD /* CallingManagerServiceTests.swift */,
 				E8A91ED61EBCF4E00061EC12 /* PermissionsTests.swift */,
 				E873609C1EF1AE3F00032750 /* MultiValueDictionaryTests.swift */,
+				E8D51E781F0E9C88009F87DC /* FilterOptionsTests.swift */,
 			);
 			path = "Calling WorkflowTests";
 			sourceTree = "<group>";
@@ -921,6 +924,7 @@
 				E8B13CCC1E3BD80A004FD60C /* DataSourceTests.swift in Sources */,
 				E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */,
 				E85E7EE41E49223B00CE05CD /* CallingManagerServiceTests.swift in Sources */,
+				E8D51E791F0E9C88009F87DC /* FilterOptionsTests.swift in Sources */,
 				3CE4C8EA1DCA824100AAFB31 /* Calling_WorkflowTests.swift in Sources */,
 				E8084F7C1E046D5D0077FDAE /* DateExtensions.swift in Sources */,
 				E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */,

@@ -144,12 +144,7 @@ class FilterOptionsObject {
                 return false
             }
             
-            if let filterStatusForMembersPriesthood = priesthood[memberPriesthood] {
-                return filterStatusForMembersPriesthood
-            }
-            else {
-                return false
-            }
+            return priesthood[memberPriesthood] ?? false
         }
         
         return arrayToReturn
