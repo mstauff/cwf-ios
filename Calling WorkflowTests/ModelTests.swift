@@ -214,7 +214,6 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(org.children[0].allOrgCallings.count, 2)
 
         XCTAssertEqual( multiDepthOrg.allOrgCallings.count, 2 )
-
     }
     
     func testAllInProcessCallings() {
@@ -222,7 +221,6 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(org.allInProcessCallings.count, 3)
         
         XCTAssertEqual( multiDepthOrg.allInProcessCallings.count, 0 )
-        
     }
     
     // todo - need to review these in light of displayOrder, anything else to test
@@ -241,8 +239,6 @@ class ModelTests: XCTestCase {
         let newCallingFromOrg = primaryClass.callings[2]
         validateCallingsSame(newCalling, newCallingFromOrg)
         validateOrgSame( unchangedClass, org.getChildOrg(id: 38432972)! )
-        
-        
     }
     
     func testUpdateCalling() {
@@ -271,7 +267,6 @@ class ModelTests: XCTestCase {
         var varsityOrg = org.getChildOrg(id: 839510)!
         let coach = varsityOrg.callings[0]
         performCallingUpdateAndValidation(parentOrg: org, childOrg: varsityOrg, originalCalling: coach, callingIdx: 0, expectedId: 275893, expectedPosition: nil, updatedIndId: 999, updatedStatus: .Proposed)
-        
     }
     
     func testDeleteCallingFromOrg() {
@@ -520,12 +515,40 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(MemberClass.allValues.count, Set<MemberClass>(MemberClass.allValues).count)
     }
     
+    func testMemberCallings() {
+        var memberCallings = MemberCallings(member: createMember(withId: 111) )
+        XCTAssertEqual( memberCallings.member.individualId, 111 )
+        XCTAssert( memberCallings.callings.isEmpty )
+        XCTAssert( memberCallings.proposedCallings.isEmpty )
 
+        let eqPres = Position(positionTypeId: 138, name: "EQ President", hidden: false, multiplesAllowed: false, displayOrder: nil, metadata: PositionMetadata())
+        let teacherPos = Position(positionTypeId: 200, name: "Primary Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata() )
+        let ssTeacherPos = Position(positionTypeId: 300, name: "Sunday School Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata() )
+
+        let calling = Calling(id: 123, cwfId: nil, existingIndId: 222, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: eqPres, notes: nil, parentOrg: nil)
+        
+        let proposedTeacher = Calling(id: nil, cwfId: "123-ABC", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 111, status: .Submitted, position: teacherPos, notes: nil, parentOrg: nil)
+        let proposedSSTeacher = Calling(id: 500, cwfId: "500-ABC", existingIndId: 222, existingStatus: .Active, activeDate: nil, proposedIndId: 111, status: .Submitted, position: ssTeacherPos, notes: nil, parentOrg: nil)
+        
+        memberCallings = MemberCallings(member: createMember(withId: 111), callings: [calling], proposedCallings: [proposedTeacher, proposedSSTeacher])
+        XCTAssertEqual( memberCallings.callings.count, 1 )
+        XCTAssertEqual( memberCallings.proposedCallings.count, 2 )
+        XCTAssertEqual( memberCallings.callings[0].id, 123 )
+        XCTAssertEqual( memberCallings.proposedCallings[0].cwfId, "123-ABC" )
+        XCTAssertEqual( memberCallings.proposedCallings[1].id, 500 )
+    }
+    
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {
             // Put the code you want to measure the time of here.
         }
     }
+    
+    func createMember( withId id: Int64 ) -> Member {
+        return Member(indId: id, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil, callings: [])
+        
+    }
+
     
 }

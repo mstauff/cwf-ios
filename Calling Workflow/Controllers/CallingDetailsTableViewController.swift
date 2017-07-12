@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPickerDelegate, StatusPickerDelegate {
+class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPickerDelegate, StatusPickerDelegate, UITextViewDelegate {
     
     //MARK: - Class Members
     var callingToDisplay : Calling? = nil {
@@ -23,6 +23,9 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     var memberDetailView : MemberInfoView? = nil
     
     var delegate : CallingsTableViewControllerDelegate?
+
+    var debouncedNotesChange : Debouncer? = nil
+    let textViewDebounceTime = 0.8
     
     //MARK: - Life Cycle
     override func viewDidLoad() {
@@ -37,6 +40,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
         tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "noteCell")
         tableView.register(CWFButtonTableViewCell.self, forCellReuseIdentifier: "buttonCell")
+
 
     }
 
@@ -189,6 +193,10 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             if (callingToDisplay?.notes != nil || callingToDisplay?.notes != "") {
                 cell?.noteTextView.text = callingToDisplay?.notes
             }
+            cell?.noteTextView.delegate = self
+            debouncedNotesChange = Debouncer(delay: textViewDebounceTime) { [weak self] in
+                self?.updateNotes( cell?.noteTextView )
+            }
             
             return cell!
             
@@ -215,7 +223,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             case 0:
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
                 if let memberId = callingToDisplay?.existingIndId {
-                    displayContactInfoForMember(member:  (appDelegate?.callingManager.getMemberWithId(memberId: memberId))!)
+                    displayContactInfoForMember(member:  (appDelegate?.callingManager.getMemberCallings(forMemberId: memberId))!)
                 }
             
             case 1:
@@ -223,7 +231,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
                 nextVC?.delegate = self
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                    nextVC?.members = appDelegate.callingManager.memberList
+                    nextVC?.members = appDelegate.callingManager.memberCallings
                 }
                 navigationController?.pushViewController(nextVC!, animated: true)
             
@@ -255,8 +263,20 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         tableView.reloadData()
     }
     
+    //MARK: - UI Text View Delegate
+    func textViewDidChange(_ textView: UITextView) {
+        debouncedNotesChange?.call()
+    }
+    
+    func updateNotes(_ textView : UITextView?) {
+        if let validTextView = textView {
+            isDirty = true
+            self.callingToDisplay?.notes = validTextView.text
+        }
+    }
+
     //MARK: - Show Contact Info
-    func displayContactInfoForMember(member: Member) {
+    func displayContactInfoForMember(member: MemberCallings) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let memberDetailView = storyboard.instantiateViewController(withIdentifier: "MemberInfoView") as? MemberInfoView
         memberDetailView?.memberToView = member

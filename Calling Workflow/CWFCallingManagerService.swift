@@ -11,7 +11,6 @@ import UIKit
 
 class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiInjected {
     
-    // todo - this should be private once we have all controllers correctly using public methods
     var ldsOrgUnit: Org? = nil
     var appDataOrg: Org? = nil
     private(set) var memberList: [Member] = []
@@ -21,6 +20,14 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     // implied ldscdApi  comes from LdscdApiInjected
     // implied ldsOrgApi  comes from LdsOrgApiInjected
     // implied dataSource  comes from DataSourceInjected
+    
+    var memberCallings : [MemberCallings] {
+        get {
+            return memberList.map() {
+                 MemberCallings(member: $0, callings: memberCallingsMap.getValues(forKey: $0.individualId), proposedCallings: memberPotentialCallingsMap.getValues(forKey: $0.individualId))
+            }
+        }
+    }
     
     /// These are orgs that are in the app data store (goodrive) but not in lds.org. They likely need to be deleted, but may contain changes that the user will need to discard or merge to another org
     private var extraAppOrgs: [Org] = []
@@ -393,6 +400,14 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             }
         }
         return member
+    }
+    
+    func getMemberCallings( forMemberId memberId: Int64 ) -> MemberCallings? {
+        var memberCallings : MemberCallings? = nil
+        if let member = getMemberWithId(memberId: memberId) {
+            memberCallings = MemberCallings(member: member, callings: getCallings(forMember: member), proposedCallings: getPotentialCallings(forMember: member))
+        }
+        return memberCallings
     }
     
     func getCallings(forMember member: Member) -> [Calling] {

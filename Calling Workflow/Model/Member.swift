@@ -39,6 +39,7 @@ public struct Member {
     let priesthood : Priesthood?
     
     /* Current callings that the member has. This does not come included with any service, we will have to populate from our own internal data*/
+    // todo - this should be removed - it's superseded by MemberCallings
     var currentCallings : [Calling]
     
     /* This is the property that should be queried for a user's phone number. Individual phone will be used if it has a value, if not we will fall back to the household phone */

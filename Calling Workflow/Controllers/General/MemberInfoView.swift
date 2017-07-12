@@ -13,7 +13,7 @@ import CoreLocation
 
 class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKMapViewDelegate {
     
-    var memberToView: Member?
+    var memberToView: MemberCallings?
     
     var infoView : UIView = UIView()
     var headerView : UIView = UIView()
@@ -55,7 +55,7 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         let nameLabel = UILabel()
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.textColor = UIColor.white
-        nameLabel.text = memberToView?.name
+        nameLabel.text = memberToView?.member.name
         
         headerView.addSubview(nameLabel)
         
@@ -84,7 +84,6 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
     }
     
     func setupInfoView() {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
         
         infoView.translatesAutoresizingMaskIntoConstraints = false
         infoView.backgroundColor = UIColor.white
@@ -99,7 +98,7 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         self.view.addConstraints([infoHConstraint, infoWConstraint, infoVConstraint, infoHoConstraint])
 
         let callingBar = MemberInfoBarItemView()
-        let callingText = (appDelegate?.callingManager.getCallings(forMember: memberToView!).namesWithTime() ?? "") + (appDelegate?.callingManager.getPotentialCallings(forMember: memberToView!).namesWithStatus() ?? "")
+        let callingText = (memberToView?.callings.namesWithTime() ?? "") + (memberToView?.proposedCallings.namesWithStatus() ?? "")
         callingBar.setupInfoBarItem(dataText: callingText, icon: nil)
         if callingBar.dataLabel.text == "" {
             callingBar.backgroundColor = UIColor.lightGray
@@ -132,11 +131,11 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         var lastView: UIView = firstBar
         var phoneNumberAndTypeArray: [(phone: String, type: String)] = []
        
-        if memberToView?.individualPhone != nil {
-            phoneNumberAndTypeArray.append(((memberToView?.individualPhone)!, "Individual"))
+        if let individualPhone = memberToView?.member.individualPhone {
+            phoneNumberAndTypeArray.append((individualPhone, "Individual"))
         }
-        if memberToView?.householdPhone != nil {
-            phoneNumberAndTypeArray.append(((memberToView?.householdPhone)!, "Household"))
+        if let housePhone = memberToView?.member.householdPhone {
+            phoneNumberAndTypeArray.append((housePhone, "Household"))
         }
         for phoneAndType in phoneNumberAndTypeArray {
             let currentPhoneBar = MemberInfoBarItemView()
@@ -172,7 +171,7 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         infoView.addConstraints([sBarConstraintH, sBarConstraintW, sBarConstraintX, sBarConstraintY])
         lastView = secondBar
         
-        if let emailString = memberToView?.individualEmail {
+        if let emailString = memberToView?.member.individualEmail {
             let emailBar = MemberInfoBarItemView()
             emailBar.setupInfoBarItem(dataText: emailString, icon: UIImage.init(named: "emailIcon"))
             emailBar.iconImageView?.addTarget(self, action: #selector(emailButtonPressed), for: .touchUpInside)
@@ -215,7 +214,7 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         lastView = thirdBar
         
         let addressBar = MemberInfoBarItemView()
-        if let addressText = memberToView?.getAddressForMemberAsString() {
+        if let addressText = memberToView?.member.getAddressAsString() {
             addressBar.setupInfoBarItem(dataText: addressText, icon: UIImage.init(named: "gps"))
             addressBar.iconImageView?.addTarget(self, action: #selector(locationButtonPressed), for: .touchUpInside)
         }

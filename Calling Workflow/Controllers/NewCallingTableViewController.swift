@@ -115,7 +115,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
                 let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
                 nextVC?.delegate = self
                 if appDelegate != nil {
-                    nextVC?.members = (appDelegate?.callingManager.memberList)!
+                    nextVC?.members = (appDelegate?.callingManager.memberCallings)!
                 }
                 navigationController?.pushViewController(nextVC!, animated: true)
             
