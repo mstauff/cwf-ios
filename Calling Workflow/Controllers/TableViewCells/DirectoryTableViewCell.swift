@@ -84,19 +84,19 @@ class DirectoryTableViewCell: UITableViewCell {
         case 0:
             print("no callings")
         case 1:
-            setupTextForLabel(calling: callings[0], member: member, label: firstSubviewLabel)
+            setupTextForLabel(calling: callings[0], member: member.member, label: firstSubviewLabel)
         case 2:
             
-            setupTextForLabel(calling: callings[0], member: member, label: firstSubviewLabel)
-            setupTextForLabel(calling: callings[1], member: member, label: secondSubviewLabel)
+            setupTextForLabel(calling: callings[0], member: member.member, label: firstSubviewLabel)
+            setupTextForLabel(calling: callings[1], member: member.member, label: secondSubviewLabel)
         case 3:
-            setupTextForLabel(calling: callings[0], member: member, label: firstSubviewLabel)
-            setupTextForLabel(calling: callings[1], member: member, label: secondSubviewLabel)
-            setupTextForLabel(calling: callings[2], member: member, label: thirdSubviewLabel)
+            setupTextForLabel(calling: callings[0], member: member.member, label: firstSubviewLabel)
+            setupTextForLabel(calling: callings[1], member: member.member, label: secondSubviewLabel)
+            setupTextForLabel(calling: callings[2], member: member.member, label: thirdSubviewLabel)
 
         default:
-            setupTextForLabel(calling: callings[0], member: member, label: firstSubviewLabel)
-            setupTextForLabel(calling: callings[1], member: member, label: secondSubviewLabel)
+            setupTextForLabel(calling: callings[0], member: member.member, label: firstSubviewLabel)
+            setupTextForLabel(calling: callings[1], member: member.member, label: secondSubviewLabel)
             thirdSubviewLabel.text = "\(callings.count - 2) more..."
             thirdSubviewLabel.textColor = UIColor.CWFGreyTextColor
         }
@@ -104,11 +104,11 @@ class DirectoryTableViewCell: UITableViewCell {
     
     func setupTextForLabel(calling: Calling, member: Member, label: UILabel) {
         if calling.existingIndId == member.individualId {
-            label.text = "\(String(describing: calling.position.name)) (\(calling.existingMonthsInCalling) m)"
+            label.text = "\(String(describing: calling.position.name!)) (\(calling.existingMonthsInCalling) m)"
             label.textColor = UIColor.CWFGreyTextColor
         }
         else if calling.proposedIndId == member.individualId {
-            label.text = "\(String(describing: calling.position.name)) (\(calling.proposedStatus.description))"
+            label.text = "\(String(describing: calling.position.name!)) (\(calling.proposedStatus.description))"
             label.textColor = UIColor.CWFGreenTextColor
         }
     }
