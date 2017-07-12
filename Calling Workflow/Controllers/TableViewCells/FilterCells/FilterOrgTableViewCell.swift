@@ -46,7 +46,7 @@ class FilterOrgTableViewCell: FilterBaseTableViewCell {
     func setupTitle(titleString: String) {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = titleString
-        titleLabel.textColor = .gray
+        titleLabel.textColor = UIColor.CWFGreyTextColor
         
         self.addSubview(titleLabel)
         

@@ -28,7 +28,7 @@ class FilterCallingStatusTableViewCell: FilterBaseTableViewCell {
         cellTitle.translatesAutoresizingMaskIntoConstraints = false
         cellTitle.numberOfLines = 0
         cellTitle.text = "Calling Status"
-        cellTitle.textColor = UIColor.gray
+        cellTitle.textColor = UIColor.CWFGreyTextColor
 
         self.addSubview(cellTitle)
         

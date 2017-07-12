@@ -8,7 +8,7 @@
 
 import UIKit
 
-class NewCallingTableViewController: UITableViewController, MemberPickerDelegate, StatusPickerDelegate, CallingsTableViewControllerDelegate {
+class NewCallingTableViewController: UITableViewController, MemberPickerDelegate, StatusPickerDelegate, CallingPickerTableViewControllerDelegate {
     
     var parentOrg : Org?
     
@@ -97,11 +97,10 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         case 0:
             switch indexPath.row {
             case 0:
-                tableView.deselectRow(at: indexPath, animated: true)
                 let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
-                let nextVC = storyboard.instantiateViewController(withIdentifier: "CallingsTableViewController") as? CallingsTableViewController
-                if (parentOrg?.callings != nil) {
-                    nextVC?.inProgressCallingsToDisplay = (parentOrg?.callings)!
+                let nextVC = storyboard.instantiateViewController(withIdentifier: "CallingPickerViewController") as? CallingPickerViewController
+                if let org = parentOrg {
+                    nextVC?.org = org
                 }
                 nextVC?.delegate = self
                 navigationController?.pushViewController(nextVC!, animated: true)

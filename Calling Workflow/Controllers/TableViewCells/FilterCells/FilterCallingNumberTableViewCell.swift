@@ -36,7 +36,7 @@ class FilterCallingNumberTableViewCell: FilterBaseTableViewCell {
     func setupTitle() {
         titleLabel.text = "Callings"
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.textColor = .gray
+        titleLabel.textColor = UIColor.CWFGreyTextColor
         
         self.addSubview(titleLabel)
         

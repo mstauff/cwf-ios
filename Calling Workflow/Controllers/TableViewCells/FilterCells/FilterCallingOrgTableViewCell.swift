@@ -27,7 +27,7 @@ class FilterCallingOrgTableViewCell: FilterBaseTableViewCell {
         cellTitle.translatesAutoresizingMaskIntoConstraints = false
         cellTitle.numberOfLines = 0
         cellTitle.text = NSLocalizedString("Organization", comment: "Organization")
-        cellTitle.textColor = UIColor.gray
+        cellTitle.textColor = UIColor.CWFGreyTextColor
         
         self.addSubview(cellTitle)
         

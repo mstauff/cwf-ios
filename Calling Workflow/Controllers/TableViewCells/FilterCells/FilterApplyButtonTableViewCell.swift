@@ -50,7 +50,7 @@ class FilterApplyButtonTableViewCell: FilterBaseTableViewCell {
         self.addConstraints([applyRConstraint, applyYConstraint, applyHConstraint])
         
         cancelButton.setTitle(NSLocalizedString("Cancel", comment: "cancel"), for: .normal)
-        cancelButton.setTitleColor(UIColor.gray, for: .normal)
+        cancelButton.setTitleColor(UIColor.CWFGreyTextColor, for: .normal)
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
         
         self.addSubview(cancelButton)

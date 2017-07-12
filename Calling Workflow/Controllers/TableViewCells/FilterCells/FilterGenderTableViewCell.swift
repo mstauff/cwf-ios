@@ -34,7 +34,7 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
     func setupTitle() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = "Gender"
-        titleLabel.textColor = .gray
+        titleLabel.textColor = UIColor.CWFGreyTextColor
         
         self.addSubview(titleLabel)
         

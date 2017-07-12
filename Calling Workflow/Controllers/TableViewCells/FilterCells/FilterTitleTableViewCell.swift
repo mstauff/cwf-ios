@@ -23,7 +23,7 @@ class FilterTitleTableViewCell: FilterBaseTableViewCell {
         self.selectionStyle = .none
         titleLabel.text = title
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.textColor = UIColor.gray
+        titleLabel.textColor = UIColor.CWFGreyTextColor
         titleLabel.font = UIFont(name: titleLabel.font.fontName, size: 24)
         
         

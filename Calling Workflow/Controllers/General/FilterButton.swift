@@ -29,7 +29,7 @@ class FilterButton: UIButton {
     
     func setupForUnselected () {
         self.backgroundColor = UIColor.clear
-        self.setTitleColor(UIColor.gray, for: .normal)
+        self.setTitleColor(UIColor.CWFGreyTextColor, for: .normal)
     }
 
     func setupForSelected () {

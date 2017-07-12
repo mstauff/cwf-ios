@@ -9,7 +9,17 @@
 import UIKit
 
 class CWFBaseTableViewController: UITableViewController {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        navigationController?.navigationBar.barTintColor = UIColor.CWFNavBarTintColor
+        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white ]
+        navigationController?.navigationBar.tintColor = UIColor.white
+    }
+}
 
+class CWFBaseViewController: UIViewController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.barTintColor = UIColor.CWFNavBarTintColor

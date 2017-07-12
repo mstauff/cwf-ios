@@ -7,8 +7,11 @@
 //
 
 import UIKit
+import MessageUI
+import MapKit
+import CoreLocation
 
-class MemberInfoView: UIViewController {
+class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKMapViewDelegate {
     
     var memberToView: Member?
     
@@ -19,6 +22,12 @@ class MemberInfoView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.5)
+        let tapRecognizer = UITapGestureRecognizer(target: self, action:#selector(dismissMemberDetails(_:)))
+        self.view.addGestureRecognizer(tapRecognizer)
+        
+        let swipeUpRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeUpAction(_:)))
+        swipeUpRecognizer.direction = .up
+        self.view.addGestureRecognizer(swipeUpRecognizer)
         self.setupView()
     }
     
@@ -29,17 +38,11 @@ class MemberInfoView: UIViewController {
 
             setupHeaderView()
             
-            let tapRecognizer = UITapGestureRecognizer(target: self, action:#selector(dismissMemberDetails(_:)))
-            self.view.addGestureRecognizer(tapRecognizer)
-            
-            let swipeUpRecognizer = UISwipeGestureRecognizer()
-            swipeUpRecognizer.addTarget(self, action: #selector(swipeUpAction(_:)))
-            swipeUpRecognizer.direction = .up
-            headerView.addGestureRecognizer(swipeUpRecognizer)
-            headerView.isUserInteractionEnabled = true
+        
         }
         else {
-            
+            setupInfoView()
+            setupHeaderView()
         }
     }
     
@@ -60,13 +63,12 @@ class MemberInfoView: UIViewController {
             let headerWidthConstraint = NSLayoutConstraint(item: headerView, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
             let headerHeightConstraint = NSLayoutConstraint(item: headerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
             let headerHorizontalConstraint = NSLayoutConstraint(item: headerView, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
-            let headerVirticalConstraint = NSLayoutConstraint(item: headerView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .topMargin, multiplier: 1, constant: 0)
+            let headerVirticalConstraint = NSLayoutConstraint(item: headerView, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .topMargin, multiplier: 1, constant: 0)
             
             self.view.addConstraints([headerWidthConstraint, headerHeightConstraint, headerHorizontalConstraint, headerVirticalConstraint])
 
         }
-        else
-        {
+        else {
             let headerWidthConstraint = NSLayoutConstraint(item: headerView, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
             let headerHeightConstraint = NSLayoutConstraint(item: headerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
             let headerHorizontalConstraint = NSLayoutConstraint(item: headerView, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
@@ -139,6 +141,7 @@ class MemberInfoView: UIViewController {
         for phoneAndType in phoneNumberAndTypeArray {
             let currentPhoneBar = MemberInfoBarItemView()
             currentPhoneBar.setupInfoBarItem(dataText: phoneAndType.phone, icon: UIImage.init(named: "phoneIcon"))
+            currentPhoneBar.iconImageView?.addTarget(self, action: #selector(callButtonPressed), for: .touchUpInside)
             
             infoView.addSubview(currentPhoneBar)
             
@@ -172,6 +175,7 @@ class MemberInfoView: UIViewController {
         if let emailString = memberToView?.individualEmail {
             let emailBar = MemberInfoBarItemView()
             emailBar.setupInfoBarItem(dataText: emailString, icon: UIImage.init(named: "emailIcon"))
+            emailBar.iconImageView?.addTarget(self, action: #selector(emailButtonPressed), for: .touchUpInside)
             
             infoView.addSubview(emailBar)
             
@@ -186,7 +190,6 @@ class MemberInfoView: UIViewController {
         else {
             let emailBar = MemberInfoBarItemView()
             emailBar.setupInfoBarItem(dataText: "No Individual Email", icon: UIImage.init(named: "emailIcon"))
-            
             infoView.addSubview(emailBar)
             
             let emailConstraintH = NSLayoutConstraint(item: emailBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 54.0)
@@ -214,6 +217,7 @@ class MemberInfoView: UIViewController {
         let addressBar = MemberInfoBarItemView()
         if let addressText = memberToView?.getAddressForMemberAsString() {
             addressBar.setupInfoBarItem(dataText: addressText, icon: UIImage.init(named: "gps"))
+            addressBar.iconImageView?.addTarget(self, action: #selector(locationButtonPressed), for: .touchUpInside)
         }
         else {
             addressBar.setupInfoBarItem(dataText: "No Address Available", icon: nil)
@@ -229,8 +233,46 @@ class MemberInfoView: UIViewController {
 
     }
     
-    func addItem(dataItem: String, icon: UIImage?) {
-        
+    //MARK: - Button Actions
+    func callButtonPressed() {
+        if var phoneString = memberToView?.phone {
+            phoneString = "tel://\(phoneString)"
+            UIApplication.shared.openURL(URL(string: phoneString)!)
+        }
+    }
+    
+    func locationButtonPressed() {
+        if var address = memberToView?.streetAddress {
+            
+            let mapVC = CWFMapViewController()
+            let navController = UINavigationController(rootViewController: mapVC)
+            mapVC.addressToDisplay = address
+            
+            present(navController, animated: true, completion: nil)
+        }
+    }
+    
+    func emailButtonPressed() {
+        if let emailAddress = memberToView?.email {
+            if MFMailComposeViewController.canSendMail() {
+                let mailVC = MFMailComposeViewController()
+                mailVC.mailComposeDelegate = self
+                mailVC.setToRecipients([emailAddress])
+                mailVC.setSubject("Subject for email")
+                mailVC.setMessageBody("Email message string", isHTML: false)
+                
+                present(mailVC, animated: true, completion: nil)
+            }
+            else {
+                let alert = UIAlertController(title: "Cannnot Send Email", message: "Check your email settings", preferredStyle: .alert)
+                alert.addAction(UIAlertAction.init(title: "OK", style: .cancel, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func textButtonPressed () {
+    
     }
     
     func dismissMemberDetails(_ sender:UITapGestureRecognizer) {
@@ -245,6 +287,14 @@ class MemberInfoView: UIViewController {
         }
         
     }
+    
+    //MARK: - Email Delegate
+    private func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+    
+    //MARK: - Map View Delegate
+    
 }
 
 
@@ -272,7 +322,7 @@ class MemberInfoBarItemView : UIView {
         dataLabel.text = dataText
         dataLabel.numberOfLines = 0
         dataLabel.font = UIFont(name: dataLabel.font.fontName, size: 14)
-        dataLabel.textColor = UIColor.gray
+        dataLabel.textColor = UIColor.CWFGreyTextColor
         dataLabel.translatesAutoresizingMaskIntoConstraints = false
 
         

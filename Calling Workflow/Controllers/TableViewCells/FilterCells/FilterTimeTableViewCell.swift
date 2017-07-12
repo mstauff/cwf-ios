@@ -33,7 +33,7 @@ class FilterTimeTableViewCell: FilterBaseTableViewCell {
     func setupTitle() {
         titleLabel.text = "Time In Calling"
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.textColor = .gray
+        titleLabel.textColor = UIColor.CWFGreyTextColor
         
         self.addSubview(titleLabel)
         
@@ -60,7 +60,7 @@ class FilterTimeTableViewCell: FilterBaseTableViewCell {
         
         sliderLabel.translatesAutoresizingMaskIntoConstraints = false
         sliderLabel.text = "\(String(sliderView.value)) Months"
-        sliderLabel.textColor = .gray
+        sliderLabel.textColor = UIColor.CWFGreyTextColor
         sliderLabel.textAlignment = .center
         sliderLabel.font = UIFont(name: sliderLabel.font.fontName, size: 12)
         
