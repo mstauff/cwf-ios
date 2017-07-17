@@ -104,11 +104,11 @@ class DirectoryTableViewCell: UITableViewCell {
     
     func setupTextForLabel(calling: Calling, member: Member, label: UILabel) {
         if calling.existingIndId == member.individualId {
-            label.text = "\(String(describing: calling.position.name)) (\(calling.existingMonthsInCalling) m)"
+            label.text = "\(String(describing: calling.position.name!)) (\(calling.existingMonthsInCalling) m)"
             label.textColor = UIColor.CWFGreyTextColor
         }
         else if calling.proposedIndId == member.individualId {
-            label.text = "\(String(describing: calling.position.name)) (\(calling.proposedStatus.description))"
+            label.text = "\(String(describing: calling.position.name!)) (\(calling.proposedStatus.description))"
             label.textColor = UIColor.CWFGreenTextColor
         }
     }
