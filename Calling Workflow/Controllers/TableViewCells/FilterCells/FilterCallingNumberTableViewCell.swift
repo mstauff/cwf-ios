@@ -86,11 +86,6 @@ class FilterCallingNumberTableViewCell: FilterBaseTableViewCell {
             sender.isSelected = false
         }
         else {
-//            for button in numberButtonArray {
-//                button.isSelected = false
-//                button.setupForUnselected()
-//            }
-//        
             sender.isSelected = true
             sender.setupForSelected()
         }

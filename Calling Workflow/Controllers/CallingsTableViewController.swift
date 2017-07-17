@@ -62,7 +62,6 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-
         return 1
     }
 
@@ -89,7 +88,12 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
         }
         
         if callingForRow.proposedStatus != CallingStatus.Unknown {
-            cell?.callingInProcessLabel.text = callingForRow.proposedStatus.description
+            if let proposedCalled = appDelegate?.callingManager.getMemberWithId(memberId: callingForRow.proposedIndId!) {
+                if let name = proposedCalled.name {
+                    cell?.callingInProcessLabel.textColor = UIColor.CWFGreenTextColor
+                    cell?.callingInProcessLabel.text = "\(name) (\(callingForRow.proposedStatus.description))"
+                }
+            }
         }
         else {
             cell?.callingInProcessLabel.text = ""
@@ -131,5 +135,4 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
         //filteredMembers = (filterObject?.filterMemberData(unfilteredArray: inProgressCallingsToDisplay))!
         tableView.reloadData()
     }
-
 }

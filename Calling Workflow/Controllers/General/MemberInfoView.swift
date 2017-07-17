@@ -234,14 +234,14 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
     
     //MARK: - Button Actions
     func callButtonPressed() {
-        if var phoneString = memberToView?.phone {
+        if var phoneString = memberToView?.member.phone {
             phoneString = "tel://\(phoneString)"
             UIApplication.shared.openURL(URL(string: phoneString)!)
         }
     }
     
     func locationButtonPressed() {
-        if var address = memberToView?.streetAddress {
+        if var address = memberToView?.member.streetAddress {
             
             let mapVC = CWFMapViewController()
             let navController = UINavigationController(rootViewController: mapVC)
@@ -252,7 +252,7 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
     }
     
     func emailButtonPressed() {
-        if let emailAddress = memberToView?.email {
+        if let emailAddress = memberToView?.member.email {
             if MFMailComposeViewController.canSendMail() {
                 let mailVC = MFMailComposeViewController()
                 mailVC.mailComposeDelegate = self

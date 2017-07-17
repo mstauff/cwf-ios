@@ -19,6 +19,8 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     var filteredMembers = [MemberCallings]()
     var filterViewOptions : FilterOptionsObject? = nil
     
+    var tableHeaderView : UIView = UIView()
+    
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -44,7 +46,9 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
-        tableView.tableHeaderView = searchController.searchBar
+        tableHeaderView.addSubview(searchController.searchBar)
+        tableView.tableHeaderView = tableHeaderView
+//        tableView.tableHeaderView = searchController.searchBar
     }
     
     // MARK: - Table view data source
@@ -62,14 +66,6 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         }
     }
     
-//    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        if searchController.isActive && searchController.searchBar.text != "" || filterViewOptions != nil{
-//            return TitleAdjustableSubtitleTableViewCell.getHeightForCellForMember(member: filteredMembers[indexPath.row])
-//        }
-//        else {
-//            return TitleAdjustableSubtitleTableViewCell.getHeightForCellForMember(member: members[indexPath.row])
-//        }
-//    }
 
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
