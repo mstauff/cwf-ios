@@ -17,7 +17,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     var searchController = UISearchController(searchResultsController: nil)
 
     var filteredMembers = [MemberCallings]()
-    var filterViewOptions : FilterOptionsObject? = nil
+    var filterViewOptions : FilterOptions? = nil
     
     //MARK: - Lifecycle
     
@@ -30,6 +30,13 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         tableView.estimatedRowHeight = 44
         setupSearchController()
         
+        // if there's any filter options then apply the filter
+        if let filter = self.filterViewOptions {
+            self.filteredMembers = filter.filterMemberData(unfilteredArray: members)            
+        } else {
+            // otherwise just set the filteredMembers to the members, we always read/display from filteredMembers
+            self.filteredMembers = members
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -54,12 +61,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if (searchController.isActive && searchController.searchBar.text != "") || filterViewOptions != nil {
-            return filteredMembers.count
-        }
-        else {
-            return members.count
-        }
+        return filteredMembers.count
     }
     
 //    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -75,14 +77,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? TitleAdjustableSubtitleTableViewCell
         
-        var currentMember : MemberCallings
-        
-        if searchController.isActive && searchController.searchBar.text != "" || filterViewOptions != nil {
-            currentMember = filteredMembers[indexPath.row]
-        }
-        else {
-            currentMember = members[indexPath.row]
-        }
+        let currentMember = filteredMembers[indexPath.row]
         
         cell?.infoButton.addTarget(self, action: #selector(showMemberDetails(_:)), for: .touchUpInside)
         cell?.infoButton.tag = indexPath.row
@@ -95,18 +90,13 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if searchController.isActive && searchController.searchBar.text != "" || filterViewOptions != nil {
-            memberSelected(selectedMember: members[indexPath.row])
-        }
-        else {
-             memberSelected(selectedMember: members[indexPath.row])
-        }
+        memberSelected(selectedMember: filteredMembers[indexPath.row])
     }
     
     // MARK: - Search Controller
     
     func filterContentForSearchText(searchText: String, scope: String = "All") {
-        filteredMembers = members.filter { member in
+        filteredMembers = filteredMembers.filter { member in
             return (member.member.name?.lowercased().contains(searchText.lowercased()))!
         }
         
@@ -125,11 +115,13 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     func filterButtonPressed(sender : UIView) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let filterView = storyboard.instantiateViewController(withIdentifier: "FilterTableViewController") as? FilterTableViewController
-        filterView?.addCallingsFilterCell()
-        filterView?.addTimeInCallingFilterCell()
-        filterView?.addAgeFilterCell()
-        filterView?.addGenderFilterCell()
+        // we want all the filter options to be included so just use the convenience method to add them all
+        filterView?.addAllFilters()
         filterView?.delegate = self
+        // if there are any preset filter options (based on position requirements) then set those on the filter screen before we transition
+        if filterViewOptions != nil {
+            filterView?.filterObject = filterViewOptions!
+        }
         
         self.navigationController?.pushViewController(filterView!, animated: true)
     }
@@ -145,7 +137,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     
     //MARK: - FilterViewDelegate
     
-    func setFilterOptions(memberFilterOptions: FilterOptionsObject) {
+    func setFilterOptions(memberFilterOptions: FilterOptions) {
         filterViewOptions = memberFilterOptions
         filteredMembers = (filterViewOptions?.filterMemberData(unfilteredArray: members))!
         tableView.reloadData()

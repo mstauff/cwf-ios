@@ -108,21 +108,10 @@ class FilterCallingOrgTableViewCell: FilterBaseTableViewCell {
     func buttonSelected (sender: FilterButton) {
         if sender.isSelected {
             sender.setupForUnselected()
-            sender.isSelected = false
         }
         else {
-            sender.isSelected = true
             sender.setupForSelected()
         }
-    }
-    
-    override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
-        filterOptions.callingOrg = [:]
-        for orgButton in orgButtonArray{
-            filterOptions.callingOrg?[orgButton.tag] = orgButton.isSelected
-        }
-        
-        return filterOptions
     }
     
     override func getCellHeight() -> CGFloat {
@@ -143,4 +132,20 @@ class FilterCallingOrgTableViewCell: FilterBaseTableViewCell {
         
     }
 
+}
+
+extension FilterCallingOrgTableViewCell : UIFilterElement {
+    func getSelectedOptions(filterOptions: FilterOptions) -> FilterOptions {
+        var filterOptions = filterOptions
+        filterOptions.callingOrg = [:]
+        for orgButton in orgButtonArray{
+            filterOptions.callingOrg?[orgButton.tag] = orgButton.isSelected
+        }
+        
+        return filterOptions
+    }
+    
+    func setSelectedOptions(filterOptions: FilterOptions) {
+        
+    }
 }

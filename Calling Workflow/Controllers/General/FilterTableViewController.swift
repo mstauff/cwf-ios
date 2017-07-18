@@ -12,7 +12,7 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
 
     var filterContentArray : [FilterBaseTableViewCell] = []
     var titleString : String?
-    var filterObject : FilterOptionsObject = FilterOptionsObject(){
+    var filterObject : FilterOptions = FilterOptions(){
         didSet {
             if let gender = filterObject.gender {
                 
@@ -24,9 +24,9 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
                 }
                 
                 if gender == Gender.Female {
-                    addOrgFilterCell(title: "Class", upperLevelNames: ["Relief Socity"], lowerLevelNames: ["Laurel", "Mia Maid", "Bee Hive"])
+                    addOrgFilterCell(title: "Class", orgType: .MemberClass, upperLevelEnums: [MemberClass.ReliefSociety], lowerLevelEnums: [MemberClass.Laurel, MemberClass.MiaMaid, MemberClass.Beehive])
                 } else {
-                    addOrgFilterCell(title: "Priesthood", upperLevelNames: ["High Priest", "Elder"], lowerLevelNames: ["Priest", "Teacher", "Deacon"])
+                    addOrgFilterCell(title: "Priesthood", orgType: .Priesthood, upperLevelEnums: [Priesthood.HighPriest, Priesthood.Elder], lowerLevelEnums: [Priesthood.Priest, Priesthood.Teacher, Priesthood.Deacon])
                 }
                 
                 tableView.reloadData()
@@ -48,6 +48,11 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
         regesterTableViewCells()
         addTitleCell()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateUI(fromFilterOptions: filterObject)
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -65,6 +70,16 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
         tableView.register(FilterApplyButtonTableViewCell.self, forCellReuseIdentifier: "FilterApplyCell")
         tableView.register(FilterCallingStatusTableViewCell.self, forCellReuseIdentifier: "FilterCallingStatusCell")
         tableView.register(FilterCallingOrgTableViewCell.self, forCellReuseIdentifier: "FilterCallingOrgCell")
+    }
+    
+    /** 
+     Convenience method for adding all possible filter options to the view. Alternatively calling classes can call the individual methods if they only want a limited set of filter options. 
+     */
+    func addAllFilters() {
+        self.addCallingsFilterCell()
+        self.addTimeInCallingFilterCell()
+        self.addAgeFilterCell()
+        self.addGenderFilterCell()
     }
     
     // MARK: - Table view data source
@@ -154,10 +169,9 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
         cell.filterDelegate = self
         filterContentArray.append(cell)
     }
-    private func addOrgFilterCell(title: String, upperLevelNames: [String]?, lowerLevelNames: [String]?) {
-        let cell = FilterOrgTableViewCell(style: .default, reuseIdentifier: "FilterOrgCell", title: "Class", upperClasses: upperLevelNames, lowerClasses: lowerLevelNames)
-        
-        filterContentArray.append(cell)
+    private func addOrgFilterCell(title: String, orgType: FilterOrgType, upperLevelEnums: [FilterButtonEnum], lowerLevelEnums: [FilterButtonEnum]) {
+        let cell = FilterOrgTableViewCell(style: .default, reuseIdentifier: "FilterOrgCell", title: "Class", orgType: orgType, upperClasses: upperLevelEnums, lowerClasses: lowerLevelEnums)
+            filterContentArray.append(cell)
     }
     
     func cancelPressed () {
@@ -170,14 +184,26 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
         self.navigationController?.popViewController(animated: true)
     }
     
-    func getUpdatedFilterObject() -> FilterOptionsObject {
-        var filterOptions : FilterOptionsObject = FilterOptionsObject()
-        for cell in tableView.visibleCells {
-            let filterCell = cell as? FilterBaseTableViewCell
-            filterOptions = (filterCell?.getSelectedOptions(filterOptions: filterOptions))!
+    func getUpdatedFilterObject() -> FilterOptions {
+        var filterOptions : FilterOptions = FilterOptions()
+        // combines the elements of all the UI elements into a single filter options object
+        filterOptions = filterContentArray.reduce( filterOptions ) {
+            let filterCell = $1 as? UIFilterElement
+            // we pass in the current filterOptions and return one with any updates from the current UIFilterElement
+            return filterCell?.getSelectedOptions(filterOptions: $0) ?? $0
         }
         return filterOptions
     }
+    
+    func updateUI(fromFilterOptions filterOptions:FilterOptions) {
+        // set the state of all the child UI elements based on any filters options that should be applied
+        for cell in filterContentArray {
+            let filterCell = cell as? UIFilterElement
+            filterCell?.setSelectedOptions(filterOptions: filterOptions)
+        }
+        tableView.reloadData()
+    }
+    
     
     func updateFilterOptionsForFilterView() {
         self.filterObject = getUpdatedFilterObject()

@@ -46,20 +46,21 @@ class FilterCallingNumberTableViewCell: FilterBaseTableViewCell {
         self.addConstraints([titleXConstraint, titleYConstraint])
     }
     
+    /**
+     The number's for the number of callings. They are currently designed to be a series of successive increasing numbers, with the last one representing the last number and greater (i.e. 0, 1, 2, 3+). You can easily change the number of elements by just providing fewer or more numbers, but if deviating from the pattern code changes will probably be required. So changing to 0, 1, 2+ can be done via params, but if you want 2,4,6  then that would likely require code changes
+     */
     func addNumberButtons (buttonsToAdd: [Int]) {
         var lastView : UIView = titleLabel
-        var buttonTag = 0
-        for button in buttonsToAdd {
+        for buttonInt in buttonsToAdd {
             let currentButton = FilterButton()
-            currentButton.tag = buttonTag
-            buttonTag += 1
+            // we also store the numerical value that the button represents in the button tag
+            currentButton.tag = buttonInt
             numberButtonArray.append(currentButton)
             
-            if button != buttonsToAdd[buttonsToAdd.count-1]{
-                currentButton.setTitle(String(button), for: UIControlState.normal)
-            }
-            else {
-                currentButton.setTitle("\(button)+", for: .normal)
+            currentButton.setTitle(String(buttonInt), for: UIControlState.normal)
+            // add the + to the last element
+            if buttonInt == buttonsToAdd.last {
+                currentButton.setTitle("\(buttonInt)+", for: .normal)
             }
             
             currentButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
@@ -83,35 +84,48 @@ class FilterCallingNumberTableViewCell: FilterBaseTableViewCell {
     func buttonSelected (sender: FilterButton) {
         if sender.isSelected {
             sender.setupForUnselected()
-            sender.isSelected = false
         }
         else {
-//            for button in numberButtonArray {
-//                button.isSelected = false
-//                button.setupForUnselected()
-//            }
-//        
-            sender.isSelected = true
             sender.setupForSelected()
         }
-    }
-    
-    override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
-        for button in numberButtonArray {
-            if button.isSelected {
-                if filterOptions.callings == nil {
-                    filterOptions.callings = [0: false, 1: false, 2: false, 3: false,]
-                }
-                filterOptions.callings?[button.tag] = true
-            }
-            else {
-                filterOptions.callings?[button.tag] = false
-            }
-        }
-        return filterOptions
     }
     
     override func getCellHeight() -> CGFloat {
         return 44
     }
+}
+
+extension FilterCallingNumberTableViewCell : UIFilterElement {
+    func getSelectedOptions( filterOptions: FilterOptions) -> FilterOptions {
+        var filter = filterOptions
+        var atLeastOneSelected = false
+        var numCallingsSelections : [Int:Bool] = [:]
+        // we're creating a dictionary of the number of callings and whether it should be filtered. i.e. [0:false, 1:true, 2:false, 3:false]
+        // For some filters just adding the true elements  to the list would suffice, but because the last element in this list is always x+ (so 3 or more callings) the filter object needs to know the max value that was in the list to know where to apply the x+ behavior. So for this list of filter options we need to include all elements whether they're true or false (unless they're all false, then we can just leave it nil because there's nothing for the filter object to do).
+        for button in numberButtonArray {
+            numCallingsSelections[button.tag] = button.isSelected
+            atLeastOneSelected = atLeastOneSelected || button.isSelected
+        }
+        if atLeastOneSelected {
+            filter.callings = numCallingsSelections
+        }
+        return filter
+    }
+    
+    func setSelectedOptions(filterOptions: FilterOptions) {
+        guard let callings = filterOptions.callings  else {
+            return
+        }
+        
+        for (callingIdx, btnSelected) in callings {
+            if callingIdx < numberButtonArray.count {
+               let currentBtn = numberButtonArray[callingIdx]
+                currentBtn.isSelected = btnSelected
+                if btnSelected {
+                    currentBtn.setupForSelected()
+                }
+            }
+        }
+    }
+
 }

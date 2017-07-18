@@ -96,7 +96,7 @@ public class HTVTMemberParser : MemberParser {
         
         let gender = Gender.init( optionalRaw: json[HTVTMemberJsonKeys.gender] as? String )
         
-        return Member(indId: indId, name: name, indPhone: indPhone, housePhone: householdPhone, indEmail: indEmail, householdEmail: householdEmail, streetAddress: streetAddress, birthdate: birthdate, gender: gender, priesthood: priesthood, callings: [])
+        return Member(indId: indId, name: name, indPhone: indPhone, housePhone: householdPhone, indEmail: indEmail, householdEmail: householdEmail, streetAddress: streetAddress, birthdate: birthdate, gender: gender, priesthood: priesthood)
     }
     
     public func addressString( city : String?, state : String?, zip : String? ) -> String? {

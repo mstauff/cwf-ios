@@ -14,7 +14,7 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     
     var delegate : CallingsTableViewControllerDelegate? = nil
     
-    var filterObject : FilterOptionsObject?
+    var filterObject : FilterOptions?
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -126,7 +126,7 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     }
     
     //MARK: - FilterDelegate
-    func setFilterOptions(memberFilterOptions: FilterOptionsObject) {
+    func setFilterOptions(memberFilterOptions: FilterOptions) {
         filterObject = memberFilterOptions
         //filteredMembers = (filterObject?.filterMemberData(unfilteredArray: inProgressCallingsToDisplay))!
         tableView.reloadData()

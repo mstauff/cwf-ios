@@ -12,7 +12,8 @@ public struct PositionRequirements : JSONParsable {
     
     let gender : Gender?
     
-    let age : Int?
+    // whether the position generally requires an adult. This will match enable the 18+ filter if it is set. We don't currently know a use case for a youth Bool, but could add that also if need arises
+    let adult : Bool
     
     let priesthood : [Priesthood]
     
@@ -23,7 +24,7 @@ public struct PositionRequirements : JSONParsable {
     public init?( fromJSON json: JSONObject) {
         gender = Gender.init( optionalRaw: json[PositionRequirementsJsonKeys.gender] as? String )
         
-        age = json[PositionRequirementsJsonKeys.age] as? Int
+        adult = json[PositionRequirementsJsonKeys.adult] as? Bool ?? false
         
         let priesthoodOffices = json[PositionRequirementsJsonKeys.priesthood] as? [String] ?? []
         priesthood = priesthoodOffices.map() { Priesthood.init( optionalRaw: $0 ) }.flatMap() { $0 } // .flatMap() will remove any nill objects
@@ -40,7 +41,7 @@ public struct PositionRequirements : JSONParsable {
 
     private struct PositionRequirementsJsonKeys {
         static let gender = "gender"
-        static let age = "age"
+        static let adult = "adult"
         static let priesthood = "priesthood"
         static let memberClasses = "memberClasses"
     }
@@ -49,7 +50,7 @@ public struct PositionRequirements : JSONParsable {
 
 extension PositionRequirements : Equatable {
     static public func == (lhs: PositionRequirements, rhs: PositionRequirements ) -> Bool {
-        return lhs.gender == rhs.gender && lhs.age == rhs.age && lhs.priesthood == rhs.priesthood && lhs.memberClasses == rhs.memberClasses
+        return lhs.gender == rhs.gender && lhs.adult == rhs.adult && lhs.priesthood == rhs.priesthood && lhs.memberClasses == rhs.memberClasses
     }
 }
 

@@ -10,12 +10,13 @@ import UIKit
 
 class FilterGenderTableViewCell: FilterBaseTableViewCell {
     let titleLabel : UILabel = UILabel()
-    var genderButtonArray : [FilterButton] = []
+    var maleButton = FilterButton()
+    var femaleButton = FilterButton()
         
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupTitle()
-        setupAgeButtons()
+        setupButtons()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -45,10 +46,8 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
         self.addConstraints([hConstraint, lConstraint, xConstraint])
     }
     
-    func setupAgeButtons() {
+    func setupButtons() {
         
-        let maleButton = FilterButton()
-        genderButtonArray.append(maleButton)
         maleButton.setTitle("Male", for: UIControlState.normal)
         maleButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
         maleButton.tag = 1
@@ -60,8 +59,6 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
         
         self.addConstraints([xConstraint, yConstraint])
         
-        let femaleButton = FilterButton()
-        genderButtonArray.append(femaleButton)
         femaleButton.setTitle("Female", for: UIControlState.normal)
         femaleButton.layoutMargins = .init(top: 5, left: 5, bottom: 5, right: 5)
         femaleButton.tag = 2
@@ -80,42 +77,36 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
     
     func buttonSelected (sender: FilterButton) {
         if (sender.isSelected) {
-            sender.isSelected = false
             sender.setupForUnselected()
-        }
-        else {
-            for button in genderButtonArray {
-                if button == sender {
-                    button.isSelected = true
-                    button.setupForSelected()
-                }
-                else {
-                    button.isSelected = false
-                    button.setupForUnselected()
-                }
-            }
+        } else {
+            // if it wasn't selected we enable it, but also we need to make sure if the other was selected that we deselect it. Currently age & gender are the only buttons that are one or the other. If we have any more in the future it would probably make sense to make a button group manager that can manage this behavior. Right now we only ever have 2 buttons in the group so easy to just deselect the other. If in the future we have more than 2 then we would need to go with an array of the other buttons
+            let otherButton = sender == femaleButton ? maleButton : femaleButton
+            otherButton.setupForUnselected()
+            
+            sender.setupForSelected()
         }
         filterDelegate?.updateFilterOptionsForFilterView()
     }
     
-    override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
-        for button in genderButtonArray {
-            switch button.tag {
-            case 1:
-                if button.isSelected {
-                    filterOptions.gender = Gender.Male
-                }
-                
-            case 2:
-                if button.isSelected {
-                    filterOptions.gender = Gender.Female
-                }
-                
-            default:
-                filterOptions.gender = nil
-            }
+}
+
+extension FilterGenderTableViewCell : UIFilterElement {
+    func getSelectedOptions(filterOptions: FilterOptions) -> FilterOptions {
+        var filterOptions = filterOptions
+        if maleButton.isSelected {
+            filterOptions.gender = Gender.Male
+        } else if femaleButton.isSelected {
+            filterOptions.gender = Gender.Female
         }
         return filterOptions
+    }
+
+    func setSelectedOptions(filterOptions: FilterOptions) {
+        guard let gender = filterOptions.gender else {
+            return
+        }
+        let selectedBtn = gender == .Female ? femaleButton : maleButton
+        selectedBtn.setupForSelected()
     }
 }
 

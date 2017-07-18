@@ -13,7 +13,7 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     var members : [MemberCallings] = []
 
     var filteredMembers = [MemberCallings]()
-    var filterViewOptions : FilterOptionsObject? = nil
+    var filterViewOptions : FilterOptions? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,7 +76,7 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     
     //MARK: - FilterViewDelegate
     
-    func setFilterOptions(memberFilterOptions: FilterOptionsObject) {
+    func setFilterOptions(memberFilterOptions: FilterOptions) {
         filterViewOptions = memberFilterOptions
         filteredMembers = (filterViewOptions?.filterMemberData(unfilteredArray: members))!
         tableView.reloadData()

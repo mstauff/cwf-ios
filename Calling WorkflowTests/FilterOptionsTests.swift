@@ -30,7 +30,7 @@ class FilterOptionsTests: XCTestCase {
         let memberNoAge = createMemberCallings(withId: 70, withAge: 0)
         
         let memberList = [member10, member15, member30, member60, memberNoAge]
-        var filterOptions = FilterOptionsObject()
+        var filterOptions = FilterOptions()
         
         // list should not be changed with no filter options
         var filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
@@ -62,12 +62,12 @@ class FilterOptionsTests: XCTestCase {
     }
     
     func testFilterForGender() {
-        let male = MemberCallings( member: Member(indId: 100, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: .Male, priesthood: nil, callings: []))
-        let female = MemberCallings(member: Member(indId: 100, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: .Female, priesthood: nil, callings: []))
-        let badData = MemberCallings(member: Member(indId: 100, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil, callings: []))
+        let male = MemberCallings( member: Member(indId: 100, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: .Male, priesthood: nil))
+        let female = MemberCallings(member: Member(indId: 100, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: .Female, priesthood: nil))
+        let badData = MemberCallings(member: Member(indId: 100, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil))
         let memberList = [male, female, badData]
         
-        var filter = FilterOptionsObject()
+        var filter = FilterOptions()
         filter.gender = .Male
         var filteredList = filter.filterMemberData(unfilteredArray: memberList)
         XCTAssertEqual(filteredList, [male])
@@ -86,7 +86,7 @@ class FilterOptionsTests: XCTestCase {
         let fourCallings = createMemberCallings(withId: 400, withNumCallings: 4)
         var memberList = [noCallings, singleCalling, twoCallings, threeCallings, fourCallings]
         
-        var filter = FilterOptionsObject()
+        var filter = FilterOptions()
         var filteredList = filter.filterMemberData(unfilteredArray: memberList)
         XCTAssertEqual(filteredList, memberList)
 
@@ -122,7 +122,7 @@ class FilterOptionsTests: XCTestCase {
         let memberNoCallings = createMemberCallings(withId: 70, numMonthsInCallings: [])
         
         let memberList = [member10months, memberLongCallingEndList, memberLongCallingStartList, memberLongCallingMiddleList, memberNoCallings]
-        var filterOptions = FilterOptionsObject()
+        var filterOptions = FilterOptions()
         
         // list should not be changed with no filter options
         var filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
@@ -149,27 +149,53 @@ class FilterOptionsTests: XCTestCase {
         
         let memberList = [priestMember, deaconMember, elderMember, noPriesthoodMember]
         
-        var filterOptions = FilterOptionsObject()
+        var filterOptions = FilterOptions()
         // options with just the desired priesthood set to true, the rest of the map is empty
-        filterOptions.priesthood = [.Priest:true]
+        filterOptions.priesthood.append( .Priest)
         var filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
         XCTAssertEqual(filteredList, [priestMember])
         
         // multiple options set to true, but still rest of the map is empty
-        filterOptions.priesthood![.Elder] = true
+        filterOptions.priesthood.append(.Elder)
         filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
         XCTAssertEqual(filteredList, [priestMember, elderMember])
         
-        // multiple options - some true & some false
-        filterOptions.priesthood = [.Deacon: true, .Teacher: true, .Priest: false, .Elder: true, .HighPriest: true, .Seventy: true]
-        filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
-        XCTAssertEqual(filteredList, [deaconMember, elderMember])
     }
     
     func testFilterForClass() {
         // holding off on this for now, since currently we would have to do a bunch of age based setup that would all go away once we move to the longterm solution of pulling the data from a service
         
     }
+    
+    func testMultipleFilters() {
+        let member10Male = createMemberCallings(withId: 10, withAge: 10, withGender: .Male)
+        let member15Female = createMemberCallings(withId: 15, withAge: 15, withGender: .Female)
+        let member30Male = createMemberCallings(withId: 30, withAge: 30, withGender: .Male)
+        let member30Female = createMemberCallings(withId: 30, withAge: 30, withGender: .Female)
+        let member60Male = createMemberCallings(withId: 60, withAge: 60, withGender: .Male)
+        let member60Female = createMemberCallings(withId: 60, withAge: 60, withGender: .Female)
+        let memberNoAge = createMemberCallings(withId: 70, withAge: 0)
+        
+        let memberList = [member10Male, member15Female, member30Male, member30Female, member60Male, member60Female, memberNoAge]
+        var filterOptions = FilterOptions()
+        
+        // list should not be changed with no filter options
+        var filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
+        XCTAssertEqual(filteredList, memberList)
+        
+        // ensure filter is applied as an && not || - results need to match all the criteria
+        filterOptions.minAge = 15
+        filterOptions.maxAge = 30
+        filterOptions.gender = .Male
+        filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
+        XCTAssertEqual(filteredList, [member30Male])
+        
+        filterOptions.gender = .Female
+        filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
+        XCTAssertEqual(filteredList, [member15Female, member30Female])
+    }
+    
+
 
     func testPerformanceExample() {
         // This is an example of a performance test case.
@@ -177,8 +203,7 @@ class FilterOptionsTests: XCTestCase {
             // Put the code you want to measure the time of here.
         }
     }
-
-    func createMemberCallings( withId id: Int, withAge age: Int ) -> MemberCallings {
+    func createMemberCallings( withId id: Int, withAge age: Int, withGender gender: Gender? ) -> MemberCallings {
         var birthDate : Date? = nil
         if age > 0 {
             var ageComponents = DateComponents()
@@ -186,13 +211,17 @@ class FilterOptionsTests: XCTestCase {
             birthDate = Calendar.current.date(byAdding: ageComponents, to: Date())
         }
         
-        let member = Member(indId: Int64(id), name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: birthDate, gender: nil, priesthood: nil, callings: [])
+        let member = Member(indId: Int64(id), name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: birthDate, gender: gender, priesthood: nil)
         return MemberCallings(member: member)
+    }
+
+    func createMemberCallings( withId id: Int, withAge age: Int ) -> MemberCallings {
+        return createMemberCallings(withId: id, withAge: age, withGender: nil)
     }
     
     func createMemberCallings( withId id: Int, withPriesthood priesthood: Priesthood ) -> MemberCallings {
         
-        let member = Member(indId: Int64(id), name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: priesthood, callings: [])
+        let member = Member(indId: Int64(id), name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: priesthood)
         return MemberCallings(member: member)
     }
 
@@ -206,7 +235,7 @@ class FilterOptionsTests: XCTestCase {
             }
         }
         
-        let member = Member(indId: Int64(id), name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil, callings: [])
+        let member = Member(indId: Int64(id), name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
         return MemberCallings(member: member, callings: callings, proposedCallings: [])
     }
     
@@ -224,7 +253,7 @@ class FilterOptionsTests: XCTestCase {
             }
         }
         
-        let member = Member(indId: Int64(id), name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil, callings: [])
+        let member = Member(indId: Int64(id), name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
         return MemberCallings(member: member, callings: callings, proposedCallings: [])
     }
     

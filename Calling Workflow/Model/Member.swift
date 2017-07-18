@@ -38,10 +38,6 @@ public struct Member {
     /* Priesthood office of the member if they hold it, and if it is available from the service. HTVT includes it, some others do not.*/
     let priesthood : Priesthood?
     
-    /* Current callings that the member has. This does not come included with any service, we will have to populate from our own internal data*/
-    // todo - this should be removed - it's superseded by MemberCallings
-    var currentCallings : [Calling]
-    
     /* This is the property that should be queried for a user's phone number. Individual phone will be used if it has a value, if not we will fall back to the household phone */
     var phone : String? {
         get  {
@@ -67,7 +63,7 @@ public struct Member {
         }
     }
     
-    init (indId: Int64, name:String?, indPhone: String?, housePhone:String?, indEmail:String?, householdEmail:String?, streetAddress : [String], birthdate : Date?, gender : Gender?, priesthood : Priesthood?, callings : [Calling] ) {
+    init (indId: Int64, name:String?, indPhone: String?, housePhone:String?, indEmail:String?, householdEmail:String?, streetAddress : [String], birthdate : Date?, gender : Gender?, priesthood : Priesthood?) {
         self.individualId = indId
         self.name = Utils.nilIfEmpty(name)
         self.individualPhone = Utils.nilIfEmpty( indPhone )
@@ -78,7 +74,6 @@ public struct Member {
         self.birthdate = birthdate
         self.gender = gender
         self.priesthood = priesthood
-        self.currentCallings = callings
     }
 }
 
