@@ -11,8 +11,13 @@ import UIKit
 class FilterAgeTableViewCell: FilterBaseTableViewCell {
 
     let titleLabel : UILabel = UILabel()
-    var ageButtonArray : [FilterButton] = []
-      
+    var youthButton : FilterButton = FilterButton()
+    var adultButton : FilterButton = FilterButton()
+    
+    let youthLabel = "\(FilterConstants.youthMinAge)-\(FilterConstants.youthMaxAge)"
+    let adultLabel = "\(FilterConstants.adultMinAge)+"
+    
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupTitle()
@@ -48,9 +53,7 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
     
     func setupAgeButtons() {
         
-        let youthButton = FilterButton()
-        ageButtonArray.append(youthButton)
-        youthButton.setTitle("12-18", for: UIControlState.normal)
+        youthButton.setTitle(youthLabel, for: UIControlState.normal)
         youthButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
         youthButton.tag = 1
         
@@ -61,9 +64,7 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
         
         self.addConstraints([xConstraint, yConstraint])
         
-        let adultButton = FilterButton()
-        ageButtonArray.append(adultButton)
-        adultButton.setTitle("18+", for: UIControlState.normal)
+        adultButton.setTitle(adultLabel, for: UIControlState.normal)
         adultButton.tag = 2
         adultButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
         
@@ -78,40 +79,42 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
     }
     
     func buttonSelected (sender: FilterButton) {
+        // if the button is selected then we just need to deselect it
         if sender.isSelected {
-            sender.isSelected = false
             sender.setupForUnselected()
-        }
-        else {
-            for button in ageButtonArray {
-                button.isSelected = false
-                button.setupForUnselected()
-            }
+        } else {
+            // if it wasn't selected we enable it, but also we need to make sure if the other was selected that we deselect it. Currently age & gender are the only buttons that are one or the other. If we have any more in the future it would probably make sense to make a button group manager that can manage this behavior. Right now we only ever have 2 buttons in the group so easy to just deselect the other. If in the future we have more than 2 then we would need to go with an array of the other buttons
+            let otherButton = sender == adultButton ? youthButton : adultButton
+            otherButton.setupForUnselected()
         
-            sender.isSelected = true
             sender.setupForSelected()
         }
-        filterDelegate?.updateFilterOptionsForFilterView() 
     }
     
-    override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
-        for button in ageButtonArray {
-            switch button.tag {
-            case 1:
-                if (button.isSelected) {
-                    filterOptions.minAge = 12
-                    filterOptions.maxAge = 18
-                }
-            case 2:
-                if button.isSelected {
-                    filterOptions.minAge = 18
-                    filterOptions.maxAge = nil
-                }
-            default:
-                print("button with no tag selected")
-            }
+
+}
+
+extension FilterAgeTableViewCell : UIFilterElement {
+    func getSelectedOptions(filterOptions: FilterOptions) -> FilterOptions {
+        var filterOptions = filterOptions
+        if youthButton.isSelected {
+            filterOptions.minAge = FilterConstants.youthMinAge
+            filterOptions.maxAge = FilterConstants.youthMaxAge
+        } else if adultButton.isSelected {
+            filterOptions.minAge = FilterConstants.adultMinAge
+            filterOptions.maxAge = nil
         }
         return filterOptions
     }
-
+    
+    func setSelectedOptions(filterOptions: FilterOptions) {
+        if let minAge = filterOptions.minAge {
+            if minAge == FilterConstants.youthMinAge {
+                youthButton.setupForSelected()
+            } else if minAge == FilterConstants.adultMinAge {
+                adultButton.setupForSelected()
+            }
+        }
+    }
+    
 }

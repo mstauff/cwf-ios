@@ -10,6 +10,7 @@ import UIKit
 
 class FilterButton: UIButton {
     var callingStatusOption : CallingStatus? = nil
+    var filterButtonEnum : FilterButtonEnum? = nil
 
     required init() {
         super.init(frame: .zero)
@@ -28,11 +29,13 @@ class FilterButton: UIButton {
     }
     
     func setupForUnselected () {
+        self.isSelected = false
         self.backgroundColor = UIColor.clear
         self.setTitleColor(UIColor.CWFGreyTextColor, for: .normal)
     }
 
     func setupForSelected () {
+        self.isSelected = true
         self.backgroundColor = UIColor.CWFNavBarTintColor
         self.setTitleColor(.white, for: .normal)
     }

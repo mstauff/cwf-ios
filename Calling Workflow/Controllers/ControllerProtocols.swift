@@ -33,5 +33,5 @@ protocol FilterTableViewCellDelegate {
 }
 
 protocol FilterTableViewControllerDelegate {
-    func setFilterOptions(memberFilterOptions: FilterOptionsObject)
+    func setFilterOptions(memberFilterOptions: FilterOptions)
 }

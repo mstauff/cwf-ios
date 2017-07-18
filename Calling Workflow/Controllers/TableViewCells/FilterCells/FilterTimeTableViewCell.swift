@@ -82,6 +82,7 @@ class FilterTimeTableViewCell: FilterBaseTableViewCell {
             sliderLabel.text = "\(String(sliderView.value)) Months"
         }
         else {
+            // round to quarter year and reset the value - this is what causes the slider to snap to the next quarter value (1.75 years, rather than allowing 1.6 years)
             let valueAsInt = (Int((sender.value + 1.5) / 3.0)) * 3
             sender.setValue(Float(valueAsInt), animated: false)
 
@@ -94,8 +95,22 @@ class FilterTimeTableViewCell: FilterBaseTableViewCell {
         return 85
     }
     
-    override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
+}
+
+extension FilterTimeTableViewCell : UIFilterElement {
+    func getSelectedOptions(filterOptions: FilterOptions) -> FilterOptions {
+        var filterOptions = filterOptions
         filterOptions.minMonthsInCalling = Int(sliderView.value)
         return filterOptions
+    }
+
+    func setSelectedOptions(filterOptions: FilterOptions) {
+        guard let monthsInCalling = filterOptions.minMonthsInCalling else {
+            return
+        }
+        
+        sliderView.value = Float( monthsInCalling )
+        sliderValueChanged(sender: sliderView)
+        
     }
 }

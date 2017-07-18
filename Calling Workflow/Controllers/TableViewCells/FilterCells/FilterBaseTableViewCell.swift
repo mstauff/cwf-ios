@@ -37,8 +37,11 @@ class FilterBaseTableViewCell: UITableViewCell {
         return 44
     }
     
-    func getSelectedOptions (filterOptions: FilterOptionsObject) -> FilterOptionsObject {
-        return filterOptions
-    }
+}
 
+protocol UIFilterElement {
+    // get the filter options object based on the state of the UI
+    func getSelectedOptions (filterOptions: FilterOptions) -> FilterOptions
+    // set the UI based on the filter options object
+    func setSelectedOptions (filterOptions: FilterOptions)
 }

@@ -104,7 +104,8 @@ class TitleAdjustableSubtitleTableViewCell: UITableViewCell {
     
     class func getHeightForCellForMember(member:Member) -> CGFloat {
         var cellHeight:CGFloat = 24 + 20
-        cellHeight += (22 * CGFloat(member.currentCallings.count))
+        // todo - need to change this to MemberCallings object
+//        cellHeight += (22 * CGFloat(member.currentCallings.count))
         return cellHeight
     }
 }

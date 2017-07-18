@@ -214,6 +214,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
     }
     
+    // Tap handler for current/proposed/status options in calling details
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 1:
@@ -221,21 +222,29 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
 
             switch indexPath.row {
             case 0:
+                // Tapped the current holder - need to display the bottom sheet with contact info for the current calling holder if there is one
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
                 if let memberId = callingToDisplay?.existingIndId {
                     displayContactInfoForMember(member:  (appDelegate?.callingManager.getMemberCallings(forMemberId: memberId))!)
                 }
             
             case 1:
+                // Tapped the proposed calling holder. Transition to member picker to select a proposed person for this calling
                 let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
                 let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
+                // register as the delegate for selecting a member to update the proposed person
                 nextVC?.delegate = self
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                    // setup the members to display in the picker, along with any filter options that should be preset based on the calling requirements
                     nextVC?.members = appDelegate.callingManager.memberCallings
+                    let requirements = callingToDisplay?.position.metadata.requirements
+                    let filterOptions = requirements != nil ? FilterOptions( fromPositionRequirements: requirements! ) : FilterOptions()
+                    nextVC?.filterViewOptions = filterOptions
                 }
                 navigationController?.pushViewController(nextVC!, animated: true)
             
             case 2:
+                // Tapped the status, show the selection screen for choosing a status
                 let statusActionSheet = getStatusActionSheet(delegate: self)
                 self.present(statusActionSheet, animated: true, completion: nil)
 

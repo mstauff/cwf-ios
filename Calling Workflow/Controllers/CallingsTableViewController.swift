@@ -12,7 +12,7 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     
     var inProgressCallingsToDisplay : [Calling] = []
     
-    var filterObject : FilterOptionsObject?
+    var filterObject : FilterOptions?
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -47,11 +47,9 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     func setupCallingsToDisplay() {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         if let unit = appDelegate?.callingManager.appDataOrg {
-            //inProgressCallingsToDisplay = unit.allInProcessCallings //TODO - change this back. It breaks this view
-            inProgressCallingsToDisplay = unit.allOrgCallings
+            inProgressCallingsToDisplay = unit.allInProcessCallings
         }
     }
-    
 
     // MARK: - Table view data source
 
@@ -102,9 +100,9 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
         let nextVc = storyboard.instantiateViewController(withIdentifier: "CallingDetailsTableViewController") as? CallingDetailsTableViewController
-        
+            
         nextVc?.callingToDisplay = inProgressCallingsToDisplay[indexPath.row]
-        
+            
         navigationController?.pushViewController(nextVc!, animated: true)
     }
     
@@ -119,7 +117,7 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     }
     
     //MARK: - FilterDelegate
-    func setFilterOptions(memberFilterOptions: FilterOptionsObject) {
+    func setFilterOptions(memberFilterOptions: FilterOptions) {
         filterObject = memberFilterOptions
         //filteredMembers = (filterObject?.filterMemberData(unfilteredArray: inProgressCallingsToDisplay))!
         tableView.reloadData()

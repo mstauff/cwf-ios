@@ -383,7 +383,7 @@ class CallingManagerServiceTests: XCTestCase {
 
 
     func createMember( withId id: Int64 ) -> Member {
-        return Member(indId: id, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil, callings: [])
+        return Member(indId: id, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
         
     }
 

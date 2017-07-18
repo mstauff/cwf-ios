@@ -77,7 +77,7 @@ class ModelTests: XCTestCase {
         XCTAssertEqual( bishopPriesthood.count, 1 )
         XCTAssertEqual(bishopPriesthood[0], .HighPriest)
         XCTAssertEqual(bishop.requirements!.gender!, .Male)
-        XCTAssertNil( bishop.requirements!.age )
+        XCTAssertFalse( bishop.requirements!.adult )
         XCTAssertTrue( bishop.requirements!.memberClasses.isEmpty )
         
         let firstCounselor = positionMap[54]!
@@ -546,7 +546,7 @@ class ModelTests: XCTestCase {
     }
     
     func createMember( withId id: Int64 ) -> Member {
-        return Member(indId: id, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil, callings: [])
+        return Member(indId: id, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
         
     }
 

@@ -106,24 +106,12 @@ class FilterCallingStatusTableViewCell: FilterBaseTableViewCell {
     func buttonSelected (sender: FilterButton) {
         if sender.isSelected {
             sender.setupForUnselected()
-            sender.isSelected = false
         }
         else {
-            sender.isSelected = true
             sender.setupForSelected()
         }
     }
 
-    override func getSelectedOptions(filterOptions: FilterOptionsObject) -> FilterOptionsObject {
-        filterOptions.callingStatuses = [:]
-        for statusButton in statusButtonArray{
-            if let status = statusButton.callingStatusOption {
-                filterOptions.callingStatuses?[status] = statusButton.isSelected
-            }
-        }
-        
-        return filterOptions
-    }
     
     override func getCellHeight() -> CGFloat {
         let remainder : Double = Double(CallingStatus.userValues.count)/3.0 - Double(CallingStatus.userValues.count/3)
@@ -133,5 +121,23 @@ class FilterCallingStatusTableViewCell: FilterBaseTableViewCell {
         else {
             return CGFloat(30 + 29*(CallingStatus.userValues.count/3))
         }
+    }
+}
+
+extension FilterCallingStatusTableViewCell : UIFilterElement {
+    func getSelectedOptions(filterOptions: FilterOptions) -> FilterOptions {
+        var filterOptions = filterOptions
+        filterOptions.callingStatuses = []
+        for statusButton in statusButtonArray{
+            if statusButton.isSelected, let status = statusButton.callingStatusOption {
+                filterOptions.callingStatuses.append(status)
+            }
+        }
+        
+        return filterOptions
+    }
+
+    func setSelectedOptions(filterOptions: FilterOptions) {
+        
     }
 }

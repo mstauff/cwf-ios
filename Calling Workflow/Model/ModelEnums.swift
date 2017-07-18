@@ -136,4 +136,31 @@ public enum MemberClass : String {
     static let allValues = [ReliefSociety, Laurel, MiaMaid, Beehive]
 }
 
+protocol FilterButtonEnum   {
+    var description:String{get}
+    var rawValue:String{get}
+    
+}
+
+extension MemberClass : FilterButtonEnum {
+    public var description : String {
+        return MemberClass.descriptionDictionary[self] ?? "Unknown"
+    }
+    
+    static let descriptionDictionary : [MemberClass:String] = allValues.toDictionary() {
+        return ($0, $0.rawValue.replacingOccurrences(of: "_", with: " ").localizedCapitalized.replacingOccurrences(of:"Miamaid", with: "MiaMaid"))
+    }    
+
+}
+
+extension Priesthood : FilterButtonEnum {
+    public var description : String {
+        return Priesthood.descriptionDictionary[self] ?? "Unknown"
+    }
+    
+    static let descriptionDictionary : [Priesthood:String] = allValues.toDictionary() {
+        return ($0, $0.rawValue.replacingOccurrences(of: "_", with: " ").localizedCapitalized)
+    }
+}
+
 

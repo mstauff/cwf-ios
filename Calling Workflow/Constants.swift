@@ -54,3 +54,9 @@ struct ErrorConstants {
     static let jsonSerializeError = 455
     static let illegalArgument = 460
 }
+
+struct FilterConstants {
+    static let youthMinAge = 12
+    static let youthMaxAge = 17
+    static let adultMinAge = 18
+}
