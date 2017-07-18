@@ -12,8 +12,6 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     
     var inProgressCallingsToDisplay : [Calling] = []
     
-    var delegate : CallingsTableViewControllerDelegate? = nil
-    
     var filterObject : FilterOptionsObject?
     
     // MARK: - Life Cycle
@@ -38,12 +36,8 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
         super.viewWillAppear(animated)
         tabBarController?.title = "In Progress"
         
-        if delegate == nil {
-            self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "filter"), style: .done, target: self, action: #selector(filterButtonPressed))
-        }
-        else {
-            self.tabBarController?.navigationItem.rightBarButtonItem = nil
-        }
+        self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "filter"), style: .done, target: self, action: #selector(filterButtonPressed))
+
         setupCallingsToDisplay()
         tableView.reloadData()
     }
@@ -51,13 +45,13 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     // MARK: - Setup
     
     func setupCallingsToDisplay() {
-        if delegate == nil {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            if let unit = appDelegate?.callingManager.appDataOrg {
-                inProgressCallingsToDisplay = unit.allInProcessCallings
-            }
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        if let unit = appDelegate?.callingManager.appDataOrg {
+            //inProgressCallingsToDisplay = unit.allInProcessCallings //TODO - change this back. It breaks this view
+            inProgressCallingsToDisplay = unit.allOrgCallings
         }
     }
+    
 
     // MARK: - Table view data source
 
@@ -104,19 +98,14 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        if delegate == nil {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
-            let nextVc = storyboard.instantiateViewController(withIdentifier: "CallingDetailsTableViewController") as? CallingDetailsTableViewController
-            
-            nextVc?.callingToDisplay = inProgressCallingsToDisplay[indexPath.row]
-            
-            navigationController?.pushViewController(nextVc!, animated: true)
-        }
-        else {
-            self.delegate?.setReturnedCalling(calling: inProgressCallingsToDisplay[indexPath.row])
-            self.navigationController?.popViewController(animated: true)
-        }
+        let nextVc = storyboard.instantiateViewController(withIdentifier: "CallingDetailsTableViewController") as? CallingDetailsTableViewController
+        
+        nextVc?.callingToDisplay = inProgressCallingsToDisplay[indexPath.row]
+        
+        navigationController?.pushViewController(nextVc!, animated: true)
     }
     
     func filterButtonPressed(sender : UIView) {
