@@ -133,7 +133,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
-        case 0:
+        case 0: // first section of the view is the title cell
             let cell = tableView.dequeueReusableCell(withIdentifier: "dataSubdata", for: indexPath) as? DataSubdataTableViewCell
 
             cell?.mainLabel?.text = callingToDisplay?.position.name
@@ -141,8 +141,9 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             
             return cell!
             
-        case 1:
+        case 1: // second section of the view is the information
             switch indexPath.row {
+            // this is the currently called cell
             case 0:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "oneRightTwoLeftCell", for: indexPath) as? OneRightTwoLeftTableViewCell
                 
@@ -154,9 +155,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                     if let months : Int = callingToDisplay?.existingMonthsInCalling {
                         cell?.subdataLabel.text = "\(months) months"
                     }
+                    else {
+                        cell?.subdataLabel.text = nil
+                    }
                 }
                 return cell!
-
+                
+            // this is the proposed individual cell
             case 1:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "middleCell", for: indexPath) as? LeftTitleRightLabelTableViewCell
                 cell?.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
@@ -167,8 +172,12 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                     let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: (callingToDisplay?.proposedIndId)!)
                     cell?.dataLabel.text = proposedMember?.name
                 }
+                else {
+                    cell?.dataLabel.text = nil
+                }
                 return cell!
-
+                
+            // this is the status cell
             case 2:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "middleCell", for: indexPath) as? LeftTitleRightLabelTableViewCell
                 cell?.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
@@ -188,7 +197,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
 
             }
             
-        case 2:
+        case 2: // third section is the notes
             let cell = tableView.dequeueReusableCell(withIdentifier: "noteCell", for: indexPath) as? NotesTableViewCell
             if (callingToDisplay?.notes != nil || callingToDisplay?.notes != "") {
                 cell?.noteTextView.text = callingToDisplay?.notes
@@ -200,7 +209,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             
             return cell!
             
-        case 3:
+        case 3: // fourth section is the button for the lcr functions.
             let cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath) as? CWFButtonTableViewCell
             cell?.cellButton.setTitle("Calling Actions", for: UIControlState.normal)
             cell?.cellButton.addTarget(self, action: #selector(callingActionsButtonPressed), for: .touchUpInside)
@@ -232,8 +241,11 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 // Tapped the proposed calling holder. Transition to member picker to select a proposed person for this calling
                 let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
                 let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
+                
                 // register as the delegate for selecting a member to update the proposed person
                 nextVC?.delegate = self
+                nextVC?.currentlySelectedId = callingToDisplay?.proposedIndId
+                
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                     // setup the members to display in the picker, along with any filter options that should be preset based on the calling requirements
                     nextVC?.members = appDelegate.callingManager.memberCallings
@@ -241,6 +253,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                     let filterOptions = requirements != nil ? FilterOptions( fromPositionRequirements: requirements! ) : FilterOptions()
                     nextVC?.filterViewOptions = filterOptions
                 }
+                
                 navigationController?.pushViewController(nextVC!, animated: true)
             
             case 2:
@@ -259,9 +272,14 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     
     
     //MARK: - Member Picker Delegate
-    func setProspectiveMember(member: Member) {
+    func setProspectiveMember(member: Member?) {
         isDirty = true
-        self.callingToDisplay?.proposedIndId = member.individualId
+        if let setMember = member {
+            self.callingToDisplay?.proposedIndId = setMember.individualId
+        }
+        else {
+            self.callingToDisplay?.proposedIndId = nil
+        }
     }
     
     

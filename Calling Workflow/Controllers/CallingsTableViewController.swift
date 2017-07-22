@@ -57,6 +57,10 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
         return 1
     }
 
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1.0
+    }
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         return inProgressCallingsToDisplay.count
@@ -71,24 +75,29 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
         
         cell?.nameLabel.text = callingForRow.position.name
        
-        if callingForRow.existingIndId != nil {
-            let currentyCalled = appDelegate?.callingManager.getMemberWithId(memberId: callingForRow.existingIndId!)
-            cell?.currentCallingLabel.text = (currentyCalled?.name)! + " (\(callingForRow.existingMonthsInCalling) Months)"
+        if let currentlyCalledId = callingForRow.existingIndId {
+            if let currentyCalled = appDelegate?.callingManager.getMemberWithId(memberId: currentlyCalledId){
+                cell?.currentCallingLabel.text = (currentyCalled.name)! + " (\(callingForRow.existingMonthsInCalling) Months)"
+            }
         }
         else {
-            cell?.currentCallingLabel.text = ""
+            cell?.currentCallingLabel.text = nil
         }
         
-        if callingForRow.proposedStatus != CallingStatus.Unknown {
-            if let proposedCalled = appDelegate?.callingManager.getMemberWithId(memberId: callingForRow.proposedIndId!) {
+        if let proposedId = callingForRow.proposedIndId {
+            if let proposedCalled = appDelegate?.callingManager.getMemberWithId(memberId: proposedId) {
                 if let name = proposedCalled.name {
                     cell?.callingInProcessLabel.textColor = UIColor.CWFGreenTextColor
-                    cell?.callingInProcessLabel.text = "\(name) (\(callingForRow.proposedStatus.description))"
+                    cell?.callingInProcessLabel.text = "\(name)"
+                    
+                    if callingForRow.proposedStatus != .Unknown {
+                        cell?.callingInProcessLabel.text?.append(" (\(callingForRow.proposedStatus.description))")
+                    }
                 }
             }
         }
         else {
-            cell?.callingInProcessLabel.text = ""
+            cell?.callingInProcessLabel.text = nil
         }
 
         return cell!
@@ -106,6 +115,7 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
         navigationController?.pushViewController(nextVc!, animated: true)
     }
     
+    //MARK: - FilterButton
     func filterButtonPressed(sender : UIView) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let filterView = storyboard.instantiateViewController(withIdentifier: "FilterTableViewController") as? FilterTableViewController

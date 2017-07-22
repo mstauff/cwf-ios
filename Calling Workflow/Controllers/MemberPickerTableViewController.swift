@@ -13,13 +13,13 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     var delegate: MemberPickerDelegate?
 
     var members : [MemberCallings] = []
-    
+    var currentlySelectedId : Int64? = nil
     var searchController = UISearchController(searchResultsController: nil)
 
     var filteredMembers = [MemberCallings]()
     var filterViewOptions : FilterOptions? = nil
     
-    var tableHeaderView : UIView = UIView()
+    var headerForTable : UIView = UIView()
     
     //MARK: - Lifecycle
     
@@ -30,15 +30,10 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         tableView.register(TitleAdjustableSubtitleTableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 44
-        setupSearchController()
         
-        // if there's any filter options then apply the filter
-        if let filter = self.filterViewOptions {
-            self.filteredMembers = filter.filterMemberData(unfilteredArray: members)            
-        } else {
-            // otherwise just set the filteredMembers to the members, we always read/display from filteredMembers
-            self.filteredMembers = members
-        }
+        setupHeaderForTable()
+        
+        setupFilterOptions()
     }
 
     override func didReceiveMemoryWarning() {
@@ -48,14 +43,109 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
 
     
     // MARK: - Setup
+    func setupFilterOptions() {
+        // if there's any filter options then apply the filter
+        if let filter = self.filterViewOptions {
+            self.filteredMembers = filter.filterMemberData(unfilteredArray: members)
+        } else {
+            // otherwise just set the filteredMembers to the members, we always read/display from filteredMembers
+            self.filteredMembers = members
+        }
+
+    }
+    
+    func setupHeaderForTable () {
+        
+        headerForTable.translatesAutoresizingMaskIntoConstraints = false
+        
+        if let _ = currentlySelectedId {
+            setupRemoveCurrentMemberView()
+        }
+        
+        setupSearchController()
+
+        
+        tableView.tableHeaderView = headerForTable
+        
+        /*        let views : [String : UIView] = ["tableViewHeader" : tableHeaderView]
+         let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tableViewHeader]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: views)
+         let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tableViewHeader(==20)]-|", options: NSLayoutFormatOptions.alignAllCenterX, metrics: nil, views: views)
+         tableView.addConstraints(hConstraint)
+         tableView.addConstraints(vConstraint)
+         */
+        if let headerView = tableView.tableHeaderView {
+            let xConstraint = NSLayoutConstraint(item: headerView, attribute: .leading, relatedBy: .equal, toItem: tableView, attribute: .leading, multiplier: 1, constant: 0)
+            let yConstraint = NSLayoutConstraint(item: headerView, attribute: .top, relatedBy: .equal, toItem: tableView, attribute: .top, multiplier: 1, constant: 0)
+            let wConstraint = NSLayoutConstraint(item: headerView, attribute: .width, relatedBy: .equal, toItem: tableView, attribute: .width, multiplier: 1, constant: 0)
+            let hConstraint = NSLayoutConstraint(item: headerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: CGFloat(44*headerView.subviews.count))
+            
+            tableView.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
+            tableView.needsUpdateConstraints()
+            tableView.layoutIfNeeded()
+        }
+    }
     
     func setupSearchController () {
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
+        
         definesPresentationContext = true
-        tableHeaderView.addSubview(searchController.searchBar)
-        tableView.tableHeaderView = tableHeaderView
-//        tableView.tableHeaderView = searchController.searchBar
+        
+        headerForTable.addSubview(searchController.searchBar)
+        
+        let xConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .leading, relatedBy: .equal, toItem: headerForTable, attribute: .leading, multiplier: 1, constant: 0)
+        let yConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .bottom, relatedBy: .equal, toItem: headerForTable, attribute: .bottom, multiplier: 1, constant: 0)
+        let wConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .trailing, relatedBy: .equal, toItem: headerForTable, attribute: .trailing, multiplier: 1, constant: 0)
+        let hConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
+        
+        headerForTable.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
+    }
+    
+    func setupRemoveCurrentMemberView () {
+        let memberView = UIView()
+        memberView.translatesAutoresizingMaskIntoConstraints = false
+
+        let removeButton = UIButton(type: .system)
+        removeButton.setImage(UIImage.imageFromSystemBarButton(.trash), for: .normal)
+        removeButton.addTarget(self, action: #selector(removeButtonPressed), for: .touchUpInside)
+        removeButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        memberView.addSubview(removeButton)
+        
+        let buttonXConstraint = NSLayoutConstraint(item: removeButton, attribute: .leading, relatedBy: .equal, toItem: memberView, attribute: .leading, multiplier: 1, constant: 0)
+        let buttonYConstraint = NSLayoutConstraint(item: removeButton, attribute: .top, relatedBy: .equal, toItem: memberView, attribute: .top, multiplier: 1, constant: 0)
+        let buttonHConstraint = NSLayoutConstraint(item: removeButton, attribute: .height, relatedBy: .equal, toItem: memberView, attribute: .height, multiplier: 1, constant: 0)
+        let buttonWConstraint = NSLayoutConstraint(item: removeButton, attribute: .width, relatedBy: .equal, toItem: removeButton, attribute: .height, multiplier: 1, constant: 0)
+        
+        memberView.addConstraints([buttonXConstraint, buttonYConstraint, buttonHConstraint, buttonWConstraint])
+        
+        let nameLabel = UILabel()
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let selectedId = currentlySelectedId{
+            if let currentlySelected = appDelegate.callingManager.getMemberWithId(memberId: selectedId) {
+                nameLabel.text = currentlySelected.name
+            }
+        }
+        
+        memberView.addSubview(nameLabel)
+        
+        let nameXConstraint = NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: removeButton, attribute: .trailing, multiplier: 1, constant: 0)
+        let nameYConstraint = NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: memberView, attribute: .top, multiplier: 1, constant: 0)
+        let nameHConstraint = NSLayoutConstraint(item: nameLabel, attribute: .bottom, relatedBy: .equal, toItem: memberView, attribute: .bottom, multiplier: 1, constant: 0)
+        let nameWConstraint = NSLayoutConstraint(item: nameLabel, attribute: .right, relatedBy: .equal, toItem: memberView, attribute: .right, multiplier: 1, constant: -15)
+        
+        memberView.addConstraints([nameXConstraint, nameYConstraint, nameHConstraint, nameWConstraint])
+        
+        
+        headerForTable.addSubview(memberView)
+        
+        let xConstraint = NSLayoutConstraint(item: memberView, attribute: .leading, relatedBy: .equal, toItem: headerForTable, attribute: .leading, multiplier: 1, constant: 0)
+        let yConstraint = NSLayoutConstraint(item: memberView, attribute: .top, relatedBy: .equal, toItem: headerForTable, attribute: .top, multiplier: 1, constant: 0)
+        let wConstraint = NSLayoutConstraint(item: memberView, attribute: .trailing, relatedBy: .equal, toItem: headerForTable, attribute: .trailing, multiplier: 1, constant: 0)
+        let hConstraint = NSLayoutConstraint(item: memberView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
+        
+        headerForTable.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
     }
     
     // MARK: - Table view data source
@@ -102,8 +192,8 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     
     // MARK: - Button Method
     func memberSelected(selectedMember: MemberCallings?) {
-        if selectedMember != nil {
-            delegate?.setProspectiveMember(member: selectedMember!.member)
+        if let member = selectedMember {
+            delegate?.setProspectiveMember(member: member.member)
         }
         self.navigationController?.popViewController(animated: true)
     }
@@ -137,6 +227,12 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         filterViewOptions = memberFilterOptions
         filteredMembers = (filterViewOptions?.filterMemberData(unfilteredArray: members))!
         tableView.reloadData()
+    }
+    
+    //MARK: - RemoveButton
+    func removeButtonPressed() {
+        delegate?.setProspectiveMember(member: nil)
+        self.navigationController?.popViewController(animated: true)
     }
 }
 

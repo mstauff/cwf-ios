@@ -225,8 +225,13 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     }
 
     // MARK: - MemberPickerDelegate
-    func setProspectiveMember(member: Member) {
-        newCalling?.proposedIndId = member.individualId
+    func setProspectiveMember(member: Member?) {
+        if let setMember = member {
+            newCalling?.proposedIndId = setMember.individualId
+        }
+        else {
+            newCalling?.proposedIndId = nil
+        }
         tableView.reloadData()
     }
     

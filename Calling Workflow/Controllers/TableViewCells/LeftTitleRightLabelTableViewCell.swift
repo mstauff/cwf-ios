@@ -36,22 +36,23 @@ class LeftTitleRightLabelTableViewCell: UITableViewCell {
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = "Name"
-        self.addSubview(titleLabel)
+        self.contentView.addSubview(titleLabel)
         
         dataLabel.translatesAutoresizingMaskIntoConstraints = false
         dataLabel.textAlignment = NSTextAlignment.right
-        self.addSubview(dataLabel)
+        self.contentView.addSubview(dataLabel)
+        
         addConstraints()
     }
     
     func addConstraints() {
         let views = ["titleLabel": titleLabel, "dataLabel": dataLabel]
-        let width = (1/3) * frame.width
+        let width = (1/3) * self.contentView.frame.width
         let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[titleLabel(\(width))]-[dataLabel]-20-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: views)
-        self.addConstraints(hConstraint)
+        self.contentView.addConstraints(hConstraint)
         
         let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[titleLabel(>=20)]-5-|", options: NSLayoutFormatOptions.alignAllLeft, metrics: nil, views: views)
-        self.addConstraints(vConstraint)
+        self.contentView.addConstraints(vConstraint)
     }
     
     class func calculateHeight() -> CGFloat {

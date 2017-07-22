@@ -9,7 +9,7 @@
 import Foundation
 
 protocol MemberPickerDelegate {
-    func setProspectiveMember(member: Member)
+    func setProspectiveMember(member: Member?)
 }
 
 protocol StatusPickerDelegate {

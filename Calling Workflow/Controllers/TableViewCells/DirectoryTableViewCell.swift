@@ -79,21 +79,32 @@ class DirectoryTableViewCell: UITableViewCell {
     func setupCellLabels(member: MemberCallings) {
         nameLabel.text = member.member.name
       let callings = member.callings + member.proposedCallings
-      // todo - need to revisit this and handle actual & proposed callings differently. Even if we don't do different text colors we at least display the time in calling for actual and the status for proposed
         switch callings.count {
+        //Option one there are no callings set all calling labels to nil
         case 0:
-            print("no callings")
+            firstSubviewLabel.text = nil
+            secondSubviewLabel.text = nil
+            thirdSubviewLabel.text = nil
+        
+        //Option two there is one calling. Set the first calling text and the others to nil
         case 1:
             setupTextForLabel(calling: callings[0], member: member.member, label: firstSubviewLabel)
+            secondSubviewLabel.text = nil
+            thirdSubviewLabel.text = nil
+        
+        //Option three there are two callings. Set the first two and the third to nil
         case 2:
-            
             setupTextForLabel(calling: callings[0], member: member.member, label: firstSubviewLabel)
             setupTextForLabel(calling: callings[1], member: member.member, label: secondSubviewLabel)
+            thirdSubviewLabel.text = nil
+        
+        //Option four there is three callings. Set the text of all the subViews
         case 3:
             setupTextForLabel(calling: callings[0], member: member.member, label: firstSubviewLabel)
             setupTextForLabel(calling: callings[1], member: member.member, label: secondSubviewLabel)
             setupTextForLabel(calling: callings[2], member: member.member, label: thirdSubviewLabel)
 
+        //Option five there are more than three callings. set the first two and then say there are more.
         default:
             setupTextForLabel(calling: callings[0], member: member.member, label: firstSubviewLabel)
             setupTextForLabel(calling: callings[1], member: member.member, label: secondSubviewLabel)
@@ -102,14 +113,17 @@ class DirectoryTableViewCell: UITableViewCell {
         }
     }
     
+    //Todo currently we are setting all inprogress callings to have green text. Do we need to change it?
     func setupTextForLabel(calling: Calling, member: Member, label: UILabel) {
         if calling.existingIndId == member.individualId {
-            label.text = "\(String(describing: calling.position.name!)) (\(calling.existingMonthsInCalling) m)"
+            label.text = "\(String(describing: calling.position.shortName!)) (\(calling.existingMonthsInCalling) m)"
             label.textColor = UIColor.CWFGreyTextColor
         }
         else if calling.proposedIndId == member.individualId {
-            label.text = "\(String(describing: calling.position.name!)) (\(calling.proposedStatus.description))"
+            label.text = "\(String(describing: calling.position.shortName!)) (\(calling.proposedStatus.description))"
             label.textColor = UIColor.CWFGreenTextColor
         }
     }
+    
+
 }

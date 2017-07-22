@@ -64,7 +64,11 @@ class OrganizationTableViewController: CWFBaseTableViewController {
             return 0
         }
     }
-    
+
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1.0
+    }
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = organizationsToDisplay?[indexPath.row].orgName

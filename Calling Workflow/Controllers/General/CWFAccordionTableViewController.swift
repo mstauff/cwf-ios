@@ -106,16 +106,9 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         return dataSource.count
     }
 
-//    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        let currentDataItem = dataSource[indexPath.row]
-//        if currentDataItem.dataItemType == .Parent{
-//            return CWFAccordionRootTableViewCell.getCellHeight()
-//        }
-//        else {
-//            return CWFAccordionChildTableViewCell.getCellHeight()  
-//        }
-//        
-//    }
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1.0
+    }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         

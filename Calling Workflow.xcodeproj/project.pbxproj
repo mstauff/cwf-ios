@@ -19,6 +19,7 @@
 		3C20DF671DD3AFC100F9847E /* InputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */; };
 		3C2428221EE1D848006DA7E8 /* MemberExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2428211EE1D848006DA7E8 /* MemberExtensions.swift */; };
 		3C2D0C521ECCFA39009A1511 /* FilterApplyButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2D0C511ECCFA39009A1511 /* FilterApplyButtonTableViewCell.swift */; };
+		3C2DFEB81F22C261007F716C /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2DFEB71F22C261007F716C /* UIImageExtension.swift */; };
 		3C3737B01F0F060900D62C2E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C3737AF1F0F060900D62C2E /* MapKit.framework */; };
 		3C3737B21F0FFD5600D62C2E /* CWFMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3737B11F0FFD5600D62C2E /* CWFMapViewController.swift */; };
 		3C3737B41F13DCB000D62C2E /* CallingPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3737B31F13DCB000D62C2E /* CallingPickerViewController.swift */; };
@@ -153,6 +154,7 @@
 		3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InputTableViewCell.swift; path = Controllers/TableViewCells/InputTableViewCell.swift; sourceTree = "<group>"; };
 		3C2428211EE1D848006DA7E8 /* MemberExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberExtensions.swift; path = Extensions/MemberExtensions.swift; sourceTree = "<group>"; };
 		3C2D0C511ECCFA39009A1511 /* FilterApplyButtonTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterApplyButtonTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterApplyButtonTableViewCell.swift; sourceTree = "<group>"; };
+		3C2DFEB71F22C261007F716C /* UIImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIImageExtension.swift; path = Extensions/UIImageExtension.swift; sourceTree = "<group>"; };
 		3C3737AF1F0F060900D62C2E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		3C3737B11F0FFD5600D62C2E /* CWFMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFMapViewController.swift; path = Controllers/General/CWFMapViewController.swift; sourceTree = "<group>"; };
 		3C3737B31F13DCB000D62C2E /* CallingPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingPickerViewController.swift; path = Controllers/CallingPickerViewController.swift; sourceTree = "<group>"; };
@@ -534,6 +536,7 @@
 				3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */,
 				3CB191FE1EC67E330098AD1C /* UIButtonExtensions.swift */,
 				3C2428211EE1D848006DA7E8 /* MemberExtensions.swift */,
+				3C2DFEB71F22C261007F716C /* UIImageExtension.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -626,19 +629,19 @@
 				TargetAttributes = {
 					3CE4C8CE1DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 75DK5N8LHP;
+						DevelopmentTeam = 42MR5LM3U2;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
 					3CE4C8E41DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 75DK5N8LHP;
+						DevelopmentTeam = 42MR5LM3U2;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3CE4C8CE1DCA824100AAFB31;
 					};
 					3CE4C8EF1DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 75DK5N8LHP;
+						DevelopmentTeam = 42MR5LM3U2;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 3CE4C8CE1DCA824100AAFB31;
 					};
@@ -895,6 +898,7 @@
 				3CA596FE1E08593C00109B27 /* CWFBaseTableViewController.swift in Sources */,
 				3C6A365E1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift in Sources */,
 				3CE4C9101DCA82A000AAFB31 /* Constants.swift in Sources */,
+				3C2DFEB81F22C261007F716C /* UIImageExtension.swift in Sources */,
 				3CE4C8D51DCA824100AAFB31 /* FirstViewController.swift in Sources */,
 				3CEBAF411DCD0D160071BE9F /* CallingsTableViewController.swift in Sources */,
 				3CE4C9171DCA82A000AAFB31 /* RestAPI.swift in Sources */,
@@ -1092,7 +1096,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1111,7 +1115,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1128,7 +1132,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowTests";
@@ -1144,7 +1148,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling WorkflowTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowTests";
@@ -1159,7 +1163,7 @@
 			baseConfigurationReference = 186DC4A209D5B238D4E39AD8 /* Pods-Calling WorkflowUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowUITests";
@@ -1174,7 +1178,7 @@
 			baseConfigurationReference = 6D38D054678C0286D5B46AE4 /* Pods-Calling WorkflowUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				DEVELOPMENT_TEAM = 75DK5N8LHP;
+				DEVELOPMENT_TEAM = 42MR5LM3U2;
 				INFOPLIST_FILE = "Calling WorkflowUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-WorkflowUITests";
