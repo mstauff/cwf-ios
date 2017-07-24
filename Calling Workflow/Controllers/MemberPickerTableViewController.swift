@@ -205,8 +205,8 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         filterView?.addAllFilters()
         filterView?.delegate = self
         // if there are any preset filter options (based on position requirements) then set those on the filter screen before we transition
-        if filterViewOptions != nil {
-            filterView?.filterObject = filterViewOptions!
+        if let filterOptions = self.filterViewOptions {
+            filterView?.filterObject = filterOptions
         }
         
         self.navigationController?.pushViewController(filterView!, animated: true)
@@ -224,8 +224,8 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     //MARK: - FilterViewDelegate
     
     func setFilterOptions(memberFilterOptions: FilterOptions) {
-        filterViewOptions = memberFilterOptions
-        filteredMembers = (filterViewOptions?.filterMemberData(unfilteredArray: members))!
+        self.filteredMembers = memberFilterOptions.filterMemberData(unfilteredArray: members)
+        self.filterViewOptions = memberFilterOptions
         tableView.reloadData()
     }
     
