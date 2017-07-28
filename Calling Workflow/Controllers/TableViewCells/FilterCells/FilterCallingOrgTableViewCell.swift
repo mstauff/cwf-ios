@@ -11,13 +11,14 @@ import UIKit
 class FilterCallingOrgTableViewCell: FilterBaseTableViewCell {
 
     let cellTitle : UILabel = UILabel()
-    var orgButtonArray : [FilterButton] = []
+    var orgButtonArray : [OrgFilterButton] = []
+    var unitLevelOrgs : [Org] = []
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    init(style: UITableViewCellStyle, reuseIdentifier: String?, unitLevelOrgs : [Org]) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+        self.unitLevelOrgs = unitLevelOrgs
         setupCellTitle()
-        setupStatusButtons()
+        setupOrgButtons()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -39,20 +40,19 @@ class FilterCallingOrgTableViewCell: FilterBaseTableViewCell {
         self.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
     }
     
-    func setupStatusButtons(){
+    func setupOrgButtons(){
         
         var buttonPosition = 0
-        var lastElement : FilterButton? = nil
+        var lastElement : OrgFilterButton? = nil
         var isFirst = true
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        if let orgArray : [Org] = appDelegate?.callingManager.appDataOrg?.children {
-        
-            for buttonOrg in orgArray {
-                let currentButton = FilterButton()
+
+            for buttonOrg in unitLevelOrgs {
+                let currentButton = OrgFilterButton()
                 currentButton.setTitle(buttonOrg.orgName, for: .normal)
                 currentButton.addTarget(self, action: #selector(buttonSelected(sender:)), for: .touchUpInside)
                 currentButton.titleLabel?.adjustsFontSizeToFitWidth = true
-                currentButton.tag = Int(buttonOrg.id)
+                // store the  ID's from the org and all the children to add to the button so we can know when a single org (i.e. Primary) is selected we can correctly show any callings in all sub orgs of the org
+                currentButton.allOrgIds = buttonOrg.allOrgIds
                 
                 orgButtonArray.append(currentButton)
                 self.addSubview(currentButton)
@@ -102,7 +102,6 @@ class FilterCallingOrgTableViewCell: FilterBaseTableViewCell {
                     buttonPosition = 0
                 }
             }
-        }
     }
    
     func buttonSelected (sender: FilterButton) {
@@ -135,17 +134,25 @@ class FilterCallingOrgTableViewCell: FilterBaseTableViewCell {
 }
 
 extension FilterCallingOrgTableViewCell : UIFilterElement {
+    /** Set the filter options based on what elements are selected in the UI */
     func getSelectedOptions(filterOptions: FilterOptions) -> FilterOptions {
         var filterOptions = filterOptions
-        filterOptions.callingOrg = [:]
-        for orgButton in orgButtonArray{
-            filterOptions.callingOrg?[orgButton.tag] = orgButton.isSelected
-        }
-        
+        filterOptions.callingOrgs = orgButtonArray.filter( { $0.isSelected && $0.allOrgIds.isNotEmpty } ).reduce([], { $0 + $1.allOrgIds } )
         return filterOptions
     }
     
+    /** Set the state of UI elements based on anything that's currently being applied in the filter */
     func setSelectedOptions(filterOptions: FilterOptions) {
+        guard filterOptions.callingOrgs.isNotEmpty else {
+            return
+        }
+        
+        for button in orgButtonArray {
+            // for all the buttons look and see if the list of ids for the button is in the list of ids in the filterOptions
+            if button.allOrgIds.contains(where: {filterOptions.callingOrgs.contains($0)}) {
+                button.setupForSelected()
+            }
+        }
         
     }
 }
