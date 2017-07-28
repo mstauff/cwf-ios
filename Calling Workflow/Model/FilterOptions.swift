@@ -18,7 +18,7 @@ struct FilterOptions {
     var memberClass : [MemberClass]
     
     var callingStatuses : [CallingStatus]
-    var callingOrg : [Int : Bool]?
+    var callingOrgs : [Int64]
     
     init () {
         minAge = nil
@@ -29,7 +29,7 @@ struct FilterOptions {
         priesthood = []
         memberClass = []
         callingStatuses = []
-        callingOrg = nil
+        callingOrgs = []
     }
     
     init( fromPositionRequirements positionRequirements: PositionRequirements ) {
@@ -37,7 +37,8 @@ struct FilterOptions {
         self.gender = positionRequirements.gender
         self.priesthood = positionRequirements.priesthood
         self.memberClass = positionRequirements.memberClasses
-        callingStatuses = []
+        self.callingStatuses = []
+        self.callingOrgs = []
     }
     
     //MARK: - Filter Member
@@ -71,32 +72,14 @@ struct FilterOptions {
         if memberClass.isNotEmpty{
             filters.append( MemberClassFilter(memberClass: memberClass) )
         }
+        if callingStatuses.isNotEmpty {
+            filters.append( CallingStatusFilter(callingStatuses: callingStatuses) )
+        }
+        if callingOrgs.isNotEmpty{
+            filters.append( CallingOrgFilter(callingOrgs: callingOrgs) )
+        }
         
         return filters
-    }
-    
-    //MARK: - Filter Org
-    func filterOrgData(unfilteredArray: [Calling]) -> [Calling] {
-        var arrayToReturn = unfilteredArray
-        if (callingOrg != nil) {
-            arrayToReturn = arrayToReturn.filter() {
-                if ($0.parentOrg != nil && (callingOrg?[Int(($0.parentOrg?.id)!)])! == true) {
-                    return true
-                }
-                else {
-                    return false
-                }
-            }
-        }
-        return arrayToReturn
-    }
-    
-    private func filterForCallingStatus() {
-        
-    }
-    
-    private func filterForCallingOrg() {
-        
     }
 }
 
@@ -240,5 +223,49 @@ struct GenderFilter : MemberFilter {
         return memberCallings.member.gender == gender
     }
 }
+
+struct CallingStatusFilter : MemberFilter {
+    var callingStatuses : [CallingStatus]
+    
+    func filter(_ member: MemberCallings) -> Bool {
+        // if the calling statuses are empty then there's nothing to filter on then we return true (shouldn't happen - should be set if this filter is invoked)
+        guard callingStatuses.isNotEmpty else {
+            return true
+        }
+        // if the member has no callings they don't meet the filter criteria so return false
+        guard member.proposedCallings.isNotEmpty  else {
+            return false
+        }
+        
+        return member.proposedCallings.contains( ) {
+            callingStatuses.contains(item: $0.proposedStatus)
+        }
+    }
+    
+}
+struct CallingOrgFilter : MemberFilter {
+    var callingOrgs : [Int64]
+    
+    func filter(_ member: MemberCallings) -> Bool {
+        // if the calling orgs are empty then there's nothing to filter on then we return true (shouldn't happen - should be set if this filter is invoked)
+        guard callingOrgs.isNotEmpty else {
+            return true
+        }
+        // if the member has no callings they don't meet the filter criteria so return false
+        guard member.proposedCallings.isNotEmpty  else {
+            return false
+        }
+        return member.proposedCallings.contains( ) {
+            var result = false
+            if let parentOrgId = $0.parentOrg?.id {
+                result = callingOrgs.contains(item:parentOrgId)
+            }
+            return result
+        }
+    }
+    
+}
+
+
 
 

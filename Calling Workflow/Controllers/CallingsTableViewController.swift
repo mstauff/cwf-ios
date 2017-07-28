@@ -11,6 +11,8 @@ import UIKit
 class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewControllerDelegate {
     
     var inProgressCallingsToDisplay : [Calling] = []
+    var allInProgressCallings : [Calling] = []
+    var unitLevelOrgs : [Org] = []
     
     var filterObject : FilterOptions?
     
@@ -38,16 +40,19 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
         
         self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "filter"), style: .done, target: self, action: #selector(filterButtonPressed))
 
-        setupCallingsToDisplay()
+        loadCallingData()
         tableView.reloadData()
     }
 
     // MARK: - Setup
     
-    func setupCallingsToDisplay() {
+    func loadCallingData() {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         if let unit = appDelegate?.callingManager.appDataOrg {
-            inProgressCallingsToDisplay = unit.allInProcessCallings
+            allInProgressCallings = unit.allInProcessCallings
+            // we always display inProgressCallingsToDisplay, so look for any existing filter and if there isn't one then just use allInProgressCallings. If there is a filter then the list has already been filtered by the delegate handling method so just use it as is
+            inProgressCallingsToDisplay = filterObject == nil ? allInProgressCallings : inProgressCallingsToDisplay
+            unitLevelOrgs = unit.children
         }
     }
 
@@ -119,17 +124,29 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     func filterButtonPressed(sender : UIView) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let filterView = storyboard.instantiateViewController(withIdentifier: "FilterTableViewController") as? FilterTableViewController
+        // need to add the orgs before we add the filter cells so when the view gets init'ed the orgs are available to create the buttons
+        filterView?.unitLevelOrgs = self.unitLevelOrgs
         filterView?.addCallingStatusFilterCell()
         filterView?.addCallingOrgFilterCell()
         filterView?.delegate = self
+        if let currentFilters = self.filterObject {
+            filterView?.filterObject = currentFilters
+        }
         
         self.navigationController?.pushViewController(filterView!, animated: true)
     }
     
     //MARK: - FilterDelegate
     func setFilterOptions(memberFilterOptions: FilterOptions) {
-        filterObject = memberFilterOptions
-        //filteredMembers = (filterObject?.filterMemberData(unfilteredArray: inProgressCallingsToDisplay))!
+        self.filterObject = memberFilterOptions
+        // we don't need the member object for any of these filters, we just need a MemberCalling object and rather than make Member, Member? we convert all the callings to MemberCalling. We don't actually use the Member object for anything so rather than look up the appropriate member based on the calling proposedIndId and set it just to throw it away, we just create a dummy member object for all of them. If we ever add different filters (like number or length in the calling) then we will need to change this to be the actual member
+        let dummyMember = Member(indId: -1, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
+        // map the callings to a MemberCalling objects and run them through the filters, then convert them back to callings.
+        let filteredMembers = memberFilterOptions.filterMemberData(unfilteredArray: allInProgressCallings.map() {
+            MemberCallings(member: dummyMember, callings: [], proposedCallings: [$0])
+        })
+        // we added each individual calling to $proposedCallings[0], so safe to pull it out of there
+        inProgressCallingsToDisplay = filteredMembers.map() { $0.proposedCallings[0] }
         tableView.reloadData()
     }
 }

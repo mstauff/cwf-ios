@@ -12,10 +12,11 @@ class FilterCallingStatusTableViewCell: FilterBaseTableViewCell {
 
     var cellTitle : UILabel = UILabel()
     var statusButtonArray : [FilterButton] = []
+    var callingStatuses : [CallingStatus] = []
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    init(style: UITableViewCellStyle, reuseIdentifier: String?, callingStatuses : [CallingStatus]) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+        self.callingStatuses = callingStatuses
         setupCellTitle()
         setupStatusButtons()
     }
@@ -46,7 +47,7 @@ class FilterCallingStatusTableViewCell: FilterBaseTableViewCell {
         var lastElement : FilterButton? = nil
         var isFirst = true
 
-        for buttonText in CallingStatus.userValues {
+        for buttonText in callingStatuses {
             let currentButton = FilterButton()
             currentButton.callingStatusOption = buttonText
             currentButton.setTitle(buttonText.description, for: .normal)
@@ -125,19 +126,26 @@ class FilterCallingStatusTableViewCell: FilterBaseTableViewCell {
 }
 
 extension FilterCallingStatusTableViewCell : UIFilterElement {
+    /** Set the filter options based on what the user selected in the UI */
     func getSelectedOptions(filterOptions: FilterOptions) -> FilterOptions {
         var filterOptions = filterOptions
-        filterOptions.callingStatuses = []
-        for statusButton in statusButtonArray{
-            if statusButton.isSelected, let status = statusButton.callingStatusOption {
-                filterOptions.callingStatuses.append(status)
-            }
-        }
+        // filter out anything that hasn't been selected. The callingStatusOption should always be set, but we make sure before we ! it
+        // then we convert from the button to just the status it represents to go in the filterOptions
+        filterOptions.callingStatuses = statusButtonArray.filter( { $0.isSelected && $0.callingStatusOption != nil } ).map( { $0.callingStatusOption! } )
         
         return filterOptions
     }
 
+    /** Set the state of elements in the UI based on any filters that are set in the options */
     func setSelectedOptions(filterOptions: FilterOptions) {
+        guard filterOptions.callingStatuses.isNotEmpty else {
+            return
+        }
         
+        for button in statusButtonArray {
+            if let btnStatus = button.callingStatusOption, filterOptions.callingStatuses.contains(item: btnStatus) {
+                button.setupForSelected()
+            }
+        }
     }
 }

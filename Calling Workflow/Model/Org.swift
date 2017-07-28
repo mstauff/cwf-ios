@@ -59,11 +59,7 @@ public struct Org : JSONParsable  {
 
     var allOrgCallings : [Calling] {
         get {
-            var callings = self.callings;
-            for subOrg in self.children {
-                callings.append( contentsOf: subOrg.allOrgCallings )
-            }
-            return callings
+            return self.children.reduce( self.callings ) { $0 + $1.allOrgCallings }
         }
     }
     
@@ -78,11 +74,14 @@ public struct Org : JSONParsable  {
 
     var allSubOrgs : [Org] {
         get {
-            var subOrgs = self.children;
-            for subOrg in self.children {
-                subOrgs.append( contentsOf: subOrg.allSubOrgs )
-            }
-            return subOrgs
+            return self.children.reduce( self.children ) { $0 + $1.allSubOrgs }
+        }
+    }
+    
+    var allOrgIds : [Int64] {
+        // get the id of the org, plus the id of all the child orgs
+        get {
+            return [self.id] + self.allSubOrgs.map() { $0.id }
         }
     }
 

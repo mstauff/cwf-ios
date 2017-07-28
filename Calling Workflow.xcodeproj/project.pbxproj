@@ -82,6 +82,7 @@
 		E8189A8A1DDA2D4600E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A881DDA2D4600E983D4 /* cwf-object.js */; };
 		E8189A8B1DDA2D4600E983D4 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8189A891DDA2D4600E983D4 /* ModelTests.swift */; };
 		E8189A931DDA74E700E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A921DDA74E700E983D4 /* cwf-object.js */; };
+		E82F306E1F28030200E20D5E /* OrgFilterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82F306D1F28030200E20D5E /* OrgFilterButton.swift */; };
 		E8316CE91E26AC1E0091419D /* LdscdRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */; };
 		E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE81E26AC1E0091419D /* LdsRestApi.swift */; };
 		E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CEB1E26AD4F0091419D /* RestAPITests.swift */; };
@@ -230,6 +231,7 @@
 		E8189A8E1DDA687C00E983D4 /* GTMSessionFetcher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GTMSessionFetcher.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Calling_Workflow-exfgumoddixqfzcrdepaqirmseyo/Build/Products/Debug-iphonesimulator/GTMSessionFetcher/GTMSessionFetcher.framework"; sourceTree = "<group>"; };
 		E8189A901DDA688000E983D4 /* GoogleAPIClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAPIClient.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Calling_Workflow-exfgumoddixqfzcrdepaqirmseyo/Build/Products/Debug-iphonesimulator/GoogleAPIClient/GoogleAPIClient.framework"; sourceTree = "<group>"; };
 		E8189A921DDA74E700E983D4 /* cwf-object.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "cwf-object.js"; sourceTree = "<group>"; };
+		E82F306D1F28030200E20D5E /* OrgFilterButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OrgFilterButton.swift; path = Controllers/OrgFilterButton.swift; sourceTree = "<group>"; };
 		E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdscdRestApi.swift; sourceTree = "<group>"; };
 		E8316CE81E26AC1E0091419D /* LdsRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdsRestApi.swift; sourceTree = "<group>"; };
 		E8316CEB1E26AD4F0091419D /* RestAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestAPITests.swift; sourceTree = "<group>"; };
@@ -450,6 +452,7 @@
 				E8084F891E04814F0077FDAE /* OrganizationTableViewController.swift */,
 				3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */,
 				3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */,
+				E82F306D1F28030200E20D5E /* OrgFilterButton.swift */,
 				3CED843E1E0AEF7C0023721E /* Base Controllers */,
 				3CBDDCAA1E48EA1D00F211F5 /* Protocols */,
 				3CEBAF461DD14A630071BE9F /* TableViewCells */,
@@ -886,6 +889,7 @@
 				E8084F871E0476F80077FDAE /* Position.swift in Sources */,
 				3C8300F51E36A20400FD0D34 /* DataSubdataTableViewCell.swift in Sources */,
 				3C2D0C521ECCFA39009A1511 /* FilterApplyButtonTableViewCell.swift in Sources */,
+				E82F306E1F28030200E20D5E /* OrgFilterButton.swift in Sources */,
 				3CEBAF481DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift in Sources */,
 				3C4347B91ECBA60400CC7369 /* FilterBaseTableViewCell.swift in Sources */,
 				E8084F881E0476F80077FDAE /* UnitLevelOrgType.swift in Sources */,

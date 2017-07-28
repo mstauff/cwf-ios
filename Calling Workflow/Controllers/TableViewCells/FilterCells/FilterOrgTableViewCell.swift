@@ -104,7 +104,7 @@ class FilterOrgTableViewCell: FilterBaseTableViewCell {
         if (sender.isSelected){
             sender.setupForUnselected()
         } else {
-                sender.setupForSelected()
+            sender.setupForSelected()
         }
     }
 
