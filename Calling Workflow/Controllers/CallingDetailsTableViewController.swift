@@ -17,6 +17,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
     }
     
+    var userPermission : Permission? = nil
+    
     var isDirty = false
 
     var originalCalling : Calling? = nil
@@ -31,10 +33,19 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     override func viewDidLoad() {
         super.viewDidLoad()
         originalCalling = callingToDisplay
+        userPermission = Permission.Update
 
         navigationController?.title = callingToDisplay?.position.name
-        let saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveAndReturn))
-        navigationItem.setRightBarButton(saveButton, animated: true)
+        
+        let buttonView : UIView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 100))
+        //buttonView.addSubview()
+        let backButton = UIBarButtonItem(image: UIImage.init(named:"backButton"), style:.plain , target: self, action: #selector(backButtonPressed) )
+        navigationItem.setLeftBarButton(backButton, animated: true)
+        
+        if userPermission != Permission.View {
+            let saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveAndReturn))
+            navigationItem.setRightBarButton(saveButton, animated: true)
+        }
         
         tableView.register(LeftTitleRightLabelTableViewCell.self, forCellReuseIdentifier: "middleCell")
         tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
@@ -49,7 +60,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         // Dispose of any resources that can be recreated.
     }
     
-    override func willMove(toParentViewController parent: UIViewController?)
+/*    override func willMove(toParentViewController parent: UIViewController?)
     {
         if parent == nil && isDirty {
             let saveAlert = UIAlertController(title: "Save Changes?", message: nil, preferredStyle: UIAlertControllerStyle.alert)
@@ -71,11 +82,16 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             // Back btn Event handler
         }
     }
-    
+*/
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        if userPermission == Permission.View {
+            return 2
+        }
+        else{
+            return 4
+        }
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -103,7 +119,12 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         case 0:
             return 1
         case 1:
-            return 3
+            if userPermission == Permission.View {
+                return 1
+            }
+            else {
+                return 3
+            }
         case 2:
             return 1
         case 3:
@@ -312,6 +333,32 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         self.present(memberDetailView!, animated: true, completion: nil)
     }
     
+    //MARK: - Actions
+    func backButtonPressed() {
+        if isDirty {
+            let saveAlert = UIAlertController(title: "Discard Changes?", message: "You have unsaved changes that will be discarded if you continue.", preferredStyle: UIAlertControllerStyle.alert)
+            
+            let cancelAction = UIAlertAction(title: "Continue", style: UIAlertActionStyle.destructive, handler: {
+                (alert: UIAlertAction!) -> Void in
+                self.navigationController?.popViewController(animated: true)
+            })
+            let saveAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: {
+                (alert: UIAlertAction!) -> Void in
+                print("cancel")
+                
+            })
+            saveAlert.addAction(cancelAction)
+            saveAlert.addAction(saveAction)
+            present(saveAlert, animated: true, completion: nil)
+            
+            print("dismiss")
+            // Back btn Event handler
+        }
+        else {
+            self.navigationController?.popViewController(animated: true)
+        }
+
+    }
     
     func callingActionsButtonPressed() {
         print("buttonPressed")
@@ -362,5 +409,10 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             }
         }
 
+    }
+    
+    //MARK: - Permissions
+    func hasPermissionToView() -> Bool {
+        return true
     }
 }

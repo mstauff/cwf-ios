@@ -12,6 +12,9 @@ class CWFAccordionChildTableViewCell: UITableViewCell {
     var title : UILabel = UILabel()
     var first_subtitle  : UILabel = UILabel()
     var second_subtitle : UILabel = UILabel()
+    var warningButton : UIButton = UIButton()
+    
+    var callingForCell : Calling? = nil
     
     //MARK: - Life Cycle
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -43,6 +46,11 @@ class CWFAccordionChildTableViewCell: UITableViewCell {
         let horizontalMargin : CGFloat = 15.0
         self.backgroundColor = UIColor.groupTableViewBackground
 
+        warningButton.translatesAutoresizingMaskIntoConstraints = false
+        warningButton.backgroundColor = UIColor.CWFWarningBackgroundColor
+        warningButton.setImage(UIImage.init(named: "warning"), for: .normal)
+        //warningButton.isHidden = false
+        
         title.translatesAutoresizingMaskIntoConstraints = false
         title.adjustsFontSizeToFitWidth = true
         title.minimumScaleFactor = 0.6
@@ -57,15 +65,21 @@ class CWFAccordionChildTableViewCell: UITableViewCell {
         second_subtitle.adjustsFontSizeToFitWidth = true
         second_subtitle.font = UIFont(name: second_subtitle.font.fontName, size: 14.0)
 
+        self.addSubview(warningButton)
         self.addSubview(title)
         self.addSubview(first_subtitle)
         self.addSubview(second_subtitle)
         
-       
+        let buttonXConstraint = NSLayoutConstraint(item: warningButton, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: 0)
+        let buttonYConstraint = NSLayoutConstraint(item: warningButton, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0)
+        let buttonHConstraint = NSLayoutConstraint(item: warningButton, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: 0)
+        let buttonWConstraint = NSLayoutConstraint(item: warningButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 50)
+        
+        self.addConstraints([buttonXConstraint, buttonYConstraint, buttonHConstraint, buttonWConstraint])
+
         let titleHConstraint = NSLayoutConstraint(item: title, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 2 * horizontalMargin)
         let titleWidthConstraint = NSLayoutConstraint(item: title, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: -15)
         let titleHeightConstraint = NSLayoutConstraint(item: title, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 20)
-        
         let titleVConstraint = NSLayoutConstraint(item: title, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 5)
         //let titleBConstraint = NSLayoutConstraint(item: title, attribute: .bottom, relatedBy: .greaterThanOrEqual, toItem: self, attribute: .bottom, multiplier: 1, constant: -5)
         
@@ -78,7 +92,7 @@ class CWFAccordionChildTableViewCell: UITableViewCell {
         
         self.addConstraints([subWidthConstraint, subHConstraint, subVConstraint])
         
-        let secondSubWConstraint = NSLayoutConstraint(item: second_subtitle, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: -horizontalMargin)
+        let secondSubWConstraint = NSLayoutConstraint(item: second_subtitle, attribute: .trailing, relatedBy: .equal, toItem: title, attribute: .trailing, multiplier: 1, constant: 0)
         let secondSubHConstraint = NSLayoutConstraint(item: second_subtitle, attribute: .top, relatedBy: .equal, toItem: first_subtitle, attribute: .bottom, multiplier: 1, constant: 5)
         let secondSubXConstraint = NSLayoutConstraint(item: second_subtitle, attribute: .leading, relatedBy: .equal, toItem: first_subtitle, attribute: .leading, multiplier: 1, constant: 0)
         let secondSubYConstraint = NSLayoutConstraint(item: second_subtitle, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: -5)

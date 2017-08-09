@@ -13,6 +13,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     var parentOrg : Org?
     
     var newCalling : Calling?
+    
     let appDelegate = UIApplication.shared.delegate as? AppDelegate
     
     // MARK: - Life Cycle
@@ -257,8 +258,8 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     
     // MARK: - CallingsTableViewControllerDelegate
     
-    func setReturnedCalling(calling: Calling) {
-        newCalling = calling
+    func setReturnedPostiton(position: Position) {
+        newCalling = Calling(id: newCalling?.id, cwfId: newCalling?.cwfId, existingIndId: newCalling?.existingIndId, existingStatus: newCalling?.existingStatus, activeDate: newCalling?.activeDate, proposedIndId: newCalling?.proposedIndId, status: newCalling?.proposedStatus, position: position, notes: newCalling?.notes, parentOrg: newCalling?.parentOrg)
         tableView.reloadData()
     }
 

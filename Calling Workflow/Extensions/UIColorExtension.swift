@@ -25,5 +25,8 @@ extension UIColor {
         return UIColor(red: (64.0/255), green: (225.0/255), blue: (63.0/255), alpha: 1.0)
     }
     
+    public class var CWFWarningBackgroundColor: UIColor {
+        return UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.5)
+    }
     
 }

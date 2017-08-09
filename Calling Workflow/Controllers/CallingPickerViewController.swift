@@ -12,7 +12,7 @@ class CallingPickerViewController: CWFBaseTableViewController {
     
     var org : Org? = nil
 
-    var callingsToDisplay : [Calling] = [] {
+    var callingsToDisplay : [Position] = [] {
         didSet {
             tableView.reloadData()
         }
@@ -41,10 +41,7 @@ class CallingPickerViewController: CWFBaseTableViewController {
     //MARK: - Setup
     
     func setupCallings() {
-        if var orgCallings = org?.allOrgCallings {
-            orgCallings = orgCallings.filter() {
-                return ($0.position.hidden || $0.position.multiplesAllowed)
-            }
+        if let orgCallings = org?.potentialNewPositions {
             callingsToDisplay = orgCallings
         }
     }
@@ -67,7 +64,7 @@ class CallingPickerViewController: CWFBaseTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if callingsToDisplay.count > 0 {
-            cell.textLabel?.text = callingsToDisplay[indexPath.row].position.name
+            cell.textLabel?.text = callingsToDisplay[indexPath.row].name
         }
         else {
             cell.textLabel?.text = NSLocalizedString("No available callings to add", comment: "no callings")
@@ -76,7 +73,7 @@ class CallingPickerViewController: CWFBaseTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.delegate?.setReturnedCalling(calling: callingsToDisplay[indexPath.row])
+        self.delegate?.setReturnedPostiton(position: callingsToDisplay[indexPath.row])
         self.navigationController?.popViewController(animated: true)
     }
 }

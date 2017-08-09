@@ -25,7 +25,7 @@ protocol CallingsTableViewControllerDelegate {
 }
 
 protocol CallingPickerTableViewControllerDelegate {
-    func setReturnedCalling(calling: Calling)
+    func setReturnedPostiton(position: Position)
 }
 
 protocol FilterTableViewCellDelegate {

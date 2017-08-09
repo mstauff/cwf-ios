@@ -36,9 +36,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         self.updatedCalling = calling
     }
     
-
-
     var dataSource : [AccordionDataItem] = []
+    
     // the root org gets updated after the view is loaded (because we read it asynchronously - fresh from google drive) so after it gets updated we need to redraw 
     var rootOrg : Org? {
         didSet {
@@ -76,7 +75,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             self.navigationItem.title = rootOrg?.orgName
 
             dataSource.removeAll( keepingCapacity: true )
-            if (rootOrg?.callings != nil && (rootOrg?.callings.count)! > 0) {
+            if (rootOrg?.callings != nil && (rootOrg?.callings.count)! > 0 && hasPermissionToEdit()) {
                 let newDataItem = AccordionDataItem.init(dataItem: "Add Calling", dataItemType: .AddCalling, expanded: true)
                 dataSource.append(newDataItem)
             }
@@ -138,13 +137,13 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "childCell", for: indexPath) as? CWFAccordionChildTableViewCell
-            let calling = (currentDataItem.dataItem as! Calling)
+            cell?.callingForCell = (currentDataItem.dataItem as! Calling)
             
-            cell?.title.text = calling.position.shortName
-            if (calling.existingIndId != nil) {
-                if let existingMember = appDelegate?.callingManager.getMemberWithId(memberId: calling.existingIndId!) {
+            cell?.title.text = cell?.callingForCell?.position.shortName
+            if let existingId = cell?.callingForCell?.existingIndId {
+                if let existingMember = appDelegate?.callingManager.getMemberWithId(memberId: existingId) {
                     if let nameString = existingMember.name {
-                        cell?.second_subtitle.text = "\(nameString) (\(calling.existingMonthsInCalling) months)"
+                        cell?.second_subtitle.text = "\(nameString) (\(cell?.callingForCell?.existingMonthsInCalling ?? 0) months)"
                     }
                 }
             }
@@ -152,15 +151,28 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                 cell?.second_subtitle.text = "--"
                 //cell?.second_subtitle.isHidden = true
             }
-            if (calling.proposedIndId != nil) {
-                if let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: calling.proposedIndId!) {
+            
+            if let proposedId = cell?.callingForCell?.proposedIndId {
+                if let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: proposedId) {
                     if let nameString = proposedMember.name {
-                        cell?.first_subtitle.text = "\(nameString) - \(calling.proposedStatus.description)"
+                        var displayText : String = nameString
+                        if let proposedStatusDescription = cell?.callingForCell?.proposedStatus.description {
+                            displayText = displayText.appending(" - \(proposedStatusDescription)")
+                        }
+                        cell?.first_subtitle.text = displayText
                     }
                 }
             }
             else {
                 cell?.first_subtitle.text = nil
+            }
+            
+            if cell?.callingForCell?.conflict != nil {
+                cell?.warningButton.isHidden = false
+                cell?.warningButton.addTarget(self, action: #selector(warningButtonPressed), for: .touchUpInside)
+            }
+            else {
+                cell?.warningButton.isHidden = true
             }
             
             return cell!
@@ -192,7 +204,9 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                 }
                 else {
                     let cell = tableView.cellForRow(at: indexPath) as? CWFAccordionRootTableViewCell
-                    cell?.newButton.isHidden = false
+                    if (hasPermissionToEdit()) {
+                        cell?.newButton.isHidden = false
+                    }
                     cell?.newButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
                     cell?.tag = indexPath.row
                     expandCell(indexPath: indexPath)
@@ -282,7 +296,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         
         self.tableView.endUpdates()
     }
-    
+
     func addButtonPressed(sender: UIButton) {
         
         let storyBoard = UIStoryboard.init(name: "Main", bundle:nil)
@@ -303,6 +317,18 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         print("showFilter")
     }
 
-    // MARK: - Navigation
+    // MARK: - Permissions
+    func hasPermissionToEdit() -> Bool {
+        return true
+    }
+    
+    //MARK: - Warning
+    func warningButtonPressed() {
+        print("warning pressed")
+        let alert = UIAlertController(title: "Error", message: "There was an error uploading changes", preferredStyle: .alert)
+            
+        self.present(alert, animated: true, completion: nil)
+    }
+
 
 }
