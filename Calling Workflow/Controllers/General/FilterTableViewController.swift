@@ -12,16 +12,20 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
 
     var filterContentArray : [FilterBaseTableViewCell] = []
     var titleString : String?
+    var unitLevelOrgs : [Org] = []
+    var callingStatuses : [CallingStatus] = []
+    
     var filterObject : FilterOptions = FilterOptions(){
         didSet {
-            if let gender = filterObject.gender {
-                
-                filterContentArray = filterContentArray.filter() {
-                    if $0 is FilterOrgTableViewCell {
-                        return false
-                    }
-                    return true
+            // we need to clear out the orgs (priesthood/class) outside the if because it could have been selected, but is no longer selected so we need to always clear it out first, if a gender has been selected then the necessary orgs will be added back in inside the if statement
+            filterContentArray = filterContentArray.filter() {
+                if $0 is FilterOrgTableViewCell {
+                    return false
                 }
+                return true
+            }
+            
+            if let gender = filterObject.gender {
                 
                 if gender == Gender.Female {
                     addOrgFilterCell(title: "Class", orgType: .MemberClass, upperLevelEnums: [MemberClass.ReliefSociety], lowerLevelEnums: [MemberClass.Laurel, MemberClass.MiaMaid, MemberClass.Beehive])
@@ -29,8 +33,8 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
                     addOrgFilterCell(title: "Priesthood", orgType: .Priesthood, upperLevelEnums: [Priesthood.HighPriest, Priesthood.Elder], lowerLevelEnums: [Priesthood.Priest, Priesthood.Teacher, Priesthood.Deacon])
                 }
                 
-                tableView.reloadData()
             }
+            tableView.reloadData()
         }
     }
 
@@ -159,13 +163,14 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
     }
     
     func addCallingStatusFilterCell() {
-        let cell = FilterCallingStatusTableViewCell(style: .default, reuseIdentifier: "FilterCallingStatusCell")
+        // we may need to pass callingStatuses into this controller as well in the future once we have the ability for the unit to disable statuses they don't care about
+        let cell = FilterCallingStatusTableViewCell(style: .default, reuseIdentifier: "FilterCallingStatusCell", callingStatuses : CallingStatus.userValues)
         cell.filterDelegate = self
         filterContentArray.append(cell)
     }
     
     func addCallingOrgFilterCell() {
-        let cell = FilterCallingOrgTableViewCell(style: .default, reuseIdentifier: "FilterCallingOrgCell")
+        let cell = FilterCallingOrgTableViewCell(style: .default, reuseIdentifier: "FilterCallingOrgCell", unitLevelOrgs: self.unitLevelOrgs)
         cell.filterDelegate = self
         filterContentArray.append(cell)
     }

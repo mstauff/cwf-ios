@@ -43,6 +43,12 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     func setupData() {        
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             members = appDelegate.callingManager.memberCallings
+            if let filter = self.filterViewOptions {
+                self.filteredMembers = filter.filterMemberData(unfilteredArray: members)
+            } else {
+                // otherwise just set the filteredMembers to the members, we always read/display from filteredMembers
+                self.filteredMembers = members
+            }
         }
     }
   
@@ -53,11 +59,11 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return members.count
+        return filteredMembers.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let memberForCell = members[indexPath.row]
+        let memberForCell = filteredMembers[indexPath.row]
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "directioryCell", for: indexPath) as! DirectoryTableViewCell
         cell.nameLabel.text = memberForCell.member.name
@@ -68,7 +74,7 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let member = members[indexPath.row]
+        let member = filteredMembers[indexPath.row]
        
         displayContactInfoForMember(member: member)
         
@@ -77,19 +83,19 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     //MARK: - FilterViewDelegate
     
     func setFilterOptions(memberFilterOptions: FilterOptions) {
-        filterViewOptions = memberFilterOptions
-        filteredMembers = (filterViewOptions?.filterMemberData(unfilteredArray: members))!
+        filteredMembers = memberFilterOptions.filterMemberData(unfilteredArray: members)
+        self.filterViewOptions = memberFilterOptions
         tableView.reloadData()
     }
 
     func filterButtonPressed(sender : UIView) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let filterView = storyboard.instantiateViewController(withIdentifier: "FilterTableViewController") as? FilterTableViewController
-        filterView?.addCallingsFilterCell()
-        filterView?.addTimeInCallingFilterCell()
-        filterView?.addAgeFilterCell()
-        filterView?.addGenderFilterCell()
+        filterView?.addAllFilters()
         filterView?.delegate = self
+        if let filterOptions = self.filterViewOptions {
+            filterView?.filterObject = filterOptions
+        }
         
         self.navigationController?.pushViewController(filterView!, animated: true)
     }

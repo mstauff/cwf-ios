@@ -162,6 +162,87 @@ class FilterOptionsTests: XCTestCase {
         
     }
     
+    func testFilterForCallingStatus() {
+        let proposedCalling = createMemberCallings(withId: 10, withPosition: PositionType.EQSecretary.rawValue, withStatus: .Proposed, withOrg: nil)
+        let approvedCalling = createMemberCallings(withId: 20, withPosition: PositionType.EQSecretary.rawValue, withStatus: .Approved, withOrg: nil)
+        let approvedCalling2 = createMemberCallings(withId: 25, withPosition: PositionType.EQ1stCounselor.rawValue, withStatus: .Approved, withOrg: nil)
+        let extendedCalling = createMemberCallings(withId: 25, withPosition: PositionType.EQ1stCounselor.rawValue, withStatus: .Extended, withOrg: nil)
+        
+        let memberList = [proposedCalling, approvedCalling, approvedCalling2, extendedCalling]
+        
+        // no statuses specified, should get original list
+        var filterOptions = FilterOptions()
+        filterOptions.callingStatuses = []
+        var filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
+        XCTAssertEqual( filteredList, memberList )
+        
+        // status that doesn't match anything, should get empty list
+        filterOptions.callingStatuses = [CallingStatus.Recorded]
+        filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
+        XCTAssert( filteredList.isEmpty )
+        
+        // status that matches 1 item
+        filterOptions.callingStatuses = [CallingStatus.Extended]
+        filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
+        XCTAssertEqual( filteredList, [extendedCalling] )
+        
+        // single status that matches multiple items
+        filterOptions.callingStatuses = [CallingStatus.Approved]
+        filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
+        XCTAssertEqual( filteredList, [approvedCalling, approvedCalling2] )
+        
+        // multiple statuses that match single item
+        filterOptions.callingStatuses = [CallingStatus.Proposed, CallingStatus.AppointmentSet]
+        filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
+        XCTAssertEqual( filteredList, [proposedCalling] )
+        
+        
+        // multiple statuses that match multiple items
+        filterOptions.callingStatuses = [CallingStatus.Proposed, .Extended, .Refused]
+        filteredList = filterOptions.filterMemberData(unfilteredArray: memberList)
+        XCTAssertEqual( filteredList, [proposedCalling, extendedCalling] )
+    }
+    
+    func testFilterForCallingOrg() {
+        let bishopric = Org(id: 100, orgTypeId: 1, orgName: "Bishopric", displayOrder: 100, children: [], callings: [])
+        let eqPresOrg = Org(id: 220, orgTypeId: 2, orgName: "EQ Presidency", displayOrder: 220, children: [], callings: [])
+        let eqTeacherOrg = Org(id: 230, orgTypeId: 3, orgName: "EQ Teachers", displayOrder: 230, children: [], callings: [])
+        let eqOrg = Org(id: 200, orgTypeId: 4, orgName: "EQ", displayOrder: 200, children: [eqPresOrg, eqTeacherOrg], callings: [])
+        let rsOrg = Org(id: 300, orgTypeId: 5, orgName: "RS", displayOrder: 300, children: [], callings: [])
+        
+        let bishopricCalling = createMemberCallings(withId: 10, withPosition: PositionType.Bishopric1stCounselor.rawValue, withStatus: nil, withOrg: bishopric)
+        let eqTeacherCalling = createMemberCallings(withId: 20, withPosition: 555, withStatus: nil, withOrg: eqTeacherOrg)
+        let eqPresCalling = createMemberCallings(withId: 30, withPosition: PositionType.EQPres.rawValue, withStatus: nil, withOrg: eqPresOrg)
+        let ssCalling = createMemberCallings(withId: 40, withPosition: PositionType.SSPres.rawValue, withStatus: nil, withOrg: nil)
+        
+        let callingList = [bishopricCalling, eqTeacherCalling, eqPresCalling, ssCalling]
+        var filterOptions = FilterOptions()
+        
+        // list should not be changed with no filter options
+        var filteredList = filterOptions.filterMemberData(unfilteredArray: callingList)
+        XCTAssertEqual(filteredList, callingList)
+        
+        // when there's some orgs, but no matches you should get an empty list
+        filterOptions.callingOrgs = rsOrg.allOrgIds
+        filteredList = filterOptions.filterMemberData(unfilteredArray: callingList)
+        XCTAssert(filteredList.isEmpty)
+        
+        // test callings that are a direct root org
+        filterOptions.callingOrgs = bishopric.allOrgIds
+        filteredList = filterOptions.filterMemberData(unfilteredArray: callingList)
+        XCTAssertEqual(filteredList, [bishopricCalling])
+        
+        // test multiple matches in child orgs
+        filterOptions.callingOrgs = eqOrg.allOrgIds
+        filteredList = filterOptions.filterMemberData(unfilteredArray: callingList)
+        XCTAssertEqual(filteredList, [eqTeacherCalling, eqPresCalling])
+        
+        // test with multiple orgs ID's in the filter
+        filterOptions.callingOrgs = eqOrg.allOrgIds + bishopric.allOrgIds
+        filteredList = filterOptions.filterMemberData(unfilteredArray: callingList)
+        XCTAssertEqual(filteredList, [bishopricCalling, eqTeacherCalling, eqPresCalling])
+    }
+    
     func testFilterForClass() {
         // holding off on this for now, since currently we would have to do a bunch of age based setup that would all go away once we move to the longterm solution of pulling the data from a service
         
@@ -256,7 +337,16 @@ class FilterOptionsTests: XCTestCase {
         let member = Member(indId: Int64(id), name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
         return MemberCallings(member: member, callings: callings, proposedCallings: [])
     }
+
+    func createMemberCallings( withId id: Int, withPosition positionId: Int, withStatus status: CallingStatus?, withOrg parentOrg : Org? ) -> MemberCallings {
+        let position = Position(positionTypeId: positionId, name: "Calling", hidden: false, multiplesAllowed: false, displayOrder: 100, metadata: PositionMetadata() )
+        let calling = Calling(id: Int64(id * 100), cwfId: nil, existingIndId: 100, existingStatus: .Active, activeDate: nil, proposedIndId: Int64(id), status: status, position:position, notes: nil, parentOrg: parentOrg)
+        
+        let member = Member(indId: Int64(id), name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
+        return MemberCallings(member: member, callings: [], proposedCallings: [calling])
+    }
     
+
     
 }
 
