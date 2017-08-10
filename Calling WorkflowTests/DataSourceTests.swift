@@ -26,8 +26,8 @@ class DataSourceTests: XCTestCase {
     }
     
     func testGetFileName() {
-        let validOrg = Org(id: 12345, orgTypeId: UnitLevelOrgType.Elders.rawValue)
-        let badOrg = Org( id: 41234, orgTypeId: 8248482 )
+        let validOrg = Org(id: 12345, unitNum: 1111, orgTypeId: UnitLevelOrgType.Elders.rawValue)
+        let badOrg = Org( id: 41234, unitNum: 1111, orgTypeId: 8248482 )
         XCTAssertEqual( dataSource.getFileName(forOrg: validOrg)!, "EQ-12345.json")
         XCTAssertNil( dataSource.getFileName(forOrg: badOrg) )
     }

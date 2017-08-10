@@ -1,4 +1,4 @@
-//
+
 //  FirstViewController.swift
 //  Calling Workflow
 //
@@ -33,7 +33,6 @@ class FirstViewController: UIViewController, GIDSignInUIDelegate {
     // TODO - need a constructor/init in the interface
     //    private let dataSource = RemoteDataSource()
 //    private let callingMgr = CallingDataManager( initDataSource: RemoteDataSource() )
-    private let eq = Org( id: 284, orgTypeId: UnitLevelOrgType.Elders.rawValue, orgName: "Elders Quorum", displayOrder: 400, children: [], callings: [] )
     
     @IBOutlet var output: UITextView!
 //    @IBOutlet weak var signInButton: GIDSignInButton!

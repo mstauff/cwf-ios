@@ -15,9 +15,9 @@ class ModelTests: XCTestCase {
     
     var testJSON : [String:AnyObject]? = nil
     var jsonSerializer : JSONSerializer = JSONSerializerImpl()
-    private var standardOrg = Org( id: 1, orgTypeId: 1 )
-    private var multiDepthOrg = Org( id: 1, orgTypeId: 1 )
-    private var fullLcrOrg = Org( id: 1, orgTypeId: 1 )
+    private var standardOrg = Org( id: 1,  unitNum: 123, orgTypeId: 1 )
+    private var multiDepthOrg = Org( id: 1,  unitNum: 123,orgTypeId: 1 )
+    private var fullLcrOrg = Org( id: 1,  unitNum: 123,orgTypeId: 1 )
     private var positionMetadata : Array<PositionMetadata> = []
 
     override func setUp() {
@@ -101,6 +101,7 @@ class ModelTests: XCTestCase {
         XCTAssertNotNil(org)
         XCTAssertEqual( org.orgName, "Primary" )
         XCTAssertEqual( org.orgTypeId, 77 )
+        XCTAssertEqual( org.unitNum, 1111 )
         XCTAssertEqual( org.displayOrder, 700 )
         XCTAssertEqual( org.id, 7428354 )
         XCTAssertEqual( org.children.count, 3 )
@@ -113,6 +114,7 @@ class ModelTests: XCTestCase {
         let childOrg = org.children[0]
         XCTAssertNotNil(childOrg)
         XCTAssertEqual( childOrg.orgName, "CTR 7" )
+        XCTAssertEqual( childOrg.unitNum, 1111 )
         XCTAssertEqual(childOrg.callings.count, 2)
         let calling = childOrg.callings[0]
         XCTAssertEqual(calling.existingIndId!, 123)
@@ -160,6 +162,7 @@ class ModelTests: XCTestCase {
         XCTAssertTrue(jsonString!.contains( "\"defaultOrgName\":\"Primary\"" ))
         XCTAssertTrue(jsonString!.contains( "\"subOrgId\":7428354" ))
         XCTAssertTrue(jsonString!.contains( "\"orgTypeId\":77" ))
+        XCTAssertTrue(jsonString!.contains( "\"unitNumber\":1111" ))
         // just test that there is some object in the callings array. If it's empty it would not have the { and " after the [
         XCTAssertTrue(jsonString!.contains( "\"callings\":[{\"" ))
         XCTAssertTrue(jsonString!.contains( "\"memberId\":123" ))
