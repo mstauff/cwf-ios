@@ -204,11 +204,11 @@ class FilterOptionsTests: XCTestCase {
     }
     
     func testFilterForCallingOrg() {
-        let bishopric = Org(id: 100, orgTypeId: 1, orgName: "Bishopric", displayOrder: 100, children: [], callings: [])
-        let eqPresOrg = Org(id: 220, orgTypeId: 2, orgName: "EQ Presidency", displayOrder: 220, children: [], callings: [])
-        let eqTeacherOrg = Org(id: 230, orgTypeId: 3, orgName: "EQ Teachers", displayOrder: 230, children: [], callings: [])
-        let eqOrg = Org(id: 200, orgTypeId: 4, orgName: "EQ", displayOrder: 200, children: [eqPresOrg, eqTeacherOrg], callings: [])
-        let rsOrg = Org(id: 300, orgTypeId: 5, orgName: "RS", displayOrder: 300, children: [], callings: [])
+        let bishopric = Org(id: 100, unitNum: 123, orgTypeId: 1, orgName: "Bishopric", displayOrder: 100, children: [], callings: [])
+        let eqPresOrg = Org(id: 220,  unitNum: 123,orgTypeId: 2, orgName: "EQ Presidency", displayOrder: 220, children: [], callings: [])
+        let eqTeacherOrg = Org(id: 230, unitNum: 123, orgTypeId: 3, orgName: "EQ Teachers", displayOrder: 230, children: [], callings: [])
+        let eqOrg = Org(id: 200,  unitNum: 123,orgTypeId: 4, orgName: "EQ", displayOrder: 200, children: [eqPresOrg, eqTeacherOrg], callings: [])
+        let rsOrg = Org(id: 300,  unitNum: 123,orgTypeId: 5, orgName: "RS", displayOrder: 300, children: [], callings: [])
         
         let bishopricCalling = createMemberCallings(withId: 10, withPosition: PositionType.Bishopric1stCounselor.rawValue, withStatus: nil, withOrg: bishopric)
         let eqTeacherCalling = createMemberCallings(withId: 20, withPosition: 555, withStatus: nil, withOrg: eqTeacherOrg)

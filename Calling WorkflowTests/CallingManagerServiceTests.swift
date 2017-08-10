@@ -15,8 +15,8 @@ class CallingManagerServiceTests: XCTestCase {
     let mockDataSource = MockDataSource()
     var org : Org?
     var positionsOrg : Org?
-    var lcrOrg = Org( id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
-    var appOrg  = Org( id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
+    var lcrOrg = Org( id: 111, unitNum: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
+    var appOrg  = Org( id: 111,unitNum: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
 
     class MockPermissionMgr : PermissionManager {
         override func isAuthorized(unitRoles: [UnitRole], domain: Domain, permission: Permission, targetData: Authorizable) -> Bool {
@@ -102,7 +102,7 @@ class CallingManagerServiceTests: XCTestCase {
     }
 
     func getSingleOrgFromFile( fileName: String ) -> Org? {
-        var result = Org(id: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue)
+        var result = Org(id: 111, unitNum: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue)
         let bundle = Bundle( for: type(of: self) )
         if let filePath = bundle.path(forResource: fileName, ofType: "js"),
             let fileData = NSData(contentsOfFile: filePath) {
@@ -249,7 +249,7 @@ class CallingManagerServiceTests: XCTestCase {
     
     func testAddCalling() {
         let primaryOrg = org!
-        let unitOrg = Org(id: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [primaryOrg], callings: [])
+        let unitOrg = Org(id: 123,unitNum: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [primaryOrg], callings: [])
         callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
         callingMgr.initDatasourceData(fromOrg: unitOrg, extraOrgs: [])
         // todo - need a mock callingMgr.dataSource with mocked updateOrg() method
@@ -288,7 +288,7 @@ class CallingManagerServiceTests: XCTestCase {
 
     func testDeleteCalling() {
         let primaryOrg = org!
-        let unitOrg = Org(id: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [primaryOrg], callings: [])
+        let unitOrg = Org(id: 123, unitNum: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [primaryOrg], callings: [])
         callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
         callingMgr.initDatasourceData(fromOrg: unitOrg, extraOrgs: [])
         // todo - need a mock callingMgr.dataSource with mocked updateOrg() method
@@ -318,7 +318,7 @@ class CallingManagerServiceTests: XCTestCase {
 
     func testDeleteNonCalling() {
         let primaryOrg = org!
-        let unitOrg = Org(id: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [primaryOrg], callings: [])
+        let unitOrg = Org(id: 123, unitNum: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [primaryOrg], callings: [])
         callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
         callingMgr.initDatasourceData(fromOrg: unitOrg, extraOrgs: [])
         // todo - need a mock callingMgr.dataSource with mocked updateOrg() method
@@ -347,7 +347,7 @@ class CallingManagerServiceTests: XCTestCase {
     func testUpdateCalling() {
         let bishopric = getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithDirectCallings")!
 
-        let unitOrg = Org(id: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [bishopric], callings: [])
+        let unitOrg = Org(id: 123, unitNum: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [bishopric], callings: [])
         callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
         callingMgr.initDatasourceData(fromOrg: unitOrg, extraOrgs: [])
         callingMgr.mockGoogleOrg = bishopric

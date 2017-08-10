@@ -1,6 +1,7 @@
 {
     "lcrOrg": [{
     "orgTypeId": 77,
+	"unitNumber" : 1111,
         "defaultOrgName": "Primary",
         "displayOrder": 700,
         "customOrgName": null,
@@ -9,6 +10,7 @@
         {
             "displayOrder": 320,
             "orgTypeId": 35,
+			"unitNumber" : 1111,
             "defaultOrgName": "CTR 7",
             "customOrgName": null,
             "subOrgId": 38432972,
@@ -39,6 +41,7 @@
         {
             "displayOrder": 350,
             "orgTypeId": 40,
+			"unitNumber" : 1111,
             "defaultOrgName": "CTR 8",
             "customOrgName": null,
             "subOrgId": 752892,
@@ -59,6 +62,7 @@
         {
             "displayOrder": 400,
             "orgTypeId": 41,
+			"unitNumber" : 1111,
             "defaultOrgName": "CTR 9",
             "customOrgName": null,
 			"comment": "Org that exists in LCR but not app",
@@ -81,6 +85,7 @@
 },
 {
 		"orgTypeId": 73,
+			"unitNumber" : 1111,
         "defaultOrgName": "Young Men",
         "displayOrder": 1500,
         "customOrgName": null,
@@ -89,6 +94,7 @@
         {
             "displayOrder": 1400,
             "orgTypeId": 739,
+			"unitNumber" : 1111,
             "defaultOrgName": "Boy Scouts",
             "customOrgName": null,
             "subOrgId": 839500,
@@ -96,6 +102,7 @@
                 {
                     "displayOrder": 1440,
                     "orgTypeId": 1700,
+			"unitNumber" : 1111,
                     "defaultOrgName": "Varsity",
                     "customOrgName": null,
                     "subOrgId": 839510,
@@ -131,6 +138,7 @@
 }],
  "appOrg" : [ {
     "orgTypeId": 77,
+			"unitNumber" : 1111,
         "defaultOrgName": "Primary",
         "displayOrder": 700,
         "customOrgName": null,
@@ -139,6 +147,7 @@
         {
             "displayOrder": 320,
             "orgTypeId": 35,
+			"unitNumber" : 1111,
             "defaultOrgName": "CTR 7",
             "customOrgName": null,
             "subOrgId": 38432972,
@@ -183,6 +192,7 @@
         {
             "displayOrder": 350,
             "orgTypeId": 40,
+			"unitNumber" : 1111,
             "defaultOrgName": "CTR 8",
             "customOrgName": null,
             "subOrgId": 752892,
@@ -230,6 +240,7 @@
 },
 {
     "orgTypeId": 73,
+			"unitNumber" : 1111,
         "defaultOrgName": "Young Men",
         "displayOrder": 1500,
         "customOrgName": null,
@@ -238,6 +249,7 @@
         {
             "displayOrder": 1400,
             "orgTypeId": 739,
+			"unitNumber" : 1111,
             "defaultOrgName": "Boy Scouts",
             "customOrgName": null,
             "subOrgId": 839500,
@@ -245,6 +257,7 @@
                 {
                     "displayOrder": 1440,
                     "orgTypeId": 1700,
+			"unitNumber" : 1111,
                     "defaultOrgName": "Varsity",
                     "customOrgName": null,
                     "subOrgId": 839510,

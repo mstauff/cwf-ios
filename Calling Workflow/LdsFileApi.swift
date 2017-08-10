@@ -82,7 +82,7 @@ class LdsFileApi : LdsOrgApi {
         let authenticated = signedIn
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
             if authenticated {
-                var unitOrg = Org( id: unitNum, orgTypeId: UnitLevelOrgType.Ward.rawValue )
+                var unitOrg = Org( id: unitNum, unitNum: unitNum, orgTypeId: UnitLevelOrgType.Ward.rawValue )
                     for jsonOrg in self.orgJSON {
                         if let childOrg = Org(fromJSON: jsonOrg) {
                             unitOrg.children.append( childOrg )

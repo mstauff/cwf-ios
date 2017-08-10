@@ -18,6 +18,11 @@ public struct Org : JSONParsable  {
      */
     let id : Int64
     
+    /** 
+     The owning unit num that this org belongs to. This is mostly for convenience as many lds.org methods require a unit number, as well as validating permissions. By adding it here to the org it allows us to have easy access to it and not have to go look it up for every permission check or network call
+     */
+    let unitNum : Int64
+    
     /**
      The CDOL orgTypeId. We debated between making this an enum, or leaving it just the int. We went with int because although we do make use of the org type as an enum for the root level orgs within a unit (RS, EQ, Primary, etc.) we don't want to have to create an enum for all the sub orgs within those (EQ Pres., CTR 7, etc.). Since an Org represents both types of structures we decided to just use the int, and then in the cases where it's appropriate and necessary we can retrieve the corresponding UnitLevelOrgType for a given orgTypeId
      */
@@ -108,6 +113,7 @@ public struct Org : JSONParsable  {
             // orgs can come from our google drive structure, or from LCR. Most of the google drive structure was designed based on the LCR org so fields are mostly named the same. OrgTypeId is the one exception. In the google drive object it's orgTypeId, in LCR there is an array of orgTypeIds, and then a convenience member var to get the first one named "firstOrgTypeId". If there were more differences we might look into subclassing & different impl's, but since this is the only one we just check for orgTypeId first and if it's not in the JSON then we check for firstOrgTypeId.
             let orgTypeId = json[ OrgJsonKeys.orgTypeId ] as? Int ?? json[ OrgJsonKeys.lcrOrgTypeId ] as? Int,
             let id = json[ OrgJsonKeys.id ] as? NSNumber,
+            let unitNum = json[ OrgJsonKeys.unitNum ] as? NSNumber,
             let displayOrder = json[OrgJsonKeys.displayOrder] as? Int
             else {
                 return nil
@@ -121,7 +127,7 @@ public struct Org : JSONParsable  {
             }.flatMap() { $0 } // .flatMap() will remove any nil objects
         
         // This initializer is a bit unorthodox where it creates an org, then sets self to it, but we need to do that because the child callings need a reference to the containing org. Although we probably could make it work by making Calling.parentOrg optional, and then filling it in after everything else is initialized, this works, so we'll stick with this method unless it causes us some other issues
-        var org = Org( id: id.int64Value, orgTypeId: orgTypeId, orgName: orgName!, displayOrder: displayOrder, children: childOrgs, callings: [] )
+        var org = Org( id: id.int64Value, unitNum: unitNum.int64Value, orgTypeId: orgTypeId, orgName: orgName!, displayOrder: displayOrder, children: childOrgs, callings: [] )
         let parsedCallings : [Calling] = callings.map() { callingJson -> Calling? in
             var calling = Calling( fromJSON: callingJson )
             // todo - at some point we need to deal with hidden callings
@@ -134,12 +140,13 @@ public struct Org : JSONParsable  {
         self = org
     }
     
-    public init( id: Int64, orgTypeId: Int ) {
-        self.init( id: id, orgTypeId: orgTypeId, orgName: "", displayOrder: 1, children: [], callings: [] )
+    public init( id: Int64, unitNum: Int64, orgTypeId: Int ) {
+        self.init( id: id, unitNum: unitNum, orgTypeId: orgTypeId, orgName: "", displayOrder: 1, children: [], callings: [] )
     }
     
-    public init( id: Int64, orgTypeId: Int, orgName : String, displayOrder : Int, children : [Org], callings : [Calling] ) {
+    public init( id: Int64, unitNum: Int64, orgTypeId: Int, orgName : String, displayOrder : Int, children : [Org], callings : [Calling] ) {
         self.id = id
+        self.unitNum = unitNum
         self.orgTypeId = orgTypeId
         self.orgName = orgName
         self.displayOrder = displayOrder
@@ -150,6 +157,7 @@ public struct Org : JSONParsable  {
     public func toJSONObject() -> JSONObject {
         var jsonObj = JSONObject()
         jsonObj[OrgJsonKeys.id] = self.id as AnyObject
+        jsonObj[OrgJsonKeys.unitNum] = self.unitNum as AnyObject
         jsonObj[OrgJsonKeys.orgTypeId] = self.orgTypeId as AnyObject
         jsonObj[OrgJsonKeys.orgName] = self.orgName as AnyObject
         jsonObj[OrgJsonKeys.displayOrder] = self.displayOrder as AnyObject
@@ -284,6 +292,7 @@ extension Org : Equatable {
 }
 
 private struct OrgJsonKeys {
+    static let unitNum = "unitNumber"
     static let id = "subOrgId"
     static let orgTypeId = "orgTypeId"
     static let displayOrder = "displayOrder"

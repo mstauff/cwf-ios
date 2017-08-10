@@ -1,120 +1,169 @@
 {
-    "orgWithCallingsInSubOrg": {
-        "orgTypeId": 77,
-        "defaultOrgName": "Primary",
-        "displayOrder": 700,
-        "customOrgName": null,
-        "subOrgId": 7428354,
-        "children": [{
-                     "displayOrder": 320,
-                     "orgTypeId": 35,
-                     "defaultOrgName": "CTR 7",
-                     "customOrgName": null,
-                     "subOrgId": 38432972,
-                     "children": [],
-                     "callings": [{
-                                  "memberId": 123,
-                                  "existingStatus": "ACTIVE",
-                                  "activeDate": null,
-                                  "positionId": 734829,
-                                  "positionTypeId": 1481,
-                                  "positionTypeEnum": "PRIMARY_WORKER_CTR_7",
-                                  "position": "Primary Teacher",
-                                  "hidden": false,
-                                  "proposedStatus": "PROPOSED",
-                                  "proposedIndId": 456,
-                                  "notes": "Some String",
-                                  "editableByOrg": true
-                                  }, {
-                                  "memberId": 234,
-                                  "existingStatus": "ACTIVE",
-                                  "activeDate": "20150922",
-                                  "positionId": 734820,
-                                  "positionTypeId": 1481,
-                                  "positionTypeEnum": "PRIMARY_WORKER_CTR_7",
-                                  "position": "Primary Teacher",
-                                  "hidden": false,
-                                  "proposedStatus": null,
-                                  "proposedIndId": null,
-                                  "notes": null,
-                                  "editableByOrg": true
-                                  }]
-                     
-                     }],
-        "callings": []
+  "orgWithCallingsInSubOrg":{
+    "orgTypeId":77,
+    "unitNumber":12345,
+    "defaultOrgName":"Primary",
+    "displayOrder":700,
+    "customOrgName":null,
+    "subOrgId":7428354,
+    "children":[
+      {
+        "displayOrder":320,
+        "orgTypeId":35,
+        "unitNumber":12345,
+        "defaultOrgName":"CTR 7",
+        "customOrgName":null,
+        "subOrgId":38432972,
+        "children":[
+
+        ],
+        "callings":[
+          {
+            "memberId":123,
+            "existingStatus":"ACTIVE",
+            "activeDate":null,
+            "positionId":734829,
+            "positionTypeId":1481,
+            "positionTypeEnum":"PRIMARY_WORKER_CTR_7",
+            "position":"Primary Teacher",
+            "hidden":false,
+            "proposedStatus":"PROPOSED",
+            "proposedIndId":456,
+            "notes":"Some String",
+            "editableByOrg":true
+          },
+          {
+            "memberId":234,
+            "existingStatus":"ACTIVE",
+            "activeDate":"20150922",
+            "positionId":734820,
+            "positionTypeId":1481,
+            "positionTypeEnum":"PRIMARY_WORKER_CTR_7",
+            "position":"Primary Teacher",
+            "hidden":false,
+            "proposedStatus":null,
+            "proposedIndId":null,
+            "notes":null,
+            "editableByOrg":true
+          }
+        ]
+      }
+    ],
+    "callings":[
+
+    ]
+  },
+  "orgWithDirectCallings":{
+    "notUsed":"Ignore this",
+    "orgTypeId":1179,
+    "unitNumber":12345,
+    "defaultOrgName":"Bishopric",
+    "displayOrder":100,
+    "customOrgName":null,
+    "subOrgId":7428354,
+    "children":[
+
+    ],
+    "callings":[
+      {
+        "memberId":123,
+        "existingStatus":"ACTIVE",
+        "activeDate":"20150922",
+        "positionId":734829,
+        "positionTypeId":1481,
+        "positionTypeEnum":"PRIMARY_WORKER_CTR_7",
+        "position":"Primary Teacher",
+        "hidden":true,
+        "proposedStatus":"PROPOSED",
+        "proposedIndId":456,
+        "notes":"Some String",
+        "editableByOrg":true
+      }
+    ]
+  },
+  "invalidOrgs":[
+    {
+      "orgTypeId":null
     },
-    "orgWithDirectCallings": {
-        "notUsed" : "Ignore this",
-        "orgTypeId": 1179,
-        "defaultOrgName": "Bishopric",
-        "displayOrder": 100,
-        "customOrgName": null,
-        "subOrgId": 7428354,
-        "children": [],
-        "callings": [{
-                     "memberId": 123,
-                     "existingStatus": "ACTIVE",
-                     "activeDate": "20150922",
-                     "positionId": 734829,
-                     "positionTypeId": 1481,
-                     "positionTypeEnum": "PRIMARY_WORKER_CTR_7",
-                     "position": "Primary Teacher",
-                     "hidden": true,
-                     "proposedStatus": "PROPOSED",
-                     "proposedIndId": 456,
-                     "notes": "Some String",
-                     "editableByOrg": true
-                     }]
+    {
+
     },
-    "invalidOrgs" : [
-                     { "orgTypeId" : null },
-                     {},
-                     { "subOrgId" : null, "orgTypeId" : 1179 },
-                     { "subOrgId" : 1234 },
-                     { "subOrgId" : 1234, "orgTypeId" : 1179, "orgName" : null },
-                     { "subOrgId" : 1234, "orgTypeId" : 1179, "orgName" : "Bishopric", "displayOrder" : null }
-                     ],
-    
-    "statuses": [{
-                 "name": "CONSIDERING",
-                 "active": true,
-                 "priority": 10
-                 }, {
-                 "name": "PROPOSED",
-                 "active": true,
-                 "priority": 20
-                 }, {
-                 "name": "APPROVED",
-                 "active": true,
-                 "priority": 30
-                 }, {
-                 "name": "REJECTED",
-                 "active": true,
-                 "priority": 40
-                 }, {
-                 "name": "APPT_SET",
-                 "active": true,
-                 "priority": 50
-                 }, {
-                 "name": "ACCEPTED",
-                 "active": true,
-                 "priority": 60
-                 }, {
-                 "name": "DECLINED",
-                 "active": true,
-                 "priority": 70
-                 }, {
-                 "name": "SUSTAINED",
-                 "active": true,
-                 "priority": 80
-                 }, {
-                 "name": "SET_APART",
-                 "active": true,
-                 "priority": 90
-                 }, {
-                 "name": "RELEASED",
-                 "active": true,
-                 "priority": 110
-                 }]
-    
+    {
+      "subOrgId":null,
+      "orgTypeId":1179
+    },
+    {
+      "subOrgId":1234
+    },
+    {
+      "subOrgId":1234,
+      "orgTypeId":1179,
+      "unitNumber":null
+    },
+    {
+      "subOrgId":1234,
+      "orgTypeId":1179,
+      "unitNumber":12345,
+      "orgName":null
+    },
+    {
+      "subOrgId":1234,
+      "orgTypeId":1179,
+      "unitNumber":12345,
+      "orgName":"Bishopric",
+      "displayOrder":null
+    }
+  ],
+  "statuses":[
+    {
+      "name":"CONSIDERING",
+      "active":true,
+      "priority":10
+    },
+    {
+      "name":"PROPOSED",
+      "active":true,
+      "priority":20
+    },
+    {
+      "name":"APPROVED",
+      "active":true,
+      "priority":30
+    },
+    {
+      "name":"REJECTED",
+      "active":true,
+      "priority":40
+    },
+    {
+      "name":"APPT_SET",
+      "active":true,
+      "priority":50
+    },
+    {
+      "name":"ACCEPTED",
+      "active":true,
+      "priority":60
+    },
+    {
+      "name":"DECLINED",
+      "active":true,
+      "priority":70
+    },
+    {
+      "name":"SUSTAINED",
+      "active":true,
+      "priority":80
+    },
+    {
+      "name":"SET_APART",
+      "active":true,
+      "priority":90
+    },
+    {
+      "name":"RELEASED",
+      "active":true,
+      "priority":110
+    }
+  ]
 }
