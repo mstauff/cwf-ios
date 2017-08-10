@@ -413,6 +413,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     
     //MARK: - Permissions
     func hasPermissionToView() -> Bool {
-        return true
+        if let appDelegete = UIApplication.shared.delegate as? AppDelegate, let parentOrg = callingToDisplay?.parentOrg, let unitLevelOrg = appDelegete.callingManager.unitLevelOrg(forSubOrg: parentOrg.id), let orgType = UnitLevelOrgType(rawValue: unitLevelOrg.orgTypeId) {
+            let authOrg = AuthorizableOrg(unitNum: (appDelegete.callingManager.appDataOrg?.id)!, unitLevelOrgId: unitLevelOrg.id, unitLevelOrgType: orgType, orgTypeId: parentOrg.orgTypeId)
+            return appDelegete.callingManager.permissionMgr.isAuthorized(unitRoles: appDelegete.callingManager.userRoles, domain: .PotentialCalling, permission: .Update, targetData: authOrg)
+            
+        }
+        else {
+            return false
+        }
     }
 }
