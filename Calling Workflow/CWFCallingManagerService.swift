@@ -43,9 +43,9 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     private let jsonFileReader = JSONFileReader()
     
-    private let permissionMgr : PermissionManager
+    let permissionMgr : PermissionManager
     
-    private var userRoles : [UnitRole] = []
+    public private(set) var userRoles : [UnitRole] = []
     
     
     init() {
@@ -627,5 +627,13 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         }
     }
     
+    func unitLevelOrg( forSubOrg subOrgId: Int64) -> Org? {
+        var org : Org? = nil
+        if let orgId = unitLevelOrgsForSubOrgs[subOrgId], let rootOrg = ldsUnitOrgsMap[orgId] {
+            org = rootOrg
+        }
+        
+        return org
+    }
 }
 
