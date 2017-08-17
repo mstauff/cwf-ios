@@ -361,7 +361,11 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     }
     
     func callingActionsButtonPressed() {
-        print("buttonPressed")
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        let callingMgr = appDelegate.callingManager
+        
         let actionSheet = UIAlertController(title: "LCR Actions", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
         let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
             (alert: UIAlertAction!) -> Void in
@@ -369,27 +373,35 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         })
         let deleteAction = UIAlertAction(title: "Delete Calling in LCR", style: UIAlertActionStyle.default, handler:  {
             (alert: UIAlertAction!) -> Void in
+            callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
+                let err = error?.localizedDescription ?? "nil"
+                print("Release result: \(success) - error: \(err)")
+                
+            }
             
-            print("update pressed")
+            print("Delete Current pressed")
             
         })
         let releaseAction = UIAlertAction(title: "Release Current in LCR", style: UIAlertActionStyle.default, handler:  {
             (alert: UIAlertAction!) -> Void in
             
-            // todo - this should just go to calling manager rather than straight to the API, but this is just for testing
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.callingManager.ldsOrgApi.releaseCalling(unitNum: appDelegate.callingManager.appDataOrg!.id, calling: self.callingToDisplay!) { (success, error) in
-                    print("Release result: \(success) - error: \(error)")
-                    
-                }
+            callingMgr.releaseLCRCalling(callingToRelease: self.callingToDisplay!) { (success, error) in
+                let err = error?.localizedDescription ?? "nil"
+                print("Release result: \(success) - error: \(err)")
+                
             }
-           print("update pressed")
+            print("Release Current pressed")
             
         })
         let finalizeAction = UIAlertAction(title: "Finalize Change in LCR", style: UIAlertActionStyle.default, handler:  {
             (alert: UIAlertAction!) -> Void in
-            
-            print("update pressed")
+            callingMgr.updateLCRCalling(updatedCalling: self.callingToDisplay!) { (calling, error) in
+                let err = error?.localizedDescription ?? "nil"
+                print("Release result: \(calling.debugDescription) - error: \(err)")
+                
+            }
+
+            print("update LCR pressed")
             
         })
         actionSheet.addAction(finalizeAction)

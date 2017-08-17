@@ -23,6 +23,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
     func setAppConfig( appConfig : AppConfig ) {
         self.appConfig = appConfig
     }
+    //todo - it's possible, however unlikely that the user's lds.org session could time out. So we always need to check if 200 OK responses return the html sign-in page, and re-login if necessary. Not sure if we do that at this level, or maybe at CWFMgrSvc. level
     
     // At some point it would be good to see if we can check for the cookie first - we probably need to save that manually, along with the last access time
     /*

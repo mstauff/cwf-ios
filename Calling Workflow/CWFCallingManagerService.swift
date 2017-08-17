@@ -441,18 +441,57 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         return self.memberPotentialCallingsMap.getValues(forKey: member.individualId)
     }
     
+    /** Adds a potential calling in the app's data store */
     public func addCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: calling, operation: .Create, completionHandler: completionHandler)
     }
     
+    /** deletes a potential calling in the app's data store */
     public func deleteCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: calling, operation: .Delete, completionHandler: completionHandler)
     }
     
+    /** updates a potential calling in the app's data store */
     public func updateCalling(updatedCalling: Calling, completionHandler: @escaping (Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: updatedCalling, operation: .Update, completionHandler: completionHandler)
     }
     
+    public func updateLCRCalling( updatedCalling: Calling, completionHandler: @escaping(Calling?, Error?) -> Void ) {
+        // todo - still need to update internal data/state/maps, etc. This is just calling the rest API - trying to validate the REST calls to LCR
+        guard let unitNum = updatedCalling.parentOrg?.unitNum, let newIndId = updatedCalling.proposedIndId else {
+            let errorMsg = "Error: calling didn't have a parent org, or there was not proposed calling"
+            print( errorMsg )
+            completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: [ "error" : errorMsg ] ) )
+            return
+        }
+        
+        self.ldsOrgApi.updateCalling(unitNum: unitNum, calling: updatedCalling, newMemberIndId: newIndId, completionHandler)
+    }
+
+    public func releaseLCRCalling( callingToRelease: Calling, completionHandler: @escaping(Bool, Error?) -> Void ) {
+        // todo - still need to update internal data/state/maps, etc. This is just calling the rest API - trying to validate the REST calls to LCR
+        guard let unitNum = callingToRelease.parentOrg?.unitNum else {
+            let errorMsg = "Error: calling didn't have a parent org"
+            print( errorMsg )
+            completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: [ "error" : errorMsg ] ) )
+            return
+        }
+        
+        self.ldsOrgApi.releaseCalling(unitNum: unitNum, calling: callingToRelease, completionHandler)
+    }
+
+    public func deleteLCRCalling( callingToDelete: Calling, completionHandler: @escaping(Bool, Error?) -> Void ) {
+        // todo - still need to update internal data/state/maps, etc. This is just calling the rest API - trying to validate the REST calls to LCR
+        guard let unitNum = callingToDelete.parentOrg?.unitNum else {
+            let errorMsg = "Error: calling didn't have a parent org"
+            print( errorMsg )
+            completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: [ "error" : errorMsg ] ) )
+            return
+        }
+        
+        self.ldsOrgApi.deleteCalling(unitNum: unitNum, calling: callingToDelete, completionHandler)
+    }
+
     /** Performs the actual CRUD operations by reading the file for the org that the calling is in from google drive, performing the update, writing the entire org back to google drive, then updating the copy of the data that is cached locally. When this is all done we call the completion handler with the results */
     private func storeCallingChange(changedCalling: Calling, operation: Org.CRUDOperation, completionHandler: @escaping (Bool, Error?) -> Void) {
         if let callingOrg = changedCalling.parentOrg, let unitLevelOrgId = self.unitLevelOrgsForSubOrgs[callingOrg.id], let unitLevelOrg = appDataOrg?.getChildOrg(id: unitLevelOrgId), let rootOrgType = UnitLevelOrgType(rawValue: unitLevelOrg.orgTypeId) {
