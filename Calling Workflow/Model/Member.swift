@@ -84,6 +84,5 @@ public enum MemberSource {
 
 public protocol MemberParser {
     func parseFrom( json : JSONObject,  householdPhone : String?, householdEmail : String?, streetAddress : [String] ) -> Member?
-    func parseFamilyFrom( json : JSONObject, includeChildren : Bool ) -> [Member]
     func parseFamilyFrom( json : JSONObject ) -> [Member]
 }

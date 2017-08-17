@@ -376,7 +376,14 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         let releaseAction = UIAlertAction(title: "Release Current in LCR", style: UIAlertActionStyle.default, handler:  {
             (alert: UIAlertAction!) -> Void in
             
-            print("update pressed")
+            // todo - this should just go to calling manager rather than straight to the API, but this is just for testing
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                appDelegate.callingManager.ldsOrgApi.releaseCalling(unitNum: appDelegate.callingManager.appDataOrg!.id, calling: self.callingToDisplay!) { (success, error) in
+                    print("Release result: \(success) - error: \(error)")
+                    
+                }
+            }
+           print("update pressed")
             
         })
         let finalizeAction = UIAlertAction(title: "Finalize Change in LCR", style: UIAlertActionStyle.default, handler:  {

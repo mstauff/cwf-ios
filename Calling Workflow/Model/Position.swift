@@ -82,14 +82,14 @@ public struct Position : JSONParsable {
     public func toJSONObject() -> JSONObject {
         var jsonObj = JSONObject()
         jsonObj[PositionJsonKeys.positionTypeId] = self.positionTypeId as AnyObject
-        if self.name != nil {
-            jsonObj[PositionJsonKeys.name] = self.name! as AnyObject
+        if let name = self.name {
+            jsonObj[PositionJsonKeys.name] = name as AnyObject
         }
-        if self.unitNum != nil {
-            jsonObj[PositionJsonKeys.unitNum] = self.unitNum! as AnyObject
+        if let unitNum = self.unitNum {
+            jsonObj[PositionJsonKeys.unitNum] = unitNum as AnyObject
         }
-        if self.displayOrder != nil {
-            jsonObj[PositionJsonKeys.displayOrder] = self.displayOrder! as AnyObject
+        if let displayOrder = self.displayOrder {
+            jsonObj[PositionJsonKeys.displayOrder] = displayOrder as AnyObject
         }
         // need to store this as a string rather than a bool before we cast to AnyObject, as casting a bool to AnyObject loses type info (it gets seen as Int and outputs 0/1 rather than true/false in the json
         jsonObj[PositionJsonKeys.hidden] = self.hidden.description as AnyObject

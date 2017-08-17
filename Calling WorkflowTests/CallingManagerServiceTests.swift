@@ -50,10 +50,14 @@ class CallingManagerServiceTests: XCTestCase {
             completionHandler( true, nil )
         }
         
-        func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ remainingOrgs: [Org], _ error: Error?) -> Void) {
-            completionHandler( [], nil )
+        func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ orgsToCreate: [Org], _ remainingOrgs: [Org], _ error: Error?) -> Void) {
+            completionHandler([], [], nil )
         }
-        
+
+        func createFiles( forOrgs orgs: [Org], completionHandler: @escaping(_ success : Bool, _ errors : [Error] )-> Void ) {
+            completionHandler( true, [] )
+        }
+    
         func getData( forOrg : Org, completionHandler : @escaping (_ org : Org?, _ error: Error? ) -> Void ) {
             completionHandler( forOrg, nil )
         }

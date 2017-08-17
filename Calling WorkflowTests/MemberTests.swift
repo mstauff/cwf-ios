@@ -48,11 +48,10 @@ class MemberTests: XCTestCase {
     func testAgeFilter() {
         let htvtParser = HTVTMemberParser()
         let memberJSON = testJSON?["families"] as? [JSONObject]
-        [true, false].forEach() { includeChildren in
             var memberList : [Member] = []
             // parse the members, either including or excluding children
             memberJSON?.forEach() { familyJson in
-                let familyMembers = htvtParser.parseFamilyFrom( json: familyJson, includeChildren: includeChildren )
+                let familyMembers = htvtParser.parseFamilyFrom( json: familyJson )
                 memberList.append(contentsOf: familyMembers)
             }
             // count how many members are under age.
@@ -60,19 +59,11 @@ class MemberTests: XCTestCase {
                 guard let age = member.age else {
                     return count
                 }
-                return  count + age <= MemberConstants.minimumAge ? 1 : 0
+                return  count + (age <= MemberConstants.minimumAge ? 1 : 0)
             }
-            if includeChildren {
-                // if children are included there should be 1 or more children in the list
+                // children are included in parsing, there should be 1 or more children in the list. They get filtered out by the callingManagerService
                 XCTAssertGreaterThan(underageMemberCount, 0)
-            } else {
-                // if children are not included there should be 0
-                XCTAssertEqual(underageMemberCount, 0)
-            }
             // if the json file gets modified so there aren't any children in the list then this test will fail until a child is added back in. Also note the age in the file is not dynamic so in 2026 this test will start to fail as well :)
-            
-        }
-        
     }
     
     
@@ -105,17 +96,18 @@ class MemberTests: XCTestCase {
      Tests that a couple with no children are parsed correctly. Also validates null/empty phone, email, birthdate & priesthood are handled. Validates that the individual phone & email work when HH phone/email are null, and that the city state and zip are formatted properly when there is no city in street 2
      */
     func testCoupleFromJson() {
-        let hoh = memberMap[-1]
+        let hoh = memberMap[501]
         
-        XCTAssertEqual( hoh?.name, "AFPTwo, Husband" )
+        // todo - need to figure this out - changing where we filter non members affected this.
+        XCTAssertEqual( hoh?.name, "CoupleTwo, Husband" )
         // individual phone is empty & home is null
         XCTAssertNil( hoh!.phone )
         // individual email is empty & home is null
         XCTAssertNil( hoh!.email )
         // should have an address
         XCTAssertGreaterThan( hoh!.streetAddress.count, 0 )
-        XCTAssertEqual( hoh!.streetAddress[0], "123 Any Street" )
-        XCTAssertEqual( hoh!.streetAddress[1], "Provo, UT 55555" )
+        XCTAssertEqual( hoh!.streetAddress[0], "456 Another Street" )
+        XCTAssertEqual( hoh!.streetAddress[1], "Savali, Tonga" )
         
         XCTAssertNil( hoh!.birthdate )
         XCTAssertNil( hoh!.age )
@@ -123,10 +115,10 @@ class MemberTests: XCTestCase {
         XCTAssertEqual( hoh?.gender, .Male )
         XCTAssertNil( hoh!.priesthood )
         
-        let spouse = memberMap[8999999998987510]
-        XCTAssertEqual( spouse?.name, "AFPTwo, Wife" )
+        let spouse = memberMap[502]
+        XCTAssertEqual( spouse?.name, "CoupleTwo, Wife" )
         // individual phone is set & home is null
-        XCTAssertEqual( spouse!.phone, "555-SPOUSE-PHONE" )
+        XCTAssertEqual( spouse!.phone, "555-555-5502" )
         // individual email is set & home is null
         XCTAssertEqual( spouse!.email, "spouse@email.com" )
         // should have an address

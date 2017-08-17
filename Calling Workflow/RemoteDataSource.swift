@@ -66,6 +66,10 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         }
         
     }
+    
+    func signOut() {
+        GIDSignIn.sharedInstance().signOut()
+    }
 
     /** This is the callback for GIDSignIn signInSilently() attempt */
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
@@ -87,7 +91,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     
 
     /* This method should be called after authenticate and before you try to retrieve the contents of any org. This is separate from auth or init because it needs to have the list of orgs that exist for a unit on lds.org to compare to what data we have in google drive and either create what's missing, or report what should be deleted. The callback will include a list of orgs that exist in google drive but were not passed in to the method and would be candidates for deletion. Any orgs that are passed in that don't exist in google drive will be silently created. */
-    func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ remainingOrgs: [Org], _ error: Error?) -> Void) {
+    func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ orgsToCreate: [Org], _ remainingOrgs: [Org], _ error: Error?) -> Void) {
         // although we could check if we already have filesByName then no need to hit goodrive, generally this should only be called once anyway so shouldn't matter. If it does get called a 2nd time then always checking goodrive allows us to grab any latest changes. Otherwise code might call this in an attempt to "refresh" but not get latest
         fetchFiles() { (driveFiles, error) in
             var orgFileNames: Set<String> = Set()
@@ -102,6 +106,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             }
 
             // put all the files from goodrive in a dictionary indexed by their name
+            // todo - change this to just a .map() call
             var fileMap = [String: GTLDriveFile]()
             driveFiles.forEach() { file in
                 fileMap[file.name] = file
@@ -113,20 +118,39 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
 
             // filesToCreate are those that were passed in but don't exist in gooDrive
             let filesToCreate = orgFileNames.subtracting( gooDriveFileNameSet )
-            filesToCreate.forEach() { fileName in
-                if let org = orgMap[fileName] {
-                    self.updateOrg( org: org ) { _, _ in
-                        // nothing to do - it will be created later
-                    }
-                }
-            }
+            let orgsToCreate = filesToCreate.flatMap() { orgMap[$0] }
 
             let filesToRemove = gooDriveFileNameSet.subtracting( orgFileNames )
-            let orgsToRemove : [Org] = filesToRemove.map() { fileName in
+            let orgsToRemove : [Org] = filesToRemove.flatMap() { fileName in
                 return orgMap[fileName]
-            }.flatMap() { $0 } // remove nils - shouldn't be any
-            completionHandler( orgsToRemove, nil )
+            }
+            
+            completionHandler( orgsToCreate, orgsToRemove, nil )
         }
+    }
+    
+    func createFiles( forOrgs orgs: [Org], completionHandler: @escaping(_ success : Bool, _ errors : [Error] )-> Void ) {
+        
+        if orgs.isEmpty {
+            completionHandler( true, [] )
+        } else {
+            var creationErrors : [Error] = []
+            let createFilesGroup = DispatchGroup()
+            orgs.forEach() {
+                createFilesGroup.enter()
+                self.updateOrg( org: $0 ) { _, error in
+                    if let error = error {
+                        creationErrors.append(error)
+                    }
+                    createFilesGroup.leave()
+                }
+            }
+            createFilesGroup.notify(queue: DispatchQueue.main) {
+                completionHandler( creationErrors.isEmpty, creationErrors )
+            }
+        }
+        
+        
     }
 
     /* Gets the contents for the org out of google drive. The org from lds.org is required as a param because we need both the org ID and the org type to get the correct data out of google drive */
@@ -196,8 +220,6 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     /* Updates a file in google drive to contain the given string data (should be JSON). If the file does not exist it will be created. This is a lower level method that just performs the actual create/update. It doesn't do any diff'ing of contents, etc. That would need to be done prior to calling this method */
     func addOrUpdateFile( fileName : String, fileContents : String, completionHandler : @escaping (_ success : Bool, _ error : Error? ) -> Void ) {
         
-        var originalFileContents : String? = nil
-        
         self.getFile(fileName: fileName) { (file, error) in
             guard error == nil else {
                 print( "Error: " + error.debugDescription )
@@ -212,7 +234,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
                         completionHandler( false, error )
                         return
                     }
-                    self.filesByName[fileName] = createdFile
+                    // createdFile does not have the google ID that all files have when we read them in initializeDrive, so we can't add it to the filesByName[:] here. It has to be added by the initializeDrive() method
                     completionHandler( true, nil )
                 }
             } else {
@@ -297,16 +319,10 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         if let file = filesByName[ fileName ] {
             self.fetchContents( forFile: file, completionHandler: completionHandler )
         } else {
-            // this should have already happened by the calling code, but just in case we'll read in what data is in google drive and see if we can find the ID of the file that we need
-            self.initializeDrive(forOrgs: []) {  _, _ in
-                if let file = self.filesByName[ fileName ] {
-                    self.fetchContents(forFile: file, completionHandler: completionHandler)
-                } else {
-                    let errorMsg = "Error: No file found for \(fileName)"
-                    print( errorMsg )
-                    completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
-                }
-            }
+            // this should never happen, because you would need google drive to be intialized before you ever see the org in the accordion to be able to click on it to get the contents
+            let errorMsg = "Error: DataSource has not been properly initialized. No file \(fileName)"
+            print( errorMsg )
+            completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
         }
     }
     

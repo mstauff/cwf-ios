@@ -57,6 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 struct InjectionMap {
     static var dataSource:DataSource = RemoteDataSource()
     static var ldsOrgApi:LdsOrgApi = LdsFileApi( appConfig: AppConfig() )
+//    static var ldsOrgApi:LdsOrgApi = LdsRestApi( appConfig: AppConfig() )
     static var ldscdApi:LdscdRestApi = LdscdRestApi( )
 }
 

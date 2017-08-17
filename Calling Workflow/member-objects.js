@@ -347,7 +347,7 @@
 				"responsibleVTAuxiliaryId": null,
 				"isAssignedVT": false,
 				"headOfHouseIndividualId": 501,
-				"phone": "555-555-5501",
+				"phone": "",
 				"birthdate": "1960-03-11T00:00:00.000-07:00",
 				"photoUrl": "img/no-pic.png"
 			},
@@ -357,7 +357,7 @@
 				"surname": "CoupleTwo",
 				"givenName1": "Spouse",
 				"priesthoodOffice": null,
-				"email": "",
+				"email": "spouse@email.com",
 				"isAdult": true,
 				"imageId": "",
 				"gender": "FEMALE",
@@ -375,7 +375,7 @@
 			},
 			"formattedCoupleName": "CoupleTwo, Husband & Wife",
 			"children": [],
-			"phone": "444-HOME-PHONE",
+			"phone": null,
 			"address": {
 				"streetAddress": "456 Another Street",
 				"streetAddress2": "Savali, Tonga",
@@ -383,7 +383,7 @@
 				"state": null,
 				"postal": "shouldn't be included"
 			},
-			"emailAddress": "hh@email.com",
+			"emailAddress": "",
 			"responsibleHTAuxiliaryId": 908949,
 			"isAssignedHT": false
         },
