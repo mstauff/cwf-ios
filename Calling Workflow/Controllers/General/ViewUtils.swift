@@ -32,3 +32,7 @@ func getStatusActionSheet(delegate: StatusPickerDelegate?) -> UIAlertController 
     actionSheet.addAction(cancelAction)
     return actionSheet
 }
+
+func CWFMarginFloat() -> CGFloat {
+    return 15.0
+}

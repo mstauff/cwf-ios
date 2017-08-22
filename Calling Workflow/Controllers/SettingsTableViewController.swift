@@ -70,6 +70,12 @@ class SettingsTableViewController: CWFBaseTableViewController {
             performSegue(withIdentifier: "SettingsToLDSCredentials", sender: nil)
         case 1:
             performSegue(withIdentifier: "SettingsToNetTest", sender: nil)
+        case 2:
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            if let nextVC = storyboard.instantiateViewController(withIdentifier: "StatusSettings") as? StatusSettingsViewController {
+                navigationController?.pushViewController(nextVC, animated: true)
+            }
+            
         default:
             tableView.deselectRow(at: indexPath, animated: true)
         }

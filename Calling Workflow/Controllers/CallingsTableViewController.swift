@@ -123,17 +123,18 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     //MARK: - FilterButton
     func filterButtonPressed(sender : UIView) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let filterView = storyboard.instantiateViewController(withIdentifier: "FilterTableViewController") as? FilterTableViewController
-        // need to add the orgs before we add the filter cells so when the view gets init'ed the orgs are available to create the buttons
-        filterView?.unitLevelOrgs = self.unitLevelOrgs
-        filterView?.addCallingStatusFilterCell()
-        filterView?.addCallingOrgFilterCell()
-        filterView?.delegate = self
-        if let currentFilters = self.filterObject {
-            filterView?.filterObject = currentFilters
-        }
+        if let filterView = storyboard.instantiateViewController(withIdentifier: "FilterTableViewController") as? FilterTableViewController {
+            // need to add the orgs before we add the filter cells so when the view gets init'ed the orgs are available to create the buttons
+            filterView.unitLevelOrgs = self.unitLevelOrgs
+            filterView.addCallingStatusFilterCell()
+            filterView.addCallingOrgFilterCell()
+            filterView.delegate = self
+            if let currentFilters = self.filterObject {
+                filterView.filterObject = currentFilters
+            }
         
-        self.navigationController?.pushViewController(filterView!, animated: true)
+            self.navigationController?.pushViewController(filterView, animated: true)
+        }
     }
     
     //MARK: - FilterDelegate

@@ -319,7 +319,13 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
 
     // MARK: - Permissions
     func hasPermissionToEdit() -> Bool {
-        return true
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let root = rootOrg, let rootId = rootOrg?.id, let unitLevelOrg = appDelegate.callingManager.unitLevelOrg(forSubOrg: rootId) {
+            let authOrg = AuthorizableOrg(fromSubOrg: root, inUnitLevelOrg: unitLevelOrg)
+            return appDelegate.callingManager.permissionMgr.isAuthorized(unitRoles: appDelegate.callingManager.userRoles, domain: .PotentialCalling, permission: .Update, targetData: authOrg)
+        }
+        else {
+            return false
+        }
     }
     
     //MARK: - Warning

@@ -32,9 +32,11 @@
 		3C4347BB1ECBBEA600CC7369 /* FilterGenderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4347BA1ECBBEA600CC7369 /* FilterGenderTableViewCell.swift */; };
 		3C4347BD1ECBC20A00CC7369 /* FilterOrgTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4347BC1ECBC20A00CC7369 /* FilterOrgTableViewCell.swift */; };
 		3C4409C91E3BEE9400484935 /* CWFStatusPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */; };
+		3C55DEBB1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C55DEBA1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift */; };
 		3C691E621ECA4A8B00CD7672 /* FilterTimeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C691E611ECA4A8B00CD7672 /* FilterTimeTableViewCell.swift */; };
 		3C6A365B1EC23D4600A58C33 /* FilterTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6A365A1EC23D4600A58C33 /* FilterTableViewController.swift */; };
 		3C6A365E1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6A365D1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift */; };
+		3C7345F21F420FD500E1BF40 /* StatusSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7345F11F420FD500E1BF40 /* StatusSettingsViewController.swift */; };
 		3C76FBA11E52693B008C4A61 /* SingleFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */; };
 		3C8300F31E3698DD00FD0D34 /* CallingDetailsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */; };
 		3C8300F51E36A20400FD0D34 /* DataSubdataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */; };
@@ -168,9 +170,11 @@
 		3C4347BA1ECBBEA600CC7369 /* FilterGenderTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterGenderTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterGenderTableViewCell.swift; sourceTree = "<group>"; };
 		3C4347BC1ECBC20A00CC7369 /* FilterOrgTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterOrgTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterOrgTableViewCell.swift; sourceTree = "<group>"; };
 		3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFStatusPickerView.swift; path = Controllers/General/CWFStatusPickerView.swift; sourceTree = "<group>"; };
+		3C55DEBA1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StatusSettingsCollectionViewCell.swift; path = Controllers/TableViewCells/StatusSettingsCollectionViewCell.swift; sourceTree = "<group>"; };
 		3C691E611ECA4A8B00CD7672 /* FilterTimeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterTimeTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterTimeTableViewCell.swift; sourceTree = "<group>"; };
 		3C6A365A1EC23D4600A58C33 /* FilterTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterTableViewController.swift; path = Controllers/General/FilterTableViewController.swift; sourceTree = "<group>"; };
 		3C6A365D1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterTitleTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterTitleTableViewCell.swift; sourceTree = "<group>"; };
+		3C7345F11F420FD500E1BF40 /* StatusSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StatusSettingsViewController.swift; path = Controllers/StatusSettingsViewController.swift; sourceTree = "<group>"; };
 		3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SingleFieldTableViewCell.swift; path = Controllers/TableViewCells/SingleFieldTableViewCell.swift; sourceTree = "<group>"; };
 		3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingDetailsTableViewController.swift; path = Controllers/CallingDetailsTableViewController.swift; sourceTree = "<group>"; };
 		3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataSubdataTableViewCell.swift; path = Controllers/TableViewCells/DataSubdataTableViewCell.swift; sourceTree = "<group>"; };
@@ -452,6 +456,7 @@
 				E8084F891E04814F0077FDAE /* OrganizationTableViewController.swift */,
 				3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */,
 				3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */,
+				3C7345F11F420FD500E1BF40 /* StatusSettingsViewController.swift */,
 				E82F306D1F28030200E20D5E /* OrgFilterButton.swift */,
 				3CED843E1E0AEF7C0023721E /* Base Controllers */,
 				3CBDDCAA1E48EA1D00F211F5 /* Protocols */,
@@ -463,6 +468,7 @@
 		3CEBAF461DD14A630071BE9F /* TableViewCells */ = {
 			isa = PBXGroup;
 			children = (
+				3C55DEBA1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift */,
 				3C3CF3B71E71FB2300143868 /* CWFAccordionChildTableViewCell.swift */,
 				3C3CF3B51E71F20A00143868 /* CWFAccordionRootTableViewCell.swift */,
 				3CA55F391E9D7D7400022D52 /* CWFButtonTableViewCell.swift */,
@@ -872,6 +878,7 @@
 				E8E8CD341ECBB87A00156450 /* Authorizable.swift in Sources */,
 				E8084F861E0476F80077FDAE /* Org.swift in Sources */,
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
+				3C55DEBB1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift in Sources */,
 				E8E8CD311ECBB81900156450 /* PermissionEnums.swift in Sources */,
 				3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */,
 				3C11A31F1E70C14D00EC9F38 /* CWFAccordionTableViewController.swift in Sources */,
@@ -902,6 +909,7 @@
 				3CA596FE1E08593C00109B27 /* CWFBaseTableViewController.swift in Sources */,
 				3C6A365E1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift in Sources */,
 				3CE4C9101DCA82A000AAFB31 /* Constants.swift in Sources */,
+				3C7345F21F420FD500E1BF40 /* StatusSettingsViewController.swift in Sources */,
 				3C2DFEB81F22C261007F716C /* UIImageExtension.swift in Sources */,
 				3CE4C8D51DCA824100AAFB31 /* FirstViewController.swift in Sources */,
 				3CEBAF411DCD0D160071BE9F /* CallingsTableViewController.swift in Sources */,

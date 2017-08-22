@@ -25,7 +25,7 @@ class DataSubdataTableViewCell: UITableViewCell {
     }
     
     class func calculateHeight() -> CGFloat {
-        var height: CGFloat = 0.0
+        var height: CGFloat = 5.0
         height += 60.0
         return height
     }

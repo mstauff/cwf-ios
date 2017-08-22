@@ -180,12 +180,16 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     }
     
     // MARK: - Search Controller
+    func searchBarIsEmpty() -> Bool {
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
     
     func filterContentForSearchText(searchText: String, scope: String = "All") {
-        filteredMembers = filteredMembers.filter { member in
-            return (member.member.name?.lowercased().contains(searchText.lowercased()))!
+        if searchText != "" {
+            filteredMembers = filteredMembers.filter { member in
+                return (member.member.name?.lowercased().contains(searchText.lowercased()))!
+            }
         }
-        
         tableView.reloadData()
     }
     
