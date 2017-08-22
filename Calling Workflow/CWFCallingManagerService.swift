@@ -157,11 +157,20 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     }
     
     func initLdsOrgData( memberList : [Member], org : Org, positionMetadata : [Int:PositionMetadata] ) {
-        self.memberList = memberList.filter() {$0.individualId > 0}
-        self.ldsOrgUnit = org.updatedWith(positionMetadata: positionMetadata)
+        var org = org
+        org = org.updatedWith(positionMetadata: positionMetadata)
+        // remove any orgs that we don't recognize (i.e. Full Time Missionaries - orgTypeId = -5)
+        org.children = org.children.filter() { UnitLevelOrgType( rawValue:  $0.orgTypeId ) != nil }
         // need to put in dictionary by root level org for updating
         self.ldsUnitOrgsMap.removeAll()
         self.ldsUnitOrgsMap = org.children.toDictionaryById() { $0.id }
+        self.ldsOrgUnit = org
+        let includeChildren = false // for now we always exclude children. If we ever want to make that optional behavior we just need to push this up and expose it as a param
+        self.memberList = memberList
+            .filter() {
+                // filter out any that are not valid members, or if we're limiting by age if they have an age then it must be greater than the min allowed. If there's not an age we include them (err on the side of caution)
+                $0.individualId > 0 && (includeChildren || $0.age == nil || $0.age! >= MemberConstants.minimumAge)
+        }
     }
     
     /** Authenticate with the application's data source (currently google drive). We need to pass in the current view controller because if the user isn't already authenticated the google API will display a login screen for the user to authenticate. This should always be called before calling loadAppData() */
@@ -171,10 +180,24 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     /** Reads all the unit data from the application data store (currently google drive), and also reconciles any difference between data previously retrieved from lds.org. This method should only be called after loadLDSData() & authorizeDataSource() have successfully completed. The data is not returned in the callback, it is just maintained within this service. The callback just indicates to the calling function when this method has succesfully completed.
      The parameters for the callback indicate if all the data was loaded successfully, and whether there were extra orgs in the application data that were not in the lds.org data that potentially need to be removed or merged. This would be rare, but in cases where there were multiple EQ or RS groups, and then one gets removed in LCR we would still have the extra in our application data store*/
-    public func loadAppData( ldsUnit: Org, completionHandler: @escaping(Bool, Bool, Error?) -> Void) {
+    public func loadAppData( ldsUnit: Org, completionHandler: @escaping(_ success: Bool, _ hasExtraOrgs: Bool, _ error : Error?) -> Void) {
         
         var org = Org(id: ldsUnit.id, unitNum: ldsUnit.unitNum, orgTypeId: ldsUnit.orgTypeId, orgName: ldsUnit.orgName, displayOrder: ldsUnit.displayOrder, children: [], callings: [])
-        dataSource.initializeDrive(forOrgs: ldsOrgUnit!.children) { extraAppOrgs, error in
+        dataSource.initializeDrive(forOrgs: ldsOrgUnit!.children) { orgsToCreate, extraAppOrgs, error in
+            
+            if orgsToCreate.isNotEmpty {
+                self.dataSource.createFiles( forOrgs: orgsToCreate ) { success, errors in
+                    if success {
+                        self.loadAppData(ldsUnit: ldsUnit, completionHandler: { success, extraOrgs, error in
+                            completionHandler( success, extraOrgs, error )
+                        })
+                    } else {
+                        let error : Error? = errors.isNotEmpty ? errors[0] : nil
+                        completionHandler( false, false, error )
+                    }                    
+                }
+            }
+            
             let dataSourceGroup = DispatchGroup()
             
             var mergedOrgs: [Org] = []
@@ -418,18 +441,57 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         return self.memberPotentialCallingsMap.getValues(forKey: member.individualId)
     }
     
+    /** Adds a potential calling in the app's data store */
     public func addCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: calling, operation: .Create, completionHandler: completionHandler)
     }
     
+    /** deletes a potential calling in the app's data store */
     public func deleteCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: calling, operation: .Delete, completionHandler: completionHandler)
     }
     
+    /** updates a potential calling in the app's data store */
     public func updateCalling(updatedCalling: Calling, completionHandler: @escaping (Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: updatedCalling, operation: .Update, completionHandler: completionHandler)
     }
     
+    public func updateLCRCalling( updatedCalling: Calling, completionHandler: @escaping(Calling?, Error?) -> Void ) {
+        // todo - still need to update internal data/state/maps, etc. This is just calling the rest API - trying to validate the REST calls to LCR
+        guard let unitNum = updatedCalling.parentOrg?.unitNum, let newIndId = updatedCalling.proposedIndId else {
+            let errorMsg = "Error: calling didn't have a parent org, or there was not proposed calling"
+            print( errorMsg )
+            completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: [ "error" : errorMsg ] ) )
+            return
+        }
+        
+        self.ldsOrgApi.updateCalling(unitNum: unitNum, calling: updatedCalling, newMemberIndId: newIndId, completionHandler)
+    }
+
+    public func releaseLCRCalling( callingToRelease: Calling, completionHandler: @escaping(Bool, Error?) -> Void ) {
+        // todo - still need to update internal data/state/maps, etc. This is just calling the rest API - trying to validate the REST calls to LCR
+        guard let unitNum = callingToRelease.parentOrg?.unitNum else {
+            let errorMsg = "Error: calling didn't have a parent org"
+            print( errorMsg )
+            completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: [ "error" : errorMsg ] ) )
+            return
+        }
+        
+        self.ldsOrgApi.releaseCalling(unitNum: unitNum, calling: callingToRelease, completionHandler)
+    }
+
+    public func deleteLCRCalling( callingToDelete: Calling, completionHandler: @escaping(Bool, Error?) -> Void ) {
+        // todo - still need to update internal data/state/maps, etc. This is just calling the rest API - trying to validate the REST calls to LCR
+        guard let unitNum = callingToDelete.parentOrg?.unitNum else {
+            let errorMsg = "Error: calling didn't have a parent org"
+            print( errorMsg )
+            completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: [ "error" : errorMsg ] ) )
+            return
+        }
+        
+        self.ldsOrgApi.deleteCalling(unitNum: unitNum, calling: callingToDelete, completionHandler)
+    }
+
     /** Performs the actual CRUD operations by reading the file for the org that the calling is in from google drive, performing the update, writing the entire org back to google drive, then updating the copy of the data that is cached locally. When this is all done we call the completion handler with the results */
     private func storeCallingChange(changedCalling: Calling, operation: Org.CRUDOperation, completionHandler: @escaping (Bool, Error?) -> Void) {
         if let callingOrg = changedCalling.parentOrg, let unitLevelOrgId = self.unitLevelOrgsForSubOrgs[callingOrg.id], let unitLevelOrg = appDataOrg?.getChildOrg(id: unitLevelOrgId), let rootOrgType = UnitLevelOrgType(rawValue: unitLevelOrg.orgTypeId) {

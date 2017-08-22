@@ -96,5 +96,13 @@ class LdsFileApi : LdsOrgApi {
             }
         }
     }
+    func releaseCalling( unitNum : Int64, calling : Calling, _ completionHandler: @escaping ( Bool, Error? ) -> Void ) {
+        // todo - need to implement this - just find the calling in org-callings json and remove the active ID
+    }
+    func deleteCalling( unitNum : Int64, calling : Calling, _ completionHandler: @escaping ( Bool, Error? ) -> Void ){}
+    func updateCalling( unitNum : Int64, calling : Calling, newMemberIndId : Int64, _ completionHandler: @escaping ( Calling?, Error? ) -> Void ){
+        // todo - need to implement this - just find the calling in org-callings json and update it
+    }
+
     
 }

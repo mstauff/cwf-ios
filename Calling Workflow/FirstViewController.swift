@@ -34,14 +34,13 @@ class FirstViewController: UIViewController, GIDSignInUIDelegate {
     //    private let dataSource = RemoteDataSource()
 //    private let callingMgr = CallingDataManager( initDataSource: RemoteDataSource() )
     
-    @IBOutlet var output: UITextView!
-//    @IBOutlet weak var signInButton: GIDSignInButton!
+    var remoteDataSource : RemoteDataSource? = nil
     
-    @IBAction func showFileClicked() {
-//        callingMgr.getOrgCallings( org: eq ) {
-//            ( fileContents, error ) -> Void in
-//            self.output.text = fileContents != nil ? String( data: fileContents!, encoding: .utf8 ) : "No Data"
-//        }
+    @IBOutlet var output: UITextView!
+    
+    @IBAction func signOutClicked(_ sender: Any) {
+        GIDSignIn.sharedInstance().signOut()
+        print( "signed out" )
     }
     @IBAction func updateClicked() {
 //        callingMgr.updateOrgCallings(org: eq) { [weak weakSelf=self] error in

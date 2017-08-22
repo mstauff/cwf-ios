@@ -82,6 +82,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
                                     }
                                 }else {
                                     self?.removeSpinner()
+                                    self?.showAlert(title: "Invalid Google Account", message: "You need to go to the Settings page, Sharing/Sync Options & then sign in with the ward google account to proceed")
                                     print( "No creds - forward to settings!")
                                     self?.presentSettingsView()
                                 }

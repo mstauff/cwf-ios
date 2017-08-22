@@ -20,10 +20,6 @@ public class HTVTMemberParser : MemberParser {
         dateFormatter.dateFormat = "yyyy-MM-dd"
     }
     public func parseFamilyFrom( json: JSONObject ) -> [Member] {
-        return parseFamilyFrom(json: json, includeChildren: false)
-    }
-    
-    public func parseFamilyFrom( json: JSONObject, includeChildren : Bool ) -> [Member] {
         let members : [Member]
         var membersJson : [JSONObject] = []
         
@@ -62,13 +58,10 @@ public class HTVTMemberParser : MemberParser {
                     address.append( combinedAddress )
                 }
             }
-            members = membersJson.map() { memberJSON -> Member? in
+            members = membersJson.flatMap() { memberJSON in
                 let member = parseFrom( json: memberJSON, householdPhone: householdPhone, householdEmail: householdEmail, streetAddress: address )
                 return member
-                }.filter() {
-                    // filter out any that are not valid members, or if we're limiting by age if they have an age then it must be greater than the min allowed. If there's not an age we include them (err on the side of caution)
-                    $0 != nil && (includeChildren || $0!.age == nil || $0!.age! >= MemberConstants.minimumAge)
-                } as! [Member]
+                } 
             
         } else {
             members = []
