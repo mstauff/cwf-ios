@@ -8,16 +8,21 @@
 
 import UIKit
 
-class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataSource, UICollectionViewDelegate, StatusSettingsCollectionViewCellDelegate {
     
     let headerView : UIView = UIView()
     let collectionView : UICollectionView = UICollectionView(frame: CGRect.init(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: UICollectionViewFlowLayout())
+    
+    var unsavedStatusToExclude: [CallingStatus] = []
     
     //MARK: - LifeCycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isTranslucent = false
+        
+        let saveButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveButtonPressed))
+        self.navigationItem.rightBarButtonItem = saveButton
 
         self.collectionView.register(StatusSettingsCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         let collectionLayout = UICollectionViewFlowLayout()
@@ -25,6 +30,9 @@ class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataS
         self.collectionView.collectionViewLayout = collectionLayout
         setupHeaderView()
         setupCollectionView()
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            unsavedStatusToExclude = appDelegate.callingManager.statusToExcludeForUnit
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -47,7 +55,7 @@ class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataS
         self.view.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
         
         let headerLabel = UILabel()
-        headerLabel.text = "Select Statuses"
+        headerLabel.text = "Select Statuses to exclude"
         headerLabel.translatesAutoresizingMaskIntoConstraints = false
         
         headerView.addSubview(headerLabel)
@@ -63,7 +71,7 @@ class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataS
     
     func setupCollectionView() {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.backgroundColor = UIColor.white
+        collectionView.backgroundColor = self.view.backgroundColor
         collectionView.delegate = self
         collectionView.dataSource = self
         
@@ -91,13 +99,50 @@ class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataS
         let collectionCell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? StatusSettingsCollectionViewCell
         collectionCell?.translatesAutoresizingMaskIntoConstraints = false
         collectionCell?.button.setTitle(CallingStatus.userValues[indexPath.row].description, for: .normal)
+        collectionCell?.callingStatus = CallingStatus.userValues[indexPath.row]
+        collectionCell?.delegate = self
+        
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            if appDelegate.callingManager.statusToExcludeForUnit.contains(item: CallingStatus.userValues[indexPath.row]) {
+                collectionCell?.button.setupForSelected()
+            }
+        }
         
         return collectionCell!
     }
+    
+
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = self.collectionView.cellForItem(at: indexPath) as? StatusSettingsCollectionViewCell
-        cell?.button.setupForSelected()
+        if let cell = self.collectionView.cellForItem(at: indexPath) as? StatusSettingsCollectionViewCell {
+            cell.buttonSelected(sender: cell.button)
+        }
     }
-
+    
+    func updateStatusSettings(status: CallingStatus) {
+        if !unsavedStatusToExclude.contains(item: status) {
+            unsavedStatusToExclude.append(status)
+        }
+    }
+    
+    //MARK: - Save Button Action
+    
+    func saveButtonPressed() {
+        for cell in collectionView.visibleCells {
+            if let statusCell = cell as? StatusSettingsCollectionViewCell, let callingStatus = statusCell.callingStatus {
+                if statusCell.button.isSelected {
+                    if !unsavedStatusToExclude.contains(item: callingStatus) {
+                        unsavedStatusToExclude.append(callingStatus)
+                    }
+                }
+                else {
+                    unsavedStatusToExclude = unsavedStatusToExclude.filter() { $0 != callingStatus }
+                }
+            }
+        }
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            appDelegate.callingManager.statusToExcludeForUnit = unsavedStatusToExclude
+        }
+        self.navigationController?.popViewController(animated: true)
+    }
 }

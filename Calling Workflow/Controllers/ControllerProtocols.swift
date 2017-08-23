@@ -35,3 +35,7 @@ protocol FilterTableViewCellDelegate {
 protocol FilterTableViewControllerDelegate {
     func setFilterOptions(memberFilterOptions: FilterOptions)
 }
+
+protocol StatusSettingsCollectionViewCellDelegate {
+    func updateStatusSettings(status: CallingStatus)
+}

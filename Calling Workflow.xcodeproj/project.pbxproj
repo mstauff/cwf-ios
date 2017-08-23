@@ -43,6 +43,7 @@
 		3C866F011E6F681B00BD6DDA /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */; };
 		3C88170F1E68D8A10037151B /* MemberInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C88170E1E68D8A10037151B /* MemberInfoView.swift */; };
 		3C9298B21E5E314000A6339B /* NotesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */; };
+		3CA0C94C1F4D4058003FA7B8 /* CWFSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA0C94B1F4D4058003FA7B8 /* CWFSpinnerView.swift */; };
 		3CA55F3A1E9D7D7400022D52 /* CWFButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA55F391E9D7D7400022D52 /* CWFButtonTableViewCell.swift */; };
 		3CA596FE1E08593C00109B27 /* CWFBaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */; };
 		3CA596FF1E08593C00109B27 /* RootTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */; };
@@ -181,6 +182,7 @@
 		3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIColorExtension.swift; path = Extensions/UIColorExtension.swift; sourceTree = "<group>"; };
 		3C88170E1E68D8A10037151B /* MemberInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberInfoView.swift; path = Controllers/General/MemberInfoView.swift; sourceTree = "<group>"; };
 		3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotesTableViewCell.swift; path = Controllers/TableViewCells/NotesTableViewCell.swift; sourceTree = "<group>"; };
+		3CA0C94B1F4D4058003FA7B8 /* CWFSpinnerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFSpinnerView.swift; path = Controllers/General/CWFSpinnerView.swift; sourceTree = "<group>"; };
 		3CA55F391E9D7D7400022D52 /* CWFButtonTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFButtonTableViewCell.swift; path = Controllers/TableViewCells/CWFButtonTableViewCell.swift; sourceTree = "<group>"; };
 		3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFBaseTableViewController.swift; path = Controllers/General/CWFBaseTableViewController.swift; sourceTree = "<group>"; };
 		3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RootTabBarViewController.swift; path = Controllers/General/RootTabBarViewController.swift; sourceTree = "<group>"; };
@@ -516,6 +518,7 @@
 				3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */,
 				3C0E01811E4D42740014D32B /* ViewUtils.swift */,
 				3C3737B11F0FFD5600D62C2E /* CWFMapViewController.swift */,
+				3CA0C94B1F4D4058003FA7B8 /* CWFSpinnerView.swift */,
 			);
 			name = "Base Controllers";
 			sourceTree = "<group>";
@@ -938,6 +941,7 @@
 				E8F959691E30129700C13EC9 /* LdsFileApi.swift in Sources */,
 				3C4347B71ECB97FC00CC7369 /* FilterAgeTableViewCell.swift in Sources */,
 				3CCFF8221EF45550004E239F /* FilterCallingStatusTableViewCell.swift in Sources */,
+				3CA0C94C1F4D4058003FA7B8 /* CWFSpinnerView.swift in Sources */,
 				3C9298B21E5E314000A6339B /* NotesTableViewCell.swift in Sources */,
 				3C88170F1E68D8A10037151B /* MemberInfoView.swift in Sources */,
 				E875C5901EB3BC8300E04499 /* PositionMetadata.swift in Sources */,

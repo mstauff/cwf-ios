@@ -47,6 +47,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     public private(set) var userRoles : [UnitRole] = []
     
+    var statusToExcludeForUnit : [CallingStatus] = []
+    
     
     init() {
         permissionMgr = PermissionManager()
@@ -413,7 +415,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             return map
     }
     
-    
+    // MARK: - Get Callings/Member data
     // Used to get a member from the memberlist by memberId
     func getMemberWithId(memberId: Int64) -> Member? {
         var member: Member? = nil
@@ -441,6 +443,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         return self.memberPotentialCallingsMap.getValues(forKey: member.individualId)
     }
     
+    //MARK: - Update/Add Calling in app data store
+    
     /** Adds a potential calling in the app's data store */
     public func addCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: calling, operation: .Create, completionHandler: completionHandler)
@@ -455,6 +459,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     public func updateCalling(updatedCalling: Calling, completionHandler: @escaping (Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: updatedCalling, operation: .Update, completionHandler: completionHandler)
     }
+    
+    //MARK: - LCR API Calls
     
     public func updateLCRCalling( updatedCalling: Calling, completionHandler: @escaping(Calling?, Error?) -> Void ) {
         // todo - still need to update internal data/state/maps, etc. This is just calling the rest API - trying to validate the REST calls to LCR
@@ -492,6 +498,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         self.ldsOrgApi.deleteCalling(unitNum: unitNum, calling: callingToDelete, completionHandler)
     }
 
+    //MARK: - Cached Data
+    
     /** Performs the actual CRUD operations by reading the file for the org that the calling is in from google drive, performing the update, writing the entire org back to google drive, then updating the copy of the data that is cached locally. When this is all done we call the completion handler with the results */
     private func storeCallingChange(changedCalling: Calling, operation: Org.CRUDOperation, completionHandler: @escaping (Bool, Error?) -> Void) {
         if let callingOrg = changedCalling.parentOrg, let unitLevelOrgId = self.unitLevelOrgsForSubOrgs[callingOrg.id], let unitLevelOrg = appDataOrg?.getChildOrg(id: unitLevelOrgId), let rootOrgType = UnitLevelOrgType(rawValue: unitLevelOrg.orgTypeId) {

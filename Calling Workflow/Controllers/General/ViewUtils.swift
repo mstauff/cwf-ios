@@ -16,8 +16,12 @@ func getStatusActionSheet(delegate: StatusPickerDelegate?) -> UIAlertController 
         (alert: UIAlertAction!) -> Void in
         print("Cancelled")
     })
+
+    var statusArray = CallingStatus.userValues
     
-    let statusArray = CallingStatus.userValues
+    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+        statusArray = statusArray.filter() { !appDelegate.callingManager.statusToExcludeForUnit.contains($0) }
+    }
     
     for status in statusArray {
         let statusAction = UIAlertAction(title: status.description, style: UIAlertActionStyle.default, handler:  {

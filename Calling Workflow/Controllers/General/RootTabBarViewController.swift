@@ -12,7 +12,7 @@ import Locksmith
 class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     
     var loginDictionary : Dictionary<String, Any>?
-    var spinnerView : UIView?
+    var spinnerView : CWFSpinnerView?
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -159,21 +159,21 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     // MARK: - Spinner Setup
     
     func startSpinner() {
-        let spinnerView = UIView()
-        spinnerView.translatesAutoresizingMaskIntoConstraints = false
-        spinnerView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.75)
+        let spinnerView = CWFSpinnerView(frame: CGRect.zero, title: "Loging In")
+//        spinnerView.translatesAutoresizingMaskIntoConstraints = false
+//        spinnerView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.75)
         
-        let textLabel = UILabel()
-        textLabel.text = "Loging In"
-        textLabel.textColor = UIColor.white
-        textLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        let spinner = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
-        spinner.startAnimating()
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        
-        spinnerView.addSubview(textLabel)
-        spinnerView.addSubview(spinner)
+//        let textLabel = UILabel()
+//        textLabel.text = "Loging In"
+//        textLabel.textColor = UIColor.white
+//        textLabel.translatesAutoresizingMaskIntoConstraints = false
+//        
+//        let spinner = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
+//        spinner.startAnimating()
+//        spinner.translatesAutoresizingMaskIntoConstraints = false
+//        
+//        spinnerView.addSubview(textLabel)
+//        spinnerView.addSubview(spinner)
         
         self.view.addSubview(spinnerView)
         self.spinnerView = spinnerView
@@ -184,12 +184,12 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
         self.view.addConstraints(hConstraint)
         self.view.addConstraints(vConstraint)
         
-        let spinnerHConstraint = NSLayoutConstraint(item: spinner, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: spinnerView, attribute: .centerX, multiplier: 1, constant: 0)
-        let textHConstraint = NSLayoutConstraint(item: textLabel, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: spinnerView, attribute: .centerX, multiplier: 1, constant: 0)
-        let spinnerVConstraint = NSLayoutConstraint(item: spinner, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: spinnerView, attribute: .centerY, multiplier: 1, constant: 0)
-        let textVConstraint = NSLayoutConstraint(item: textLabel, attribute: .bottom, relatedBy: .equal, toItem: spinner, attribute: .top, multiplier: 1, constant: -15)
-        
-        self.view.addConstraints([spinnerHConstraint, textHConstraint, spinnerVConstraint, textVConstraint])
+//        let spinnerHConstraint = NSLayoutConstraint(item: spinner, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: spinnerView, attribute: .centerX, multiplier: 1, constant: 0)
+//        let textHConstraint = NSLayoutConstraint(item: textLabel, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: spinnerView, attribute: .centerX, multiplier: 1, constant: 0)
+//        let spinnerVConstraint = NSLayoutConstraint(item: spinner, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: spinnerView, attribute: .centerY, multiplier: 1, constant: 0)
+//        let textVConstraint = NSLayoutConstraint(item: textLabel, attribute: .bottom, relatedBy: .equal, toItem: spinner, attribute: .top, multiplier: 1, constant: -15)
+//        
+//        self.view.addConstraints([spinnerHConstraint, textHConstraint, spinnerVConstraint, textVConstraint])
     }
     
     func removeSpinner () {

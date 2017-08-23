@@ -17,6 +17,9 @@ class FilterCallingStatusTableViewCell: FilterBaseTableViewCell {
     init(style: UITableViewCellStyle, reuseIdentifier: String?, callingStatuses : [CallingStatus]) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.callingStatuses = callingStatuses
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            self.callingStatuses = self.callingStatuses.filter() { !appDelegate.callingManager.statusToExcludeForUnit.contains(item: $0)}
+        }
         setupCellTitle()
         setupStatusButtons()
     }

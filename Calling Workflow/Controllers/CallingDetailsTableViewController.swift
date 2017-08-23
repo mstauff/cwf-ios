@@ -29,6 +29,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     var debouncedNotesChange : Debouncer? = nil
     let textViewDebounceTime = 0.8
     
+    var spinnerView : CWFSpinnerView? = nil
+    
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +39,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
 
         navigationController?.title = callingToDisplay?.position.name
         
-        let buttonView : UIView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 100))
+//        let buttonView : UIView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 100))
         //buttonView.addSubview()
         let backButton = UIBarButtonItem(image: UIImage.init(named:"backButton"), style:.plain , target: self, action: #selector(backButtonPressed) )
         navigationItem.setLeftBarButton(backButton, animated: true)
@@ -367,10 +369,37 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         let callingMgr = appDelegate.callingManager
         
         let actionSheet = UIAlertController(title: "LCR Actions", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
+        let finalizeAction = UIAlertAction(title: "Finalize Change in LCR", style: UIAlertActionStyle.default, handler:  {
             (alert: UIAlertAction!) -> Void in
-            print("Cancelled")
+            callingMgr.updateLCRCalling(updatedCalling: self.callingToDisplay!) { (calling, error) in
+                let err = error?.localizedDescription ?? "nil"
+                print("Release result: \(calling.debugDescription) - error: \(err)")
+                
+            }
+            
+            print("update LCR pressed")
+            
         })
+
+        actionSheet.addAction(finalizeAction)
+
+        if callingToDisplay?.existingIndId != nil {
+            let releaseAction = UIAlertAction(title: "Release Current in LCR", style: UIAlertActionStyle.default, handler:  {
+                (alert: UIAlertAction!) -> Void in
+                
+                callingMgr.releaseLCRCalling(callingToRelease: self.callingToDisplay!) { (success, error) in
+                    let err = error?.localizedDescription ?? "nil"
+                    print("Release result: \(success) - error: \(err)")
+                    
+                    
+                }
+                print("Release Current pressed")
+                
+            })
+
+            actionSheet.addAction(releaseAction)
+
+        }
         let deleteAction = UIAlertAction(title: "Delete Calling in LCR", style: UIAlertActionStyle.default, handler:  {
             (alert: UIAlertAction!) -> Void in
             callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
@@ -382,31 +411,14 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             print("Delete Current pressed")
             
         })
-        let releaseAction = UIAlertAction(title: "Release Current in LCR", style: UIAlertActionStyle.default, handler:  {
-            (alert: UIAlertAction!) -> Void in
-            
-            callingMgr.releaseLCRCalling(callingToRelease: self.callingToDisplay!) { (success, error) in
-                let err = error?.localizedDescription ?? "nil"
-                print("Release result: \(success) - error: \(err)")
-                
-            }
-            print("Release Current pressed")
-            
-        })
-        let finalizeAction = UIAlertAction(title: "Finalize Change in LCR", style: UIAlertActionStyle.default, handler:  {
-            (alert: UIAlertAction!) -> Void in
-            callingMgr.updateLCRCalling(updatedCalling: self.callingToDisplay!) { (calling, error) in
-                let err = error?.localizedDescription ?? "nil"
-                print("Release result: \(calling.debugDescription) - error: \(err)")
-                
-            }
 
-            print("update LCR pressed")
-            
-        })
-        actionSheet.addAction(finalizeAction)
-        actionSheet.addAction(releaseAction)
         actionSheet.addAction(deleteAction)
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
+            (alert: UIAlertAction!) -> Void in
+            print("Cancelled")
+        })
+        
         actionSheet.addAction(cancelAction)
         self.present(actionSheet, animated: true, completion: nil)
     }
@@ -429,6 +441,24 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
 
     }
+    //MARK: - Spinner
+    func startSpinner() {
+        let spinView = CWFSpinnerView(frame: CGRect.zero, title: "Loging In")
+        
+        self.view.addSubview(spinView)
+        self.spinnerView = spinView
+        
+        let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-(==0)-[spinnerView]-(==0)-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: ["spinnerView": spinView])
+        let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[spinnerView]-|", options: NSLayoutFormatOptions.alignAllCenterX, metrics: nil, views: ["spinnerView": spinView])
+        
+        self.view.addConstraints(hConstraint)
+        self.view.addConstraints(vConstraint)
+    }
+    
+    func removeSpinner () {
+        self.spinnerView?.removeFromSuperview()
+    }
+
     
     //MARK: - Permissions
     func hasPermissionToView() -> Bool {
