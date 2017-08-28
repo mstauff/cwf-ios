@@ -10,19 +10,19 @@ import Foundation
 
 /** Protocol for checking if a role is authorized for the data it's trying to access. A unit admin only has to validate that they're in the same unit as the data. An OrgAdmin has to validate the unit, and that they're part of the org type of the data */
 public protocol PermissionResolver {
-    func isAuthorized( role: UnitRole, domain: Domain, permission: Permission, targetData: Authorizable ) -> Bool
+    func isAuthorized( role: UnitRole, targetData: Authorizable ) -> Bool
     
 }
 
 public class UnitPermResolver : PermissionResolver {
-    public func isAuthorized(role: UnitRole, domain: Domain, permission: Permission, targetData: Authorizable) -> Bool {
+    public func isAuthorized(role: UnitRole, targetData: Authorizable) -> Bool {
         // eventually we may need to break this down into a switch based on the domain object, but current requirements just need to ensure they have rights for the unit
         return role.unitNum == targetData.unitNum
     }
 }
 
 public class OrgPermResolver : PermissionResolver {
-    public func isAuthorized(role: UnitRole, domain: Domain, permission: Permission, targetData: Authorizable) -> Bool {
+    public func isAuthorized(role: UnitRole, targetData: Authorizable) -> Bool {
         var targetOrgAuth : AuthorizableOrg? = nil
         
         if targetData is AuthorizableOrg {
