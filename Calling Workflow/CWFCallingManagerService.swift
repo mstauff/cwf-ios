@@ -248,6 +248,20 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         
     }
     
+    func loadUnitSettings( forUnitNum unitNum: Int64, completionHandler: @escaping( UnitSettings?, Error?) -> Void ) {
+        dataSource.getUnitSettings(forUnitNum: unitNum) { unitSettings, error in
+            if let settings = unitSettings {
+                self.statusToExcludeForUnit = settings.disabledStatuses
+            }
+            completionHandler( unitSettings, error )
+        }
+    }
+    
+    func updateUnitSettings( unitSettings: UnitSettings, completionHandler: @escaping( Bool, Error? ) -> Void ) {
+        self.statusToExcludeForUnit = unitSettings.disabledStatuses
+        dataSource.updateUnitSettings(unitSettings, completionHandler: completionHandler)
+    }
+    
     /** Reads the given Org from google drive and calls the callback with the org converted from JSON */
     public func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
         if let ldsOrg = self.ldsUnitOrgsMap[orgId], let orgType = UnitLevelOrgType(rawValue: ldsOrg.orgTypeId) {

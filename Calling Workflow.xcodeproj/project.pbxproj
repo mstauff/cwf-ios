@@ -108,6 +108,7 @@
 		E8B13CCC1E3BD80A004FD60C /* DataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */; };
 		E8CC956A1E01E722007EBA47 /* member-objects.js in Resources */ = {isa = PBXBuildFile; fileRef = E8CC95691E01E722007EBA47 /* member-objects.js */; };
 		E8CC956C1E01E77F007EBA47 /* MemberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC956B1E01E77F007EBA47 /* MemberTests.swift */; };
+		E8D4EFB01F54BADF0053E3E4 /* UnitSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D4EFAF1F54BADF0053E3E4 /* UnitSettings.swift */; };
 		E8D51E751F0AC370009F87DC /* MemberCallings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D51E741F0AC370009F87DC /* MemberCallings.swift */; };
 		E8D51E771F0E94DC009F87DC /* Debounce.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D51E761F0E94DC009F87DC /* Debounce.swift */; };
 		E8D51E791F0E9C88009F87DC /* FilterOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D51E781F0E9C88009F87DC /* FilterOptionsTests.swift */; };
@@ -261,6 +262,7 @@
 		E8B13CCB1E3BD80A004FD60C /* DataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSourceTests.swift; sourceTree = "<group>"; };
 		E8CC95691E01E722007EBA47 /* member-objects.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "member-objects.js"; sourceTree = "<group>"; };
 		E8CC956B1E01E77F007EBA47 /* MemberTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberTests.swift; sourceTree = "<group>"; };
+		E8D4EFAF1F54BADF0053E3E4 /* UnitSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UnitSettings.swift; path = Model/UnitSettings.swift; sourceTree = "<group>"; };
 		E8D51E741F0AC370009F87DC /* MemberCallings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberCallings.swift; path = Model/MemberCallings.swift; sourceTree = "<group>"; };
 		E8D51E761F0E94DC009F87DC /* Debounce.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Debounce.swift; sourceTree = "<group>"; };
 		E8D51E781F0E9C88009F87DC /* FilterOptionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterOptionsTests.swift; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 				E875C58D1EB2926800E04499 /* PositionRequirements.swift */,
 				E875C58F1EB3BC8300E04499 /* PositionMetadata.swift */,
 				E8D51E741F0AC370009F87DC /* MemberCallings.swift */,
+				E8D4EFAF1F54BADF0053E3E4 /* UnitSettings.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -936,6 +939,7 @@
 				3C4409C91E3BEE9400484935 /* CWFStatusPickerView.swift in Sources */,
 				3C6A365B1EC23D4600A58C33 /* FilterTableViewController.swift in Sources */,
 				3CE4C9121DCA82A000AAFB31 /* JSON.swift in Sources */,
+				E8D4EFB01F54BADF0053E3E4 /* UnitSettings.swift in Sources */,
 				3CEBAF451DCD0FBF0071BE9F /* Member.swift in Sources */,
 				E8F959681E30129700C13EC9 /* CWFCallingManagerService.swift in Sources */,
 				E8F959691E30129700C13EC9 /* LdsFileApi.swift in Sources */,

@@ -33,13 +33,12 @@ struct NetworkConstants {
 }
 
 struct RemoteStorageConstants {
-    // for right now we have a single file. Eventually will likely have a file per sub org.
-    static let dataFileName = "cwf-unit-data.json"
     
     static let dataFileMimeType = "application/json"
     // special Application Data folder available in google drive that is not viewable by users outside the app that created it
     static let dataFileFolder = "appDataFolder"
     static let dataFileExtension = ".json"
+    static let configFileExtension = ".config"
     
 }
 

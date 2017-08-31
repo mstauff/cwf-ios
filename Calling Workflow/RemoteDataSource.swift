@@ -14,6 +14,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     
     private let orgFileNamesMap : [UnitLevelOrgType:String] = [ .Bishopric : "BISHOPRIC", .BranchPresidency : "BRANCH_PRES", .HighPriests : "HP", .Elders : "EQ", .ReliefSociety : "RS", .YoungMen : "YM", .YoungWomen : "YW", .SundaySchool : "SS", .Primary : "PRIMARY", .WardMissionaries : "WARD_MISSIONARY", .Other : "OTHER"]
     private let orgNameDelimiter = "-"
+    private let configFilePrefix = "config-"
     
     // This is all the permissions (scopes) that the app needs
     // If modifying these scopes, delete your previously saved credentials by
@@ -106,23 +107,20 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             }
 
             // put all the files from goodrive in a dictionary indexed by their name
-            // todo - change this to just a .map() call
-            var fileMap = [String: GTLDriveFile]()
-            driveFiles.forEach() { file in
-                fileMap[file.name] = file
-            }
+            self.filesByName = driveFiles.toDictionaryById({$0.name})
 
-            self.filesByName = fileMap
 
-            let gooDriveFileNameSet = Set<String>(fileMap.keys)
+            let gooDriveFileNameSet = Set<String>(self.filesByName.keys)
 
             // filesToCreate are those that were passed in but don't exist in gooDrive
             let filesToCreate = orgFileNames.subtracting( gooDriveFileNameSet )
             let orgsToCreate = filesToCreate.flatMap() { orgMap[$0] }
 
             let filesToRemove = gooDriveFileNameSet.subtracting( orgFileNames )
+            // todo - test this - probably wrong, as any files that are not in lds.org will not be in orgMap, so trying to look them up by name will just result in a nil
             let orgsToRemove : [Org] = filesToRemove.flatMap() { fileName in
-                return orgMap[fileName]
+                // we only want to include files for orgs, not the config files. Eventually may want to filter this based on org being in the same unit as well
+                return fileName.contains(RemoteStorageConstants.dataFileExtension) ? orgMap[fileName] : nil
             }
             
             completionHandler( orgsToCreate, orgsToRemove, nil )
@@ -149,8 +147,6 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
                 completionHandler( creationErrors.isEmpty, creationErrors )
             }
         }
-        
-        
     }
 
     /* Gets the contents for the org out of google drive. The org from lds.org is required as a param because we need both the org ID and the org type to get the correct data out of google drive */
@@ -205,6 +201,66 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             completionHandler( false, updateError )
         }
     }
+    
+    func getUnitSettings( forUnitNum unitNum : Int64, completionHandler : @escaping( _ unitSettings : UnitSettings?, _ error : Error? ) -> Void ) {
+        
+        let fileName = getFileName(forUnitSettings: unitNum)
+        
+        fetchFileContents(fileName: fileName) { data, error in
+            guard error == nil else {
+                print( "Error: " + error.debugDescription )
+                completionHandler( nil, error )
+                return
+            }
+            
+            guard let responseData = data else {
+                let errorMsg = "Error: No network error, but did not recieve data from \(fileName)"
+                print( errorMsg )
+                completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
+                return
+            }
+            do {
+                let settingsJson = try JSONSerialization.jsonObject(with: responseData, options: [])
+                let unitSettings = UnitSettings( fromJSON: settingsJson as! JSONObject )
+                completionHandler( unitSettings, nil )
+            } catch {
+                let errorMsg = "Error: error parsing json: \(responseData.debugDescription)"
+                print( errorMsg )
+                completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.jsonParseError, userInfo:  [ "error" : errorMsg ] ) )
+            }
+        }
+    }
+    
+    func updateUnitSettings( _ unitSettings : UnitSettings, completionHandler : @escaping( _ success : Bool, _ error : Error? ) -> Void ) {
+        var updateError : Error? = nil
+        guard let unitNum = unitSettings.unitNum else {
+            // completionHandler error
+            return
+        }
+        
+        let fileName = getFileName(forUnitSettings: unitNum )
+        let settingsJSONObj = unitSettings.toJSONObject()
+        if let settingsJSON = jsonSerializer.serialize(jsonObject: settingsJSONObj) {
+            
+            addOrUpdateFile(fileName: fileName, fileContents: settingsJSON) { (fileContents, error) in
+                guard error == nil else {
+                    print( "Error updating data for \(fileName): " + error.debugDescription )
+                    completionHandler( false, error )
+                    return
+                }
+                completionHandler( true, nil )
+            }
+        } else {
+            let errorMsg = "Unable to serialize unit settings: " + settingsJSONObj.debugDescription
+            updateError = NSError( domain: ErrorConstants.domain, code: ErrorConstants.jsonSerializeError, userInfo: [ "error" : errorMsg ])
+        }
+        
+        if updateError != nil {
+            completionHandler( false, updateError )
+        }
+        
+    }
+
 
     /* returns the file name for a given org in the form of <ORG_TYPE>-<ORG_ID>.json. So EQ-394205.json or PRIMARY-2038800.json */
     func getFileName( forOrg org: Org ) -> String? {
@@ -215,6 +271,11 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         }
         return orgFileName
     }
+
+    func getFileName( forUnitSettings unitNum: Int64 ) -> String {
+        return configFilePrefix + String( unitNum ) + RemoteStorageConstants.configFileExtension
+    }
+    
 
     // todo - this probably needs to return a GTLServiceTicket, but not sure how that works yet
     /* Updates a file in google drive to contain the given string data (should be JSON). If the file does not exist it will be created. This is a lower level method that just performs the actual create/update. It doesn't do any diff'ing of contents, etc. That would need to be done prior to calling this method */
