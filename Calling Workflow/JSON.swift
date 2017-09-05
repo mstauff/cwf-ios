@@ -32,6 +32,13 @@ public class JSONSerializerImpl : JSONSerializer  {
                 jsonDictionary[jsonKey] = jsonVal as? Int
             } else if jsonVal is Int64 {
                 jsonDictionary[jsonKey] = NSNumber(value: (jsonVal as? Int64)!)
+            } else if jsonVal is [Int] {
+                jsonDictionary[jsonKey] = jsonVal as? [Int]
+            } else if jsonVal is [Int64] {
+                let int64Arr = jsonVal as? [Int64]
+                if let nsNumArray = int64Arr?.flatMap({ NSNumber( value: $0 ) }) {
+                    jsonDictionary[jsonKey] = nsNumArray
+                }
             } else if jsonVal is [JSONObject] {
                 jsonDictionary[jsonKey] = (jsonVal as! Array).map() { jsonObj -> NSDictionary in
                     return prepare( jsonObject: jsonObj )
