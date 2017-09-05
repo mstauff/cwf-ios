@@ -39,8 +39,6 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
 
         navigationController?.title = callingToDisplay?.position.name
         
-//        let buttonView : UIView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 100))
-        //buttonView.addSubview()
         let backButton = UIBarButtonItem(image: UIImage.init(named:"backButton"), style:.plain , target: self, action: #selector(backButtonPressed) )
         navigationItem.setLeftBarButton(backButton, animated: true)
         
@@ -62,29 +60,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         // Dispose of any resources that can be recreated.
     }
     
-/*    override func willMove(toParentViewController parent: UIViewController?)
-    {
-        if parent == nil && isDirty {
-            let saveAlert = UIAlertController(title: "Save Changes?", message: nil, preferredStyle: UIAlertControllerStyle.alert)
-    
-            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
-                (alert: UIAlertAction!) -> Void in
-                print("cancel")
-            })
-            let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.default, handler: {
-                (alert: UIAlertAction!) -> Void in
-                self.save()
-                
-            })
-            saveAlert.addAction(cancelAction)
-            saveAlert.addAction(saveAction)
-            present(saveAlert, animated: true, completion: nil)
 
-            print("dismiss")
-            // Back btn Event handler
-        }
-    }
-*/
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -170,13 +146,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             case 0:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "oneRightTwoLeftCell", for: indexPath) as? OneRightTwoLeftTableViewCell
                 
-                cell?.titleLabel.text = "Current:"
+                cell?.titleLabel.text = NSLocalizedString("Current:", comment: "Current:")
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
                 if (callingToDisplay?.existingIndId) != nil {
                     let currentMember = appDelegate?.callingManager.getMemberWithId(memberId: (callingToDisplay?.existingIndId)!)
                     cell?.dataLabel.text = currentMember?.name
                     if let months : Int = callingToDisplay?.existingMonthsInCalling {
-                        cell?.subdataLabel.text = "\(months) months"
+                        cell?.subdataLabel.text = NSLocalizedString("\(months) months", comment: "months")
                     }
                     else {
                         cell?.subdataLabel.text = nil
@@ -189,7 +165,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 let cell = tableView.dequeueReusableCell(withIdentifier: "middleCell", for: indexPath) as? LeftTitleRightLabelTableViewCell
                 cell?.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
                 
-                cell?.titleLabel.text = "Proposed:"
+                cell?.titleLabel.text = NSLocalizedString("Proposed:", comment: "Proposed")
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
                 if (callingToDisplay?.proposedIndId) != nil {
                     let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: (callingToDisplay?.proposedIndId)!)
@@ -204,13 +180,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             case 2:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "middleCell", for: indexPath) as? LeftTitleRightLabelTableViewCell
                 cell?.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
-                cell?.titleLabel.text = "Status:"
+                cell?.titleLabel.text = NSLocalizedString("Status:", comment: "Status")
                 
                 if callingToDisplay?.proposedStatus != nil {
                     cell?.dataLabel.text = callingToDisplay?.proposedStatus.description
                 }
                 else {
-                    cell?.dataLabel.text = "None"
+                    cell?.dataLabel.text = NSLocalizedString("None", comment: "None")
                 }
                 return cell!
 
@@ -234,7 +210,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             
         case 3: // fourth section is the button for the lcr functions.
             let cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath) as? CWFButtonTableViewCell
-            cell?.cellButton.setTitle("Calling Actions", for: UIControlState.normal)
+            cell?.cellButton.setTitle(NSLocalizedString("Calling Actions", comment: "Calling Actions"), for: UIControlState.normal)
             cell?.cellButton.addTarget(self, action: #selector(callingActionsButtonPressed), for: .touchUpInside)
             
             return cell!
@@ -338,13 +314,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     //MARK: - Actions
     func backButtonPressed() {
         if isDirty {
-            let saveAlert = UIAlertController(title: "Discard Changes?", message: "You have unsaved changes that will be discarded if you continue.", preferredStyle: UIAlertControllerStyle.alert)
+            let saveAlert = UIAlertController(title: NSLocalizedString("Discard Changes?", comment: "discard"), message: NSLocalizedString("You have unsaved changes that will be discarded if you continue.", comment: "discard message"), preferredStyle: UIAlertControllerStyle.alert)
             
-            let cancelAction = UIAlertAction(title: "Continue", style: UIAlertActionStyle.destructive, handler: {
+            let cancelAction = UIAlertAction(title: NSLocalizedString("Continue", comment: "Continue"), style: UIAlertActionStyle.destructive, handler: {
                 (alert: UIAlertAction!) -> Void in
                 self.navigationController?.popViewController(animated: true)
             })
-            let saveAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: {
+            let saveAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.default, handler: {
                 (alert: UIAlertAction!) -> Void in
                 print("cancel")
                 
@@ -368,53 +344,140 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
         let callingMgr = appDelegate.callingManager
         
-        let actionSheet = UIAlertController(title: "LCR Actions", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        let finalizeAction = UIAlertAction(title: "Finalize Change in LCR", style: UIAlertActionStyle.default, handler:  {
-            (alert: UIAlertAction!) -> Void in
-            callingMgr.updateLCRCalling(updatedCalling: self.callingToDisplay!) { (calling, error) in
-                let err = error?.localizedDescription ?? "nil"
-                print("Release result: \(calling.debugDescription) - error: \(err)")
-                
-            }
-            
-            print("update LCR pressed")
-            
-        })
-
-        actionSheet.addAction(finalizeAction)
-
-        if callingToDisplay?.existingIndId != nil {
-            let releaseAction = UIAlertAction(title: "Release Current in LCR", style: UIAlertActionStyle.default, handler:  {
+        let actionSheet = UIAlertController(title: NSLocalizedString("LCR Actions", comment: "LCR Actions"), message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        
+        //Only add Update option if there is a proposed individual
+        if callingToDisplay?.proposedIndId != nil {
+            let finalizeAction = UIAlertAction(title: NSLocalizedString("Finalize Change in LCR", comment: "Finalize"), style: UIAlertActionStyle.default, handler:  {
                 (alert: UIAlertAction!) -> Void in
                 
-                callingMgr.releaseLCRCalling(callingToRelease: self.callingToDisplay!) { (success, error) in
-                    let err = error?.localizedDescription ?? "nil"
-                    print("Release result: \(success) - error: \(err)")
-                    
-                    
-                }
-                print("Release Current pressed")
+                //String to use as warning message when updating LCR
+                var alertMessage : String = ""
                 
+                //If existingIndividual add release info to the alert message, otherwise add start of sentence
+                if let existingId = self.callingToDisplay?.existingIndId, let currentlyCalled = callingMgr.getMemberWithId(memberId: existingId), let currentName = currentlyCalled.name {
+                    alertMessage.append(NSLocalizedString("This will release \(currentName) and ", comment: "Conf beginning"))
+                }
+                else {
+                    alertMessage.append(NSLocalizedString("This ", comment: "this"))
+                }
+                
+                //Add the rest of the message with proposed individual name
+                if let proposedId = self.callingToDisplay?.proposedIndId, let currentlyProposed = callingMgr.getMemberWithId(memberId: proposedId),let proposedName = currentlyProposed.name, let callingName = self.callingToDisplay?.position.name {
+                    alertMessage.append(NSLocalizedString("will record \(proposedName) as \(callingName) in LCR. This will make the change offical and public.", comment: "update calling message"))
+                }
+                //Initialize the alert with the message created
+                let updateAlert = UIAlertController(title: NSLocalizedString("Update Calling", comment: "Update Calling"), message: alertMessage, preferredStyle: UIAlertControllerStyle.alert)
+                
+                //Init the action that will run when OK is pressed
+                let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
+                    (alert: UIAlertAction!) -> Void in
+                    //Call to callingManager to update calling
+                    callingMgr.updateLCRCalling(updatedCalling: self.callingToDisplay!) { (calling, error) in
+                        let err = error?.localizedDescription ?? "nil"
+                        print("Release result: \(calling.debugDescription) - error: \(err)")
+                        
+                    }
+                })
+                
+                let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
+                    (alert: UIAlertAction!) -> Void in
+                    print("Cancelled")
+                })
+                
+                updateAlert.addAction(okAction)
+                updateAlert.addAction(cancelAction)
+                
+                self.present(updateAlert, animated: true, completion: nil)
+            })
+
+            actionSheet.addAction(finalizeAction)
+        }
+        if callingToDisplay?.existingIndId != nil {
+            let releaseAction = UIAlertAction(title: NSLocalizedString("Release Current in LCR", comment: "release"), style: UIAlertActionStyle.default, handler:  {
+                (alert: UIAlertAction!) -> Void in
+                
+                var releaseWarningString : String = ""
+                if let existingId = self.callingToDisplay?.existingIndId, let currentlyCalled = callingMgr.getMemberWithId(memberId: existingId), let name = currentlyCalled.name, let callingName = self.callingToDisplay?.position.name {
+                    releaseWarningString = NSLocalizedString("This will release \(name) as \(callingName) on lds.org (LCR). This will make the release public (it will appear in lds.org sites, LDS Tools, etc.). Generally this should only be done after the individual has been released in Sacrament Meeting. Do you want to record the release on lds.org?", comment: "Release Warning")
+                }
+                let releaseAlert = UIAlertController(title: NSLocalizedString("Release From Calling", comment: "Release"), message: releaseWarningString, preferredStyle: .alert)
+                
+                let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
+                    (alert: UIAlertAction!) -> Void in
+                    //call to calling manager to release individual
+                    callingMgr.releaseLCRCalling(callingToRelease: self.callingToDisplay!) { (success, error) in
+                        let err = error?.localizedDescription ?? "nil"
+                        print("Release result: \(success) - error: \(err)")
+                        
+                        
+                    }
+                })
+                
+                let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
+                    (alert: UIAlertAction!) -> Void in
+                    print("Cancelled")
+                })
+                
+                releaseAlert.addAction(okAction)
+                releaseAlert.addAction(cancelAction)
+                self.present(releaseAlert, animated: true, completion: nil)
             })
 
             actionSheet.addAction(releaseAction)
 
         }
-        let deleteAction = UIAlertAction(title: "Delete Calling in LCR", style: UIAlertActionStyle.default, handler:  {
+        
+        //init delete option for the action sheet
+        let deleteAction = UIAlertAction(title: NSLocalizedString("Delete Calling in LCR", comment: "delete calling"), style: UIAlertActionStyle.default, handler:  {
             (alert: UIAlertAction!) -> Void in
-            callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
-                let err = error?.localizedDescription ?? "nil"
-                print("Release result: \(success) - error: \(err)")
-                
-            }
             
+            //Message to use for the action conformation alert
+            var deleteWarningMessage : String = ""
+            
+            //If there is an existing individual display release warning.
+            if let existingId = self.callingToDisplay?.existingIndId, let existingIndividual = callingMgr.getMemberWithId(memberId: existingId), let existingName = existingIndividual.name, let callingName = self.callingToDisplay?.position.name {
+                deleteWarningMessage.append(NSLocalizedString("This will release \(existingName) as \(callingName) on lds.org (LCR) and remove the calling from ward lists. Do you want to record the release on lds.org?", comment: "existingIndDelete"))
+            }
+            else {
+                if let callingName = self.callingToDisplay?.position.name{
+                    deleteWarningMessage.append(NSLocalizedString("This will remove \(callingName) from ward lists and directiories. Do you want to continue?", comment: "deleteWarning"))
+                }
+            }
+
+            //Init the alert using the warning string
+            let deleteAlert = UIAlertController(title: NSLocalizedString("Delete Calling", comment: "delete"), message: deleteWarningMessage, preferredStyle: .alert)
+            
+            //Init the ok button and the callback to execute
+            let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
+                (alert: UIAlertAction!) -> Void in
+            
+                callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
+                    let err = error?.localizedDescription ?? "nil"
+                    print("Release result: \(success) - error: \(err)")
+        
+                }
+            })
+            
+            //Init the cancel button for the delete calling alert
+            let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
+                (alert: UIAlertAction!) -> Void in
+                print("Cancelled")
+            })
+            
+            //Add the buttons to the alert and display to the user.
+            deleteAlert.addAction(okAction)
+            deleteAlert.addAction(cancelAction)
+            
+            self.present(deleteAlert, animated: true, completion: nil)
+
             print("Delete Current pressed")
             
         })
 
         actionSheet.addAction(deleteAction)
 
-        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
+        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
             (alert: UIAlertAction!) -> Void in
             print("Cancelled")
         })
@@ -441,9 +504,11 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
 
     }
+    
+    
     //MARK: - Spinner
     func startSpinner() {
-        let spinView = CWFSpinnerView(frame: CGRect.zero, title: "Loging In")
+        let spinView = CWFSpinnerView(frame: CGRect.zero, title: NSLocalizedString("Updating", comment: "Updating") as NSString)
         
         self.view.addSubview(spinView)
         self.spinnerView = spinView

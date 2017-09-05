@@ -34,7 +34,7 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
     
     func setupTitle() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = "Gender"
+        titleLabel.text = NSLocalizedString("Gender", comment: "")
         titleLabel.textColor = UIColor.CWFGreyTextColor
         
         self.addSubview(titleLabel)
@@ -48,7 +48,7 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
     
     func setupButtons() {
         
-        maleButton.setTitle("Male", for: UIControlState.normal)
+        maleButton.setTitle(NSLocalizedString("Male", comment: ""), for: UIControlState.normal)
         maleButton.addTarget(self, action: #selector(buttonSelected), for: .touchUpInside)
         maleButton.tag = 1
         
@@ -59,7 +59,7 @@ class FilterGenderTableViewCell: FilterBaseTableViewCell {
         
         self.addConstraints([xConstraint, yConstraint])
         
-        femaleButton.setTitle("Female", for: UIControlState.normal)
+        femaleButton.setTitle(NSLocalizedString("Female", comment: ""), for: UIControlState.normal)
         femaleButton.layoutMargins = .init(top: 5, left: 5, bottom: 5, right: 5)
         femaleButton.tag = 2
         

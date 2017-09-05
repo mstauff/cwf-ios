@@ -76,7 +76,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
 
             dataSource.removeAll( keepingCapacity: true )
             if (rootOrg?.callings != nil && (rootOrg?.callings.count)! > 0 && hasPermissionToEdit()) {
-                let newDataItem = AccordionDataItem.init(dataItem: "Add Calling", dataItemType: .AddCalling, expanded: true)
+                let newDataItem = AccordionDataItem.init(dataItem: NSLocalizedString("Add Calling", comment: "select to add calling"), dataItemType: .AddCalling, expanded: true)
                 dataSource.append(newDataItem)
             }
             
@@ -331,10 +331,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     //MARK: - Warning
     func warningButtonPressed() {
         print("warning pressed")
-        let alert = UIAlertController(title: "Error", message: "There was an error uploading changes", preferredStyle: .alert)
+        let alert = UIAlertController(title: NSLocalizedString("Error", comment: ""), message: NSLocalizedString("There was an error uploading changes", comment: "error uploading message"), preferredStyle: .alert)
             
         self.present(alert, animated: true, completion: nil)
     }
-
-
 }

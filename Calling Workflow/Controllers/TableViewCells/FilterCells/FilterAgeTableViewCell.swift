@@ -39,7 +39,7 @@ class FilterAgeTableViewCell: FilterBaseTableViewCell {
     
     func setupTitle() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = "Age"
+        titleLabel.text = NSLocalizedString("Age", comment: "")
         titleLabel.textColor = UIColor.CWFGreyTextColor
         
         self.addSubview(titleLabel)

@@ -159,7 +159,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     // MARK: - Spinner Setup
     
     func startSpinner() {
-        let spinnerView = CWFSpinnerView(frame: CGRect.zero, title: "Loging In")
+        let spinnerView = CWFSpinnerView(frame: CGRect.zero, title: NSLocalizedString("Loging In", comment: "") as NSString)
 //        spinnerView.translatesAutoresizingMaskIntoConstraints = false
 //        spinnerView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.75)
         

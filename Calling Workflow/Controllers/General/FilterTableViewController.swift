@@ -44,7 +44,7 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleString = "Search Filter"
+        titleString = NSLocalizedString("Search Filter", comment: "")
         self.tableView.alwaysBounceVertical = false
         self.tableView.separatorStyle = .none
         self.clearsSelectionOnViewWillAppear = false

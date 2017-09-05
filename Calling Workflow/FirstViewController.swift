@@ -129,7 +129,7 @@ class FirstViewController: UIViewController, GIDSignInUIDelegate {
             preferredStyle: UIAlertControllerStyle.alert
         )
         let ok = UIAlertAction(
-            title: "OK",
+            title: NSLocalizedString("OK", comment: "OK"),
             style: UIAlertActionStyle.default,
             handler: nil
         )

@@ -33,7 +33,7 @@ class SingleFieldTableViewCell: UITableViewCell {
     }
 
     func setupCell() {
-        textField.text = "fieldText"
+        textField.text = ""
         textField.translatesAutoresizingMaskIntoConstraints = false
         
         self.addSubview(textField)

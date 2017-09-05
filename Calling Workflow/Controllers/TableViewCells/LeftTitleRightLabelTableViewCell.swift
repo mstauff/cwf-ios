@@ -35,7 +35,7 @@ class LeftTitleRightLabelTableViewCell: UITableViewCell {
     func setupCell() {
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = "Name"
+        titleLabel.text = NSLocalizedString("Name", comment: "")
         self.contentView.addSubview(titleLabel)
         
         dataLabel.translatesAutoresizingMaskIntoConstraints = false

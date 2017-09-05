@@ -241,7 +241,7 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
     }
     
     func locationButtonPressed() {
-        if var address = memberToView?.member.streetAddress {
+        if let address = memberToView?.member.streetAddress {
             
             let mapVC = CWFMapViewController()
             let navController = UINavigationController(rootViewController: mapVC)
@@ -257,14 +257,14 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
                 let mailVC = MFMailComposeViewController()
                 mailVC.mailComposeDelegate = self
                 mailVC.setToRecipients([emailAddress])
-                mailVC.setSubject("Subject for email")
-                mailVC.setMessageBody("Email message string", isHTML: false)
+                mailVC.setSubject(NSLocalizedString("Subject for email", comment: ""))
+                mailVC.setMessageBody(NSLocalizedString("Email message string", comment: ""), isHTML: false)
                 
                 present(mailVC, animated: true, completion: nil)
             }
             else {
-                let alert = UIAlertController(title: "Cannnot Send Email", message: "Check your email settings", preferredStyle: .alert)
-                alert.addAction(UIAlertAction.init(title: "OK", style: .cancel, handler: nil))
+                let alert = UIAlertController(title: NSLocalizedString("Cannnot Send Email", comment: "email error"), message:NSLocalizedString("Check your email settings", comment: "email error message") , preferredStyle: .alert)
+                alert.addAction(UIAlertAction.init(title: NSLocalizedString("OK", comment: ""), style: .cancel, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             }
         }

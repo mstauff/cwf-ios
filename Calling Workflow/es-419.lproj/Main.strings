@@ -1,0 +1,48 @@
+
+/* Class = "UITabBarItem"; title = "In Progress"; ObjectID = "0IG-Uj-QTq"; */
+"0IG-Uj-QTq.title" = "In Progress";
+
+/* Class = "UITabBarItem"; title = "Directory"; ObjectID = "1ZI-98-qVT"; */
+"1ZI-98-qVT.title" = "Directory";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "3P3-0T-pOk"; */
+"3P3-0T-pOk.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "8Mr-Jw-RaC"; */
+"8Mr-Jw-RaC.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "E4X-5m-8qH"; */
+"E4X-5m-8qH.text" = "Label";
+
+/* Class = "UITabBarItem"; title = "Settings"; ObjectID = "KBJ-MQ-kmF"; */
+"KBJ-MQ-kmF.title" = "Settings";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "PjD-o7-A96"; */
+"PjD-o7-A96.text" = "Label";
+
+/* Class = "UINavigationItem"; title = "Directory"; ObjectID = "Qea-WB-9Wq"; */
+"Qea-WB-9Wq.title" = "Directory";
+
+/* Class = "UIButton"; normalTitle = "Update"; ObjectID = "RKP-BU-ZYM"; */
+"RKP-BU-ZYM.normalTitle" = "Update";
+
+/* Class = "UINavigationItem"; title = "Callings"; ObjectID = "Sye-c3-P4Y"; */
+"Sye-c3-P4Y.title" = "Callings";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Zru-tE-mSq"; */
+"Zru-tE-mSq.text" = "Label";
+
+/* Class = "UILabel"; text = "Sign in"; ObjectID = "fVC-3h-mkp"; */
+"fVC-3h-mkp.text" = "Sign in";
+
+/* Class = "UIButton"; normalTitle = "Sign Out Google"; ObjectID = "gPy-rR-Sxt"; */
+"gPy-rR-Sxt.normalTitle" = "Sign Out Google";
+
+/* Class = "UINavigationItem"; title = "Settings"; ObjectID = "qJK-b9-Vcr"; */
+"qJK-b9-Vcr.title" = "Settings";
+
+/* Class = "UINavigationItem"; title = "Organizations"; ObjectID = "rQI-It-Hkd"; */
+"rQI-It-Hkd.title" = "Organizations";
+
+/* Class = "UITabBarItem"; title = "Organizations"; ObjectID = "vnL-b5-sMi"; */
+"vnL-b5-sMi.title" = "Organizations";

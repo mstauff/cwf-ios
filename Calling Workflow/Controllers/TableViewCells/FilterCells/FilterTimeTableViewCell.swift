@@ -31,7 +31,7 @@ class FilterTimeTableViewCell: FilterBaseTableViewCell {
     }
 
     func setupTitle() {
-        titleLabel.text = "Time In Calling"
+        titleLabel.text = NSLocalizedString("Time In Calling", comment: "")
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.textColor = UIColor.CWFGreyTextColor
         
@@ -59,7 +59,7 @@ class FilterTimeTableViewCell: FilterBaseTableViewCell {
         self.addConstraints([yConstraint, hConstraint, lConstraint, rConstraint])
         
         sliderLabel.translatesAutoresizingMaskIntoConstraints = false
-        sliderLabel.text = "\(String(sliderView.value)) Months"
+        sliderLabel.text = NSLocalizedString("\(String(sliderView.value)) Months", comment: "months in calling")
         sliderLabel.textColor = UIColor.CWFGreyTextColor
         sliderLabel.textAlignment = .center
         sliderLabel.font = UIFont(name: sliderLabel.font.fontName, size: 12)
@@ -79,7 +79,7 @@ class FilterTimeTableViewCell: FilterBaseTableViewCell {
             let valueAsInt = Int(sender.value)
             sender.setValue(Float(valueAsInt), animated: false)
 
-            sliderLabel.text = "\(String(sliderView.value)) Months"
+            sliderLabel.text = NSLocalizedString("\(String(sliderView.value)) Months", comment: "months in calling")
         }
         else {
             // round to quarter year and reset the value - this is what causes the slider to snap to the next quarter value (1.75 years, rather than allowing 1.6 years)
@@ -87,7 +87,7 @@ class FilterTimeTableViewCell: FilterBaseTableViewCell {
             sender.setValue(Float(valueAsInt), animated: false)
 
             let valueInYears = sender.value / 12.0
-            sliderLabel.text = "\(valueInYears)+ Years"
+            sliderLabel.text = NSLocalizedString("\(valueInYears)+ Years", comment: "years in calling")
         }
     }
     

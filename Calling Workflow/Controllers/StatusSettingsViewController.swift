@@ -21,7 +21,7 @@ class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataS
         super.viewDidLoad()
         self.navigationController?.navigationBar.isTranslucent = false
         
-        let saveButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveButtonPressed))
+        let saveButton = UIBarButtonItem(title: NSLocalizedString("Save", comment: ""), style: .plain, target: self, action: #selector(saveButtonPressed))
         self.navigationItem.rightBarButtonItem = saveButton
 
         self.collectionView.register(StatusSettingsCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
@@ -55,7 +55,7 @@ class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataS
         self.view.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
         
         let headerLabel = UILabel()
-        headerLabel.text = "Select Statuses to exclude"
+        headerLabel.text = NSLocalizedString("Select statuses to include", comment: "")
         headerLabel.translatesAutoresizingMaskIntoConstraints = false
         
         headerView.addSubview(headerLabel)
@@ -98,13 +98,14 @@ class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataS
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let collectionCell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? StatusSettingsCollectionViewCell
         collectionCell?.translatesAutoresizingMaskIntoConstraints = false
+        collectionCell?.button.setupForSelected()
         collectionCell?.button.setTitle(CallingStatus.userValues[indexPath.row].description, for: .normal)
         collectionCell?.callingStatus = CallingStatus.userValues[indexPath.row]
         collectionCell?.delegate = self
         
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             if appDelegate.callingManager.statusToExcludeForUnit.contains(item: CallingStatus.userValues[indexPath.row]) {
-                collectionCell?.button.setupForSelected()
+                collectionCell?.button.setupForUnselected()
             }
         }
         
@@ -130,7 +131,7 @@ class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataS
     func saveButtonPressed() {
         for cell in collectionView.visibleCells {
             if let statusCell = cell as? StatusSettingsCollectionViewCell, let callingStatus = statusCell.callingStatus {
-                if statusCell.button.isSelected {
+                if !statusCell.button.isSelected {
                     if !unsavedStatusToExclude.contains(item: callingStatus) {
                         unsavedStatusToExclude.append(callingStatus)
                     }

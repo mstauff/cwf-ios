@@ -21,7 +21,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.title = "Add New Calling"
+        self.navigationItem.title = NSLocalizedString("Add New Calling", comment: "Add New Calling")
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveNewCalling))
         
         tableView.register(SingleFieldTableViewCell.self, forCellReuseIdentifier: "SingleFieldTableViewCell")
@@ -143,7 +143,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
                 cell.textLabel?.text = newCalling?.position.name
             }
             else {
-                cell.textLabel?.text = "Select Calling"
+                cell.textLabel?.text = NSLocalizedString("Select Calling", comment: "Select Calling")
             }
             
             cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
@@ -152,13 +152,13 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
             
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SingleFieldTableViewCell", for: indexPath) as? SingleFieldTableViewCell
-            cell?.textField.text = "Calling Name"
+            cell?.textField.text = NSLocalizedString("Calling Name", comment: "Calling Name")
             
             return cell!
             
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SingleFieldTableViewCell", for: indexPath) as? SingleFieldTableViewCell
-            cell?.textField.text = "Custom"
+            cell?.textField.text = NSLocalizedString("Custom", comment: "Custom")
             
             return cell!
             
@@ -175,7 +175,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             if (newCalling?.proposedIndId == nil) {
                 
-                cell.textLabel?.text = "Select Person for Calling"
+                cell.textLabel?.text = NSLocalizedString("Select Person for Calling", comment: "")
             }
             else {
                 let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: (newCalling?.proposedIndId)!)
@@ -191,7 +191,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
                 cell.textLabel?.text = statusString
             }
             else {
-                cell.textLabel?.text = "Status"
+                cell.textLabel?.text = NSLocalizedString("Status", comment: "")
             }
             cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
             
@@ -210,7 +210,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
             let cell = tableView.dequeueReusableCell(withIdentifier: "NoteTableViewCell", for: indexPath) as? NotesTableViewCell
 
             if (newCalling?.notes != nil || newCalling?.notes != "") {
-                cell?.noteTextView.text = "Notes"
+                cell?.noteTextView.text = NSLocalizedString("Notes", comment: "")
             }
             else {
                 cell?.noteTextView.text = newCalling?.notes

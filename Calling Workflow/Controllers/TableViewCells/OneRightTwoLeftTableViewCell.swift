@@ -36,7 +36,7 @@ class OneRightTwoLeftTableViewCell: UITableViewCell {
     func setupCell() {
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = "Name"
+        titleLabel.text = NSLocalizedString("Name", comment: "")
         self.addSubview(titleLabel)
         
         dataLabel.translatesAutoresizingMaskIntoConstraints = false

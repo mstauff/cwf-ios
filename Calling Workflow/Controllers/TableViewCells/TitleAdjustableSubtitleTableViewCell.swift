@@ -44,7 +44,7 @@ class TitleAdjustableSubtitleTableViewCell: UITableViewCell {
         let spacing : CGFloat = 2.0
         
         //titleLabel.frame = CGRect(x: sideMarginSize, y: verticalMarginSize, width: self.frame.width - (2*sideMarginSize), height: 20)
-        titleLabel.text = "Name"
+        titleLabel.text = NSLocalizedString("Name", comment: "")
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
         self.addSubview(titleLabel)

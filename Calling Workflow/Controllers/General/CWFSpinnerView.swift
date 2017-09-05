@@ -18,7 +18,7 @@ class CWFSpinnerView: UIView {
         self.translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.75)
 
-        textLabel.text = "Loging In"
+        textLabel.text = ""
         textLabel.textColor = UIColor.white
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         

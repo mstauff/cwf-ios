@@ -44,7 +44,7 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController {
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 0:
-            return "LDS Account"
+            return NSLocalizedString("LDS Account", comment: "LDS Account")
         default:
             return ""
         }
@@ -77,7 +77,7 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController {
                     cell?.inputField?.text = keychainDataDictionary?["username"]
                 }
                 else {
-                    cell?.inputField?.placeholder = "LDS Username"
+                    cell?.inputField?.placeholder = NSLocalizedString("LDS Username", comment: "LDS.org Username")
                 }
                 self.userNameField = cell?.inputField
                 
@@ -86,7 +86,7 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController {
                     cell?.inputField.text = keychainDataDictionary?["password"]
                 }
                 else {
-                    cell?.inputField?.placeholder = "Password"
+                    cell?.inputField?.placeholder = NSLocalizedString("Password", comment: "Password")
                 }
                 cell?.inputField?.isSecureTextEntry = true
                 passwordField = cell?.inputField 

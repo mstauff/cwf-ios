@@ -33,7 +33,7 @@ class DirectoryTableViewController: CWFBaseTableViewController, FilterTableViewC
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.tabBarController?.title = "Directory"
+        self.tabBarController?.title = NSLocalizedString("Directory", comment: "Directory")
         self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "filter"), style: .done, target: self, action: #selector(filterButtonPressed))
         setupData()
         tableView.reloadData()

@@ -25,7 +25,7 @@ class FilterOrgTableViewCell: FilterBaseTableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         filterOrgType = nil
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupTitle(titleString: "Title")
+        setupTitle(titleString: "")
     }
     
     init(style: UITableViewCellStyle, reuseIdentifier: String?, title: String, orgType: FilterOrgType, upperClasses: [FilterButtonEnum], lowerClasses: [FilterButtonEnum] ) {

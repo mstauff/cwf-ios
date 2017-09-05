@@ -20,6 +20,7 @@
 		3C2428221EE1D848006DA7E8 /* MemberExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2428211EE1D848006DA7E8 /* MemberExtensions.swift */; };
 		3C2D0C521ECCFA39009A1511 /* FilterApplyButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2D0C511ECCFA39009A1511 /* FilterApplyButtonTableViewCell.swift */; };
 		3C2DFEB81F22C261007F716C /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2DFEB71F22C261007F716C /* UIImageExtension.swift */; };
+		3C303BF01F5A13D200C80C25 /* CallingDetailsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C303BEF1F5A13D200C80C25 /* CallingDetailsUITests.swift */; };
 		3C3737B01F0F060900D62C2E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C3737AF1F0F060900D62C2E /* MapKit.framework */; };
 		3C3737B21F0FFD5600D62C2E /* CWFMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3737B11F0FFD5600D62C2E /* CWFMapViewController.swift */; };
 		3C3737B41F13DCB000D62C2E /* CallingPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3737B31F13DCB000D62C2E /* CallingPickerViewController.swift */; };
@@ -34,6 +35,7 @@
 		3C4409C91E3BEE9400484935 /* CWFStatusPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */; };
 		3C55DEBB1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C55DEBA1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift */; };
 		3C691E621ECA4A8B00CD7672 /* FilterTimeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C691E611ECA4A8B00CD7672 /* FilterTimeTableViewCell.swift */; };
+		3C6928301F50A80D00E209D9 /* RootTabBarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C69282F1F50A80D00E209D9 /* RootTabBarUITests.swift */; };
 		3C6A365B1EC23D4600A58C33 /* FilterTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6A365A1EC23D4600A58C33 /* FilterTableViewController.swift */; };
 		3C6A365E1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6A365D1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift */; };
 		3C7345F21F420FD500E1BF40 /* StatusSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7345F11F420FD500E1BF40 /* StatusSettingsViewController.swift */; };
@@ -159,6 +161,7 @@
 		3C2428211EE1D848006DA7E8 /* MemberExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MemberExtensions.swift; path = Extensions/MemberExtensions.swift; sourceTree = "<group>"; };
 		3C2D0C511ECCFA39009A1511 /* FilterApplyButtonTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterApplyButtonTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterApplyButtonTableViewCell.swift; sourceTree = "<group>"; };
 		3C2DFEB71F22C261007F716C /* UIImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIImageExtension.swift; path = Extensions/UIImageExtension.swift; sourceTree = "<group>"; };
+		3C303BEF1F5A13D200C80C25 /* CallingDetailsUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallingDetailsUITests.swift; sourceTree = "<group>"; };
 		3C3737AF1F0F060900D62C2E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		3C3737B11F0FFD5600D62C2E /* CWFMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFMapViewController.swift; path = Controllers/General/CWFMapViewController.swift; sourceTree = "<group>"; };
 		3C3737B31F13DCB000D62C2E /* CallingPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingPickerViewController.swift; path = Controllers/CallingPickerViewController.swift; sourceTree = "<group>"; };
@@ -173,6 +176,7 @@
 		3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFStatusPickerView.swift; path = Controllers/General/CWFStatusPickerView.swift; sourceTree = "<group>"; };
 		3C55DEBA1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StatusSettingsCollectionViewCell.swift; path = Controllers/TableViewCells/StatusSettingsCollectionViewCell.swift; sourceTree = "<group>"; };
 		3C691E611ECA4A8B00CD7672 /* FilterTimeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterTimeTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterTimeTableViewCell.swift; sourceTree = "<group>"; };
+		3C69282F1F50A80D00E209D9 /* RootTabBarUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootTabBarUITests.swift; sourceTree = "<group>"; };
 		3C6A365A1EC23D4600A58C33 /* FilterTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterTableViewController.swift; path = Controllers/General/FilterTableViewController.swift; sourceTree = "<group>"; };
 		3C6A365D1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterTitleTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterTitleTableViewCell.swift; sourceTree = "<group>"; };
 		3C7345F11F420FD500E1BF40 /* StatusSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StatusSettingsViewController.swift; path = Controllers/StatusSettingsViewController.swift; sourceTree = "<group>"; };
@@ -419,6 +423,8 @@
 			children = (
 				3CE4C8F41DCA824100AAFB31 /* Calling_WorkflowUITests.swift */,
 				3CE4C8F61DCA824100AAFB31 /* Info.plist */,
+				3C69282F1F50A80D00E209D9 /* RootTabBarUITests.swift */,
+				3C303BEF1F5A13D200C80C25 /* CallingDetailsUITests.swift */,
 			);
 			path = "Calling WorkflowUITests";
 			sourceTree = "<group>";
@@ -970,6 +976,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CE4C8F51DCA824100AAFB31 /* Calling_WorkflowUITests.swift in Sources */,
+				3C303BF01F5A13D200C80C25 /* CallingDetailsUITests.swift in Sources */,
+				3C6928301F50A80D00E209D9 /* RootTabBarUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1012,6 +1020,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1064,6 +1073,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";

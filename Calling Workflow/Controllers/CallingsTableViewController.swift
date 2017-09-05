@@ -36,7 +36,7 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tabBarController?.title = "In Progress"
+        tabBarController?.title = NSLocalizedString("In Progress", comment: "callings in progress")
         
         self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "filter"), style: .done, target: self, action: #selector(filterButtonPressed))
 
@@ -81,8 +81,8 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
         cell?.nameLabel.text = callingForRow.position.name
        
         if let currentlyCalledId = callingForRow.existingIndId {
-            if let currentyCalled = appDelegate?.callingManager.getMemberWithId(memberId: currentlyCalledId){
-                cell?.currentCallingLabel.text = (currentyCalled.name)! + " (\(callingForRow.existingMonthsInCalling) Months)"
+            if let currentyCalled = appDelegate?.callingManager.getMemberWithId(memberId: currentlyCalledId), let name = currentyCalled.name {
+                cell?.currentCallingLabel.text = name + NSLocalizedString(" (\(callingForRow.existingMonthsInCalling) Months)", comment: "months in calling")
             }
         }
         else {

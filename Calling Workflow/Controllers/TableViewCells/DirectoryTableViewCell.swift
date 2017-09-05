@@ -108,7 +108,7 @@ class DirectoryTableViewCell: UITableViewCell {
         default:
             setupTextForLabel(calling: callings[0], member: member.member, label: firstSubviewLabel)
             setupTextForLabel(calling: callings[1], member: member.member, label: secondSubviewLabel)
-            thirdSubviewLabel.text = "\(callings.count - 2) more..."
+            thirdSubviewLabel.text = NSLocalizedString("\(callings.count - 2) more...", comment: "number of callings remaining")
             thirdSubviewLabel.textColor = UIColor.CWFGreyTextColor
         }
     }

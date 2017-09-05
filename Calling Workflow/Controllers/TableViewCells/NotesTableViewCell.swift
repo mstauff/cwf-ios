@@ -34,7 +34,7 @@ class NotesTableViewCell: UITableViewCell {
     
     func setupCell() {
         noteTextView.translatesAutoresizingMaskIntoConstraints = false
-        noteTextView.text = "Notes"
+        noteTextView.text = NSLocalizedString("Notes", comment: "")
         self.addSubview(noteTextView)
         
         initConstraints()

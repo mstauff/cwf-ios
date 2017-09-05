@@ -10,9 +10,9 @@ import UIKit
 
 func getStatusActionSheet(delegate: StatusPickerDelegate?) -> UIAlertController {
    
-    let actionSheet = UIAlertController(title: "Status", message: "Select calling status.", preferredStyle: UIAlertControllerStyle.actionSheet)
+    let actionSheet = UIAlertController(title: NSLocalizedString("Status", comment: ""), message: NSLocalizedString("Select calling status.", comment: "select status message"), preferredStyle: UIAlertControllerStyle.actionSheet)
     
-    let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {
+    let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
         (alert: UIAlertAction!) -> Void in
         print("Cancelled")
     })

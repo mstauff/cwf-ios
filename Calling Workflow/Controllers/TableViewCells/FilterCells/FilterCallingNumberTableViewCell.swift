@@ -34,7 +34,7 @@ class FilterCallingNumberTableViewCell: FilterBaseTableViewCell {
     }
     
     func setupTitle() {
-        titleLabel.text = "Callings"
+        titleLabel.text = NSLocalizedString("Callings", comment: "")
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.textColor = UIColor.CWFGreyTextColor
         

@@ -31,7 +31,7 @@ class FilterCallingStatusTableViewCell: FilterBaseTableViewCell {
     func setupCellTitle() {
         cellTitle.translatesAutoresizingMaskIntoConstraints = false
         cellTitle.numberOfLines = 0
-        cellTitle.text = "Calling Status"
+        cellTitle.text = NSLocalizedString("Calling Status", comment: "")
         cellTitle.textColor = UIColor.CWFGreyTextColor
 
         self.addSubview(cellTitle)
