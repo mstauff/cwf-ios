@@ -140,7 +140,7 @@ public class PermissionManager {
     
     /** Determines if a user has a specified permission to perform an action on a set of data. An OrgAdmin may have permission to update a calling, but only on data within their org. */
     public func isAuthorized( unitRole: UnitRole, domain: Domain, permission: Permission, targetData: Authorizable ) -> Bool {
-        return hasPermission(unitRole: unitRole, domain: domain, permission: permission) && permissionResolvers[unitRole.role.type]!.isAuthorized(role: unitRole, domain: domain, permission: permission, targetData: targetData)
+        return hasPermission(unitRole: unitRole, domain: domain, permission: permission) && permissionResolvers[unitRole.role.type]!.isAuthorized(role: unitRole, targetData: targetData)
         
     }
 

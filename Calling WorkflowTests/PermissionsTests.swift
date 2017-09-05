@@ -107,15 +107,15 @@ class PermissionsTests: XCTestCase {
         let unitPermResolver = UnitPermResolver()
         let authUnitRole = UnitRole(role: .unitAdmin, unitNum: mainUnit, orgId: nil, orgType: nil, activePosition: posDontCare, orgRightsException: nil)
         let nonAuthUnitRole = UnitRole(role: .unitAdmin, unitNum: 2748, orgId: nil, orgType: nil, activePosition: posDontCare, orgRightsException: nil)
-        let testCases : [(role: UnitRole, domain: Domain, perm: Permission, authorizable: Authorizable, expectedResult: Bool)] =
-            [(authUnitRole, .OrgInfo,  .View, authorizedUnit, true ), // authorized via unit
-            (authUnitRole, .OrgInfo,  .View, authorizedOrg, true ), // authorized via org
-             (authUnitRole, .ActiveCalling, .Create, authorizedUnit, true), // perm & domain shouldn't matter
-             (nonAuthUnitRole, .OrgInfo, .View, authorizedUnit, false ), // not authorized
-                (nonAuthUnitRole, .OrgInfo, .View, authorizedUnit, false ), // not authorized
+        let testCases : [(role: UnitRole, authorizable: Authorizable, expectedResult: Bool)] =
+            [(authUnitRole, authorizedUnit, true ), // authorized via unit
+            (authUnitRole, authorizedOrg, true ), // authorized via org
+             (authUnitRole, authorizedUnit, true), // perm & domain shouldn't matter
+             (nonAuthUnitRole, authorizedUnit, false ), // not authorized
+                (nonAuthUnitRole, authorizedUnit, false ), // not authorized
              ]
         testCases.forEach() {
-            XCTAssertEqual( unitPermResolver.isAuthorized( role: $0.role, domain: $0.domain, permission: $0.perm, targetData: $0.authorizable), $0.expectedResult )
+            XCTAssertEqual( unitPermResolver.isAuthorized( role: $0.role, targetData: $0.authorizable), $0.expectedResult )
         }
         
     }
@@ -139,7 +139,7 @@ class PermissionsTests: XCTestCase {
                 (eqAdmin, .OrgInfo, .View, eqPresOrg, false ), // eq admin - but org is excaption (presidency)
         ]
         testCases.forEach() {
-            XCTAssertEqual( orgPermResolver.isAuthorized( role: $0.role, domain: $0.domain, permission: $0.perm, targetData: $0.authorizable), $0.expectedResult )
+            XCTAssertEqual( orgPermResolver.isAuthorized( role: $0.role, targetData: $0.authorizable), $0.expectedResult )
         }
         
     }

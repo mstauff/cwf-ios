@@ -66,6 +66,15 @@ class CallingManagerServiceTests: XCTestCase {
             completionHandler( true, nil )
         }
         
+        func getUnitSettings( forUnitNum : Int64, completionHandler : @escaping( _ unitSettings : UnitSettings?, _ error : Error? ) -> Void ) {
+            completionHandler( UnitSettings(), nil )
+        }
+        
+        func updateUnitSettings( _ unitSettings : UnitSettings, completionHandler : @escaping( _ success : Bool, _ error: Error?) -> Void ) {
+            
+        }
+
+        
     }
 
     override func setUp() {

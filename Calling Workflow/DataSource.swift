@@ -31,4 +31,7 @@ protocol DataSource {
     
     func updateOrg( org : Org, completionHandler : @escaping (_ success : Bool, _ error: Error? ) -> Void )
     
+    func getUnitSettings( forUnitNum : Int64, completionHandler : @escaping( _ unitSettings : UnitSettings?, _ error : Error? ) -> Void )
+    func updateUnitSettings( _ unitSettings : UnitSettings, completionHandler : @escaping( _ success : Bool, _ error: Error?) -> Void )
+    
 }

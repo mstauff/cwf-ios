@@ -19,6 +19,7 @@ class ModelTests: XCTestCase {
     private var multiDepthOrg = Org( id: 1,  unitNum: 123,orgTypeId: 1 )
     private var fullLcrOrg = Org( id: 1,  unitNum: 123,orgTypeId: 1 )
     private var positionMetadata : Array<PositionMetadata> = []
+    private var unitSettings = UnitSettings()
 
     override func setUp() {
         super.setUp()
@@ -38,6 +39,7 @@ class ModelTests: XCTestCase {
             testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:AnyObject]
             standardOrg = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )!
             multiDepthOrg = Org( fromJSON: (testJSON?["orgWithMultiDepthSubOrg"] as? JSONObject)! )!
+            unitSettings = UnitSettings( fromJSON: (testJSON?["unitSettings"] as? JSONObject)! )!
 
         } else {
             print( "No File Path found for file" )
@@ -93,6 +95,12 @@ class ModelTests: XCTestCase {
         
         let primaryPianist = positionMap[215]!
         XCTAssertNil( primaryPianist.requirements )
+    }
+    
+    func testUnitSettingsJsonDeserialization() {
+        let unitSettings = self.unitSettings
+        
+        XCTAssertEqual( [CallingStatus.Proposed, CallingStatus.Accepted, CallingStatus.Sustained] , unitSettings.disabledStatuses )
     }
     
     func testOrgJsonDeserialization() {

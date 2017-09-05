@@ -241,5 +241,10 @@
       "orgName": "Bishopric",
       "displayOrder": null
     }
-  ]
+  ],
+  "unitSettings" : {
+  	"disabledStatuses" : [
+		"PROPOSED","ACCEPTED", "FOOBAR", "SUSTAINED"
+	]
+  }
 }
