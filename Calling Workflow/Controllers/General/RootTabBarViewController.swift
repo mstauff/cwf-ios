@@ -90,7 +90,8 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
                         } else {
                             self?.removeSpinner()
                             print( "Error loading data from LDS.org")
-                            self?.showAlert(title: "LDS.org Communication Error", message: (loadingError?.localizedDescription)!)
+                            let alertText = loadingError?.localizedDescription ?? "Unknown Error"
+                            self?.showAlert(title: "LDS.org Communication Error", message: alertText)
                         }
                     
                     }
