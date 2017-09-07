@@ -52,6 +52,11 @@ struct FilterOptions {
         }
     }
     
+    func passesFilter( member: Member ) -> Bool {
+        // check if a single member passes filter requirements - this allows us to validate if a single member meets position requirements by just creating a set of filters from the position requirements and applying that to a single member.
+        return self.filterMemberData( unfilteredArray: [MemberCallings( member: member )] ).isNotEmpty
+    }
+    
     func createFilters() -> [MemberFilter] {
         var filters : [MemberFilter] = []
         if minAge != nil || maxAge != nil {

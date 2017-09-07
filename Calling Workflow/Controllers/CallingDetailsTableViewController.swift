@@ -51,8 +51,6 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
         tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "noteCell")
         tableView.register(CWFButtonTableViewCell.self, forCellReuseIdentifier: "buttonCell")
-
-
     }
 
     override func didReceiveMemoryWarning() {
@@ -166,9 +164,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 cell?.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
                 
                 cell?.titleLabel.text = NSLocalizedString("Proposed:", comment: "Proposed")
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                if (callingToDisplay?.proposedIndId) != nil {
-                    let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: (callingToDisplay?.proposedIndId)!)
+                // look up the name of the proposed individual
+                if let proposedIndId = callingToDisplay?.proposedIndId {
+                    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                    let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: proposedIndId)
+                    // check to see if the member meets the position requiremenst (show a warning if they don't)
+                    let meetsRequirements = self.meetsPositionRequirements(ofCalling: callingToDisplay, member: proposedMember)
+                    // todo - add warning icon if the user doesn't meet the requirements for the position
                     cell?.dataLabel.text = proposedMember?.name
                 }
                 else {
@@ -503,6 +505,22 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             }
         }
 
+    }
+    
+    /** Check if a member meets the position requirements for a calling, if there are any. Returns true if the member meets the requirements, false if there's a violation
+     */
+    func meetsPositionRequirements( ofCalling calling: Calling?, member: Member? ) -> Bool {
+        guard let calling = calling, let member = member else {
+            return true
+        }
+        
+        var result = true
+        if let requirements = calling.position.metadata.requirements {
+            // just use all the existing filter code to see perform the check, so we don't have to rewrite the validation code
+            let positionRequirementsFilter = FilterOptions( fromPositionRequirements: requirements )
+             result = positionRequirementsFilter.passesFilter(member: member)
+        }
+        return result
     }
     
     
