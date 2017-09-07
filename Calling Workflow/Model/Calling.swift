@@ -90,11 +90,11 @@ public struct Calling : JSONParsable {
         self.cwfId = Calling.generateCwfId( id: id, cwfId: cwfId )
         self.existingIndId = existingIndId
         self.proposedIndId = proposedIndId
-        self.proposedStatus = status ?? .Unknown
+        self.proposedStatus = status ?? .None
         self.position = position
         self.notes = notes
         self.parentOrg = parentOrg
-        self.existingStatus = existingStatus ?? .Unknown
+        self.existingStatus = existingStatus ?? .None
         self.activeDate = activeDate
         
     }
@@ -108,11 +108,18 @@ public struct Calling : JSONParsable {
         id = (json[CallingJsonKeys.id] as? NSNumber)?.int64Value
         cwfId = Calling.generateCwfId( id: id, cwfId: json[CallingJsonKeys.cwfId] as? String )
         position = validPosition
-        var statusStr = json[CallingJsonKeys.proposedStatus] as? String ?? ""
-        proposedStatus = CallingStatus( rawValue:statusStr ) ?? .Unknown
+        // if there is a status value in the JSON we try to convert it to a known value, otherwise we set it to unknown (indicating there was a status, but we don't have an equivalent enum). If there's no status in the json then we default to none
+        if let statusStr = json[CallingJsonKeys.proposedStatus] as? String {
+            proposedStatus = CallingStatus( rawValue:statusStr ) ?? .Unknown
+        } else {
+            proposedStatus = .None
+        }
         
-        statusStr = json[CallingJsonKeys.existingStatus] as? String ?? ""
-        existingStatus = ExistingCallingStatus( rawValue:statusStr ) ?? .Unknown
+        if let statusStr = json[CallingJsonKeys.existingStatus] as? String {
+            existingStatus = ExistingCallingStatus( rawValue:statusStr ) ?? .Unknown
+        } else {
+            existingStatus = .None
+        }
         
         existingIndId = (json[CallingJsonKeys.existingIndId] as? NSNumber)?.int64Value
         proposedIndId = (json[CallingJsonKeys.proposedIndId] as? NSNumber)?.int64Value
