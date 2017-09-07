@@ -374,6 +374,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 //Init the action that will run when OK is pressed
                 let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                     (alert: UIAlertAction!) -> Void in
+                    self.save()
                     //Call to callingManager to update calling
                     callingMgr.updateLCRCalling(updatedCalling: self.callingToDisplay!) { (calling, error) in
                         let err = error?.localizedDescription ?? "nil"
@@ -407,6 +408,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 
                 let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                     (alert: UIAlertAction!) -> Void in
+                    self.save()
                     //call to calling manager to release individual
                     callingMgr.releaseLCRCalling(callingToRelease: self.callingToDisplay!) { (success, error) in
                         let err = error?.localizedDescription ?? "nil"
@@ -453,7 +455,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             //Init the ok button and the callback to execute
             let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                 (alert: UIAlertAction!) -> Void in
-            
+                self.save()
+
                 callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
                     let err = error?.localizedDescription ?? "nil"
                     print("Release result: \(success) - error: \(err)")
