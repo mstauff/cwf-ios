@@ -11,6 +11,9 @@ import Foundation
 /* Extension of RestAPI for making calls to retrieve data for LDS.org. Calling code should start by always calling ldsSignin to make sure the user has a valid OBSSOCookie before making any other calls */
 class LdsRestApi : RestAPI, LdsOrgApi {
     
+    // the LCR calls all need to have a "position" field in them or the server returns a 500 error (even though the change still works ok). The text of the field doesn't matter, it just needs to be a non-empty string. Generally we'll use calling.position.name, but since that's optional if it is nil we'll fall back to this string.
+    static let defaultPositionText = "unused"
+    
     var appConfig : AppConfig
     
     private let jsonSerializer = JSONSerializerImpl()
@@ -135,7 +138,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
     }
     
     func getOrgWithCallings( unitNum : Int64, _ completionHandler: @escaping ( Org?, Error? ) -> Void ) {
-        var url = appConfig.ldsEndpointUrls[NetworkConstants.callingsListURLKey]!
+        var url = appConfig.ldsEndpointUrls[NetworkConstants.callingsListURLKey]! + "?lang=eng"
         url = url.replacingOccurrences(of: ":unitNum", with: String(unitNum))
         doGet(url: url ) { data, response, error in
             guard error == nil else {
@@ -147,6 +150,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
             if let httpResponse = response as? HTTPURLResponse {
                 let responseCode = httpResponse.statusCode
                 if RestAPI.isErrorResponse( responseCode ) {
+                    print( "response code: " + httpResponse.statusCode.description + " | response body: " + String(data: data!, encoding: .utf8)!)
                     let errorMsg = "Error: network error while trying to read callings from lds.org: \(responseCode)"
                     completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.networkError, userInfo: [ "error" : errorMsg ] ) )
                     return
@@ -177,10 +181,9 @@ class LdsRestApi : RestAPI, LdsOrgApi {
          "subOrgTypeId": 1252,
          "subOrgId": 2081422,
          "positionTypeId": 216,
+         "position": "any non-empty string"
          "memberId": "17767512672",
          "releaseDate": "20170801",
-         // test in poster - this probably is not needed
-         "justCalled": true,
          "releasePositionIds": [
          38816970
          ]
@@ -196,7 +199,9 @@ class LdsRestApi : RestAPI, LdsOrgApi {
         }
         let todayAsLcrString = Date().lcrDateString()
 
-        var payloadJsonObj : JSONObject = [ LcrCallingJsonKeys.unitNum : unitNum as AnyObject, LcrCallingJsonKeys.id : org.id as AnyObject, LcrCallingJsonKeys.orgTypeId : org.orgTypeId as AnyObject, LcrCallingJsonKeys.positionTypeId : calling.position.positionTypeId as AnyObject, LcrCallingJsonKeys.memberId : newMemberId as AnyObject, LcrCallingJsonKeys.justCalled : "true" as AnyObject, LcrCallingJsonKeys.activeDate : todayAsLcrString as AnyObject, LcrCallingJsonKeys.releaseDate : todayAsLcrString as AnyObject ]
+        // we need to include the "position" field in the JSON payload. It doesn't appear to matter what the string is, it just has to be a non-empty string. We could just hard code it to "foo", but we'll at least try playing nice by using the position name (which should be just what we received from LCR in the first place), and then if it's nil for whatever reason we have a fall back value of "unused"
+        let positionName = calling.position.name ?? LdsRestApi.defaultPositionText
+        var payloadJsonObj : JSONObject = [ LcrCallingJsonKeys.unitNum : unitNum as AnyObject, LcrCallingJsonKeys.id : org.id as AnyObject, LcrCallingJsonKeys.orgTypeId : org.orgTypeId as AnyObject, LcrCallingJsonKeys.positionTypeId : calling.position.positionTypeId as AnyObject, LcrCallingJsonKeys.memberId : newMemberId as AnyObject, LcrCallingJsonKeys.justCalled : "true" as AnyObject, LcrCallingJsonKeys.activeDate : todayAsLcrString as AnyObject, LcrCallingJsonKeys.releaseDate : todayAsLcrString as AnyObject, LcrCallingJsonKeys.position: positionName as AnyObject ]
         
         if let callingId = calling.id {
             // there is someone already in the calling, so we need to release them
@@ -222,6 +227,8 @@ class LdsRestApi : RestAPI, LdsOrgApi {
                     completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.serviceError, userInfo: [ "error" : errorMsg ] ) )
                     return
                 }
+                    print( "response code: " + httpResponse.statusCode.description + " | response body: " + String(data: data, encoding: .utf8)!)
+
                 if RestAPI.isSuccessResponse(httpResponse.statusCode), let newCallingId = responseJson[LcrCallingJsonKeys.id] as? NSNumber  {
                     // right now we're just checking for 200 OK. and that there is a positionId assigned. eventually we should also check that the memberId is what we passed up to ensure it happened.
                     
@@ -256,6 +263,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
         "unitNumber": 56030,
         "subOrgTypeId": 1252,
         "subOrgId": 2081422,
+         "position": "any non-empty string"
         "positionId": 38816967,
         "releaseDate": "20170801"
     } */
@@ -277,6 +285,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
          "unitNumber": 56030,
          "subOrgTypeId": 1252,
          "subOrgId": 2081422,
+         "position": "any non-empty string"
          "positionId": 38816967,
          "releaseDate": "20170801",
          "pendingHide" : true
@@ -305,8 +314,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
             return
         }
         
-        //todo - verify if the lang=eng is necessary - if so move to the URL dictionary
-        let url = appConfig.ldsEndpointUrls[NetworkConstants.updateCallingURLKey]! + "?lang=eng"
+        let url = appConfig.ldsEndpointUrls[NetworkConstants.updateCallingURLKey]!
         doPost( url: url, bodyPayload: json ) {
             (data, response, error) -> Void in
             
@@ -342,7 +350,9 @@ class LdsRestApi : RestAPI, LdsOrgApi {
     }
     
     func lcrJsonPayload( forCalling calling: Calling, inOrg org: Org, unitNum : Int64 ) -> JSONObject {
-        return [ LcrCallingJsonKeys.unitNum : unitNum as AnyObject, LcrCallingJsonKeys.id : org.id as AnyObject, LcrCallingJsonKeys.orgTypeId : org.orgTypeId as AnyObject, LcrCallingJsonKeys.positionId : calling.id as AnyObject ]
+        // try to use the position name (should be what LCR sent down in the first place), use "unused" as a  fallback value
+        let positionName = calling.position.name ?? LdsRestApi.defaultPositionText
+        return [ LcrCallingJsonKeys.unitNum : unitNum as AnyObject, LcrCallingJsonKeys.id : org.id as AnyObject, LcrCallingJsonKeys.orgTypeId : org.orgTypeId as AnyObject, LcrCallingJsonKeys.positionId : calling.id as AnyObject, LcrCallingJsonKeys.position: positionName as AnyObject ]
     }
 
     func lcrReleaseJsonPayload( forCalling calling: Calling, inOrg org: Org, unitNum : Int64 ) -> JSONObject {
@@ -356,6 +366,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
 private struct LcrCallingJsonKeys {
     static let id = "subOrgId"
     static let orgTypeId = "subOrgTypeId"
+    static let position = "position"
     static let positionId = "positionId"
     static let positionTypeId = "positionTypeId"
     static let unitNum = "unitNumber"
