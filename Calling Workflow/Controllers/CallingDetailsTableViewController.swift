@@ -257,6 +257,10 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 if let proposedId = callingToDisplay?.proposedIndId, let memberCallings = appDelegate?.callingManager.getMemberCallings(forMemberId: proposedId){
                     self.displayContactInfoForMember(member: memberCallings)
                 }
+                // if no proposedId go to the memberPicker
+                else {
+                    memberPickerButtonPressed()
+                }
                 
             case 2:
                 // Tapped the status, show the selection screen for choosing a status
