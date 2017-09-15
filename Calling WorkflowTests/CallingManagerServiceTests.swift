@@ -244,7 +244,7 @@ class CallingManagerServiceTests: XCTestCase {
         XCTAssertEqual(varsityCoach.position.positionTypeId, 1459)
         XCTAssertEqual(varsityCoach.existingIndId, 890)
         XCTAssertNil(varsityCoach.proposedIndId)
-        XCTAssertEqual(varsityCoach.proposedStatus, .Unknown)
+        XCTAssertEqual(varsityCoach.proposedStatus, .None)
         
         let scoutOrg = reconciledOrg.getChildOrg(id: 839500)!
         XCTAssertEqual(scoutOrg.allOrgCallings.count, 2)
