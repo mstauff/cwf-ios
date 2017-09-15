@@ -40,3 +40,24 @@ func getStatusActionSheet(delegate: StatusPickerDelegate?) -> UIAlertController 
 func CWFMarginFloat() -> CGFloat {
     return 15.0
 }
+
+func checkMemberForCalling(member: Member, calling: Calling) -> Bool {
+    if let requirements = calling.position.metadata.requirements {
+        let memberFilter : FilterOptions = FilterOptions.init(fromPositionRequirements: requirements)
+        var memberArray : [MemberCallings] = []
+        let memberCalling = MemberCallings.init(member: member)
+        memberArray.append(memberCalling)
+        memberArray = memberFilter.filterMemberData(unfilteredArray: memberArray)
+        
+        if memberArray.count != 0 {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    else {
+        return true
+    }
+    
+}

@@ -29,7 +29,12 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         let positionMetadata = PositionMetadata()
         let newPostiton = Position(positionTypeId: 0, name: nil, hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: positionMetadata)
         
-        newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: .Proposed, position: newPostiton, notes: nil, parentOrg: parentOrg)
+        var newStatusArray = CallingStatus.userValues
+        if let excludeStatuses = appDelegate?.callingManager.statusToExcludeForUnit {
+            newStatusArray = CallingStatus.userValues.filter() { !excludeStatuses.contains(item: $0) }
+        }
+                
+        newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: newStatusArray.first, position: newPostiton, notes: nil, parentOrg: parentOrg)
     }
 
     override func didReceiveMemoryWarning() {

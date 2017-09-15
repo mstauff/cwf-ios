@@ -165,24 +165,37 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 let cell = tableView.dequeueReusableCell(withIdentifier: "middleCell", for: indexPath) as? LeftTitleRightLabelTableViewCell
                 cell?.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
                 
+                let accessoryButton = UIButton(type: .contactAdd)
+                accessoryButton.setImage(UIImage.imageFromSystemBarButton(.action), for: .normal)
+                accessoryButton.addTarget(self, action: #selector(memberPickerButtonPressed), for: .touchUpInside)
+                cell?.accessoryView = accessoryButton
+                
                 cell?.titleLabel.text = NSLocalizedString("Proposed:", comment: "Proposed")
                 let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                if (callingToDisplay?.proposedIndId) != nil {
-                    let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId: (callingToDisplay?.proposedIndId)!)
+                
+                if let proposedId = callingToDisplay?.proposedIndId {
+                    let proposedMember = appDelegate?.callingManager.getMemberWithId(memberId:proposedId)
+                    
                     cell?.dataLabel.text = proposedMember?.name
                 }
                 else {
                     cell?.dataLabel.text = nil
                 }
+                
                 return cell!
                 
             // this is the status cell
             case 2:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "middleCell", for: indexPath) as? LeftTitleRightLabelTableViewCell
                 cell?.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
+                let accessoryButton = UIButton(type: .contactAdd)
+                accessoryButton.setImage(UIImage.init(named: "disclosureArrow"), for: .normal)
+                accessoryButton.addTarget(self, action: #selector(tappedTheStatus), for: .touchUpInside)
+                cell?.accessoryView = accessoryButton
+
                 cell?.titleLabel.text = NSLocalizedString("Status:", comment: "Status")
                 
-                if callingToDisplay?.proposedStatus != nil {
+                if callingToDisplay?.proposedStatus != CallingStatus.Unknown {
                     cell?.dataLabel.text = callingToDisplay?.proposedStatus.description
                 }
                 else {
@@ -224,6 +237,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     
     // Tap handler for current/proposed/status options in calling details
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        
         switch indexPath.section {
         case 1:
             tableView.deselectRow(at: indexPath, animated: false)
@@ -231,34 +246,19 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             switch indexPath.row {
             case 0:
                 // Tapped the current holder - need to display the bottom sheet with contact info for the current calling holder if there is one
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate
                 if let memberId = callingToDisplay?.existingIndId {
                     displayContactInfoForMember(member:  (appDelegate?.callingManager.getMemberCallings(forMemberId: memberId))!)
                 }
             
             case 1:
-                // Tapped the proposed calling holder. Transition to member picker to select a proposed person for this calling
-                let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
-                let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
-                
-                // register as the delegate for selecting a member to update the proposed person
-                nextVC?.delegate = self
-                nextVC?.currentlySelectedId = callingToDisplay?.proposedIndId
-                
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                    // setup the members to display in the picker, along with any filter options that should be preset based on the calling requirements
-                    nextVC?.members = appDelegate.callingManager.memberCallings
-                    let requirements = callingToDisplay?.position.metadata.requirements
-                    let filterOptions = requirements != nil ? FilterOptions( fromPositionRequirements: requirements! ) : FilterOptions()
-                    nextVC?.filterViewOptions = filterOptions
+                // Tapped the proposed calling holder. Transition to member contact info
+                if let proposedId = callingToDisplay?.proposedIndId, let memberCallings = appDelegate?.callingManager.getMemberCallings(forMemberId: proposedId){
+                    self.displayContactInfoForMember(member: memberCallings)
                 }
                 
-                navigationController?.pushViewController(nextVC!, animated: true)
-            
             case 2:
                 // Tapped the status, show the selection screen for choosing a status
-                let statusActionSheet = getStatusActionSheet(delegate: self)
-                self.present(statusActionSheet, animated: true, completion: nil)
+                tappedTheStatus()
 
             default:
                 print("Default to do nothing")
@@ -275,10 +275,22 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         isDirty = true
         if let setMember = member {
             self.callingToDisplay?.proposedIndId = setMember.individualId
+            
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            var statusArray : [CallingStatus] = CallingStatus.userValues
+            if let excludeArray = appDelegate?.callingManager.statusToExcludeForUnit {
+                statusArray = statusArray.filter() { !excludeArray.contains(item: $0) }
+            }
+            if let first = statusArray.first {
+                self.callingToDisplay?.proposedStatus = first
+            }
+
         }
         else {
             self.callingToDisplay?.proposedIndId = nil
+            self.callingToDisplay?.proposedStatus = .None
         }
+        
     }
     
     
@@ -312,6 +324,31 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     }
     
     //MARK: - Actions
+    func tappedTheStatus () {
+        let statusActionSheet = getStatusActionSheet(delegate: self)
+        self.present(statusActionSheet, animated: true, completion: nil)
+    }
+    
+    func memberPickerButtonPressed() {
+        // Tapped the proposed calling holder. Transition to member picker to select a proposed person for this calling
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+        let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
+        
+        // register as the delegate for selecting a member to update the proposed person
+        nextVC?.delegate = self
+        nextVC?.currentlySelectedId = callingToDisplay?.proposedIndId
+        
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            // setup the members to display in the picker, along with any filter options that should be preset based on the calling requirements
+            nextVC?.members = appDelegate.callingManager.memberCallings
+            let requirements = callingToDisplay?.position.metadata.requirements
+            let filterOptions = requirements != nil ? FilterOptions( fromPositionRequirements: requirements! ) : FilterOptions()
+            nextVC?.filterViewOptions = filterOptions
+        }
+        
+        navigationController?.pushViewController(nextVC!, animated: true)
+    }
+    
     func backButtonPressed() {
         if isDirty {
             let saveAlert = UIAlertController(title: NSLocalizedString("Discard Changes?", comment: "discard"), message: NSLocalizedString("You have unsaved changes that will be discarded if you continue.", comment: "discard message"), preferredStyle: UIAlertControllerStyle.alert)

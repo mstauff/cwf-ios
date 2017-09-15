@@ -11,7 +11,7 @@ import UIKit
 class LeftTitleRightLabelTableViewCell: UITableViewCell {
 
     let titleLabel : UILabel = UILabel()
-    let dataLabel  : UILabel = UILabel()
+    var dataLabel  : UILabel = UILabel()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -39,7 +39,7 @@ class LeftTitleRightLabelTableViewCell: UITableViewCell {
         self.contentView.addSubview(titleLabel)
         
         dataLabel.translatesAutoresizingMaskIntoConstraints = false
-        dataLabel.textAlignment = NSTextAlignment.right
+        dataLabel.textAlignment = .right
         self.contentView.addSubview(dataLabel)
         
         addConstraints()
@@ -53,6 +53,9 @@ class LeftTitleRightLabelTableViewCell: UITableViewCell {
         
         let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[titleLabel(>=20)]-5-|", options: NSLayoutFormatOptions.alignAllLeft, metrics: nil, views: views)
         self.contentView.addConstraints(vConstraint)
+        
+        let dataVConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[dataLabel(>=20)]-5-|", options: NSLayoutFormatOptions.alignAllLeft, metrics: nil, views: views)
+        self.contentView.addConstraints(dataVConstraint)
     }
     
     class func calculateHeight() -> CGFloat {
