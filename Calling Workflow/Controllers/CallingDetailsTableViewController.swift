@@ -17,8 +17,6 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
     }
     
-    var userPermission : Permission? = nil
-    
     var isDirty = false
 
     var originalCalling : Calling? = nil
@@ -30,21 +28,37 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     let textViewDebounceTime = 0.8
     
     var spinnerView : CWFSpinnerView? = nil
+    weak var callingMgr : CWFCallingManagerService? = nil
+    var isEditable = false
     
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        originalCalling = callingToDisplay
-        userPermission = Permission.Update
+        
+        guard let calling = callingToDisplay else {
+            return
+        }
+        
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        self.callingMgr = appDelegate?.callingManager
 
-        navigationController?.title = callingToDisplay?.position.name
+        originalCalling = calling
+
+        navigationController?.title = calling.position.name
         
         let backButton = UIBarButtonItem(image: UIImage.init(named:"backButton"), style:.plain , target: self, action: #selector(backButtonPressed) )
         navigationItem.setLeftBarButton(backButton, animated: true)
         
-        if userPermission != Permission.View {
-            let saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveAndReturn))
-            navigationItem.setRightBarButton(saveButton, animated: true)
+        // check permissions to see if we need to display options to edit the calling
+        if let parentOrg = calling.parentOrg, let callingMgr = self.callingMgr, let unitLevelOrg = callingMgr.unitLevelOrg(forSubOrg: parentOrg.id) {
+            
+            let authOrg = AuthorizableOrg(fromSubOrg: parentOrg, inUnitLevelOrg: unitLevelOrg)
+            if callingMgr.permissionMgr.isAuthorized(unitRoles: callingMgr.userRoles, domain: .PotentialCalling, permission: .Create, targetData: authOrg ) {
+                let saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveAndReturn))
+                navigationItem.setRightBarButton(saveButton, animated: true)
+                isEditable = true
+            }
+            
         }
         
         tableView.register(LeftTitleRightLabelTableViewCell.self, forCellReuseIdentifier: "middleCell")
@@ -64,11 +78,11 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        if userPermission == Permission.View {
-            return 2
+        if isEditable {
+            return 4
         }
         else{
-            return 4
+            return 2
         }
     }
     
@@ -97,11 +111,11 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         case 0:
             return 1
         case 1:
-            if userPermission == Permission.View {
-                return 1
+            if isEditable {
+                return 3
             }
             else {
-                return 3
+                return 1
             }
         case 2:
             return 1
