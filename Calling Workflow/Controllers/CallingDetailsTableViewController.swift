@@ -166,7 +166,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 cell?.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
                 
                 let accessoryButton = UIButton(type: .contactAdd)
-                accessoryButton.setImage(UIImage.imageFromSystemBarButton(.action), for: .normal)
+                accessoryButton.setImage(UIImage.init(named: "disclosureArrow"), for: .normal)
                 accessoryButton.addTarget(self, action: #selector(memberPickerButtonPressed), for: .touchUpInside)
                 cell?.accessoryView = accessoryButton
                 
@@ -178,10 +178,20 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                     // check to see if the member meets the position requiremenst (show a warning if they don't)
                     let meetsRequirements = self.meetsPositionRequirements(ofCalling: callingToDisplay, member: proposedMember)
                     // todo - add warning icon if the user doesn't meet the requirements for the position
+                    if !meetsRequirements {
+                        cell?.warningButton.isHidden = false
+                        cell?.warningButton.addTarget(self, action: #selector(warningButtonPressed), for: .touchUpInside)
+                        
+                    }
+                    else {
+                        cell?.warningButton.isHidden = true
+                    }
+                    
                     cell?.dataLabel.text = proposedMember?.name
                 }
                 else {
                     cell?.dataLabel.text = nil
+                    cell?.warningButton.isHidden = true
                 }
                 
                 return cell!
@@ -379,6 +389,19 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             self.navigationController?.popViewController(animated: true)
         }
 
+    }
+    
+    func warningButtonPressed() {
+        print("Warning Pressed")
+        let warningAlert = UIAlertController(title: NSLocalizedString("Warning", comment: "Warning"), message: NSLocalizedString("You have selected a member that does not meet the requirements for the calling selected. You may not be able to save these changes in LCR", comment: "warning to user about position requirements"), preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.default, handler: {
+            (alert: UIAlertAction!) -> Void in
+            print("ok")
+        })
+
+        warningAlert.addAction(okAction)
+        present(warningAlert, animated: true, completion: nil)
     }
     
     func callingActionsButtonPressed() {

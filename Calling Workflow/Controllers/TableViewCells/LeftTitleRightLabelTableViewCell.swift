@@ -12,6 +12,7 @@ class LeftTitleRightLabelTableViewCell: UITableViewCell {
 
     let titleLabel : UILabel = UILabel()
     var dataLabel  : UILabel = UILabel()
+    var warningButton : UIButton = UIButton()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -42,13 +43,19 @@ class LeftTitleRightLabelTableViewCell: UITableViewCell {
         dataLabel.textAlignment = .right
         self.contentView.addSubview(dataLabel)
         
+        warningButton.translatesAutoresizingMaskIntoConstraints = false
+        warningButton.setTitle("⚠️", for: .normal)
+        warningButton.isHidden = true
+        
+        self.contentView.addSubview(warningButton)
+        
         addConstraints()
     }
     
     func addConstraints() {
-        let views = ["titleLabel": titleLabel, "dataLabel": dataLabel]
-        let width = (1/3) * self.contentView.frame.width
-        let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[titleLabel(\(width))]-[dataLabel]-20-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: views)
+        let views : [String: UIView] = ["titleLabel": titleLabel, "dataLabel": dataLabel, "warningButton": warningButton]
+        let width = (1/4) * self.contentView.frame.width
+        let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[titleLabel(\(width))]-[warningButton(<=44)]-[dataLabel]-20-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: views)
         self.contentView.addConstraints(hConstraint)
         
         let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[titleLabel(>=20)]-5-|", options: NSLayoutFormatOptions.alignAllLeft, metrics: nil, views: views)
@@ -56,6 +63,9 @@ class LeftTitleRightLabelTableViewCell: UITableViewCell {
         
         let dataVConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[dataLabel(>=20)]-5-|", options: NSLayoutFormatOptions.alignAllLeft, metrics: nil, views: views)
         self.contentView.addConstraints(dataVConstraint)
+        
+        let warningVConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[warningButton(>=20)]-5-|", options: NSLayoutFormatOptions.alignAllLeft, metrics: nil, views: views)
+        self.contentView.addConstraints(warningVConstraint)
     }
     
     class func calculateHeight() -> CGFloat {
