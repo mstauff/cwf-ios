@@ -9,7 +9,7 @@
 import Foundation
 
 struct NetworkConstants {
-    static let configUrl = "http://dev-ldscd.rhcloud.com/cwf/config?env=test"
+    static let configUrl = "http://dev-config-server-ldscd.7e14.starter-us-west-2.openshiftapps.com/cwf/config?env=test"
     
     static let memberListURLKey = "MEMBER_LIST"
     static let callingsListURLKey = "CALLING_LIST"
