@@ -34,6 +34,11 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        // initi these UI elements before we do the guard check to make sure we have a calling
+        tableView.register(LeftTitleRightLabelTableViewCell.self, forCellReuseIdentifier: "middleCell")
+        tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
+        tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "noteCell")
+        tableView.register(CWFButtonTableViewCell.self, forCellReuseIdentifier: "buttonCell")
         
         guard let calling = callingToDisplay else {
             return
@@ -53,7 +58,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         if let parentOrg = calling.parentOrg, let callingMgr = self.callingMgr, let unitLevelOrg = callingMgr.unitLevelOrg(forSubOrg: parentOrg.id) {
             
             let authOrg = AuthorizableOrg(fromSubOrg: parentOrg, inUnitLevelOrg: unitLevelOrg)
-            if callingMgr.permissionMgr.isAuthorized(unitRoles: callingMgr.userRoles, domain: .PotentialCalling, permission: .Create, targetData: authOrg ) {
+            if callingMgr.permissionMgr.isAuthorized(unitRoles: callingMgr.userRoles, domain: .PotentialCalling, permission: .Update, targetData: authOrg ) {
                 let saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveAndReturn))
                 navigationItem.setRightBarButton(saveButton, animated: true)
                 isEditable = true
@@ -61,11 +66,6 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             
         }
         
-        tableView.register(LeftTitleRightLabelTableViewCell.self, forCellReuseIdentifier: "middleCell")
-        tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
-        tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "noteCell")
-        tableView.register(CWFButtonTableViewCell.self, forCellReuseIdentifier: "buttonCell")
-
 
     }
 
@@ -486,13 +486,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 
                 let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                     (alert: UIAlertAction!) -> Void in
-                    self.save()
                     //call to calling manager to release individual
                     callingMgr.releaseLCRCalling(callingToRelease: self.callingToDisplay!) { (success, error) in
                         let err = error?.localizedDescription ?? "nil"
                         print("Release result: \(success) - error: \(err)")
-                        
-                        
+                        DispatchQueue.main.async {
+                            self.returnToAux(saveFirst: false)
+                        }
                     }
                 })
                 
@@ -533,11 +533,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             //Init the ok button and the callback to execute
             let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                 (alert: UIAlertAction!) -> Void in
-                self.save()
 
                 callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
                     let err = error?.localizedDescription ?? "nil"
-                    print("Release result: \(success) - error: \(err)")
+                    print("Delete result: \(success) - error: \(err)")
+                    DispatchQueue.main.async {
+                        self.returnToAux(saveFirst: false)
+                    }
         
                 }
             })
@@ -570,9 +572,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     }
     
     func saveAndReturn() {
-//
-        //todo -- add save to calling service
-        save()
+        returnToAux(saveFirst: true)
+    }
+    
+    func returnToAux( saveFirst : Bool ) {
+        if saveFirst {
+            save()
+        }
         isDirty = false
         delegate?.setReturnedCalling(calling: self.callingToDisplay!)
         let _ = self.navigationController?.popViewController(animated: true)

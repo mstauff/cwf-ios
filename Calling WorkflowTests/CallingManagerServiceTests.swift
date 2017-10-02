@@ -238,24 +238,51 @@ class CallingManagerServiceTests: XCTestCase {
         XCTAssertNotNil( ctr9 )
         
         let varsityOrg = reconciledOrg.getChildOrg(id: 839510)!
-        // varsity coach was finalized outside the app. ensure that the proposed version was deleted
-        XCTAssertEqual(varsityOrg.callings.count, 1)
-        let varsityCoach = varsityOrg.callings[0]
-        XCTAssertEqual(varsityCoach.position.positionTypeId, 1459)
-        XCTAssertEqual(varsityCoach.existingIndId, 890)
-        XCTAssertNil(varsityCoach.proposedIndId)
-        XCTAssertEqual(varsityCoach.proposedStatus, .None)
+        // varsity coach had not current calling holder was finalized outside the app. ensure that the proposed version was deleted
+        XCTAssertEqual(varsityOrg.callings.count, 4)
+        let varsityCoach  = varsityOrg.callings.filter() { $0.id == 275893 }.first
+        XCTAssertNotNil( varsityCoach )
+        XCTAssertEqual(varsityCoach!.position.positionTypeId, 1459)
+        XCTAssertEqual(varsityCoach!.existingIndId, 890)
+        XCTAssertNil(varsityCoach!.proposedIndId)
+        XCTAssertEqual(varsityCoach!.proposedStatus, .None)
+
+        // asst varsity coach was released outside the app - make sure it's correct in app
+        XCTAssertTrue( varsityOrg.callings.filter() {$0.id == 275950}.isEmpty )
+        let asstVC = varsityOrg.callings.filter() {$0.position.positionTypeId == 1461}.first
+        XCTAssertNotNil( asstVC )
+        XCTAssertNil( asstVC!.existingIndId )
+        XCTAssertEqual( asstVC!.proposedIndId, 952 )
+        XCTAssertEqual( asstVC!.proposedStatus, .Approved )
+
+        // scoutmaster had current calling holder was finalized outside the app. ensure that the proposed version was deleted
+        let scoutmaster  = varsityOrg.callings.filter() { $0.id == 275894 }.first
+        XCTAssertNotNil( scoutmaster )
+        XCTAssertEqual(scoutmaster!.position.positionTypeId, 1465)
+        XCTAssertEqual(scoutmaster!.existingIndId, 895)
+        XCTAssertNil(scoutmaster!.proposedIndId)
+        XCTAssertEqual(scoutmaster!.proposedStatus, .None)
+
+        // explorer advisor had current calling holder was finalized outside the app, but with someone else other than the proposed. Should retain proposed
+        let explorer  = varsityOrg.callings.filter() { $0.id == 275900 }.first
+        XCTAssertNotNil( explorer )
+        XCTAssertEqual(explorer!.position.positionTypeId, 1470)
+        XCTAssertEqual(explorer!.existingIndId, 900)
+        XCTAssertEqual(explorer!.proposedIndId, 955)
+        XCTAssertEqual(explorer!.proposedStatus, .OnHold)
+        
         
         let scoutOrg = reconciledOrg.getChildOrg(id: 839500)!
-        XCTAssertEqual(scoutOrg.allOrgCallings.count, 2)
+        XCTAssertEqual(scoutOrg.allOrgCallings.count, 5)
         // validate that a new calling added in LCR shows up
         XCTAssertEqual(scoutOrg.callings.count, 1)
         let newCalling = scoutOrg.callings[0]
         XCTAssertEqual(newCalling.id, 14727)
         XCTAssertEqual(newCalling.existingIndId, 789)
         
+        
+        
         // todo - outstanding test cases
-        // - proposed & actual with different person - should be merged
         // - variations with multiple allowed
         // - callings are same - except app has notes
     }
@@ -299,7 +326,7 @@ class CallingManagerServiceTests: XCTestCase {
        
     }
 
-    func testDeleteCalling() {
+    func testDeletePotentialCalling() {
         let primaryOrg = org!
         let unitOrg = Org(id: 123, unitNum: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [primaryOrg], callings: [])
         callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
@@ -326,6 +353,37 @@ class CallingManagerServiceTests: XCTestCase {
         }
         
         waitForExpectations(timeout: 5)
+        
+    }
+
+    func testDeleteActualCalling() {
+        // TODO - copied this from potential, need to modify for actual
+//        let primaryOrg = org!
+//        let unitOrg = Org(id: 123, unitNum: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [primaryOrg], callings: [])
+//        callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
+//        callingMgr.initDatasourceData(fromOrg: unitOrg, extraOrgs: [])
+//        // todo - need a mock callingMgr.dataSource with mocked updateOrg() method
+//        let ctr8 = primaryOrg.getChildOrg(id: 752892)!
+//        
+//        let primaryTeacherPos = Position(positionTypeId: 1481, name: "Primary Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata())
+//        
+//        // Add a second calling for a member with a potential calling, so we can delete and make sure we still have at least one
+//        let calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
+//        let memberWithMultipleProposedCallings = createMember(withId: 456)
+//        let deleteValidCallingExpectation = self.expectation( description: "delete a potential calling for a member that has multiple potential calling")
+//        
+//        callingMgr.addCalling(calling: calling) { _, _ in
+//            XCTAssertEqual( self.callingMgr.getCallings(forMember: memberWithMultipleProposedCallings).count, 0 )
+//            XCTAssertEqual( self.callingMgr.getPotentialCallings(forMember: memberWithMultipleProposedCallings).count, 2)
+//            self.callingMgr.deleteCalling(calling: calling ) { success, error in
+//                XCTAssert( success )
+//                XCTAssertNil( error )
+//                XCTAssertEqual( self.callingMgr.getPotentialCallings(forMember: memberWithMultipleProposedCallings).count, 1)
+//                deleteValidCallingExpectation.fulfill()
+//            }
+//        }
+//        
+//        waitForExpectations(timeout: 5)
         
     }
 

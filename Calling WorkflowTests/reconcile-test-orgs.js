@@ -117,7 +117,39 @@
                             "hidden": false,
 							"allowMultiple": false,
 							"notes": "was finalized outside the app - was just a proposed in app"
-                        }
+                        },
+						{
+                            "memberId": null,
+                            "activeDate": null,
+                            "positionId": null,
+                            "positionTypeId": 1461,
+                            "position": "Asst. Varsity Coach",
+                            "hidden": false,
+							"allowMultiple": false,
+							"notes": "was released outside the app"
+                        },
+                                 {
+                                 "memberId": 895,
+                                 "activeDate": null,
+                                 "positionId": 275894,
+                                 "positionTypeId": 1465,
+                                 "position": "Scoutmaster",
+                                 "hidden": false,
+                                 "allowMultiple": false,
+                                 "notes": "Changed ID - no multiples - This is similar to the CTR 7 teacher, but no multiples allowed"
+                                 },
+                                 {
+                                 "memberId": 900,
+                                 "activeDate": null,
+                                 "positionId": 275900,
+                                 "positionTypeId": 1470,
+                                 "position": "Explorer Advisor",
+                                 "hidden": false,
+                                 "allowMultiple": false,
+                                 "notes": "Changed ID - no multiples - This is similar to the CTR 7 teacher, but no multiples allowed. Here the proposed doesn't match the actual, so the proposed should be retained"
+                                 }
+
+
                     ]
                 }
             ],
@@ -185,7 +217,7 @@
                     "proposedIndId": null,
                     "notes": null,
                     "editableByOrg": true,
-					"comment" : "Id matches but indId has changed from 222 to 234 - can this happen, or does positionId always change????"
+					"comment" : "changed ID & changed member ID"
                 }
             ]
         },
@@ -278,8 +310,45 @@
                             "proposedIndId": 890,
                             "notes": "calling two levels deep",
                             "editableByOrg": true,
-							"comment": "was finalzied outside the app - is actual in LCR, just proposed in app, should result in an actual calling with no proposed"
-                        }
+							"comment": "With no active holder, was finalzied outside the app - is actual in LCR, just proposed in app, should result in an actual calling with no proposed"
+                        },{
+                            "memberId": 950,
+                            "activeDate": null,
+                            "positionId": 275950,
+                            "positionTypeId": 1461,
+                            "position": "Asst. Varsity Coach",
+                                 "proposedIndId" : 952,
+                                 "proposedStatus" : "APPROVED",
+                            "hidden": false,
+							"allowMultiple": false,
+							"notes": "has data in app - was released outside the app"
+                        },
+                                 {
+                                 "memberId": 896,
+                                 "activeDate": null,
+                                 "positionId": 275895,
+                                 "proposedIndId": 895,
+                                 "positionTypeId": 1465,
+                                 "position": "Scoutmaster",
+                                 "hidden": false,
+                                 "allowMultiple": false,
+                                 "notes": "with active holder, Changed ID - no multiples - This is similar to the CTR 7 teacher, but no multiples allowed. Here the proposed matches the actual, so shouldn't be marked as a conflict"
+                                 },
+                                 {
+                                 "memberId": 885,
+                                 "activeDate": null,
+                                 "positionId": 275885,
+                                 "proposedIndId": 955,
+                                 "proposedStatus": "ON_HOLD",
+                                 "positionTypeId": 1470,
+                                 "position": "Explorer Advisor",
+                                 "hidden": false,
+                                 "allowMultiple": false,
+                                 "notes": "Changed ID - no multiples - This is similar to the CTR 7 teacher, but no multiples allowed. Here the proposed doesn't match the actual, so the proposed should be retained"
+                                 }
+
+                                 
+
                     ]
                 }
             ],
