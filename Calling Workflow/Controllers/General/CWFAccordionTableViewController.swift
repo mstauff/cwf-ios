@@ -208,7 +208,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                         cell?.newButton.isHidden = false
                     }
                     cell?.newButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
-                    cell?.tag = indexPath.row
+                    cell?.newButton.tag = indexPath.row
                     expandCell(indexPath: indexPath)
                 }
             }
