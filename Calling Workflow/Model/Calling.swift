@@ -185,6 +185,14 @@ public struct Calling : JSONParsable {
         return result
     }
 
+    enum ChangeOperation {
+        case Create
+        case Release
+        case Update
+        case Delete
+    }
+    
+
     
 }
 

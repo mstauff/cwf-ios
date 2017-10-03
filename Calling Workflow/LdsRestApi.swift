@@ -201,7 +201,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
 
         // we need to include the "position" field in the JSON payload. It doesn't appear to matter what the string is, it just has to be a non-empty string. We could just hard code it to "foo", but we'll at least try playing nice by using the position name (which should be just what we received from LCR in the first place), and then if it's nil for whatever reason we have a fall back value of "unused"
         let positionName = calling.position.name ?? LdsRestApi.defaultPositionText
-        var payloadJsonObj : JSONObject = [ LcrCallingJsonKeys.unitNum : unitNum as AnyObject, LcrCallingJsonKeys.id : org.id as AnyObject, LcrCallingJsonKeys.orgTypeId : org.orgTypeId as AnyObject, LcrCallingJsonKeys.positionTypeId : calling.position.positionTypeId as AnyObject, LcrCallingJsonKeys.memberId : newMemberId as AnyObject, LcrCallingJsonKeys.justCalled : "true" as AnyObject, LcrCallingJsonKeys.activeDate : todayAsLcrString as AnyObject, LcrCallingJsonKeys.releaseDate : todayAsLcrString as AnyObject, LcrCallingJsonKeys.position: positionName as AnyObject ]
+        var payloadJsonObj : JSONObject = [ LcrCallingJsonKeys.unitNum : unitNum as AnyObject, LcrCallingJsonKeys.subOrgId : org.id as AnyObject, LcrCallingJsonKeys.orgTypeId : org.orgTypeId as AnyObject, LcrCallingJsonKeys.positionTypeId : calling.position.positionTypeId as AnyObject, LcrCallingJsonKeys.memberId : newMemberId as AnyObject, LcrCallingJsonKeys.activeDate : todayAsLcrString as AnyObject, LcrCallingJsonKeys.position: positionName as AnyObject ]
         
         if let callingId = calling.id {
             // there is someone already in the calling, so we need to release them
@@ -229,7 +229,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
                 }
                     print( "response code: " + httpResponse.statusCode.description + " | response body: " + String(data: data, encoding: .utf8)!)
 
-                if RestAPI.isSuccessResponse(httpResponse.statusCode), let newCallingId = responseJson[LcrCallingJsonKeys.id] as? NSNumber  {
+                if RestAPI.isSuccessResponse(httpResponse.statusCode), let newCallingId = responseJson[LcrCallingJsonKeys.subOrgId] as? NSNumber  {
                     // right now we're just checking for 200 OK. and that there is a positionId assigned. eventually we should also check that the memberId is what we passed up to ensure it happened.
                     
                     // extract the fields from the JSON that we care about
@@ -265,6 +265,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
         "subOrgId": 2081422,
          "position": "any non-empty string"
         "positionId": 38816967,
+         "positionTypeId": 208,
         "releaseDate": "20170801"
     } */
         guard let org = calling.parentOrg, calling.id != nil else {
@@ -275,30 +276,44 @@ class LdsRestApi : RestAPI, LdsOrgApi {
             return
             
         }
-        let payloadJsonObj = lcrReleaseJsonPayload( forCalling: calling, inOrg: org, unitNum: unitNum )
+        var payloadJsonObj = lcrJsonPayload( forCalling: calling, inOrg: org, unitNum: unitNum )
+        // the positionTypeId cannot be added in the util method because it causes problems with release of a calling with a current holder, so we have to add it for the case of release (without it a release will actually delete the calling)
+        payloadJsonObj[LcrCallingJsonKeys.positionTypeId] = calling.position.positionTypeId as AnyObject
         removeCalling(bodyPayload: payloadJsonObj, completionHandler)
         
     }
     
     func deleteCalling( unitNum : Int64, calling : Calling, _ completionHandler: @escaping ( Bool, Error? ) -> Void ) {
-        /* release from LCR requires the following payload:{
+        /* delete from LCR requires the following payload if the calling has someone in it:
+         {
          "unitNumber": 56030,
          "subOrgTypeId": 1252,
          "subOrgId": 2081422,
          "position": "any non-empty string"
          "positionId": 38816967,
          "releaseDate": "20170801",
-         "pendingHide" : true
-         } */
-        guard let org = calling.parentOrg, calling.id != nil else {
+         "hidden": true
+         }
+
+         and if it is empty:
+         {
+         "unitNumber": 56030,
+         "subOrgTypeId": 1252,
+         "subOrgId": 2081422,
+         "positionTypeId" : 208,
+         "position": "any non-empty string"
+         "hidden" : true
+         }
+
+         */
+        guard let org = calling.parentOrg else {
             let orgDescription = calling.parentOrg?.orgTypeId.description ?? "no org type"
             let errorMsg = "Error: Invalid data - no owning org or id for calling CallingId= \((calling.id?.description ?? "nil")) org type=\(orgDescription)"
             print( errorMsg )
             completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: [ "error" : errorMsg ] ) )
             return
-            
         }
-        var payloadJsonObj = lcrReleaseJsonPayload( forCalling: calling, inOrg: org, unitNum: unitNum )
+        var payloadJsonObj = lcrJsonPayload( forCalling: calling, inOrg: org, unitNum: unitNum )
         payloadJsonObj[LcrCallingJsonKeys.hide] = "true" as AnyObject
         removeCalling(bodyPayload: payloadJsonObj, completionHandler)
     }
@@ -352,19 +367,23 @@ class LdsRestApi : RestAPI, LdsOrgApi {
     func lcrJsonPayload( forCalling calling: Calling, inOrg org: Org, unitNum : Int64 ) -> JSONObject {
         // try to use the position name (should be what LCR sent down in the first place), use "unused" as a  fallback value
         let positionName = calling.position.name ?? LdsRestApi.defaultPositionText
-        return [ LcrCallingJsonKeys.unitNum : unitNum as AnyObject, LcrCallingJsonKeys.id : org.id as AnyObject, LcrCallingJsonKeys.orgTypeId : org.orgTypeId as AnyObject, LcrCallingJsonKeys.positionId : calling.id as AnyObject, LcrCallingJsonKeys.position: positionName as AnyObject ]
-    }
+        
+        var jsonPayload = [ LcrCallingJsonKeys.unitNum : unitNum as AnyObject, LcrCallingJsonKeys.subOrgId : org.id as AnyObject, LcrCallingJsonKeys.orgTypeId : org.orgTypeId as AnyObject,  LcrCallingJsonKeys.position: positionName as AnyObject ]
+        // if there's an existing calling then the release or delete needs the positionId & the release date
+        if let posId = calling.id {
+            jsonPayload[LcrCallingJsonKeys.positionId] = posId as AnyObject
+            jsonPayload[LcrCallingJsonKeys.releaseDate] = Date().lcrDateString() as AnyObject
+        } else {
+            // this would basically be for deleting an empty calling - we need the positionTypeId. We have to split it out because in certain cases of release/delete having the positionTypeId in addition to the positionId causes problems (LCR throws an error if both are present for whatever reason)
+            jsonPayload[LcrCallingJsonKeys.positionTypeId] = calling.position.positionTypeId as AnyObject
+        }
 
-    func lcrReleaseJsonPayload( forCalling calling: Calling, inOrg org: Org, unitNum : Int64 ) -> JSONObject {
-        var payloadJson = lcrJsonPayload(forCalling: calling, inOrg: org, unitNum: unitNum)
-        payloadJson[LcrCallingJsonKeys.releaseDate] = Date().lcrDateString() as AnyObject
-        return payloadJson
+        return jsonPayload
     }
-    
 }
 
 private struct LcrCallingJsonKeys {
-    static let id = "subOrgId"
+    static let subOrgId = "subOrgId"
     static let orgTypeId = "subOrgTypeId"
     static let position = "position"
     static let positionId = "positionId"
@@ -375,5 +394,5 @@ private struct LcrCallingJsonKeys {
     static let memberId = "memberId"
     static let releasePositionIds = "releasePositionIds"
     static let justCalled = "justCalled"
-    static let hide = "pendingHide"
+    static let hide = "hidden"
 }

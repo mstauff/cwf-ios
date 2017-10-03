@@ -23,11 +23,10 @@ public class JSONSerializerImpl : JSONSerializer  {
     public func prepare( jsonObject : JSONObject ) -> NSDictionary {
         let jsonDictionary : NSMutableDictionary = [:]
         for( jsonKey, jsonVal ) in jsonObject {
-            // We don't have support for Bool types. They need to be stored in the jsonObject as strings
-            // before it becomes an AnyObject. Once it gets cast to AnyObject it gets converted to a 
-            // 0/1 Int, so it gets handled by the is Int case below
             if jsonVal is String {
                 jsonDictionary[jsonKey] = jsonVal as? String
+            } else if jsonVal is Bool {
+                jsonDictionary[jsonKey] = jsonVal as? Bool
             } else if jsonVal is Int {
                 jsonDictionary[jsonKey] = jsonVal as? Int
             } else if jsonVal is Int64 {

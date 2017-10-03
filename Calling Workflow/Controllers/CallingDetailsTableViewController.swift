@@ -17,8 +17,6 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
     }
     
-    var userPermission : Permission? = nil
-    
     var isDirty = false
 
     var originalCalling : Calling? = nil
@@ -30,28 +28,44 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     let textViewDebounceTime = 0.8
     
     var spinnerView : CWFSpinnerView? = nil
+    weak var callingMgr : CWFCallingManagerService? = nil
+    var isEditable = false
     
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        originalCalling = callingToDisplay
-        userPermission = Permission.Update
-
-        navigationController?.title = callingToDisplay?.position.name
-        
-        let backButton = UIBarButtonItem(image: UIImage.init(named:"backButton"), style:.plain , target: self, action: #selector(backButtonPressed) )
-        navigationItem.setLeftBarButton(backButton, animated: true)
-        
-        if userPermission != Permission.View {
-            let saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveAndReturn))
-            navigationItem.setRightBarButton(saveButton, animated: true)
-        }
-        
+        // initi these UI elements before we do the guard check to make sure we have a calling
         tableView.register(LeftTitleRightLabelTableViewCell.self, forCellReuseIdentifier: "middleCell")
         tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
         tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "noteCell")
         tableView.register(CWFButtonTableViewCell.self, forCellReuseIdentifier: "buttonCell")
+        
+        guard let calling = callingToDisplay else {
+            return
+        }
+        
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        self.callingMgr = appDelegate?.callingManager
 
+        originalCalling = calling
+
+        navigationController?.title = calling.position.name
+        
+        let backButton = UIBarButtonItem(image: UIImage.init(named:"backButton"), style:.plain , target: self, action: #selector(backButtonPressed) )
+        navigationItem.setLeftBarButton(backButton, animated: true)
+        
+        // check permissions to see if we need to display options to edit the calling
+        if let parentOrg = calling.parentOrg, let callingMgr = self.callingMgr, let unitLevelOrg = callingMgr.unitLevelOrg(forSubOrg: parentOrg.id) {
+            
+            let authOrg = AuthorizableOrg(fromSubOrg: parentOrg, inUnitLevelOrg: unitLevelOrg)
+            if callingMgr.permissionMgr.isAuthorized(unitRoles: callingMgr.userRoles, domain: .PotentialCalling, permission: .Update, targetData: authOrg ) {
+                let saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveAndReturn))
+                navigationItem.setRightBarButton(saveButton, animated: true)
+                isEditable = true
+            }
+            
+        }
+        
 
     }
 
@@ -65,11 +79,11 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         //Return 2 sections if the user only can view 4 if they can edit
-        if userPermission == Permission.View {
-            return 2
+        if isEditable {
+            return 4
         }
         else{
-            return 4
+            return 2
         }
     }
     
@@ -99,11 +113,11 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         case 0: // header information
             return 1
         case 1: // calling details. If the user has permition to edit return more rows
-            if userPermission == Permission.View {
-                return 1
+            if isEditable {
+                return 3
             }
             else {
-                return 3
+                return 1
             }
         case 2: // notes section. Only needs one row
             return 1
@@ -474,13 +488,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 
                 let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                     (alert: UIAlertAction!) -> Void in
-                    self.save()
                     //call to calling manager to release individual
                     callingMgr.releaseLCRCalling(callingToRelease: self.callingToDisplay!) { (success, error) in
                         let err = error?.localizedDescription ?? "nil"
                         print("Release result: \(success) - error: \(err)")
-                        
-                        
+                        DispatchQueue.main.async {
+                            self.returnToAux(saveFirst: false)
+                        }
                     }
                 })
                 
@@ -521,11 +535,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             //Init the ok button and the callback to execute
             let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                 (alert: UIAlertAction!) -> Void in
-                self.save()
 
                 callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
                     let err = error?.localizedDescription ?? "nil"
-                    print("Release result: \(success) - error: \(err)")
+                    print("Delete result: \(success) - error: \(err)")
+                    DispatchQueue.main.async {
+                        self.returnToAux(saveFirst: false)
+                    }
         
                 }
             })
@@ -558,9 +574,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     }
     
     func saveAndReturn() {
-//
-        //todo -- add save to calling service
-        save()
+        returnToAux(saveFirst: true)
+    }
+    
+    func returnToAux( saveFirst : Bool ) {
+        if saveFirst {
+            save()
+        }
         isDirty = false
         delegate?.setReturnedCalling(calling: self.callingToDisplay!)
         let _ = self.navigationController?.popViewController(animated: true)

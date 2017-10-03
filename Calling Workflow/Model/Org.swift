@@ -242,7 +242,7 @@ public struct Org : JSONParsable  {
     }
     
     /** Does the actual work of doing the CRUD operations with callings. Because Org is a struct we have to return a new copy with the updated data, we can't just make an inline change.*/
-    func updatedWithCallingChange( updatedCalling: Calling, operation : CRUDOperation) -> Org? {
+    func updatedWithCallingChange( updatedCalling: Calling, operation : Calling.ChangeOperation) -> Org? {
         // the calling has to be somewhere within this org for us to update it
         guard let callingDepth = self.getCallingDepth(calling: updatedCalling) else {
             return nil
@@ -259,6 +259,12 @@ public struct Org : JSONParsable  {
                 } else {
                     updatedOrg.callings.append( updatedCalling )
                 }
+            case .Release:
+                if let callingIdx = self.callings.index(of: updatedCalling) {
+                    let updatedCalling = Calling( id : nil, cwfId : updatedCalling.cwfId, existingIndId: nil, existingStatus : nil, activeDate : nil, proposedIndId : updatedCalling.proposedIndId, status : updatedCalling.proposedStatus, position : updatedCalling.position, notes : updatedCalling.notes, parentOrg : updatedCalling.parentOrg)
+
+                    updatedOrg.callings[callingIdx] = updatedCalling
+                }
             case .Delete:
                 // if someone else has already deleted this will still function
                 updatedOrg.callings = updatedOrg.callings.filter() { $0 != updatedCalling }
@@ -270,13 +276,7 @@ public struct Org : JSONParsable  {
         
         return updatedOrg
     }
-    
-    enum CRUDOperation {
-        case Create
-        case Update
-        case Delete
-    }
-    
+        
     // todo - at some point should probably move this to Comparable protocol extension
     public static func sortByDisplayOrder( org1: Org, org2: Org ) -> Bool {
         return org1.displayOrder < org2.displayOrder

@@ -9,7 +9,7 @@
 import Foundation
 
 struct NetworkConstants {
-    static let configUrl = "http://dev-ldscd.rhcloud.com/cwf/config?env=test"
+    static let configUrl = "http://dev-config-server-ldscd.7e14.starter-us-west-2.openshiftapps.com/cwf/config?env=test"
     
     static let memberListURLKey = "MEMBER_LIST"
     static let callingsListURLKey = "CALLING_LIST"
@@ -19,7 +19,10 @@ struct NetworkConstants {
     static let updateCallingURLKey = "UPDATE_CALLING"
     
     // these are defaults - they will potentially be overridden by results from the configUrl
-    static let ldsOrgEndpoints = [ memberListURLKey : "https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/member-detaillist/:unitNum", callingsListURLKey : "https://www.lds.org/mls/mbr/services/orgs/sub-orgs-with-callings", userDataURLKey : "https://www.lds.org/mobiledirectory/services/v2/ldstools/current-user-detail", signInURLKey : "https://signin.lds.org/login.html", signOutURLKey: "https://www.lds.org/signinout/?lang=eng&signmeout", updateCallingURLKey : "https://www.lds.org/mls/mbr/services/orgs/callings?lang=eng" ]
+    static let ldsOrgEndpoints = [ memberListURLKey : "https://www.lds.org/htvt/services/v1/:unitNum/members", callingsListURLKey : "https://www.lds.org/mls/mbr/services/orgs/sub-orgs-with-callings", userDataURLKey : "https://www.lds.org/mobiledirectory/services/v2/ldstools/current-user-detail", signInURLKey : "https://signin.lds.org/login.html", signOutURLKey: "https://www.lds.org/signinout/?lang=eng&signmeout", updateCallingURLKey : "https://www.lds.org/mls/mbr/services/orgs/callings?lang=eng" ]
+    
+    // if hitting "https://test.lds.org/htvt/services/v1/:unitNum/members" for member list then the data is wrapped in an object with property data.families (that's the array that contains the ward list).
+    // if hitting https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/member-detaillist/:unitNum the data is just a raw array that gets returned. As of 9/17 we're hitting the htvt service because it includes priesthood information
     static var ldsOrgEndpointKeys : [String] {
         // implicit get for computed properties that are read only
         return [String](ldsOrgEndpoints.keys)

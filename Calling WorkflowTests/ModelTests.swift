@@ -132,9 +132,38 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(calling.position.positionTypeId, 1481)
         XCTAssertEqual(calling.position.name, "Primary Teacher")
         XCTAssertEqual(calling.position.hidden, false)
+        XCTAssertEqual(calling.position.multiplesAllowed, true)
         XCTAssertEqual(calling.proposedStatus, CallingStatus.Proposed)
         XCTAssertEqual(calling.notes, "Some String")
         
+    }
+    
+    func testPositionsFromJson() {
+        // most of the position parsing is already tested, but one thing we were missing was tests for boolean fields - hidden and multiplesAllowed. We want to make sure we handle them correctly as a boolean or as a string
+        var org = Org( fromJSON: (testJSON?["orgWithDirectCallings"] as? JSONObject)! )
+        
+        XCTAssertNotNil(org)
+        var calling = org!.callings[0]
+        // this one is a boolean in json
+        XCTAssertEqual(calling.position.multiplesAllowed, false)
+        XCTAssertEqual(calling.position.hidden, false)
+
+        org = Org( fromJSON: (testJSON?["orgWithMultiDepthSubOrg"] as? JSONObject)! )
+        
+        XCTAssertNotNil(org)
+        calling = org!.children[0].children[0].callings[0]
+        // this one is a string "false"
+        XCTAssertEqual(calling.position.multiplesAllowed, false)
+        XCTAssertEqual(calling.position.hidden, false)
+
+        org = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )
+        
+        XCTAssertNotNil(org)
+        calling = org!.children[0].callings[0]
+        // this is a string "true" in the json
+        XCTAssertEqual(calling.position.multiplesAllowed, true)
+        XCTAssertEqual(calling.position.hidden, false)
+
     }
     func testCallingsInOrgFromJson() {
         let org = Org( fromJSON: (testJSON?["orgWithDirectCallings"] as? JSONObject)! )
@@ -148,9 +177,9 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(calling.position.positionTypeId, 4)
         XCTAssertEqual(calling.position.name, "Bishop")
         XCTAssertEqual(calling.position.hidden, false)
+        XCTAssertEqual(calling.position.multiplesAllowed, false)
         XCTAssertEqual(calling.proposedStatus, CallingStatus.Proposed)
         XCTAssertEqual(calling.notes, "Some String")
-        
     }
     
     
@@ -180,7 +209,7 @@ class ModelTests: XCTestCase {
         XCTAssertTrue(jsonString!.contains( "\"notes\":\"Some String\"" ))
         XCTAssertTrue(jsonString!.contains( "\"proposedStatus\":\"PROPOSED\"" ))
         XCTAssertTrue(jsonString!.contains( "\"position\":\"Primary Teacher\"" ))
-        XCTAssertTrue(jsonString!.contains( "\"hidden\":\"false\"" ))
+        XCTAssertTrue(jsonString!.contains( "\"hidden\":false" ))
         XCTAssertTrue(jsonString!.contains( "\"activeDate\":\"20150922\"" ))
         XCTAssertTrue(jsonString!.contains( "\"displayOrder\":700" ))
         print( "JSON:" + jsonString! )

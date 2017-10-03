@@ -43,6 +43,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
             var unitNum: Int64?
             // todo - make this weak
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.callingManager.appConfig = appConfig ?? AppConfig()
             appDelegate?.callingManager.getLdsUser(username: username, password: password) { [weak self] (ldsUser, error) in
                 guard error == nil, let validUser = ldsUser else {
                     // todo - check error for bad username/password vs. network failure (on our end or lds.org end)

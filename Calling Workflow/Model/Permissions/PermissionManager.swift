@@ -82,7 +82,7 @@ public class PermissionManager {
     private let permissionResolvers : [RoleType:PermissionResolver]
     
     init() {
-        permissionResolvers = [.UnitAdmin:unitPermResolver, .StakeAssistant:unitPermResolver, .OrgAdmin:orgPermResolver]
+        permissionResolvers = [.UnitAdmin:unitPermResolver, .StakeAssistant:unitPermResolver, .OrgAdmin:orgPermResolver, .PriesthoodOrgAdmin: orgPermResolver]
     }
     
     /** Method to be called once we have the users positions for lds.org getCurrentUser call to create the roles within the app associated with those positions */

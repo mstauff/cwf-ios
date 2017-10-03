@@ -247,10 +247,34 @@ class PermissionsTests: XCTestCase {
         
     }
     
-    // we don't have any tests for isAuthorized, but it's using hasPermission() which is tested, and the permissionResolver classes which are also tested. We could add test for isAuth at some point, but it's low value/priority since everything is already being tested. The only way it might break is if we added any more logic to isAuth, rather than calling other methods to do the actual work.
+    // This test is for retrieving PermissionResolvers based on the role. There's not much in isAuthorized() but it does pull a permissionResolver instance based on the role type, so this test just makes sure that each role type has a valid permission resolver.
+    func testIsAuthorized() {
+        let unitAdmin = createPositions( 4, inUnitNum: mainUnit )
+        let priesthoodOrgAdmin = createPositions(138, inUnitNum: mainUnit)
+        let orgAdmin = createPositions(204, inUnitNum: mainUnit)
+        
+        let unitAdminRole = UnitRole(role: .unitAdmin, unitNum: mainUnit, orgId: nil, orgType: nil, activePosition: unitAdmin[0], orgRightsException: nil )
+        let orgAdminRole = UnitRole(role: .orgAdmin, unitNum: mainUnit, orgId: nil, orgType: .Elders, activePosition: orgAdmin[0], orgRightsException: nil) // an org admin will have a rights
+        let priesthoodOrgAdminRole = UnitRole(role: .priesthoodOrgAdmin, unitNum: mainUnit, orgId: nil, orgType: .Elders, activePosition: priesthoodOrgAdmin[0], orgRightsException: nil) // an org admin will have a rights
+        
+        let eqOrg = AuthorizableOrg(unitNum: mainUnit, unitLevelOrgId: 444, unitLevelOrgType: .Elders, orgTypeId: 555)
+        
+        let testCases : [( unitRoles: [UnitRole], domain: Domain, perm: Permission, targetData: Authorizable, expectedResult: Bool)] = [
+            ([unitAdminRole], .OrgInfo, .View, eqOrg, true), // valid permissions the role should have
+            ([orgAdminRole], .PotentialCalling, .Update, eqOrg, true),
+            ([priesthoodOrgAdminRole], .PotentialCalling, .Delete, eqOrg, true),
+        ]
+        
+        testCases.forEach() {
+            
+            XCTAssertEqual(permMgr.isAuthorized(unitRoles: $0.unitRoles, domain: $0.domain, permission: $0.perm, targetData: $0.targetData), $0.expectedResult)
+        }
+        
+    }
     
     func testRolePerms() {
         let unitAdminPerms : [Domain: [Permission]]  =  [ .OrgInfo : [.View],
+                                                          .PriesthoodOffice : [.View],
                                 .PotentialCalling : [.Create, .Update, .Delete],
                                 .ActiveCalling : [.Update, .Delete, .Release],
                                 .UnitGoogleAccount: [.Create, .Update]]
@@ -258,6 +282,8 @@ class PermissionsTests: XCTestCase {
         let testCases : [(role: Role, expectedPerms: [Domain:[Permission]])] =
             [
                 (Role.unitAdmin, unitAdminPerms),
+                (Role.priesthoodOrgAdmin, [.OrgInfo: [.View],.PriesthoodOffice : [.View], .PotentialCalling : [.Create, .Update, .Delete],
+                                 .ActiveCalling : [.Update, .Delete, .Release]]),
                 (Role.orgAdmin, [.OrgInfo: [.View], .PotentialCalling : [.Create, .Update, .Delete],
                                  .ActiveCalling : [.Update, .Delete, .Release]]),
                 (Role.stakeAssistant, [.OrgInfo: [.View], .PotentialCalling : [.Create, .Update, .Delete]])
