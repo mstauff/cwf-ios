@@ -48,7 +48,6 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
                     // todo - check error for bad username/password vs. network failure (on our end or lds.org end)
                     print( "Error logging in to lds.org: " + error.debugDescription )
                     self?.removeSpinner()
-                    self?.presentSettingsView()
                     return
                 }
                 
@@ -84,7 +83,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
                                     self?.removeSpinner()
                                     self?.showAlert(title: "Invalid Google Account", message: "You need to go to the Settings page, Sharing/Sync Options & then sign in with the ward google account to proceed")
                                     print( "No creds - forward to settings!")
-                                    self?.presentSettingsView()
+                                    self?.presentDriveSignInView()
                                 }
                             }
                         } else {
@@ -115,8 +114,13 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
         present(alert, animated: true, completion: nil)
     }
     
-    func presentSettingsView() {
-        // todo - like below, if we don't have google creds we need to forward to the settings screen.
+    func presentDriveSignInView() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let loginVC = storyboard.instantiateViewController(withIdentifier: "FirstViewController") as? FirstViewController
+        let navController2 = UINavigationController()
+        navController2.addChildViewController(loginVC!)
+        
+        self.present(navController2, animated: false, completion: nil)
     }
     
     func presentLdsOrgLogin() {
@@ -130,6 +134,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
         
 
     }
+    
     
     func getLogin() {
         
@@ -148,6 +153,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
             
         }
         
+        
     }
     
     
@@ -161,20 +167,6 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     
     func startSpinner() {
         let spinnerView = CWFSpinnerView(frame: CGRect.zero, title: NSLocalizedString("Loging In", comment: "") as NSString)
-//        spinnerView.translatesAutoresizingMaskIntoConstraints = false
-//        spinnerView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.75)
-        
-//        let textLabel = UILabel()
-//        textLabel.text = "Loging In"
-//        textLabel.textColor = UIColor.white
-//        textLabel.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        let spinner = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
-//        spinner.startAnimating()
-//        spinner.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        spinnerView.addSubview(textLabel)
-//        spinnerView.addSubview(spinner)
         
         self.view.addSubview(spinnerView)
         self.spinnerView = spinnerView
@@ -184,13 +176,6 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
         
         self.view.addConstraints(hConstraint)
         self.view.addConstraints(vConstraint)
-        
-//        let spinnerHConstraint = NSLayoutConstraint(item: spinner, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: spinnerView, attribute: .centerX, multiplier: 1, constant: 0)
-//        let textHConstraint = NSLayoutConstraint(item: textLabel, attribute: NSLayoutAttribute.centerX, relatedBy: .equal, toItem: spinnerView, attribute: .centerX, multiplier: 1, constant: 0)
-//        let spinnerVConstraint = NSLayoutConstraint(item: spinner, attribute: NSLayoutAttribute.centerY, relatedBy: .equal, toItem: spinnerView, attribute: .centerY, multiplier: 1, constant: 0)
-//        let textVConstraint = NSLayoutConstraint(item: textLabel, attribute: .bottom, relatedBy: .equal, toItem: spinner, attribute: .top, multiplier: 1, constant: -15)
-//        
-//        self.view.addConstraints([spinnerHConstraint, textHConstraint, spinnerVConstraint, textVConstraint])
     }
     
     func removeSpinner () {

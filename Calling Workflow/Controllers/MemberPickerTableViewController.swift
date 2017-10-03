@@ -219,7 +219,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     func showMemberDetails(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let memberDetailView = storyboard.instantiateViewController(withIdentifier: "MemberInfoView") as? MemberInfoView
-        memberDetailView?.memberToView = members[sender.tag]
+        memberDetailView?.memberToView = self.filteredMembers[sender.tag]
         memberDetailView?.modalPresentationStyle = .overCurrentContext
 
         self.present(memberDetailView!, animated: true, completion: nil)        

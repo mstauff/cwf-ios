@@ -11,7 +11,7 @@ import MessageUI
 import MapKit
 import CoreLocation
 
-class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKMapViewDelegate {
+class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKMapViewDelegate, MFMessageComposeViewControllerDelegate {
     
     var memberToView: MemberCallings?
     
@@ -98,8 +98,20 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         self.view.addConstraints([infoHConstraint, infoWConstraint, infoVConstraint, infoHoConstraint])
 
         let callingBar = MemberInfoBarItemView()
-        let callingText = (memberToView?.callings.namesWithTime() ?? "") + (memberToView?.proposedCallings.namesWithStatus() ?? "")
-        callingBar.setupInfoBarItem(dataText: callingText, icon: nil)
+        let baseCurrentString = (memberToView?.callings.namesWithTime() ?? "")
+        let baseProposedString = (memberToView?.proposedCallings.namesWithStatus() ?? "")
+        let callingText : NSMutableAttributedString = NSMutableAttributedString(string: "")
+        
+        callingText.append(NSAttributedString(string: baseCurrentString))
+        if (callingText != NSAttributedString(string:"") && baseCurrentString != "") {
+            callingText.append(NSAttributedString(string: ", "))
+        }
+        callingText.append(NSAttributedString(string: baseProposedString))
+        
+        let greenRange = NSRange.init(location: callingText.length - baseProposedString.characters.count, length: baseProposedString.characters.count)
+        callingText.addAttribute(NSForegroundColorAttributeName, value: UIColor.CWFGreenTextColor, range: greenRange)
+        callingBar.setupInfoBarItem(dataText: callingText, leftIcon: nil, rightIcon: nil)
+        
         if callingBar.dataLabel.text == "" {
             callingBar.backgroundColor = UIColor.lightGray
         }
@@ -139,8 +151,9 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         }
         for phoneAndType in phoneNumberAndTypeArray {
             let currentPhoneBar = MemberInfoBarItemView()
-            currentPhoneBar.setupInfoBarItem(dataText: phoneAndType.phone, icon: UIImage.init(named: "phoneIcon"))
+            currentPhoneBar.setupInfoBarItem(dataText: NSAttributedString(string:phoneAndType.phone), leftIcon: UIImage.init(named: "phoneIcon"), rightIcon: UIImage.init(named:"phoneIcon"))
             currentPhoneBar.iconImageView?.addTarget(self, action: #selector(callButtonPressed), for: .touchUpInside)
+            currentPhoneBar.rightIconImageView?.addTarget(self, action: #selector(textButtonPressed), for: .touchUpInside)
             
             infoView.addSubview(currentPhoneBar)
             
@@ -173,7 +186,7 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         
         if let emailString = memberToView?.member.individualEmail {
             let emailBar = MemberInfoBarItemView()
-            emailBar.setupInfoBarItem(dataText: emailString, icon: UIImage.init(named: "emailIcon"))
+            emailBar.setupInfoBarItem(dataText: NSAttributedString(string: emailString), leftIcon: UIImage.init(named: "emailIcon"), rightIcon: nil)
             emailBar.iconImageView?.addTarget(self, action: #selector(emailButtonPressed), for: .touchUpInside)
             
             infoView.addSubview(emailBar)
@@ -188,7 +201,7 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         }
         else {
             let emailBar = MemberInfoBarItemView()
-            emailBar.setupInfoBarItem(dataText: "No Individual Email", icon: UIImage.init(named: "emailIcon"))
+            emailBar.setupInfoBarItem(dataText: NSAttributedString(string: NSLocalizedString("No Individual Email", comment: "no email")), leftIcon: UIImage.init(named: "emailIcon"), rightIcon: nil)
             infoView.addSubview(emailBar)
             
             let emailConstraintH = NSLayoutConstraint(item: emailBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 54.0)
@@ -215,11 +228,11 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         
         let addressBar = MemberInfoBarItemView()
         if let addressText = memberToView?.member.getAddressAsString() {
-            addressBar.setupInfoBarItem(dataText: addressText, icon: UIImage.init(named: "gps"))
+            addressBar.setupInfoBarItem(dataText: NSAttributedString(string: addressText), leftIcon: UIImage.init(named: "gps"), rightIcon: nil)
             addressBar.iconImageView?.addTarget(self, action: #selector(locationButtonPressed), for: .touchUpInside)
         }
         else {
-            addressBar.setupInfoBarItem(dataText: "No Address Available", icon: nil)
+            addressBar.setupInfoBarItem(dataText: NSAttributedString(string: NSLocalizedString("No Address Available", comment: "no address")), leftIcon: nil, rightIcon: nil)
         }
         infoView.addSubview(addressBar)
         
@@ -271,11 +284,23 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
     }
     
     func textButtonPressed () {
-    
+        print("Text Button Pressed")
+        if let phoneString = memberToView?.member.phone {
+            if true { //MFMessageComposeViewController.canSendText() {
+                let messageVC = MFMessageComposeViewController()
+                messageVC.recipients = [phoneString]
+                messageVC.messageComposeDelegate = self
+                navigationController?.pushViewController(messageVC, animated: true)
+            }
+            else {
+                let alert = UIAlertController(title: NSLocalizedString("Messaging not available", comment: "") , message: NSLocalizedString("Device not ready to send messabes", comment: ""), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .cancel, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
     }
     
     func dismissMemberDetails(_ sender:UITapGestureRecognizer) {
-        print("tapped")
         self.dismiss(animated: true, completion: nil)
     }
   
@@ -292,6 +317,10 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         controller.dismiss(animated: true, completion: nil)
     }
     
+    //MARK: - Message Delegate
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult){
+        controller.dismiss(animated: true, completion: nil)
+    }
     //MARK: - Map View Delegate
     
 }
@@ -301,7 +330,8 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
 class MemberInfoBarItemView : UIView {
     
     var iconImageView : UIButton?
-    
+    var rightIconImageView : UIButton?
+
     var dataLabel : UILabel = UILabel()
     
     override init(frame: CGRect) {
@@ -316,30 +346,66 @@ class MemberInfoBarItemView : UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupInfoBarItem(dataText: String, icon: UIImage?) {
+    func setupInfoBarItem(dataText: NSAttributedString, leftIcon: UIImage?, rightIcon: UIImage?) {
         
-        dataLabel.text = dataText
+        dataLabel.attributedText = dataText
         dataLabel.numberOfLines = 0
         dataLabel.font = UIFont(name: dataLabel.font.fontName, size: 14)
-        dataLabel.textColor = UIColor.CWFGreyTextColor
+        dataLabel.adjustsFontSizeToFitWidth = true
         dataLabel.translatesAutoresizingMaskIntoConstraints = false
 
+        self.addSubview(dataLabel)
         
-        if (icon != nil) {
-
+        if let leftImage = leftIcon, let rightImage = rightIcon {
+            
             iconImageView = UIButton()
-            iconImageView?.setImage(icon, for: .normal)
+            iconImageView?.setImage(leftImage, for: .normal)
             iconImageView?.translatesAutoresizingMaskIntoConstraints = false
-
             self.addSubview(iconImageView!)
+
+            rightIconImageView = UIButton()
+            rightIconImageView?.setImage(rightImage, for: .normal)
+            rightIconImageView?.translatesAutoresizingMaskIntoConstraints = false
+            self.addSubview(rightIconImageView!)
+
             
             let iconConstraintH = NSLayoutConstraint(item: iconImageView!, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
             let iconConstraintW = NSLayoutConstraint(item: iconImageView!, attribute: .width, relatedBy: .equal, toItem: iconImageView, attribute: .height, multiplier: 1, constant: 0)
             let iconConstraintY = NSLayoutConstraint(item: iconImageView!, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
             let iconConstraintX = NSLayoutConstraint(item: iconImageView!, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 15)
+
             self.addConstraints([iconConstraintH, iconConstraintW, iconConstraintX, iconConstraintY])
             
-            self.addSubview(dataLabel)
+            
+            let labelConstraintH = NSLayoutConstraint(item: dataLabel, attribute: .height, relatedBy: .equal, toItem: iconImageView, attribute: .height, multiplier: 1, constant: 0)
+            let labelConstraintL = NSLayoutConstraint(item: dataLabel, attribute: .left, relatedBy: .equal, toItem: iconImageView!, attribute: .right, multiplier: 1, constant: 10)
+            let labelConstraintR = NSLayoutConstraint(item: dataLabel, attribute: .right, relatedBy: .equal, toItem: rightIconImageView!, attribute: .right, multiplier: 1, constant: -5)
+            let labelConstraintY = NSLayoutConstraint(item: dataLabel, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
+            
+            self.addConstraints([labelConstraintH, labelConstraintL, labelConstraintR, labelConstraintY])
+           
+            let rightIconConstraintH = NSLayoutConstraint(item: rightIconImageView!, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
+            let rightIconConstraintW = NSLayoutConstraint(item: rightIconImageView!, attribute: .width, relatedBy: .equal, toItem: rightIconImageView, attribute: .height, multiplier: 1, constant: 0)
+            let rightIconConstraintY = NSLayoutConstraint(item: rightIconImageView!, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
+            let rightIconConstraintX = NSLayoutConstraint(item: rightIconImageView!, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: -15)
+            
+            self.addConstraints([rightIconConstraintH, rightIconConstraintW, rightIconConstraintX, rightIconConstraintY])
+
+            
+        }
+        else if let leftImage = leftIcon {
+            iconImageView = UIButton()
+            iconImageView?.setImage(leftImage, for: .normal)
+            iconImageView?.translatesAutoresizingMaskIntoConstraints = false
+            
+            self.addSubview(iconImageView!)
+            let iconConstraintH = NSLayoutConstraint(item: iconImageView!, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
+            let iconConstraintW = NSLayoutConstraint(item: iconImageView!, attribute: .width, relatedBy: .equal, toItem: iconImageView, attribute: .height, multiplier: 1, constant: 0)
+            let iconConstraintY = NSLayoutConstraint(item: iconImageView!, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
+            let iconConstraintX = NSLayoutConstraint(item: iconImageView!, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 15)
+            
+            self.addConstraints([iconConstraintH, iconConstraintW, iconConstraintX, iconConstraintY])
+            
             
             let labelConstraintH = NSLayoutConstraint(item: dataLabel, attribute: .height, relatedBy: .equal, toItem: iconImageView, attribute: .height, multiplier: 1, constant: 0)
             let labelConstraintL = NSLayoutConstraint(item: dataLabel, attribute: .left, relatedBy: .equal, toItem: iconImageView!, attribute: .right, multiplier: 1, constant: 10)
@@ -347,11 +413,8 @@ class MemberInfoBarItemView : UIView {
             let labelConstraintY = NSLayoutConstraint(item: dataLabel, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0)
             
             self.addConstraints([labelConstraintH, labelConstraintL, labelConstraintR, labelConstraintY])
-            
         }
         else {
-            self.addSubview(dataLabel)
-            
             let labelConstraintH = NSLayoutConstraint(item: dataLabel, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 0.80, constant: 0)
             let labelConstraintL = NSLayoutConstraint(item: dataLabel, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 15)
             let labelConstraintR = NSLayoutConstraint(item: dataLabel, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: -15)
@@ -361,6 +424,4 @@ class MemberInfoBarItemView : UIView {
             
         }
     }
-    
-    
 }

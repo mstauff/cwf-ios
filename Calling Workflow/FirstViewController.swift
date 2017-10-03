@@ -142,4 +142,14 @@ class FirstViewController: UIViewController, GIDSignInUIDelegate {
         // Dispose of any resources that can be recreated.
     }
     
+    
+    //MARK: - GDISignIn delegate
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        if error != nil {
+            print("There is an error")
+        }
+        else {
+            print("Sign in successful")
+        }
+    }
 }

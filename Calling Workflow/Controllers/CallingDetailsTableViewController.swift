@@ -64,6 +64,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
+        //Return 2 sections if the user only can view 4 if they can edit
         if userPermission == Permission.View {
             return 2
         }
@@ -74,9 +75,9 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
-        case 0:
+        case 0:// we don't want a header on the first section
             return 0
-        default:
+        default:// all other sections get a 25 px header
             return 25
         }
     }
@@ -93,19 +94,20 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // return number of rows per section
         switch section {
-        case 0:
+        case 0: // header information
             return 1
-        case 1:
+        case 1: // calling details. If the user has permition to edit return more rows
             if userPermission == Permission.View {
                 return 1
             }
             else {
                 return 3
             }
-        case 2:
+        case 2: // notes section. Only needs one row
             return 1
-        case 3:
+        case 3: // LCR button section, only one row needed
             return 1
         default:
             return 0
@@ -114,16 +116,16 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
-        case 0:
+        case 0: //Top header Section
             return DataSubdataTableViewCell.calculateHeight()
-        case 1:
+        case 1: // calling details section
             switch indexPath.row {
             case 0:
                 return OneRightTwoLeftTableViewCell.calculateHeight()
             default:
                 return LeftTitleRightLabelTableViewCell.calculateHeight()
             }
-        case 2:
+        case 2: // notes section
             return 170
         default:
             return 44

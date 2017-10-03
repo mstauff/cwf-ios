@@ -48,7 +48,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     public private(set) var userRoles : [UnitRole] = []
     
     var statusToExcludeForUnit : [CallingStatus] = []
-    
+        
     
     init() {
         permissionMgr = PermissionManager()

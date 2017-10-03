@@ -85,7 +85,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             //            let idToken = user.authentication.idToken // Safe to send to the server
             //            let fullName = user.profile.name
         // todo - search profile name for the unit num
-            driveService.authorizer = user.authentication.fetcherAuthorizer()
+        driveService.authorizer = user.authentication.fetcherAuthorizer()
         self.authCompletionHandler?( true, nil )
         self.authCompletionHandler = nil
     }

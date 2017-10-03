@@ -46,6 +46,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         }
     }
     
+    var expandedParents : [Org] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = false
@@ -88,6 +90,9 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             for org in (rootOrg?.children)! {
                 let newDataItem = AccordionDataItem.init(dataItem: org, dataItemType: .Parent, expanded: false)
                 dataSource.append(newDataItem)
+                if expandedParents.contains(item: org){
+                    
+                }
             }
         }
     }
