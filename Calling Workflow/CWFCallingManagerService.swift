@@ -206,7 +206,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                         print( error.debugDescription )
                         return // exits the callback, not loadAppData
                     }
-                    var mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg)
+                    var mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg, unitLevelOrg: ldsOrg)
                     // if there have been changes write them back to google drive
                     if mergedOrg.hasUnsavedChanges {
                         self.dataSource.updateOrg(org: mergedOrg, completionHandler: { _,_ in
@@ -281,7 +281,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                     completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
                 } else {
                     // todo - need to strip out any org exceptions
-                    let mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg).updatedWith(positionMetadata: self.positionMetadataMap)
+                    let mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg, unitLevelOrg: ldsOrg ).updatedWith(positionMetadata: self.positionMetadataMap)
                     completionHandler(mergedOrg, nil)
                 }
             }
@@ -297,8 +297,19 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
      As a general rule if there is an outstanding change that appears to be finalized in the LDS version, we don't delete, we mark it so the user can confirm deletion. The one pseudo-exception is a case where a calling had a potential change in the app, and then the LDS version has that change finalized. In that case we had an existing ID from LCR so we know it is a match and we don't really delete a record, we just remove the potential details. In other cases where there was a potential being considered (but didn't have an ID from LCR), and then in the LDS version it has been finalized we just mark the potential for the user to confirm.
      
      We follow a similar pattern with orgs, if the org is in the app but no loner in the LDS data we mark it for the user to confirm. If an org is in the LDS data and not in the app, we just add it.   */
-    func reconcileOrg(appOrg: Org, ldsOrg: Org) -> Org {
+    func reconcileOrg(appOrg: Org, ldsOrg: Org, unitLevelOrg: Org) -> Org {
         var updatedOrg = appOrg
+        
+        if let orgType = UnitLevelOrgType(rawValue: unitLevelOrg.orgTypeId) {
+            let orgAuth = AuthorizableOrg(unitNum: ldsOrg.unitNum, unitLevelOrgId:unitLevelOrg.id , unitLevelOrgType: orgType, orgTypeId: ldsOrg.orgTypeId)
+            guard permissionMgr.isAuthorized(unitRoles: userRoles, domain: .OrgInfo, permission: .View, targetData: orgAuth ) else  {
+                return ldsOrg
+            }
+        } else {
+            // if we can't validate permissions, only return lds version
+            return ldsOrg
+        }
+
         
         let appOrgIds = Set<Int64>(appOrg.children.map( { $0.id } ))
         let ldsOrgIds = Set<Int64>(ldsOrg.children.map( { $0.id } ))
@@ -317,7 +328,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 updatedOrg.hasUnsavedChanges = true
             } else {
                 // otherwise, it exists in both places, so we recursively call to reconcile the child orgs
-                let reconciledChildOrg = reconcileOrg(appOrg: appOrgChild, ldsOrg: ldsOrg.getChildOrg(id: appOrgChild.id)! )
+                let reconciledChildOrg = reconcileOrg(appOrg: appOrgChild, ldsOrg: ldsOrg.getChildOrg(id: appOrgChild.id)!, unitLevelOrg: unitLevelOrg )
                 updatedChildren.append( reconciledChildOrg )
                 
                 // if we've already marked that there are changes to this org then we don't want to overwrite that with false from a child that didn't change, so if it's already marked for this org we use that, if not we'll look to the child to see if it's changed
@@ -340,6 +351,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         
         // sort any callings in the org by display order
         updatedOrg.callings = updatedOrg.callings.sorted(by: Calling.sortByDisplayOrder)
+    
         
         return updatedOrg
         
