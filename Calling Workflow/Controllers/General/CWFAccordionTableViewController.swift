@@ -46,7 +46,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         }
     }
     
-    var expandedParents : [Org] = []
+    var expandedParents : [AccordionDataItem] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,15 +88,39 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             }
             
             for org in (rootOrg?.children)! {
-                let newDataItem = AccordionDataItem.init(dataItem: org, dataItemType: .Parent, expanded: false)
-                dataSource.append(newDataItem)
-                if expandedParents.contains(item: org){
-                    
+                var newDataItem = AccordionDataItem.init(dataItem: org, dataItemType: .Parent, expanded: false)
+                //check if it should be expanded
+                let filteredArray = expandedParents.filter() {
+                    let filterOrg = $0.dataItem as! Org
+                    if filterOrg == org {
+                        return true
+                    } else {
+                        return false
+                    }
+                }
+                if filteredArray.count > 0 {
+                    newDataItem.expanded = true
+                    dataSource.append(newDataItem)
+                    self.setupChildren(org: org)
+                }
+                else {
+                    dataSource.append(newDataItem)
                 }
             }
         }
     }
     
+    func setupChildren(org: Org) {
+        for child in org.children {
+            let childDataItem = AccordionDataItem.init(dataItem: child, dataItemType: .Child, expanded: false)
+            dataSource.append(childDataItem)
+        }
+        
+        for calling in org.callings {
+            let callingDataItem = AccordionDataItem.init(dataItem: calling, dataItemType: .Calling, expanded: false)
+            dataSource.append(callingDataItem)
+        }
+    }
     
     // MARK: - Table view data source
 
@@ -269,6 +293,9 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             }
         }
         dataSource[indexPath.row].expanded = false
+        expandedParents = expandedParents.filter() {
+            $0.dataItem as! Org != dataSource[indexPath.row].dataItem as! Org
+        }
         self.tableView.beginUpdates()
         self.tableView.deleteRows(at: indexPaths, with: .fade)
         self.tableView.endUpdates()
@@ -294,6 +321,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         }
         
         dataSource[indexPath.row].expanded = true
+        
+        self.expandedParents.append(dataSource[indexPath.row])
         
         self.tableView.beginUpdates()
         
