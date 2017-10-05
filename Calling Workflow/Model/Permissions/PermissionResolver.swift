@@ -16,8 +16,24 @@ public protocol PermissionResolver {
 
 public class UnitPermResolver : PermissionResolver {
     public func isAuthorized(role: UnitRole, targetData: Authorizable) -> Bool {
-        // eventually we may need to break this down into a switch based on the domain object, but current requirements just need to ensure they have rights for the unit
-        return role.unitNum == targetData.unitNum
+        
+        // in the case of an org permission resolver we default to false, unless we have a match of the org type to the role. 
+        // For unit admins we're going to default to true essentially (they have to match the unit number, but based on the way the app works that should never be false) and then we look to see if the target data is associated with an org and if so if that org is excepted from their privileges
+        // if it's an authorizableUnit, or something else added in the future then the only thing that comes into play is that the unit number matches
+        var result =  role.unitNum == targetData.unitNum
+        var targetOrgAuth : AuthorizableOrg? = nil
+        
+        if targetData is AuthorizableOrg {
+            targetOrgAuth = targetData as? AuthorizableOrg
+        } else if targetData is AuthorizableCalling {
+            targetOrgAuth = (targetData as! AuthorizableCalling).owningAuthOrg
+        }
+        
+        if let target = targetOrgAuth, target.orgTypeId == role.orgRightsException {
+            result = false
+        }
+        
+        return result
     }
 }
 

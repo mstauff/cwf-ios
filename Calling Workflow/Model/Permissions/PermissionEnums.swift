@@ -133,9 +133,9 @@ public enum PositionType : Int {
     var orgType : UnitLevelOrgType? {
         switch self {
         case .Bishop, .Bishopric1stCounselor, .Bishopric2ndCounselor, .WardExecSec, .WardClerk :
-            return nil
+            return .Bishopric
         case .BranchPres, .Branch1stCounselor, .Branch2ndCounselor, .BranchExecSec, .BranchClerk :
-            return nil
+            return .BranchPresidency
         case .HPGroupLeader, .HP1stAssistant, .HP2ndAssistant, .HPSecretary :
             return .HighPriests
         case .EQPres, .EQ1stCounselor, .EQ2ndCounselor, .EQSecretary :
