@@ -207,7 +207,7 @@ class CallingManagerServiceTests: XCTestCase {
     func testReconcileCallings() {
         // create a reconcileAppOrg & reconcileLdsOrg in the json file
         // read them in, pass to reconcileCallings & validate
-            let reconciledOrg = callingMgr.reconcileOrg(appOrg: appOrg, ldsOrg: lcrOrg)
+            let reconciledOrg = callingMgr.reconcileOrg(appOrg: appOrg, ldsOrg: lcrOrg, unitLevelOrg: lcrOrg)
         let primaryOrg = reconciledOrg.getChildOrg(id: 7428354)!
         XCTAssertEqual( primaryOrg.children.count, 3 )
         let ctr7 = reconciledOrg.getChildOrg(id: 38432972)!

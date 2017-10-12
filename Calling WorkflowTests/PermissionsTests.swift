@@ -82,7 +82,7 @@ class PermissionsTests: XCTestCase {
           (ywPosIds, .YoungWomen, .OrgAdmin),
           (ssPosIds, .SundaySchool, .OrgAdmin),
           (priPosIds, .Primary, .OrgAdmin),
-          (bishopricPosIds, nil, .UnitAdmin),
+          (bishopricPosIds, .Bishopric, .UnitAdmin),
           // todo - need to add support for branch and stake positions before we can test for them
 //          (branchPresPosIds, .Ward, .UnitAdmin),
         ]
@@ -103,14 +103,17 @@ class PermissionsTests: XCTestCase {
         let posDontCare = Position(positionTypeId: 0, name: nil, hidden: false, multiplesAllowed: false, displayOrder: nil, metadata: PositionMetadata())
         let authorizedUnit = AuthorizableUnit(unitNum: mainUnit)
         let authorizedOrg = AuthorizableOrg(unitNum: mainUnit, unitLevelOrgId: 5555, unitLevelOrgType: .Elders, orgTypeId: 66)
+        let exceptionOrg = AuthorizableOrg(unitNum: mainUnit, unitLevelOrgId: 5555, unitLevelOrgType: .Bishopric, orgTypeId: UnitLevelOrgType.Bishopric.rawValue)
         
         let unitPermResolver = UnitPermResolver()
-        let authUnitRole = UnitRole(role: .unitAdmin, unitNum: mainUnit, orgId: nil, orgType: nil, activePosition: posDontCare, orgRightsException: nil)
+        let authUnitRole = UnitRole(role: .unitAdmin, unitNum: mainUnit, orgId: nil, orgType: nil, activePosition: posDontCare, orgRightsException: UnitLevelOrgType.Bishopric.rawValue)
         let nonAuthUnitRole = UnitRole(role: .unitAdmin, unitNum: 2748, orgId: nil, orgType: nil, activePosition: posDontCare, orgRightsException: nil)
         let testCases : [(role: UnitRole, authorizable: Authorizable, expectedResult: Bool)] =
             [(authUnitRole, authorizedUnit, true ), // authorized via unit
             (authUnitRole, authorizedOrg, true ), // authorized via org
              (authUnitRole, authorizedUnit, true), // perm & domain shouldn't matter
+                // troubleshoot this
+                (authUnitRole, exceptionOrg, false), // Org is an exception even for the unit admin (Bishop can't modify bishopric)
              (nonAuthUnitRole, authorizedUnit, false ), // not authorized
                 (nonAuthUnitRole, authorizedUnit, false ), // not authorized
              ]
@@ -152,7 +155,7 @@ class PermissionsTests: XCTestCase {
         let eqPresPos = createPositions(138, inUnitNum: mainUnit)
         let ssPresPos = createPositions(205, inUnitNum: mainUnit)
         
-        let unitAdminRole = UnitRole(role: .unitAdmin, unitNum: mainUnit, orgId: nil, orgType: nil, activePosition: unitAdmin[0], orgRightsException: nil )
+        let unitAdminRole = UnitRole(role: .unitAdmin, unitNum: mainUnit, orgId: nil, orgType: .Bishopric, activePosition: unitAdmin[0], orgRightsException: nil )
         let eqAdminRole = UnitRole(role: .priesthoodOrgAdmin, unitNum: mainUnit, orgId: nil, orgType: .Elders, activePosition: eqPresPos[0], orgRightsException: nil) // an org admin will have a rights exception, but we're not validating that in this test, so no need to set it
         let ssAdminRole = UnitRole(role: .orgAdmin, unitNum: mainUnit, orgId: nil, orgType: .SundaySchool, activePosition: ssPresPos[0], orgRightsException: nil) // an org admin will have a rights exception, but we're not validating that in this test, so no need to set it
         

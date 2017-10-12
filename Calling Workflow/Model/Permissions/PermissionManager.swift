@@ -73,8 +73,7 @@ public struct UnitRole {
 public class PermissionManager {
     
     // Org leaders can see all changes within their org, except within their presidency, so for each root level org we have the org type ID's of the presidency.
-    // todo - should bishopric & BP be added to this? Probably.
-    static var unitLevelOrgExceptions : [UnitLevelOrgType:Int] = [ .HighPriests: 1299, .Elders: 1295, .ReliefSociety: 1279, .YoungMen: 1311, .YoungWomen: 1312, .SundaySchool: 1308, .Primary: 1303 ]
+    static var unitLevelOrgExceptions : [UnitLevelOrgType:Int] = [.Bishopric: UnitLevelOrgType.Bishopric.rawValue, .BranchPresidency: UnitLevelOrgType.BranchPresidency.rawValue, .HighPriests: 1299, .Elders: 1295, .ReliefSociety: 1279, .YoungMen: 1311, .YoungWomen: 1312, .SundaySchool: 1308, .Primary: 1303 ]
     
     private let unitPermResolver = UnitPermResolver()
     private let orgPermResolver = OrgPermResolver()
