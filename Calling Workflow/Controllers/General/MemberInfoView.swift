@@ -103,7 +103,7 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         let callingText : NSMutableAttributedString = NSMutableAttributedString(string: "")
         
         callingText.append(NSAttributedString(string: baseCurrentString))
-        if (callingText != NSAttributedString(string:"") && baseCurrentString != "") {
+        if (callingText != NSAttributedString(string:"") && baseProposedString != "") {
             callingText.append(NSAttributedString(string: ", "))
         }
         callingText.append(NSAttributedString(string: baseProposedString))
@@ -151,7 +151,7 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         }
         for phoneAndType in phoneNumberAndTypeArray {
             let currentPhoneBar = MemberInfoBarItemView()
-            currentPhoneBar.setupInfoBarItem(dataText: NSAttributedString(string:phoneAndType.phone), leftIcon: UIImage.init(named: "phoneIcon"), rightIcon: UIImage.init(named:"phoneIcon"))
+            currentPhoneBar.setupInfoBarItem(dataText: NSAttributedString(string:phoneAndType.phone), leftIcon: UIImage.init(named: "phoneIcon"), rightIcon: UIImage.init(named:"text"))
             currentPhoneBar.iconImageView?.addTarget(self, action: #selector(callButtonPressed), for: .touchUpInside)
             currentPhoneBar.rightIconImageView?.addTarget(self, action: #selector(textButtonPressed), for: .touchUpInside)
             

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MemberPickerTableViewController: UITableViewController, FilterTableViewControllerDelegate {
+class MemberPickerTableViewController: UITableViewController, FilterTableViewControllerDelegate, UISearchControllerDelegate {
     
     var delegate: MemberPickerDelegate?
 
@@ -89,14 +89,16 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
-        
-        definesPresentationContext = true
+        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.delegate = self
+        //searchController.definesPresentationContext = true
         
         headerForTable.addSubview(searchController.searchBar)
         
-        let xConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .leading, relatedBy: .equal, toItem: headerForTable, attribute: .leading, multiplier: 1, constant: 0)
+        
+        let xConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .left, relatedBy: .equal, toItem: headerForTable, attribute: .left, multiplier: 1, constant: 0)
         let yConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .bottom, relatedBy: .equal, toItem: headerForTable, attribute: .bottom, multiplier: 1, constant: 0)
-        let wConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .trailing, relatedBy: .equal, toItem: headerForTable, attribute: .trailing, multiplier: 1, constant: 0)
+        let wConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .width, relatedBy: .equal, toItem: headerForTable, attribute: .width, multiplier: 1, constant: 0)
         let hConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
         
         headerForTable.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
@@ -169,8 +171,20 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         cell?.infoButton.tag = indexPath.row
 
         cell?.titleLabel.text = currentMember.member.name
+        let baseCurrentString = (currentMember.callings.namesWithTime())
+        let baseProposedString = (currentMember.proposedCallings.namesWithStatus())
+        let callingText : NSMutableAttributedString = NSMutableAttributedString(string: "")
         
-        cell?.subtitle.text = (currentMember.callings.namesWithTime() ) + (currentMember.proposedCallings.namesWithStatus() )
+        callingText.append(NSAttributedString(string: baseCurrentString))
+        if (callingText != NSAttributedString(string:"") && baseProposedString != "") {
+            callingText.append(NSAttributedString(string: ", "))
+        }
+        callingText.append(NSAttributedString(string: baseProposedString))
+        
+        let greenRange = NSRange.init(location: callingText.length - baseProposedString.characters.count, length: baseProposedString.characters.count)
+        callingText.addAttribute(NSForegroundColorAttributeName, value: UIColor.CWFGreenTextColor, range: greenRange)
+
+        cell?.subtitle.attributedText = callingText
 
         return cell!
     }
@@ -192,6 +206,14 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         }
         tableView.reloadData()
     }
+    
+//    func willPresentSearchController(_ searchController: UISearchController) {
+//        self.navigationController?.navigationBar.isTranslucent = true
+//  }
+//
+//    func willDismissSearchController(_ searchController: UISearchController) {
+//        self.navigationController?.navigationBar.isTranslucent = false
+//    }
     
     
     // MARK: - Button Method

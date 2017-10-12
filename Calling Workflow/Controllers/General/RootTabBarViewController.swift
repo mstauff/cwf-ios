@@ -169,14 +169,14 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     func startSpinner() {
         let spinnerView = CWFSpinnerView(frame: CGRect.zero, title: NSLocalizedString("Loging In", comment: "") as NSString)
         
-        self.view.addSubview(spinnerView)
+        self.navigationController?.view.addSubview(spinnerView)
         self.spinnerView = spinnerView
         
         let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-(==0)-[spinnerView]-(==0)-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: ["spinnerView": spinnerView])
         let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[spinnerView]-|", options: NSLayoutFormatOptions.alignAllCenterX, metrics: nil, views: ["spinnerView": spinnerView])
         
-        self.view.addConstraints(hConstraint)
-        self.view.addConstraints(vConstraint)
+        self.navigationController?.view.addConstraints(hConstraint)
+        self.navigationController?.view.addConstraints(vConstraint)
     }
     
     func removeSpinner () {

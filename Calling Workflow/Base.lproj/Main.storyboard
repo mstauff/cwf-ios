@@ -297,10 +297,11 @@
             </objects>
             <point key="canvasLocation" x="900" y="1122.1889055472266"/>
         </scene>
-        <!--Calling Details Table View Controller-->
+        <!--Table View Controller-->
         <scene sceneID="qHR-bu-s9P">
             <objects>
-                <tableViewController storyboardIdentifier="CallingDetailsTableViewController" id="vWf-cQ-dZt" customClass="CallingDetailsTableViewController" customModule="Calling_Workflow" customModuleProvider="target" sceneMemberID="viewController">
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ng2-gB-mt3" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tableViewController id="vWf-cQ-dZt" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="60" sectionHeaderHeight="28" sectionFooterHeight="28" id="jWr-F4-TVd">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -358,15 +359,28 @@
                                 </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="vWf-cQ-dZt" id="aeb-Rc-FX4"/>
-                            <outlet property="delegate" destination="vWf-cQ-dZt" id="5Gc-tV-gsf"/>
-                        </connections>
                     </tableView>
                 </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ng2-gB-mt3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1821.5999999999999" y="1121.2893553223389"/>
+            <point key="canvasLocation" x="1518" y="1122"/>
+        </scene>
+        <!--Calling Details Table View Controller-->
+        <scene sceneID="iC7-2T-zfv">
+            <objects>
+                <viewController storyboardIdentifier="CallingDetailsTableViewController" id="8eK-66-MjY" customClass="CallingDetailsTableViewController" customModule="Calling_Workflow" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ebk-7T-aYX"/>
+                        <viewControllerLayoutGuide type="bottom" id="mnE-br-Cmn"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="6W0-pY-QWL">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XMA-do-ohy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1822" y="1121"/>
         </scene>
         <!--Member Picker Table View Controller-->
         <scene sceneID="6g8-4S-XWq">
@@ -562,7 +576,7 @@
         <scene sceneID="tYD-Oy-G3J">
             <objects>
                 <navigationController id="THt-KO-N4t" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="vw4-xs-zQe">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="vw4-xs-zQe">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

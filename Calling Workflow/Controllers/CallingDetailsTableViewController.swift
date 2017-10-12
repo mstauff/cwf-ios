@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPickerDelegate, StatusPickerDelegate, UITextViewDelegate {
+class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDelegate, UITableViewDataSource, MemberPickerDelegate, StatusPickerDelegate, UITextViewDelegate {
     
     //MARK: - Class Members
     var callingToDisplay : Calling? = nil {
@@ -16,7 +16,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             tableView.reloadData()
         }
     }
-    
+    var tableView = UITableView()
     var isDirty = false
 
     var originalCalling : Calling? = nil
@@ -34,11 +34,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // initi these UI elements before we do the guard check to make sure we have a calling
-        tableView.register(LeftTitleRightLabelTableViewCell.self, forCellReuseIdentifier: "middleCell")
-        tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
-        tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "noteCell")
-        tableView.register(CWFButtonTableViewCell.self, forCellReuseIdentifier: "buttonCell")
+        setupTableView()
         
         guard let calling = callingToDisplay else {
             return
@@ -48,11 +44,10 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         self.callingMgr = appDelegate?.callingManager
 
         originalCalling = calling
-
-        navigationController?.title = calling.position.name
+        navigationItem.title = calling.position.name
+//        navigationController?.title = calling.position.name
         
-        let backButton = UIBarButtonItem(image: UIImage.init(named:"backButton"), style:.plain , target: self, action: #selector(backButtonPressed) )
-        navigationItem.setLeftBarButton(backButton, animated: true)
+        setupNavBarButtons()
         
         // check permissions to see if we need to display options to edit the calling
         if let parentOrg = calling.parentOrg, let callingMgr = self.callingMgr, let unitLevelOrg = callingMgr.unitLevelOrg(forSubOrg: parentOrg.id) {
@@ -74,10 +69,58 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         // Dispose of any resources that can be recreated.
     }
     
+    
+    // MARK: - Setup
+    
+    func setupNavBarButtons() {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage.init(named: "backButton"), for: .normal)
+        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        button.frame = CGRect(x: 0, y: 0, width: 53.0, height: 31.0)
+        
+//        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 53.0, height: 31.0))
+//        label.font = UIFont(name: "Arial", size: 15)
+//        label.textColor = UIColor.white
+//        label.backgroundColor = UIColor.clear
+//        label.textAlignment = .center
+//        label.text = NSLocalizedString("Back", comment: "back button")
+//        button.addSubview(label)
+        
+        let backButton = UIBarButtonItem(customView: button)
+        
+//        let backButton = UIBarButtonItem(image: UIImage.init(named:"backButton"), style:.plain, target: self, action: #selector(backButtonPressed) )
+//        backButton.title = NSLocalizedString("Back", comment: "back button")
+        
+        navigationItem.setLeftBarButton(backButton, animated: true)
+
+    }
+    
+    func setupTableView() {
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.view.addSubview(self.tableView)
+        
+        let xConstraint = NSLayoutConstraint(item: tableView, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1, constant: 0)
+        let yConstraint = NSLayoutConstraint(item: tableView, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 0)
+        let wConstraint = NSLayoutConstraint(item: tableView, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1, constant: 0)
+        let hConstraint = NSLayoutConstraint(item: tableView, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 0)
+        
+        self.view.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
+        
+        // initi these UI elements before we do the guard check to make sure we have a calling
+        tableView.register(DataSubdataTableViewCell.self, forCellReuseIdentifier: "dataSubdata")
+        tableView.register(LeftTitleRightLabelTableViewCell.self, forCellReuseIdentifier: "middleCell")
+        tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
+        tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "noteCell")
+        tableView.register(CWFButtonTableViewCell.self, forCellReuseIdentifier: "buttonCell")
+
+    }
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         //Return 2 sections if the user only can view 4 if they can edit
         if isEditable {
             return 4
@@ -87,7 +130,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
     }
     
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case 0:// we don't want a header on the first section
             return 0
@@ -96,18 +139,18 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
     }
 
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         default:
             return ""
         }
     }
     
-    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.01
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // return number of rows per section
         switch section {
         case 0: // header information
@@ -128,7 +171,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
     }
 
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
         case 0: //Top header Section
             return DataSubdataTableViewCell.calculateHeight()
@@ -146,13 +189,13 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
         }
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0: // first section of the view is the title cell
             let cell = tableView.dequeueReusableCell(withIdentifier: "dataSubdata", for: indexPath) as? DataSubdataTableViewCell
 
-            cell?.mainLabel?.text = callingToDisplay?.position.name
-            cell?.subLabel?.text = callingToDisplay?.parentOrg?.orgName
+            cell?.mainLabel.text = callingToDisplay?.position.name
+            cell?.subLabel.text = callingToDisplay?.parentOrg?.orgName
             
             return cell!
             
@@ -264,7 +307,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     }
     
     // Tap handler for current/proposed/status options in calling details
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         
         switch indexPath.section {
@@ -455,6 +498,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                     (alert: UIAlertAction!) -> Void in
                     self.save()
+                    self.startSpinner()
                     //Call to callingManager to update calling
                     callingMgr.updateLCRCalling(updatedCalling: self.callingToDisplay!) { (calling, error) in
                         let err = error?.localizedDescription ?? "nil"
@@ -489,6 +533,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
                 let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                     (alert: UIAlertAction!) -> Void in
                     //call to calling manager to release individual
+                    self.startSpinner()
                     callingMgr.releaseLCRCalling(callingToRelease: self.callingToDisplay!) { (success, error) in
                         let err = error?.localizedDescription ?? "nil"
                         print("Release result: \(success) - error: \(err)")
@@ -535,7 +580,7 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
             //Init the ok button and the callback to execute
             let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                 (alert: UIAlertAction!) -> Void in
-
+                self.startSpinner()
                 callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
                     let err = error?.localizedDescription ?? "nil"
                     print("Delete result: \(success) - error: \(err)")
@@ -615,6 +660,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     
     //MARK: - Spinner
     func startSpinner() {
+        self.navigationItem.leftBarButtonItem?.isEnabled = false
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
         let spinView = CWFSpinnerView(frame: CGRect.zero, title: NSLocalizedString("Updating", comment: "Updating") as NSString)
         
         self.view.addSubview(spinView)
@@ -628,6 +675,8 @@ class CallingDetailsTableViewController: CWFBaseTableViewController, MemberPicke
     }
     
     func removeSpinner () {
+        self.navigationItem.leftBarButtonItem?.isEnabled = true
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
         self.spinnerView?.removeFromSuperview()
     }
 
