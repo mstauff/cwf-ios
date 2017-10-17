@@ -261,7 +261,7 @@ public struct Org : JSONParsable  {
                 }
             case .Release:
                 if let callingIdx = self.callings.index(of: updatedCalling) {
-                    let updatedCalling = Calling( id : nil, cwfId : updatedCalling.cwfId, existingIndId: nil, existingStatus : nil, activeDate : nil, proposedIndId : updatedCalling.proposedIndId, status : updatedCalling.proposedStatus, position : updatedCalling.position, notes : updatedCalling.notes, parentOrg : updatedCalling.parentOrg)
+                    let updatedCalling = Calling( id : nil, cwfId : updatedCalling.cwfId, existingIndId: nil, existingStatus : nil, activeDate : nil, proposedIndId : updatedCalling.proposedIndId, status : updatedCalling.proposedStatus, position : updatedCalling.position, notes : updatedCalling.notes, parentOrg : updatedCalling.parentOrg, cwfOnly: false)
 
                     updatedOrg.callings[callingIdx] = updatedCalling
                 }

@@ -73,21 +73,9 @@ public struct Position : JSONParsable {
         positionTypeId = validPositionTypeId
         // We're defaulting to true, even though there are likely more positions that allowMultiples is false, if we default to false we could potentially identify different primary teaching positions as equivalent, and overwrite one when we shouldn't. If we default to true for a position that should be false then we might incorrectly not match an EQ 1st Counselor with the correct calling, resulting in duplicates. But that is much easier for a user to identify and correct than two callings that are incorrectly merged, or one just deleted, that could result in a loss of data
         // They should be written as booleans, but we also want to support them if they are strings ("true" vs true). We default to true if it's not in the JSON, or if it's an empty string.
-        if let multiples = json[PositionJsonKeys.allowMultiples] as? Bool {
-            multiplesAllowed = multiples
-        } else if let multiples = json[PositionJsonKeys.allowMultiples] as? String {
-            multiplesAllowed = multiples.isEmpty ? true : multiples.lowercased() == "true"
-        } else {
-            multiplesAllowed = true
-        }
+        multiplesAllowed = JSONParseUtil.boolean(fromJsonField: json[PositionJsonKeys.allowMultiples], defaultingTo: true)
+        hidden = JSONParseUtil.boolean(fromJsonField: json[PositionJsonKeys.hidden], defaultingTo: false)
 
-        if let callingHidden = json[PositionJsonKeys.hidden] as? Bool {
-            hidden = callingHidden
-        } else if let callingHidden = json[PositionJsonKeys.hidden] as? String {
-            hidden = callingHidden.isEmpty ? false : callingHidden.lowercased() == "true"
-        } else {
-            hidden = false
-        }
 
         displayOrder = json[PositionJsonKeys.displayOrder] as? Int
         metadata = PositionMetadata()
@@ -105,7 +93,6 @@ public struct Position : JSONParsable {
         if let displayOrder = self.displayOrder {
             jsonObj[PositionJsonKeys.displayOrder] = displayOrder as AnyObject
         }
-        // need to store this as a string rather than a bool before we cast to AnyObject, as casting a bool to AnyObject loses type info (it gets seen as Int and outputs 0/1 rather than true/false in the json
         jsonObj[PositionJsonKeys.hidden] = self.hidden  as AnyObject
         jsonObj[PositionJsonKeys.allowMultiples] = self.multiplesAllowed as AnyObject
         return jsonObj;

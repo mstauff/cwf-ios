@@ -240,7 +240,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
                         activeDate = newActiveDate
                     }
                     // create the calling based on the returned json
-                    let updatedCalling = Calling( id: newCallingId.int64Value, cwfId : nil, existingIndId : newExistingIndId, existingStatus: .Active, activeDate: activeDate, proposedIndId : nil, status: CallingStatus.None, position: calling.position, notes: nil, parentOrg : calling.parentOrg )
+                    let updatedCalling = Calling( id: newCallingId.int64Value, cwfId : nil, existingIndId : newExistingIndId, existingStatus: .Active, activeDate: activeDate, proposedIndId : nil, status: CallingStatus.None, position: calling.position, notes: nil, parentOrg : calling.parentOrg, cwfOnly: false )
 
                     completionHandler(updatedCalling, nil)
                 } else {
