@@ -34,7 +34,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
             newStatusArray = CallingStatus.userValues.filter() { !excludeStatuses.contains(item: $0) }
         }
                 
-        newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: newStatusArray.first, position: newPostiton, notes: nil, parentOrg: parentOrg)
+        newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: newStatusArray.first, position: newPostiton, notes: nil, parentOrg: parentOrg, cwfOnly: true)
     }
 
     override func didReceiveMemoryWarning() {
@@ -264,7 +264,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     // MARK: - CallingsTableViewControllerDelegate
     
     func setReturnedPostiton(position: Position) {
-        newCalling = Calling(id: newCalling?.id, cwfId: newCalling?.cwfId, existingIndId: newCalling?.existingIndId, existingStatus: newCalling?.existingStatus, activeDate: newCalling?.activeDate, proposedIndId: newCalling?.proposedIndId, status: newCalling?.proposedStatus, position: position, notes: newCalling?.notes, parentOrg: newCalling?.parentOrg)
+        newCalling = Calling(id: newCalling?.id, cwfId: newCalling?.cwfId, existingIndId: newCalling?.existingIndId, existingStatus: newCalling?.existingStatus, activeDate: newCalling?.activeDate, proposedIndId: newCalling?.proposedIndId, status: newCalling?.proposedStatus, position: position, notes: newCalling?.notes, parentOrg: newCalling?.parentOrg, cwfOnly: true)
         tableView.reloadData()
     }
 

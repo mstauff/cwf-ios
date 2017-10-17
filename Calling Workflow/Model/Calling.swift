@@ -46,6 +46,9 @@ public struct Calling : JSONParsable {
     // reference back to the parent org that this calling is a member of. It is only optional because we create the org with the callings and then fill in the reference to the owning org afterwards.
     var parentOrg : Org?
     
+    // flag to indicate whether a calling was created by cwf app. We can't just rely on cwfId, because a position can exist in LCR, and just be empty in which case we will assign a cwfId to it. This allows us to differentiate between empty callings in LCR and callings that have been created in CWF when reconciling callings between the two
+    var cwfOnly = false
+    
     var existingMonthsInCalling : Int {
         get {
             var numMonths = 0
@@ -80,11 +83,17 @@ public struct Calling : JSONParsable {
         }
     }
     
+    /** Copy constructor. The position is a separate argument to be able to provide a position with updated position metadata (this is used when we're merging the position metadata with the callings, we want to keeps the metadata a let constant, so we create a new calling with an updated Position object) */
     init( _ calling: Calling, position: Position ) {
-        self.init( id: calling.id, cwfId: calling.cwfId, existingIndId : calling.existingIndId, existingStatus: calling.existingStatus, activeDate: calling.activeDate, proposedIndId: calling.proposedIndId, status: calling.proposedStatus, position: position, notes: calling.notes, parentOrg : calling.parentOrg)
+        self.init( id: calling.id, cwfId: calling.cwfId, existingIndId : calling.existingIndId, existingStatus: calling.existingStatus, activeDate: calling.activeDate, proposedIndId: calling.proposedIndId, status: calling.proposedStatus, position: position, notes: calling.notes, parentOrg : calling.parentOrg, cwfOnly : calling.cwfOnly)
     }
     
-    init(id : Int64?, cwfId : String?, existingIndId: Int64?, existingStatus : ExistingCallingStatus?, activeDate : Date?, proposedIndId : Int64?, status : CallingStatus?, position : Position, notes : String?, parentOrg : Org?) {
+    /** Create an empty calling with a given position. This is used by reconcile and add calling to create a new empty calling of a certain type */
+    init( forPosition position: Position ) {
+        self.init(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: position, notes: nil, parentOrg: nil, cwfOnly: false)
+    }
+    
+    init(id : Int64?, cwfId : String?, existingIndId: Int64?, existingStatus : ExistingCallingStatus?, activeDate : Date?, proposedIndId : Int64?, status : CallingStatus?, position : Position, notes : String?, parentOrg : Org?, cwfOnly : Bool) {
         self.id = id
         // if ID is not set then either cwfID has to contain a value, or we'll generate a UUID.
         self.cwfId = Calling.generateCwfId( id: id, cwfId: cwfId )
@@ -96,7 +105,7 @@ public struct Calling : JSONParsable {
         self.parentOrg = parentOrg
         self.existingStatus = existingStatus ?? .None
         self.activeDate = activeDate
-        
+        self.cwfOnly = cwfOnly
     }
     
     public init?(fromJSON json: JSONObject) {
@@ -127,6 +136,7 @@ public struct Calling : JSONParsable {
         let notesJson = json[CallingJsonKeys.notes]
         notes = notesJson is String ? notesJson as? String : nil
         parentOrg = nil
+        cwfOnly = JSONParseUtil.boolean(fromJsonField: json[CallingJsonKeys.cwfOnly], defaultingTo: false)
         
         activeDate = Date( fromLCRString: (json[CallingJsonKeys.activeDate] as? String ?? "") )
     }
@@ -145,6 +155,7 @@ public struct Calling : JSONParsable {
         jsonObj[CallingJsonKeys.activeDate] = self.activeDate?.lcrDateString() as AnyObject
         jsonObj[CallingJsonKeys.proposedIndId] = self.proposedIndId as AnyObject
         jsonObj[CallingJsonKeys.notes] = self.notes as AnyObject
+        jsonObj[CallingJsonKeys.cwfOnly] = self.cwfOnly as AnyObject
         jsonObj = jsonObj.merged( withDictionary: position.toJSONObject() )
         return jsonObj;
     }
@@ -236,5 +247,6 @@ private struct CallingJsonKeys {
     static let existingIndId = "memberId"
     static let proposedIndId = "proposedIndId"
     static let notes = "notes"
+    static let cwfOnly = "cwfOnly"
 }
 

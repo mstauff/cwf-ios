@@ -151,7 +151,7 @@ class CallingManagerServiceTests: XCTestCase {
     }
     
     func testmapForCallingsByIndId() {
-        let callingMap = callingMgr.multiValueDictionaryFromArray(array: org!.allOrgCallings, transformer: {$0.proposedIndId})
+        let callingMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org!.allOrgCallings, transformer: {$0.proposedIndId})
         validateCallingList(callingMap: callingMap, indId: 567, expectedNumCallings: 2, expectedCallings: [1482, 1483], shouldNotHaveCallings: [1481])
         validateCallingList(callingMap: callingMap, indId: 456, expectedNumCallings: 1, expectedCallings: [1481], shouldNotHaveCallings: [1482])
 
@@ -209,7 +209,7 @@ class CallingManagerServiceTests: XCTestCase {
         // read them in, pass to reconcileCallings & validate
             let reconciledOrg = callingMgr.reconcileOrg(appOrg: appOrg, ldsOrg: lcrOrg, unitLevelOrg: lcrOrg)
         let primaryOrg = reconciledOrg.getChildOrg(id: 7428354)!
-        XCTAssertEqual( primaryOrg.children.count, 3 )
+        XCTAssertEqual( primaryOrg.children.count, 4 )
         let ctr7 = reconciledOrg.getChildOrg(id: 38432972)!
         // app & lcr both have 2 callings - but one of them has changed so it will appear as 3 callings, with one of them marked with a conflict for deletion
         XCTAssertEqual( ctr7.callings.count, 3 )
@@ -280,7 +280,23 @@ class CallingManagerServiceTests: XCTestCase {
         XCTAssertEqual(newCalling.id, 14727)
         XCTAssertEqual(newCalling.existingIndId, 789)
         
-        
+        // tests for empty callings in ctr6
+        let ctr6EmptyCallings = reconciledOrg.getChildOrg(id: 47283)!
+        // LCR has 2 empty callings that aren't in the app. App should add 2 to match
+        var emptyCallings = ctr6EmptyCallings.callings.filter() { $0.position.positionTypeId == 1481 }
+        XCTAssertEqual(emptyCallings.count, 2)
+        // LCR has 2 empty callings, app only has 1, should add 1
+        emptyCallings = ctr6EmptyCallings.callings.filter() { $0.position.positionTypeId == 1482 }
+        XCTAssertEqual(emptyCallings.count, 2)
+        // LCR has 1 empty calling, app has 4. 3 should be removed, but the one that has proposed details should remain
+        emptyCallings = ctr6EmptyCallings.callings.filter() { $0.position.positionTypeId == 1483 }
+        XCTAssertEqual(emptyCallings.count, 1)
+        XCTAssertEqual(emptyCallings[0].proposedStatus, CallingStatus.Proposed)
+        // LCR has 2 empty callings, app has 3 (1 with proposed data, 2 without). Should retain 1 with data and one empty
+        emptyCallings = ctr6EmptyCallings.callings.filter() { $0.position.positionTypeId == 1484 }
+        XCTAssertEqual(emptyCallings.count, 2)
+        emptyCallings = emptyCallings.filter() { $0.proposedStatus == CallingStatus.Proposed }
+        XCTAssertEqual(emptyCallings.count, 1)
         
         // todo - outstanding test cases
         // - variations with multiple allowed
@@ -299,10 +315,10 @@ class CallingManagerServiceTests: XCTestCase {
         
         // Add a calling for a member with a calling - see if we correctly get both active callings
         // NOTE: currently not a valid test case, you only add a proposed calling, not an active callings. Active callings go through the update to LCR
-        var calling = Calling(id: 123, cwfId: nil, existingIndId: 123, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
+        var calling = Calling(id: 123, cwfId: nil, existingIndId: 123, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: primaryTeacherPos, notes: nil, parentOrg: ctr8, cwfOnly: false)
         
         // Add a calling for a member with a potential calling - see if we correctly get both potential callings
-        calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
+        calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8, cwfOnly: false)
         let memberWithMultipleProposedCallings = createMember(withId: 456)
         let addPotentialCallingExpectation = self.expectation( description: "Add a potential calling for a member that already has a potential calling")
         
@@ -313,7 +329,7 @@ class CallingManagerServiceTests: XCTestCase {
         }
         
         // add a potential calling for a member with an active calling, make sure we get both
-        calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 678, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
+        calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 678, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8, cwfOnly: false)
         let memberWithBothTypesCallings = createMember(withId: 678)
         let addPotentialToActiveExpectation = self.expectation(description: "Add a potential calling to a member that has an active calling")
         callingMgr.addCalling(calling: calling) { _, _ in
@@ -337,7 +353,7 @@ class CallingManagerServiceTests: XCTestCase {
         let primaryTeacherPos = Position(positionTypeId: 1481, name: "Primary Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata())
         
         // Add a second calling for a member with a potential calling, so we can delete and make sure we still have at least one
-        let calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8)
+        let calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: primaryTeacherPos, notes: nil, parentOrg: ctr8, cwfOnly: false)
         let memberWithMultipleProposedCallings = createMember(withId: 456)
         let deleteValidCallingExpectation = self.expectation( description: "delete a potential calling for a member that has multiple potential calling")
         
@@ -400,7 +416,7 @@ class CallingManagerServiceTests: XCTestCase {
         let member = createMember(withId: 456)
         
         // try a delete for a calling that doesn't exist
-        let calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: ctr9TeacherPos, notes: nil, parentOrg: ctr8)
+        let calling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 456, status: .Proposed, position: ctr9TeacherPos, notes: nil, parentOrg: ctr8, cwfOnly: false)
         let deleteInvalidExpectation = self.expectation(description: "remove a calling that doesn't exist")
         callingMgr.deleteCalling(calling: calling) { success, error in
             // make sure that the calling they do have was not affected

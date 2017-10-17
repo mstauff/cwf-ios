@@ -16,6 +16,19 @@ public protocol JSONParsable {
     func toJSONObject() -> JSONObject
 }
 
+public class JSONParseUtil {
+    // Util method for handling a boolean from json that may be bool or string
+    public static func boolean( fromJsonField jsonValue: AnyObject?, defaultingTo defaultVal : Bool ) -> Bool {
+        var result = defaultVal
+        if let boolVal = jsonValue as? Bool {
+            result = boolVal
+        } else if let stringVal = jsonValue as? String, !stringVal.isEmpty {
+            result = stringVal.lowercased() == "true"
+        }
+        return result
+    }
+}
+
 public protocol JSONSerializer {
     func serialize( jsonObject : JSONObject ) -> String?
 }

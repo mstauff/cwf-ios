@@ -312,7 +312,7 @@ class FilterOptionsTests: XCTestCase {
         if numCallings > 0 {
             for i in 1...numCallings {
                 
-                callings.append( Calling(id: Int64(id * 100 + i), cwfId: nil, existingIndId: Int64(id), existingStatus: .Active, activeDate: nil, proposedIndId: nil, status: nil, position:position, notes: nil, parentOrg: nil) )
+                callings.append( Calling(id: Int64(id * 100 + i), cwfId: nil, existingIndId: Int64(id), existingStatus: .Active, activeDate: nil, proposedIndId: nil, status: nil, position:position, notes: nil, parentOrg: nil, cwfOnly: false) )
             }
         }
         
@@ -330,7 +330,7 @@ class FilterOptionsTests: XCTestCase {
                 timeInCalling.month = -numMonths
                 let activeDate = Calendar.current.date(byAdding: timeInCalling, to: Date())
 
-                callings.append( Calling(id: Int64(id * 100 + index), cwfId: nil, existingIndId: Int64(id), existingStatus: .Active, activeDate: activeDate, proposedIndId: nil, status: nil, position:position, notes: nil, parentOrg: nil) )
+                callings.append( Calling(id: Int64(id * 100 + index), cwfId: nil, existingIndId: Int64(id), existingStatus: .Active, activeDate: activeDate, proposedIndId: nil, status: nil, position:position, notes: nil, parentOrg: nil, cwfOnly: false) )
             }
         }
         
@@ -340,7 +340,7 @@ class FilterOptionsTests: XCTestCase {
 
     func createMemberCallings( withId id: Int, withPosition positionId: Int, withStatus status: CallingStatus?, withOrg parentOrg : Org? ) -> MemberCallings {
         let position = Position(positionTypeId: positionId, name: "Calling", hidden: false, multiplesAllowed: false, displayOrder: 100, metadata: PositionMetadata() )
-        let calling = Calling(id: Int64(id * 100), cwfId: nil, existingIndId: 100, existingStatus: .Active, activeDate: nil, proposedIndId: Int64(id), status: status, position:position, notes: nil, parentOrg: parentOrg)
+        let calling = Calling(id: Int64(id * 100), cwfId: nil, existingIndId: 100, existingStatus: .Active, activeDate: nil, proposedIndId: Int64(id), status: status, position:position, notes: nil, parentOrg: parentOrg, cwfOnly: false)
         
         let member = Member(indId: Int64(id), name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
         return MemberCallings(member: member, callings: [], proposedCallings: [calling])
