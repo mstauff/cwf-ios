@@ -16,7 +16,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             tableView.reloadData()
         }
     }
-    var tableView = UITableView()
+    var tableView = UITableView(frame: CGRect.zero, style: .grouped)
     var isDirty = false
 
     var originalCalling : Calling? = nil
@@ -99,6 +99,8 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         tableView.delegate = self
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 0.1))
+        
         
         self.view.addSubview(self.tableView)
         
@@ -129,16 +131,32 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             return 2
         }
     }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case 0:// we don't want a header on the first section
-            return 0
+            return 0.1
         default:// all other sections get a 25 px header
             return 25
         }
     }
-
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        switch section {
+        case 0:
+            return UIView(frame: CGRect(x: 0, y: 0, width: 0.1, height: 0.1))
+        default:
+            return UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 25.0))
+        }
+    }
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        switch section {
+        case 0:// we don't want a header on the first section
+            return 0.1
+        default:// all other sections get a 25 px header
+            return 25
+        }
+    }
+    
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         default:

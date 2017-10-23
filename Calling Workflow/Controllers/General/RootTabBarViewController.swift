@@ -82,7 +82,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
                                     }
                                 }else {
                                     self?.removeSpinner()
-                                    self?.showAlert(title: "Invalid Google Account", message: "You need to go to the Settings page, Sharing/Sync Options & then sign in with the ward google account to proceed")
+                                    self?.showDriveSignInAlert(title: NSLocalizedString("Invalid Google Account", comment: "invalid google account"), message:NSLocalizedString("You need to go to the Settings page, Sharing/Sync Options & then sign in with the ward google account to proceed", comment: "Notify user that they are going to the settings") )
                                     print( "No creds - forward to settings!")
                                     self?.presentDriveSignInView()
                                 }
@@ -112,6 +112,17 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
             handler: nil
         )
         alert.addAction(ok)
+        present(alert, animated: true, completion: nil)
+    }
+    func showDriveSignInAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "ok"), style: .default, handler: {
+            (alert: UIAlertAction!) -> Void in
+            self.presentDriveSignInView()
+        })
+        
+        alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
     }
     

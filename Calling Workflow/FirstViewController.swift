@@ -27,7 +27,7 @@ import GoogleAPIClient
 import GTMOAuth2
 import UIKit
 
-class FirstViewController: UIViewController, GIDSignInUIDelegate {
+class FirstViewController: CWFBaseViewController, GIDSignInUIDelegate, GIDSignInDelegate {
     
     var dataObject = ""
     // TODO - need a constructor/init in the interface
@@ -42,8 +42,8 @@ class FirstViewController: UIViewController, GIDSignInUIDelegate {
         GIDSignIn.sharedInstance().signOut()
         print( "signed out" )
     }
-    @IBAction func updateClicked() {
-//        callingMgr.updateOrgCallings(org: eq) { [weak weakSelf=self] error in
+
+    //        callingMgr.updateOrgCallings(org: eq) { [weak weakSelf=self] error in
 //            guard error == nil else {
 //                print( "Error on update: " + error.debugDescription )
 //                weakSelf?.showAlert(title: "Error Updating Data", message: error.debugDescription)
@@ -52,13 +52,15 @@ class FirstViewController: UIViewController, GIDSignInUIDelegate {
 //            self.output.text = "Data Updated"
         
 //        }
-    }
+    
     // When the view loads, create necessary subviews
     // and initialize the Drive API service
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.navigationItem.title = "Google Account Management"
         GIDSignIn.sharedInstance().uiDelegate = self
+        GIDSignIn.sharedInstance().delegate = self
+
         // todo - should implement optional GIDSignInUIDelegate methods to handle sign in results
         
     }
@@ -150,6 +152,8 @@ class FirstViewController: UIViewController, GIDSignInUIDelegate {
         }
         else {
             print("Sign in successful")
+            self.dismiss(animated: true, completion: nil)
+            self.navigationController?.popViewController(animated: true)
         }
     }
 }

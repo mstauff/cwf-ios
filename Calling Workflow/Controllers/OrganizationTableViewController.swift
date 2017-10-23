@@ -39,6 +39,11 @@ class OrganizationTableViewController: CWFBaseTableViewController {
         self.tabBarController?.title = appDelegate?.callingManager.appDataOrg?.orgName
 
         self.tabBarController?.navigationItem.rightBarButtonItem = nil
+
+        if self.organizationsToDisplay == nil {
+            organizationsToDisplay = []
+        }
+
         getOrgs()
         tableView.reloadData()
     }
