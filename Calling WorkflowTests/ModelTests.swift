@@ -47,12 +47,6 @@ class ModelTests: XCTestCase {
         let jsonFileReader = JSONFileReader()
         let metadataList = jsonFileReader.getJSONArray(fromFile: "position-metadata")
         
-//        if let positionMetadataFile = bundle.path(forResource: "position-metadata", ofType: "js"),
-//            let fileData = NSData(contentsOfFile: positionMetadataFile) {
-        
-//            let jsonData = Data( referencing: fileData )
-//            print( jsonData.debugDescription )
-//            let metadataList = try! JSONSerialization.jsonObject(with: jsonData, options: []) as! [JSONObject]
             positionMetadata = metadataList.map() { PositionMetadata( fromJSON: $0 ) }.flatMap() {$0 }
             print( positionMetadata.debugDescription )
 //        } else {
@@ -85,8 +79,8 @@ class ModelTests: XCTestCase {
         let firstCounselor = positionMap[54]!
         XCTAssertEqual(firstCounselor.shortName, "1st Counselor")
         
-        let htDistLeader = positionMap[1395]!
-        XCTAssertEqual(htDistLeader.requirements?.priesthood.count, 5)
+        let htDistLeader = positionMap[3635]!
+        XCTAssertEqual(htDistLeader.requirements?.priesthood.count, 3)
         XCTAssertTrue( (htDistLeader.requirements?.priesthood.contains(item: .Priest))!)
         
         let rsPres = positionMap[143]!
@@ -271,7 +265,7 @@ class ModelTests: XCTestCase {
         XCTAssertEqual(primaryClass.callings.count, 2)
         let teacher = Position(positionTypeId: 1482, name: "Primary Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata())
         
-        let newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 999, status: .Proposed, position: teacher, notes: nil, parentOrg: primaryClass)
+        let newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 999, status: .Proposed, position: teacher, notes: nil, parentOrg: primaryClass, cwfOnly: false)
         
         org = org.updatedWith(newCalling: newCalling)!
         primaryClass = org.getChildOrg(id: 752892)!
@@ -362,7 +356,7 @@ class ModelTests: XCTestCase {
     func testCallingComputedVarNames() {
         let eqPresPos = Position(positionTypeId: 138, name: "EQ Pres", hidden: false, multiplesAllowed: false, displayOrder: nil, metadata: PositionMetadata() )
         let teacherPos = Position(positionTypeId: 200, name: "Primary Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata() )
-        let eqPresCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: Date().xMonths(x: -15), proposedIndId: nil, status: .Proposed, position: eqPresPos, notes: nil, parentOrg: nil)
+        let eqPresCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: Date().xMonths(x: -15), proposedIndId: nil, status: .Proposed, position: eqPresPos, notes: nil, parentOrg: nil, cwfOnly: false)
         var callingText = eqPresCalling.nameWithTime
         // should contain the name of the calling
         // should contain the time in calling
@@ -378,7 +372,7 @@ class ModelTests: XCTestCase {
         XCTAssertFalse(callings.namesWithTime().contains( "," ))
         XCTAssertFalse(callings.namesWithStatus().contains( "," ))
         
-        let teacherCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: Date().xMonths(x: -6), proposedIndId: nil, status: .Accepted, position: teacherPos, notes: nil, parentOrg: nil)
+        let teacherCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: Date().xMonths(x: -6), proposedIndId: nil, status: .Accepted, position: teacherPos, notes: nil, parentOrg: nil, cwfOnly: false)
         callings = [eqPresCalling, teacherCalling]
 
         callingText = callings.namesWithTime()
@@ -468,8 +462,8 @@ class ModelTests: XCTestCase {
     func testCallingEqual() {
         let eqPres = Position(positionTypeId: 138, name: "EQ President", hidden: false, multiplesAllowed: false, displayOrder: nil, metadata: PositionMetadata())
         let ctr7 = Position(positionTypeId: 222, name: "CTR 7 Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata())
-        let eqpCalling = Calling(id: 111, cwfId: "222-3434-111", existingIndId: 555, existingStatus: .Active, activeDate: nil, proposedIndId: 600, status: .Proposed, position: eqPres, notes: nil, parentOrg: standardOrg)
-        let ctr7Calling = Calling(id: 222, cwfId: nil, existingIndId: 600, existingStatus: .Active, activeDate: nil, proposedIndId: 777, status: .Proposed, position: ctr7, notes: nil, parentOrg: standardOrg)
+        let eqpCalling = Calling(id: 111, cwfId: "222-3434-111", existingIndId: 555, existingStatus: .Active, activeDate: nil, proposedIndId: 600, status: .Proposed, position: eqPres, notes: nil, parentOrg: standardOrg, cwfOnly: false)
+        let ctr7Calling = Calling(id: 222, cwfId: nil, existingIndId: 600, existingStatus: .Active, activeDate: nil, proposedIndId: 777, status: .Proposed, position: ctr7, notes: nil, parentOrg: standardOrg, cwfOnly: false)
         
         
         // callings that has a position ID that matches
@@ -484,34 +478,34 @@ class ModelTests: XCTestCase {
         XCTAssertFalse( eqpCalling == ctr7Calling )
 
         // calling that matches only based on positionId
-        callingWithMatchingId = Calling(id: 111, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: eqPres, notes: nil, parentOrg: standardOrg)
+        callingWithMatchingId = Calling(id: 111, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: eqPres, notes: nil, parentOrg: standardOrg, cwfOnly: false)
         XCTAssertTrue( eqpCalling == callingWithMatchingId )
         
         // calling with a different ID, but the same position, multiples not allowed so should match based on position
-        let callingDiffIdSamePosition = Calling(id: 1122, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: eqPres, notes: nil, parentOrg: standardOrg)
+        let callingDiffIdSamePosition = Calling(id: 1122, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: eqPres, notes: nil, parentOrg: standardOrg, cwfOnly: false)
         XCTAssertTrue( eqpCalling == callingDiffIdSamePosition )
         
         // calling with a different ID, but the same position, multiples are allowed so should not match based on position
-        let callingDiffIdSamePositionWithMulti = Calling(id: 1122, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: ctr7, notes: nil, parentOrg: standardOrg)
+        let callingDiffIdSamePositionWithMulti = Calling(id: 1122, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: ctr7, notes: nil, parentOrg: standardOrg, cwfOnly: false)
         XCTAssertFalse( ctr7Calling == callingDiffIdSamePositionWithMulti )
         
         // proposed callings, only with cwfId
-        let proposed = Calling(id: nil, cwfId: "11-22-33", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 555, status: .Proposed, position: ctr7, notes: nil, parentOrg: standardOrg)
+        let proposed = Calling(id: nil, cwfId: "11-22-33", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 555, status: .Proposed, position: ctr7, notes: nil, parentOrg: standardOrg, cwfOnly: false)
         var changedProposed = proposed
         changedProposed.proposedIndId = 777
         changedProposed.proposedStatus = .Approved
         XCTAssertTrue( proposed == changedProposed )
         
         // if it has a different cwfId it should not match even though it's same position (when multiples are allowed)
-        changedProposed = Calling(id: nil, cwfId: "44-55-66", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 777, status: .Approved, position: ctr7, notes: nil, parentOrg: standardOrg)
+        changedProposed = Calling(id: nil, cwfId: "44-55-66", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 777, status: .Approved, position: ctr7, notes: nil, parentOrg: standardOrg, cwfOnly: false)
         XCTAssertFalse( proposed == changedProposed )
         
         // a proposed calling merged on another client with an active. Should match based on cwfId
-        let proposedMergedActive = Calling(id: 1122, cwfId: "11-22-33", existingIndId: 555, existingStatus: .Active, activeDate: nil, proposedIndId: 777, status: .Approved, position: ctr7, notes: nil, parentOrg: standardOrg)
+        let proposedMergedActive = Calling(id: 1122, cwfId: "11-22-33", existingIndId: 555, existingStatus: .Active, activeDate: nil, proposedIndId: 777, status: .Approved, position: ctr7, notes: nil, parentOrg: standardOrg, cwfOnly: false)
         XCTAssertTrue( proposed == proposedMergedActive )
         
         //  test for same calling w/ different cwfId's (multiples not allowed - should match based on position regardless of different cwfId)
-        changedProposed = Calling(id: nil, cwfId: "44-55-66", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 777, status: .Approved, position: eqPres, notes: nil, parentOrg: standardOrg)
+        changedProposed = Calling(id: nil, cwfId: "44-55-66", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 777, status: .Approved, position: eqPres, notes: nil, parentOrg: standardOrg, cwfOnly: false)
         XCTAssertTrue( eqpCalling == changedProposed )
         
         
@@ -565,10 +559,10 @@ class ModelTests: XCTestCase {
         let teacherPos = Position(positionTypeId: 200, name: "Primary Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata() )
         let ssTeacherPos = Position(positionTypeId: 300, name: "Sunday School Teacher", hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata() )
 
-        let calling = Calling(id: 123, cwfId: nil, existingIndId: 222, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: eqPres, notes: nil, parentOrg: nil)
+        let calling = Calling(id: 123, cwfId: nil, existingIndId: 222, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: nil, position: eqPres, notes: nil, parentOrg: nil, cwfOnly: false)
         
-        let proposedTeacher = Calling(id: nil, cwfId: "123-ABC", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 111, status: .Submitted, position: teacherPos, notes: nil, parentOrg: nil)
-        let proposedSSTeacher = Calling(id: 500, cwfId: "500-ABC", existingIndId: 222, existingStatus: .Active, activeDate: nil, proposedIndId: 111, status: .Submitted, position: ssTeacherPos, notes: nil, parentOrg: nil)
+        let proposedTeacher = Calling(id: nil, cwfId: "123-ABC", existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: 111, status: .Submitted, position: teacherPos, notes: nil, parentOrg: nil, cwfOnly: false)
+        let proposedSSTeacher = Calling(id: 500, cwfId: "500-ABC", existingIndId: 222, existingStatus: .Active, activeDate: nil, proposedIndId: 111, status: .Submitted, position: ssTeacherPos, notes: nil, parentOrg: nil, cwfOnly: false)
         
         memberCallings = MemberCallings(member: createMember(withId: 111), callings: [calling], proposedCallings: [proposedTeacher, proposedSSTeacher])
         XCTAssertEqual( memberCallings.callings.count, 1 )

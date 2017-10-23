@@ -243,9 +243,9 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         }
 
         // this is only actual callings.
-        self.memberCallingsMap = self.multiValueDictionaryFromArray(array: org.allOrgCallings) { $0.existingIndId }
+        self.memberCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.existingIndId }
         // Now proposed callings
-        self.memberPotentialCallingsMap = self.multiValueDictionaryFromArray(array: org.allOrgCallings) { $0.proposedIndId }
+        self.memberPotentialCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.proposedIndId }
         self.extraAppOrgs = extraOrgs
         
     }
@@ -411,7 +411,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 
                 // Now need to add the existing calling from LCR
                 if let ldsCallingOrg = ldsCalling.parentOrg, let appCallingOrg = appOrg.id == ldsCallingOrg.id ? appOrg : appOrg.getChildOrg(id: ldsCallingOrg.id) {
-                    let callingFromLcr = Calling(id: ldsCalling.id, cwfId: nil, existingIndId: ldsCalling.existingIndId, existingStatus: .Active, activeDate: ldsCalling.activeDate, proposedIndId: mergedProposedIndId, status: mergedProposedStatus, position: ldsCalling.position, notes: mergedNotes, parentOrg: appCallingOrg)
+                    let callingFromLcr = Calling(id: ldsCalling.id, cwfId: nil, existingIndId: ldsCalling.existingIndId, existingStatus: .Active, activeDate: ldsCalling.activeDate, proposedIndId: mergedProposedIndId, status: mergedProposedStatus, position: ldsCalling.position, notes: mergedNotes, parentOrg: appCallingOrg, cwfOnly: false)
                     updatedOrg = updatedOrg.updatedWith(newCalling: callingFromLcr) ?? updatedOrg
                     updatedOrg.hasUnsavedChanges = true
                 }
@@ -440,7 +440,37 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 // if it's not in the updatedOrg, then nothing to worry about, nothing to remove
             }
         }
-        // We're currently not handling (very well) empty callings. Adam and I discussed and agreed on we're going to add another flag to a calling "cwfOnly" or similar that indicates if a calling was created in the app vs. in LCR. Then we just match up numbers of empty callings between LCR and the app. This still needs to be coded for here
+        
+        let emptyLCRCallings = ldsOrg.callings.filter() { $0.id == nil && $0.position.multiplesAllowed }
+        // for the app callings we need any that id is nil, or any that have been marked as a conflict (that's a case where the id could potentially be nil, pending user response
+        let emptyAppCallings = updatedOrg.callings.filter() { ($0.id == nil || $0.conflict != nil) && !$0.cwfOnly  && $0.position.multiplesAllowed }
+
+        // reduce to map  by type, then look for equivalent amounts.
+        let emptyLCRCallingsByType = MultiValueDictionary<Int, Calling>.initFromArray(array: emptyLCRCallings, transformer: {$0.position.positionTypeId}  )
+        let emptyAppCallingsByType = MultiValueDictionary<Int, Calling>.initFromArray(array: emptyAppCallings, transformer: {$0.position.positionTypeId} )
+        emptyLCRCallingsByType.dictionary.forEach() { (positionTypeId, callings) in
+            let equivalentAppCallings = emptyAppCallingsByType.getValues(forKey: positionTypeId)
+                // compare size
+            let numCallingsDiff = abs(equivalentAppCallings.count - callings.count)
+            
+            
+            if equivalentAppCallings.count < callings.count {
+                // we need to add the empty from LCR to updated Org
+                for _ in 1...numCallingsDiff {
+                    updatedOrg.callings.append( Calling( forPosition: callings[0].position ) )
+                }
+            } else if equivalentAppCallings.count > callings.count {
+                // of the empty callings that are candidates to remove we need to make sure that they don't have any proposed data, and then we remove up to numCallingsDiff of completely empty callings.
+                let cwfIdsToRemove = equivalentAppCallings.filter() {
+                    $0.proposedIndId == nil && $0.proposedStatus == .None && $0.notes == nil
+                    }.prefix(numCallingsDiff).flatMap() { $0.cwfId }
+                if cwfIdsToRemove.isNotEmpty {
+                    updatedOrg.callings = updatedOrg.callings.filter() { $0.cwfId != nil && !cwfIdsToRemove.contains(item: $0.cwfId!) }
+                    
+                }
+            }
+            
+        }
         
         return updatedOrg
     }
@@ -449,21 +479,10 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
      utility method to combine existing calling data and proposed calling data into a single calling object
      */
     private func mergeCallingData( fromActualCalling existingCalling: Calling, andProposedCalling proposedCalling: Calling ) -> Calling {
-        return Calling(id: existingCalling.id, cwfId: nil, existingIndId: existingCalling.existingIndId, existingStatus: .Active, activeDate: existingCalling.activeDate, proposedIndId: proposedCalling.proposedIndId, status: proposedCalling.proposedStatus, position: existingCalling.position, notes: proposedCalling.notes, parentOrg: existingCalling.parentOrg)
+        return Calling(id: existingCalling.id, cwfId: nil, existingIndId: existingCalling.existingIndId, existingStatus: .Active, activeDate: existingCalling.activeDate, proposedIndId: proposedCalling.proposedIndId, status: proposedCalling.proposedStatus, position: existingCalling.position, notes: proposedCalling.notes, parentOrg: existingCalling.parentOrg, cwfOnly: false)
         
     }
     
-    /** Creates a MultiValueDictionary (a dictionary where each key maps to an array of values, rather than a single element) from an array. It takes a transforming function that returns what the key for the element should be. It puts all the elements in the dictionary, if there are duplicate entries for a given key they will all be added to the array value for the key */
-    func multiValueDictionaryFromArray<T, K>(array: [T], transformer: (_: T) -> K?)
-        -> MultiValueDictionary<K, T> {
-            var map = MultiValueDictionary<K, T>()
-            for element in array {
-                if let key = transformer(element) {
-                    map.addValue(forKey: key, value: element)
-                }
-            }
-            return map
-    }
     
     // MARK: - Get Callings/Member data
     // Used to get a member from the memberlist by memberId

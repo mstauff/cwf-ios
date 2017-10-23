@@ -26,6 +26,18 @@ public struct MultiValueDictionary<K:Hashable, V> {
         }
 
     }
+    /** Creates a MultiValueDictionary (a dictionary where each key maps to an array of values, rather than a single element) from an array. It takes a transforming function that returns what the key for the element should be. It puts all the elements in the dictionary, if there are duplicate entries for a given key they will all be added to the array value for the key. In theory this would be better as an init method, but I couldn't figure out the syntax to make it work with the generics */
+    static func initFromArray<T, K>(array: [T], transformer: (_: T) -> K?)
+        -> MultiValueDictionary<K, T> {
+            var map = MultiValueDictionary<K, T>()
+            for element in array {
+                if let key = transformer(element) {
+                    map.addValue(forKey: key, value: element)
+                }
+            }
+            return map
+    }
+
 
 }
 

@@ -14,7 +14,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     
     private let orgFileNamesMap : [UnitLevelOrgType:String] = [ .Bishopric : "BISHOPRIC", .BranchPresidency : "BRANCH_PRES", .HighPriests : "HP", .Elders : "EQ", .ReliefSociety : "RS", .YoungMen : "YM", .YoungWomen : "YW", .SundaySchool : "SS", .Primary : "PRIMARY", .WardMissionaries : "WARD_MISSIONARY", .Other : "OTHER"]
     private let orgNameDelimiter = "-"
-    private let configFilePrefix = "config-"
+    private let configFilePrefix = "settings-"
     
     // This is all the permissions (scopes) that the app needs
     // If modifying these scopes, delete your previously saved credentials by
