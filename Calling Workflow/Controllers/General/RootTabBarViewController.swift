@@ -35,14 +35,14 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     func signIntoLDSAPI() {
         startSpinner()
         
+        // some tests fail (it's during test/init code, not during the test itself) if this is inside the getAppConfig callback. So get the reference before the call.
+        weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
         let ldscdApi = LdscdRestApi()
         ldscdApi.getAppConfig() { (appConfig, error) in
             
             let username = self.loginDictionary?["username"] as! String
             let password = self.loginDictionary?["password"] as! String
             var unitNum: Int64?
-            // todo - make this weak
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
             appDelegate?.callingManager.appConfig = appConfig ?? AppConfig()
             appDelegate?.callingManager.getLdsUser(username: username, password: password) { [weak self] (ldsUser, error) in
                 guard error == nil, let validUser = ldsUser else {

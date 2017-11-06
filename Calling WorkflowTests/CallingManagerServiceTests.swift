@@ -465,9 +465,50 @@ class CallingManagerServiceTests: XCTestCase {
         }
         
         waitForExpectations(timeout: 5)
+        // todo - need to add more variations to this test
         
     }
 
+    func testReleaseCalling() {
+        let bishopric = getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithDirectCallings")!
+        
+        let unitOrg = Org(id: 123, unitNum: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [bishopric], callings: [])
+        callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
+        callingMgr.initDatasourceData(fromOrg: unitOrg, extraOrgs: [])
+        callingMgr.mockGoogleOrg = bishopric
+        
+        var bishopCalling = bishopric.callings[0]
+        let originalProposed = bishopCalling.proposedIndId!
+        let originalActual = bishopCalling.existingIndId!
+        let updateCallingExpectation = self.expectation( description: "release a calling")
+        
+        callingMgr.releaseCalling(updatedCalling: bishopCalling ) { success, error in
+            XCTAssert( success )
+            XCTAssertNil( error )
+            // make sure the potential calling cache still has the proposed calling
+            var callings = self.callingMgr.getPotentialCallings(forMember: self.createMember(withId: originalProposed))
+            XCTAssert( callings.isNotEmpty )
+            if callings.count > 0 {
+                bishopCalling = callings[0]
+                XCTAssertEqual( bishopCalling.proposedIndId, originalProposed )
+            }
+            
+            
+            // check that the position is not in the actual position cache anymore
+            let emptyCallings = self.callingMgr.getMemberCallings(forMemberId: originalActual)
+            XCTAssert( emptyCallings == nil || emptyCallings!.callings.isEmpty )
+
+            // the org data
+            bishopCalling = (self.callingMgr.appDataOrg?.children[0].callings[0])!
+            XCTAssertNil( bishopCalling.existingIndId )
+            
+            updateCallingExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: 5)
+        // todo - need to add more variations to this test
+        
+    }
 
     func createMember( withId id: Int64 ) -> Member {
         return Member(indId: id, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)

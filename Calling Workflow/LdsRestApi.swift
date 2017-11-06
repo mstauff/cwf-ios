@@ -229,7 +229,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
                 }
                     print( "response code: " + httpResponse.statusCode.description + " | response body: " + String(data: data, encoding: .utf8)!)
 
-                if RestAPI.isSuccessResponse(httpResponse.statusCode), let newCallingId = responseJson[LcrCallingJsonKeys.subOrgId] as? NSNumber  {
+                if RestAPI.isSuccessResponse(httpResponse.statusCode), let newCallingId = responseJson[LcrCallingJsonKeys.positionId] as? NSNumber  {
                     // right now we're just checking for 200 OK. and that there is a positionId assigned. eventually we should also check that the memberId is what we passed up to ensure it happened.
                     
                     // extract the fields from the JSON that we care about
