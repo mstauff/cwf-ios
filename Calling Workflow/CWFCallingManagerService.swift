@@ -52,6 +52,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     public private(set) var userRoles : [UnitRole] = []
     
     var statusToExcludeForUnit : [CallingStatus] = []
+    
+    let maxLoadAttempts = 1
         
     
     init() {
@@ -177,14 +179,22 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     /** Reads all the unit data from the application data store (currently google drive), and also reconciles any difference between data previously retrieved from lds.org. This method should only be called after loadLDSData() & authorizeDataSource() have successfully completed. The data is not returned in the callback, it is just maintained within this service. The callback just indicates to the calling function when this method has succesfully completed.
      The parameters for the callback indicate if all the data was loaded successfully, and whether there were extra orgs in the application data that were not in the lds.org data that potentially need to be removed or merged. This would be rare, but in cases where there were multiple EQ or RS groups, and then one gets removed in LCR we would still have the extra in our application data store*/
     public func loadAppData( ldsUnit: Org, completionHandler: @escaping(_ success: Bool, _ hasExtraOrgs: Bool, _ error : Error?) -> Void) {
+        self.loadAppData(ldsUnit: ldsUnit, numLoadAttempts: 0, completionHandler: completionHandler)
+    }
+   
+    /** Private version of loading data, it includes the number of times it's been attempted so when it gets called recursively we can limit it based on the number of attempts. Generally it will only get called twice (first is the load, 2nd is after we create new orgs). As a failsafe in case there are just errors with creating orgs we don't want to get stuck in a reconcile in a recursive calling loop */
+    func loadAppData( ldsUnit: Org, numLoadAttempts: Int, completionHandler: @escaping(_ success: Bool, _ hasExtraOrgs: Bool, _ error : Error?) -> Void) {
         
         var org = Org(id: ldsUnit.id, unitNum: ldsUnit.unitNum, orgTypeId: ldsUnit.orgTypeId, orgName: ldsUnit.orgName, displayOrder: ldsUnit.displayOrder, children: [], callings: [])
         dataSource.initializeDrive(forOrgs: ldsOrgUnit!.children) { orgsToCreate, extraAppOrgs, error in
             
-            if orgsToCreate.isNotEmpty {
+            // if there's more orgs to create, and we haven't hit the limit of number of attempts, then try to create more.
+            // We include an artificial cap to prevent us from looping forever if there's just a case where we aren't able to create the missing orgs.
+            if orgsToCreate.isNotEmpty && numLoadAttempts < self.maxLoadAttempts {
                 self.dataSource.createFiles( forOrgs: orgsToCreate ) { success, errors in
                     if success {
-                        self.loadAppData(ldsUnit: ldsUnit, completionHandler: { success, extraOrgs, error in
+                        // we have to attempt a load again to get the file ID's. The create doesn't return the ID for the file, so we have to repeat the init process (read all the files in google drive and then map the file ID's by name)
+                        self.loadAppData(ldsUnit: ldsUnit, numLoadAttempts: numLoadAttempts + 1, completionHandler: { success, extraOrgs, error in
                             completionHandler( success, extraOrgs, error )
                         })
                     } else {
