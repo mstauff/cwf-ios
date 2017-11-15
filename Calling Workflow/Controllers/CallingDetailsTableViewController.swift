@@ -99,7 +99,9 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         tableView.delegate = self
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 0.1))
+        let headerView = UIView(frame: CGRect(x: 0, y: -2, width: self.view.frame.width, height: 0.1))
+        headerView.backgroundColor = UIColor.orange
+        tableView.tableHeaderView = headerView
         
         
         self.view.addSubview(self.tableView)
@@ -151,7 +153,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch section {
         case 0:// we don't want a header on the first section. iOS wants a height greater than 0
-            return UIView(frame: CGRect(x: 0, y: 0, width: 0.1, height: 0.1))
+            return UIView(frame: CGRect(x: 0, y: -2.0, width: 0.1, height: 0.1))
         default:// all other sections get a 25 px header
             return UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 25.0))
         }
@@ -572,56 +574,58 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         }
         
         //init delete option for the action sheet
-        let deleteAction = UIAlertAction(title: NSLocalizedString("Delete Calling in LCR", comment: "delete calling"), style: UIAlertActionStyle.default, handler:  {
-            (alert: UIAlertAction!) -> Void in
-            
-            //Message to use for the action conformation alert
-            var deleteWarningMessage : String = ""
-            
-            //If there is an existing individual display release warning.
-            if let existingId = self.callingToDisplay?.existingIndId, let existingIndividual = callingMgr.getMemberWithId(memberId: existingId), let existingName = existingIndividual.name, let callingName = self.callingToDisplay?.position.name {
-                deleteWarningMessage.append(NSLocalizedString("This will release \(existingName) as \(callingName) on lds.org (LCR) and remove the calling from ward lists. Do you want to record the release on lds.org?", comment: "existingIndDelete"))
-            }
-            else {
-                if let callingName = self.callingToDisplay?.position.name{
-                    deleteWarningMessage.append(NSLocalizedString("This will remove \(callingName) from ward lists and directiories. Do you want to continue?", comment: "deleteWarning"))
-                }
-            }
-
-            //Init the alert using the warning string
-            let deleteAlert = UIAlertController(title: NSLocalizedString("Delete Calling", comment: "delete"), message: deleteWarningMessage, preferredStyle: .alert)
-            
-            //Init the ok button and the callback to execute
-            let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
+        if canDeleteCalling() {
+            let deleteAction = UIAlertAction(title: NSLocalizedString("Delete Calling", comment: "delete calling"), style: UIAlertActionStyle.default, handler:  {
                 (alert: UIAlertAction!) -> Void in
-                self.startSpinner()
-                callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
-                    let err = error?.localizedDescription ?? "nil"
-                    print("Delete result: \(success) - error: \(err)")
-                    DispatchQueue.main.async {
-                        self.returnToAux(saveFirst: false)
+                
+                //Message to use for the action conformation alert
+                var deleteWarningMessage : String = ""
+                
+                //If there is an existing individual display release warning.
+                if let existingId = self.callingToDisplay?.existingIndId, let existingIndividual = callingMgr.getMemberWithId(memberId: existingId), let existingName = existingIndividual.name, let callingName = self.callingToDisplay?.position.name {
+                    deleteWarningMessage.append(NSLocalizedString("This will release \(existingName) as \(callingName) on lds.org (LCR) and remove the calling from ward lists. Do you want to record the release on lds.org?", comment: "existingIndDelete"))
+                }
+                else {
+                    if let callingName = self.callingToDisplay?.position.name{
+                        deleteWarningMessage.append(NSLocalizedString("This will remove \(callingName) from ward lists and directiories. Do you want to continue?", comment: "deleteWarning"))
                     }
-        
                 }
-            })
-            
-            //Init the cancel button for the delete calling alert
-            let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
-                (alert: UIAlertAction!) -> Void in
-                print("Cancelled")
-            })
-            
-            //Add the buttons to the alert and display to the user.
-            deleteAlert.addAction(okAction)
-            deleteAlert.addAction(cancelAction)
-            
-            self.present(deleteAlert, animated: true, completion: nil)
 
-            print("Delete Current pressed")
+                //Init the alert using the warning string
+                let deleteAlert = UIAlertController(title: NSLocalizedString("Delete Calling", comment: "delete"), message: deleteWarningMessage, preferredStyle: .alert)
+                
+                //Init the ok button and the callback to execute
+                let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
+                    (alert: UIAlertAction!) -> Void in
+                    self.startSpinner()
+                    callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
+                        let err = error?.localizedDescription ?? "nil"
+                        print("Delete result: \(success) - error: \(err)")
+                        DispatchQueue.main.async {
+                            self.returnToAux(saveFirst: false)
+                        }
             
-        })
+                    }
+                })
+                
+                //Init the cancel button for the delete calling alert
+                let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
+                    (alert: UIAlertAction!) -> Void in
+                    print("Cancelled")
+                })
+                
+                //Add the buttons to the alert and display to the user.
+                deleteAlert.addAction(okAction)
+                deleteAlert.addAction(cancelAction)
+                
+                self.present(deleteAlert, animated: true, completion: nil)
 
-        actionSheet.addAction(deleteAction)
+                print("Delete Current pressed")
+                
+            })
+
+            actionSheet.addAction(deleteAction)
+        }
 
         let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
             (alert: UIAlertAction!) -> Void in
@@ -705,5 +709,18 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         else {
             return false
         }
+    }
+    
+    func canDeleteCalling() -> Bool {
+        var boolToReturn = false
+        //TODO : does this need to include if this is the last one?
+        if let calling = callingToDisplay {
+            if calling.position.multiplesAllowed {
+                boolToReturn = true
+            }
+            
+        }
+        
+        return boolToReturn
     }
 }

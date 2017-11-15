@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="THt-KO-N4t">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="THt-KO-N4t">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -25,11 +25,14 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mK6-UV-l1K" customClass="GIDSignInButton">
                                 <rect key="frame" x="16" y="72" width="343" height="108"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="108" id="6Al-Bl-PFK"/>
+                                </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gPy-rR-Sxt">
                                 <rect key="frame" x="125" y="188" width="125" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="125" id="wSh-Au-Sdf"/>
+                                    <constraint firstAttribute="width" constant="125" id="LQW-7I-HYe"/>
                                 </constraints>
                                 <state key="normal" title="Sign Out Google"/>
                                 <connections>
@@ -39,12 +42,11 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="gPy-rR-Sxt" firstAttribute="top" secondItem="mK6-UV-l1K" secondAttribute="bottom" constant="8" symbolic="YES" id="ABO-Qe-Fi3"/>
-                            <constraint firstItem="mK6-UV-l1K" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" id="Grn-LU-Ady"/>
-                            <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="gPy-rR-Sxt" secondAttribute="bottom" constant="449" id="HaS-xq-Pig"/>
-                            <constraint firstItem="mK6-UV-l1K" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" constant="8" symbolic="YES" id="Ukm-j2-ZWI"/>
-                            <constraint firstItem="gPy-rR-Sxt" firstAttribute="centerX" secondItem="mK6-UV-l1K" secondAttribute="centerX" id="Xbs-8g-QcC"/>
-                            <constraint firstItem="mK6-UV-l1K" firstAttribute="trailing" secondItem="tsR-hK-woN" secondAttribute="trailingMargin" id="nGX-2i-ZRv"/>
+                            <constraint firstItem="gPy-rR-Sxt" firstAttribute="centerX" secondItem="mK6-UV-l1K" secondAttribute="centerX" id="3wN-Ag-ifq"/>
+                            <constraint firstItem="gPy-rR-Sxt" firstAttribute="top" secondItem="mK6-UV-l1K" secondAttribute="bottom" constant="8" symbolic="YES" id="J6G-DE-S81"/>
+                            <constraint firstItem="mK6-UV-l1K" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" id="pAF-YZ-18d"/>
+                            <constraint firstItem="mK6-UV-l1K" firstAttribute="trailing" secondItem="tsR-hK-woN" secondAttribute="trailingMargin" id="wex-AK-Sul"/>
+                            <constraint firstItem="mK6-UV-l1K" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" constant="8" id="xlt-rq-nwS"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -94,19 +96,17 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sign in" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fVC-3h-mkp">
-                                            <rect key="frame" x="120" y="11" width="135" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="Atb-sn-E7b"/>
-                                                <constraint firstAttribute="width" constant="135" id="Z1M-jT-YP2"/>
-                                            </constraints>
+                                            <rect key="frame" x="128" y="14" width="119" height="15.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.18823529410000001" green="0.68235294120000001" blue="0.93725490199999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="fVC-3h-mkp" firstAttribute="centerX" secondItem="L7w-1D-nD3" secondAttribute="centerX" id="M4K-cS-ein"/>
-                                        <constraint firstItem="fVC-3h-mkp" firstAttribute="centerY" secondItem="L7w-1D-nD3" secondAttribute="centerY" id="hLu-9Y-VF5"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="fVC-3h-mkp" secondAttribute="trailing" constant="112" id="3um-1t-QeY"/>
+                                        <constraint firstItem="fVC-3h-mkp" firstAttribute="leading" secondItem="L7w-1D-nD3" secondAttribute="leadingMargin" constant="112" id="Wzk-nE-jwW"/>
+                                        <constraint firstItem="fVC-3h-mkp" firstAttribute="top" secondItem="L7w-1D-nD3" secondAttribute="topMargin" constant="3" id="qQI-DC-Qn2"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="fVC-3h-mkp" secondAttribute="bottom" constant="3.5" id="u77-xG-DPV"/>
                                     </constraints>
                                 </tableViewCellContentView>
                             </tableViewCell>
@@ -371,7 +371,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="11h-R7-uuV">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" id="11h-R7-uuV">
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="11h-R7-uuV" id="F6c-YN-OqI">

@@ -37,6 +37,20 @@ func getStatusActionSheet(delegate: StatusPickerDelegate?) -> UIAlertController 
     return actionSheet
 }
 
+func showAlertFromBackground(alert: UIAlertController, completion: (() -> Void)? ) {
+    DispatchQueue.main.async {
+        var rootViewController = UIApplication.shared.keyWindow?.rootViewController
+        if let navigationController = rootViewController as? UINavigationController {
+            rootViewController = navigationController.viewControllers.first
+        }
+        if let tabViewController = rootViewController as? UITabBarController {
+            rootViewController = tabViewController.selectedViewController
+        }
+
+        rootViewController?.present(alert, animated: true, completion: completion)
+    }
+}
+
 func CWFMarginFloat() -> CGFloat {
     return 15.0
 }

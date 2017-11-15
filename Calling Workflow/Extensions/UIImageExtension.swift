@@ -17,17 +17,18 @@ extension UIImage {
         UIToolbar().setItems([tempItem], animated: false)
         
         // got image from real uibutton
-        let itemView = tempItem.value(forKey: "view") as! UIView
+        if let itemView = tempItem.value(forKey: "view") as? UIView {
         
-        for view in itemView.subviews {
-            if view is UIButton {
-                let button = view as! UIButton
-                let image = button.imageView!.image!
-                image.withRenderingMode(renderingMode)
-                return image
+            for view in itemView.subviews {
+                if view is UIButton {
+                    if let button = view as? UIButton {
+                        let image = button.imageView!.image!
+                        image.withRenderingMode(renderingMode)
+                        return image
+                    }
+                }
             }
         }
-        
         return UIImage()
     }
 }

@@ -109,7 +109,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         memberView.translatesAutoresizingMaskIntoConstraints = false
 
         let removeButton = UIButton(type: .system)
-        removeButton.setImage(UIImage.imageFromSystemBarButton(.trash), for: .normal)
+        removeButton.setImage(UIImage.init(named: "DeleteIcon") , for: .normal)
         removeButton.addTarget(self, action: #selector(removeButtonPressed), for: .touchUpInside)
         removeButton.translatesAutoresizingMaskIntoConstraints = false
         

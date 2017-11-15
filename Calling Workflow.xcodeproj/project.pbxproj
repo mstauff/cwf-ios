@@ -520,14 +520,14 @@
 			children = (
 				3C11A31E1E70C14D00EC9F38 /* CWFAccordionTableViewController.swift */,
 				3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */,
+				3C3737B11F0FFD5600D62C2E /* CWFMapViewController.swift */,
+				3CA0C94B1F4D4058003FA7B8 /* CWFSpinnerView.swift */,
 				3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */,
 				3CB192001EC6801E0098AD1C /* FilterButton.swift */,
 				3C6A365A1EC23D4600A58C33 /* FilterTableViewController.swift */,
 				3C88170E1E68D8A10037151B /* MemberInfoView.swift */,
 				3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */,
 				3C0E01811E4D42740014D32B /* ViewUtils.swift */,
-				3C3737B11F0FFD5600D62C2E /* CWFMapViewController.swift */,
-				3CA0C94B1F4D4058003FA7B8 /* CWFSpinnerView.swift */,
 			);
 			name = "Base Controllers";
 			sourceTree = "<group>";
@@ -550,13 +550,13 @@
 		E8B6CF1A1DF8CF0C0080097F /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				E8B13CC91E3BC749004FD60C /* DateExtensions.swift */,
-				E8084F7D1E0476C10077FDAE /* DataExtensions.swift */,
 				E8084F7E1E0476C10077FDAE /* CollectionExtensions.swift */,
-				E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */,
-				3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */,
-				3CB191FE1EC67E330098AD1C /* UIButtonExtensions.swift */,
+				E8084F7D1E0476C10077FDAE /* DataExtensions.swift */,
+				E8B13CC91E3BC749004FD60C /* DateExtensions.swift */,
 				3C2428211EE1D848006DA7E8 /* MemberExtensions.swift */,
+				E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */,
+				3CB191FE1EC67E330098AD1C /* UIButtonExtensions.swift */,
+				3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */,
 				3C2DFEB71F22C261007F716C /* UIImageExtension.swift */,
 			);
 			name = Extensions;
@@ -650,7 +650,6 @@
 				TargetAttributes = {
 					3CE4C8CE1DCA824100AAFB31 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 42MR5LM3U2;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
@@ -1126,12 +1125,15 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = 42MR5LM3U2;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-Workflow";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Calling Workflow/Calling Workflow-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
@@ -1145,12 +1147,15 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = 42MR5LM3U2;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "Calling Workflow/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.ldscd.Calling-Workflow";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Calling Workflow/Calling Workflow-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 			};

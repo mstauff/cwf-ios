@@ -172,7 +172,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         }
     }
 
-    // todo - need to change the callback to take an conflict resolution object  - in case there were conflicts that had to be resolved
+    // todo - need to change the callback to take a conflict resolution object  - in case there were conflicts that had to be resolved
     func updateOrg( org: Org, completionHandler : @escaping (_ success : Bool, _ error: Error? ) -> Void ) {
         // todo - need to check for conflicts first
         var updateError : Error? = nil

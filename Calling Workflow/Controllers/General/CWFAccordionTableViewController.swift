@@ -144,7 +144,16 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         switch currentDataItem.dataItemType {
         case DataItemType.Parent:
             let cell = tableView.dequeueReusableCell(withIdentifier: "rootCell", for: indexPath) as? CWFAccordionRootTableViewCell
-            cell?.titleLabel.text = (currentDataItem.dataItem as! Org).orgName
+            if let org = currentDataItem.dataItem as? Org {
+                cell?.titleLabel.text = org.orgName
+                cell?.newButton.buttonOrg = org
+                if self.expandedParents.contains(where: {org == $0.dataItem as? Org}) {
+                    cell?.newButton.isHidden = false
+                }
+                else {
+                    cell?.newButton.isHidden = true
+                }
+            }
             return cell!
             
         case .AddCalling:
@@ -237,7 +246,9 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                         cell?.newButton.isHidden = false
                     }
                     cell?.newButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
-                    cell?.newButton.tag = indexPath.row
+                    if let org = dataItem.dataItem as? Org {
+                        cell?.newButton.buttonOrg = org
+                    }
                     expandCell(indexPath: indexPath)
                 }
             }
@@ -331,11 +342,13 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         self.tableView.endUpdates()
     }
 
-    func addButtonPressed(sender: UIButton) {
+    func addButtonPressed(sender: AccordionUIButton) {
         
         let storyBoard = UIStoryboard.init(name: "Main", bundle:nil)
         let nextVC = storyBoard.instantiateViewController(withIdentifier: "NewCallingTableViewController") as? NewCallingTableViewController
-        nextVC?.parentOrg = dataSource[sender.tag].dataItem as? Org
+        if let org = sender.buttonOrg {
+            nextVC?.parentOrg = org
+        }
         self.navigationController?.pushViewController(nextVC!, animated: true)
     }
     
@@ -366,7 +379,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     func warningButtonPressed() {
         print("warning pressed")
         let alert = UIAlertController(title: NSLocalizedString("Error", comment: ""), message: NSLocalizedString("There was an error uploading changes", comment: "error uploading message"), preferredStyle: .alert)
-            
+        let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.default, handler: nil)
+        alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
     }
 }

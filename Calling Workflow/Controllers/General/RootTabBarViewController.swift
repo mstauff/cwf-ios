@@ -149,7 +149,6 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     
     
     func getLogin() {
-        
         //get login from keychain
         if let ldsLoginData = Locksmith.loadDataForUserAccount(userAccount: "callingWorkFlow") {
             setLoginDictionary(returnedLoginDictionary: ldsLoginData)
