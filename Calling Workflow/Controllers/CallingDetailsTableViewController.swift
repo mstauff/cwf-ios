@@ -513,13 +513,15 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                 //Init the action that will run when OK is pressed
                 let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                     (alert: UIAlertAction!) -> Void in
-                    self.save()
                     self.startSpinner()
                     //Call to callingManager to update calling
                     callingMgr.updateLCRCalling(updatedCalling: self.callingToDisplay!) { (calling, error) in
+                        self.callingToDisplay = calling
                         let err = error?.localizedDescription ?? "nil"
                         print("Release result: \(calling.debugDescription) - error: \(err)")
-                        
+                        DispatchQueue.main.async {
+                            self.returnToAux(saveFirst: false)
+                        }
                     }
                 })
                 
@@ -536,12 +538,12 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
 
             actionSheet.addAction(finalizeAction)
         }
-        if callingToDisplay?.existingIndId != nil {
+        if let displayedCalling = callingToDisplay, displayedCalling.existingIndId != nil {
             let releaseAction = UIAlertAction(title: NSLocalizedString("Release Current in LCR", comment: "release"), style: UIAlertActionStyle.default, handler:  {
                 (alert: UIAlertAction!) -> Void in
                 
                 var releaseWarningString : String = ""
-                if let existingId = self.callingToDisplay?.existingIndId, let currentlyCalled = callingMgr.getMemberWithId(memberId: existingId), let name = currentlyCalled.name, let callingName = self.callingToDisplay?.position.name {
+                if let existingId = displayedCalling.existingIndId, let currentlyCalled = callingMgr.getMemberWithId(memberId: existingId), let name = currentlyCalled.name, let callingName = displayedCalling.position.name {
                     releaseWarningString = NSLocalizedString("This will release \(name) as \(callingName) on lds.org (LCR). This will make the release public (it will appear in lds.org sites, LDS Tools, etc.). Generally this should only be done after the individual has been released in Sacrament Meeting. Do you want to record the release on lds.org?", comment: "Release Warning")
                 }
                 let releaseAlert = UIAlertController(title: NSLocalizedString("Release From Calling", comment: "Release"), message: releaseWarningString, preferredStyle: .alert)
@@ -550,7 +552,10 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                     (alert: UIAlertAction!) -> Void in
                     //call to calling manager to release individual
                     self.startSpinner()
-                    callingMgr.releaseLCRCalling(callingToRelease: self.callingToDisplay!) { (success, error) in
+                    callingMgr.releaseLCRCalling(callingToRelease: displayedCalling) { (success, error) in
+                        // need to update the calling to display with the changes the user has made, so when we return we can pass this back to the delegate (parent view), so the UI is updated to reflect the change
+                        // todo - we should modify releaseLCRCalling to return a calling (even though LCR doesn't), so the controller doesn't have to create a new calling in the correct state
+                        self.callingToDisplay = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: displayedCalling.proposedIndId, status: displayedCalling.proposedStatus, position: displayedCalling.position, notes: displayedCalling.notes, parentOrg: displayedCalling.parentOrg, cwfOnly: false)
                         let err = error?.localizedDescription ?? "nil"
                         print("Release result: \(success) - error: \(err)")
                         DispatchQueue.main.async {

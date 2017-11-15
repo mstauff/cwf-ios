@@ -24,13 +24,21 @@ struct AccordionDataItem {
 
 class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTableViewControllerDelegate {
     
+    // this is the calling with any changes that came back from the calling details controller
     var updatedCalling : Calling? {
         didSet {
             if let validCalling = updatedCalling {
+                    if let prevVal = callingToDisplay, validCalling.position.multiplesAllowed, prevVal.id != validCalling.id {
+                        // in the cases where we've done an update to LCR when multiples are allowed the calling ID may have changed so we need to remove the old one (by it's cwfID) before updating with the new one. If we simply update the new value with the ID it is not matched with the old calling without an ID, so it gets added as new rather than replacing
+                        self.rootOrg = self.rootOrg?.updatedWith(callingToDelete: prevVal)
+                    }
                 self.rootOrg = self.rootOrg?.updatedWith(changedCalling: validCalling)
             }
         }
     }
+    
+    // this is the selected calling that the user tapped that will be passed to calling details.
+    var callingToDisplay : Calling?
     
     func setReturnedCalling(calling: Calling) {
         self.updatedCalling = calling
@@ -75,6 +83,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     func setupView() {
         if rootOrg != nil {
             self.navigationItem.title = rootOrg?.orgName
+            callingToDisplay = nil
 
             dataSource.removeAll( keepingCapacity: true )
             if (rootOrg?.callings != nil && (rootOrg?.callings.count)! > 0 && hasPermissionToEdit()) {
@@ -266,6 +275,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             let calling = dataItem.dataItem as? Calling
             let storyBoard = UIStoryboard.init(name: "Main", bundle:nil)
             let nextVC = storyBoard.instantiateViewController(withIdentifier: "CallingDetailsTableViewController") as? CallingDetailsTableViewController
+            self.callingToDisplay = calling
             nextVC?.callingToDisplay = calling
             nextVC?.delegate = self
             self.navigationController?.pushViewController(nextVC!, animated: true)

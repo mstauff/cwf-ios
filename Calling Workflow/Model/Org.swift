@@ -226,6 +226,21 @@ public struct Org : JSONParsable  {
         return updatedOrg
     }
     
+    public func updatedWith( conflictCallingIds: [Int64:ConflictCause] ) -> Org {
+        var updatedOrg = self
+        updatedOrg.callings = updatedOrg.callings.map() {
+            var calling = $0
+            if let id = calling.id, let conflictCause = conflictCallingIds[id]  {
+                calling.conflict = conflictCause
+            }
+            return calling
+        }
+        
+        updatedOrg.children = self.children.map() {$0.updatedWith(conflictCallingIds: conflictCallingIds)}
+        
+        return updatedOrg
+    }
+    
     /** Returns a new org with the original calling changed to the updated calling. Returns nil if the calling isn't in this Org.  */
     public func updatedWith( changedCalling: Calling ) -> Org? {
         return updatedWithCallingChange( updatedCalling: changedCalling, operation: .Update )

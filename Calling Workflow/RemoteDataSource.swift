@@ -34,7 +34,6 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     // to translate between the selectors used by google drive and Swift closure mechanisms used
     // by calling clients
     private var authCompletionHandler : ((Bool, Error?) -> Void)? = nil
-    private var fileListCompletionHandler : (([GTLDriveFile],Error? ) -> Void)? = nil
     
     /*************** computed props ******************/
     var isAuthenticated : Bool {
@@ -101,8 +100,14 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             // so if we need to create any files for them we have the needed orgs
             orgs.forEach() { org in
                 if let fileName = self.getFileName(forOrg: org) {
-                    orgFileNames.insert(fileName)
-                    orgMap[fileName] = org
+                    // only insert if it doesn't already exist - this will ensure if by some accident we have duplicates for an org in google drive we always use the oldest file
+                    if orgMap[fileName] == nil {
+                        orgFileNames.insert(fileName)
+                        orgMap[fileName] = org
+                    } else {
+                        // todo - we could at somepoint use delete the file if it's a duplicate
+                        print( "RemoteDataSource.initializeDrive(forOrgs): Duplicate file found for \(fileName) - file will be ignored" )
+                    }
                 }
             }
 
@@ -136,7 +141,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             let createFilesGroup = DispatchGroup()
             orgs.forEach() {
                 createFilesGroup.enter()
-                self.updateOrg( org: $0 ) { _, error in
+                self.createOrg( org: $0 ) { _, error in
                     if let error = error {
                         creationErrors.append(error)
                     }
@@ -167,9 +172,41 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
                 }
             }
         } else {
-            //TODO: make some standard keys - logMsg
             completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [:] ) )
         }
+    }
+    
+    /* Creates an org if it doesn't exist. If the org already exists then we call the callback with an error (code is ErrorConstants.illegalArgument)*/
+    func createOrg(org: Org, completionHandler: @escaping (Bool, Error?) -> Void) {
+        if let orgFileName = getFileName(forOrg: org ) {
+            let orgJSONObj = org.toJSONObject()
+            if let orgJSON = jsonSerializer.serialize(jsonObject: orgJSONObj) {
+                self.getFile(fileName: orgFileName) { (file, error) in
+                    guard error == nil else {
+                        print( "Error: " + error.debugDescription )
+                        completionHandler( false, error )
+                        return
+                    }
+                    
+                    if file == nil {
+                        self.createFile(fileName: orgFileName, fileContents: orgJSON) { (_, createFileError) in
+                            guard createFileError == nil else {
+                                print( "Error: " + error.debugDescription )
+                                completionHandler( false, error )
+                                return
+                            }
+                            
+                            // createdFile does not have the google ID that all files have when we read them in initializeDrive, so we can't add it to the filesByName[:] here. It has to be added by the initializeDrive() method
+                            // todo - at some point can we just do a getFile(byName) here to get the ID?
+                            completionHandler( true, nil )
+                        }
+                    } else {
+                        // file already existed - we can't create
+                        completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: [:]) )
+                    }
+                }
+            }
+        }        
     }
 
     // todo - need to change the callback to take a conflict resolution object  - in case there were conflicts that had to be resolved
@@ -180,7 +217,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             let orgJSONObj = org.toJSONObject()
             if let orgJSON = jsonSerializer.serialize(jsonObject: orgJSONObj) {
 
-                addOrUpdateFile(fileName: orgFileName, fileContents: orgJSON) { (fileContents, error) in
+                updateFile(fileName: orgFileName, fileContents: orgJSON) { (fileContents, error) in
                     guard error == nil else {
                         print( "Error updating data for \(orgFileName): " + error.debugDescription )
                         completionHandler( false, error )
@@ -234,21 +271,42 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     func updateUnitSettings( _ unitSettings : UnitSettings, completionHandler : @escaping( _ success : Bool, _ error : Error? ) -> Void ) {
         var updateError : Error? = nil
         guard let unitNum = unitSettings.unitNum else {
-            // completionHandler error
+            let errorMsg = "Error: No unit number to update unit settings"
+            print( errorMsg )
+            completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
             return
         }
         
         let fileName = getFileName(forUnitSettings: unitNum )
         let settingsJSONObj = unitSettings.toJSONObject()
         if let settingsJSON = jsonSerializer.serialize(jsonObject: settingsJSONObj) {
-            
-            addOrUpdateFile(fileName: fileName, fileContents: settingsJSON) { (fileContents, error) in
-                guard error == nil else {
-                    print( "Error updating data for \(fileName): " + error.debugDescription )
-                    completionHandler( false, error )
-                    return
+            updateFile(fileName: fileName, fileContents: settingsJSON) { (fileContents, error) in
+                // in this case we can't just guard against error, we need to look, if it's our own file not found error then we need to create it
+                if let fileCreateError = error {
+                    var errorHandled = false
+                    // xcode gives a warning about "is" test is always true, but not sure why. It could be other error classes
+                    if fileCreateError is NSError  {
+                        let nsError = fileCreateError as NSError
+                        if nsError.domain == ErrorConstants.domain && nsError.code == ErrorConstants.notFound {
+                            errorHandled = true
+                            // the file didn't exist, it needs to be created
+                            self.createFile(fileName: fileName, fileContents: settingsJSON) { _, createFileError in
+                                guard createFileError == nil else {
+                                    print( "Error: " + error.debugDescription )
+                                    completionHandler( false, error )
+                                    return
+                                }
+                                completionHandler( true, nil )
+                            }
+                        }
+                    }
+                    if !errorHandled {
+                        completionHandler( false, error )
+                    }
+                } else {
+                    // error was nil, so update succeeded
+                    completionHandler( true, nil )
                 }
-                completionHandler( true, nil )
             }
         } else {
             let errorMsg = "Unable to serialize unit settings: " + settingsJSONObj.debugDescription
@@ -260,7 +318,6 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         }
         
     }
-
 
     /* returns the file name for a given org in the form of <ORG_TYPE>-<ORG_ID>.json. So EQ-394205.json or PRIMARY-2038800.json */
     func getFileName( forOrg org: Org ) -> String? {
@@ -276,32 +333,37 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         return configFilePrefix + String( unitNum ) + RemoteStorageConstants.configFileExtension
     }
     
-
     // todo - this probably needs to return a GTLServiceTicket, but not sure how that works yet
-    /* Updates a file in google drive to contain the given string data (should be JSON). If the file does not exist it will be created. This is a lower level method that just performs the actual create/update. It doesn't do any diff'ing of contents, etc. That would need to be done prior to calling this method */
-    func addOrUpdateFile( fileName : String, fileContents : String, completionHandler : @escaping (_ success : Bool, _ error : Error? ) -> Void ) {
+    /* Updates a file in google drive to contain the given string data (should be JSON). This is a lower level method that just performs the actual create/update. It doesn't do any diff'ing of contents, etc. That would need to be done prior to calling this method */
+    func updateFile( fileName : String, fileContents : String, completionHandler : @escaping (_ success : Bool, _ error : Error? ) -> Void ) {
         
-        self.getFile(fileName: fileName) { (file, error) in
+        self.getFile(fileName: fileName) { (gDriveFile, error) in
             guard error == nil else {
                 print( "Error: " + error.debugDescription )
                 completionHandler( false, error )
                 return
             }
+            guard let file = gDriveFile else {
+                let errorMsg = "Error: No File to update for: \(fileName)"
+                print( errorMsg )
+                completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
+                return
+            }
             
-            if file == nil {
-                self.createFile(fileName: fileName, fileContents: fileContents) { (createdFile, createFileError) in
+            // update the file
+            let newFileHack = GTLDriveFile()
+            
+            let encodedData = Data(fileContents.utf8)
+            let uploadParams = GTLUploadParameters(data: encodedData, mimeType: RemoteStorageConstants.dataFileMimeType)
+            if let query = GTLQueryDrive.queryForFilesUpdate(withObject: newFileHack, fileId: file.identifier, uploadParameters: uploadParams) {
+                self.driveService.executeQuery(query) { (ticket, response, error) in
                     guard error == nil else {
-                        print( "Error: " + error.debugDescription )
+                        print( "Update Error: " + error.debugDescription )
                         completionHandler( false, error )
                         return
                     }
-                    // createdFile does not have the google ID that all files have when we read them in initializeDrive, so we can't add it to the filesByName[:] here. It has to be added by the initializeDrive() method
+                    print( "Update Result:" + response.debugDescription )
                     completionHandler( true, nil )
-                }
-            } else {
-                // update the file
-                self.updateFile( file: file!, fileContents: fileContents ) { (success, error) in
-                    completionHandler( success, error )
                 }
             }
         }
@@ -312,28 +374,8 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         if let file = filesByName[ fileName ] {
             completionHandler( file, nil )
         } else {
-            // just invoke callback with nil. At one point we had code to attempt to initialize the drive again here to see if the file was perhaps newly added in google drive, but that led to errors because this method itself is called from the init, so we would need to refactor things to be a little more granular so we could avoid potential recursive loop if we wanted to support that functionality
-            completionHandler( nil, nil )
-        }
-        
-    }
-
-    /* Performs the actual update in google drive that will update the contents of the file with the JSON that is provided in this call */
-    func updateFile( file: GTLDriveFile, fileContents: String, completionHandler: @escaping (_ success: Bool, _ error: Error? ) -> Void ) {
-        let newFileHack = GTLDriveFile()
-        
-        let encodedData = Data(fileContents.utf8)
-        let uploadParams = GTLUploadParameters(data: encodedData, mimeType: RemoteStorageConstants.dataFileMimeType)
-        if let query = GTLQueryDrive.queryForFilesUpdate(withObject: newFileHack, fileId: file.identifier, uploadParameters: uploadParams) {
-            driveService.executeQuery(query) { (ticket, response, error) in
-                guard error == nil else {
-                    print( "Update Error: " + error.debugDescription )
-                    completionHandler( false, error )
-                    return
-                }
-                print( "Update Result:" + response.debugDescription )
-                completionHandler( true, nil )
-            }
+            // query google drive for any files with the given name (in case it does exist in google drive, just wasn't loaded at startup for whatever reason
+            fetchFile(byName: fileName, completionHandler: completionHandler)
         }
     }
 
@@ -358,19 +400,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             }
             
             completionHandler( file, nil )
-            
-            // todo - do we need to do anything with the data???
-            //            guard let responseData = data else {
-            //                let errorMsg = "Error: No network error, but did not recieve data"
-            //                print( errorMsg )
-            ////                completionHandler( nil, NSError( domain: ErrorConstants.domain, code: 404, userInfo: [ "error" : errorMsg ] ) )
-            //                return
-            //            }
-            
-            //            completionHandler( AppConfig.parseFrom( responseData.jsonDictionaryValue! ), nil )
         })
-        
-        
     }
 
     /* Looks up a file object from the cache and retrieves its' contents from google drive */
@@ -380,8 +410,8 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         if let file = filesByName[ fileName ] {
             self.fetchContents( forFile: file, completionHandler: completionHandler )
         } else {
-            // this should never happen, because you would need google drive to be intialized before you ever see the org in the accordion to be able to click on it to get the contents
-            let errorMsg = "Error: DataSource has not been properly initialized. No file \(fileName)"
+            // this should never happen, but belt & suspenders
+            let errorMsg = "Error: RemoteDataSource.fetchFileContents(): DataSource has not been properly initialized. No file \(fileName)"
             print( errorMsg )
             completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
         }
@@ -415,41 +445,63 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         }
     }
     
-    /* Fetches all the files from the google drive appDataFolder and saves off the callback to be called by fileListComplete (since google drive api uses #selector methods for callbacks */
+    /* Fetches all the files from the google drive appDataFolder */
     private func fetchFiles( completionHandler: @escaping ([GTLDriveFile],Error? ) -> Void) {
         let query = GTLQueryDrive.queryForFilesList()
-        query?.spaces = "appDataFolder"
+        query?.spaces = GoogleDriveConstants.storageFolder
         
-        query?.pageSize = 10
-        query?.fields = "files(id, name)"
-        // save off the completion handler so it can be referenced from the selector method
-        self.fileListCompletionHandler = completionHandler
-        
-        driveService.executeQuery(
-            query!,
-            delegate: self,
-            didFinish: #selector(fileListComplete(ticket:finishedWithObject:error:))
-        )
+        query?.pageSize = GoogleDriveConstants.pageSize
+        query?.fields = GoogleDriveConstants.fields
+        query?.orderBy = GoogleDriveConstants.orderByFirstCreated
+
+        driveService.executeQuery(query!, completionHandler: {(ticket:GTLServiceTicket?, object: Any?, error: Error?)->Void in
+            guard error == nil else {
+                completionHandler( [], error )
+                return
+            }
+            var files : [GTLDriveFile] = []
+            if let driveFileList = object as? GTLDriveFileList {
+                files = driveFileList.files as? [GTLDriveFile] ?? []
+            }
+            completionHandler( files, nil )
+        })
     }
     
-    /* Invoked by google drive when the fetching of files from appDataFolder is complete. This method just invokes the callback that was stored in fetchFiles with the result from the google drive operation */
-    func fileListComplete(ticket : GTLServiceTicket,
-                                finishedWithObject response : GTLDriveFileList,
-                                error : Error?) {
-        guard error == nil else {
-            //            showAlert(title: "Error", message: error.localizedDescription)
-            // if there's a completionHandler, call it, then set it to nil to avoid memory cycle
-            self.fileListCompletionHandler?( [], error )
-            self.fileListCompletionHandler = nil
-            return
-        }
+    /* Attempts to read a single file from google drive. We do this any time before creating a file to make sure it really needs to be created, and in an attempt to avoid creating duplicates. */
+    private func fetchFile( byName fileName: String, completionHandler: @escaping (GTLDriveFile?,Error? ) -> Void) {
+        let methodName = "RemoteDataSource.fetchFile(byName):"
+        let query = GTLQueryDrive.queryForFilesList()
+        query?.spaces = GoogleDriveConstants.storageFolder
         
-        let files : [GTLDriveFile] = response.files as? [GTLDriveFile] ?? []
-        
-        self.fileListCompletionHandler?( files, nil )
-        self.fileListCompletionHandler = nil
+        query?.fields = GoogleDriveConstants.fields
+        query?.q = "name = '" + fileName + "'"
+        print( methodName + "Looking for files with query: " + (query?.q)! )
+        query?.orderBy = GoogleDriveConstants.orderByFirstCreated
+        driveService.executeQuery(query!, completionHandler: {(ticket:GTLServiceTicket?, object: Any?, error: Error?)->Void in
+                    guard error == nil else {
+                        print( error.debugDescription )
+                        completionHandler(nil, error )
+                        return
+                    }
+            var file : GTLDriveFile? = nil
+            if let driveFileList = object as? GTLDriveFileList {
+                let files = driveFileList.files as? [GTLDriveFile] ?? []
+                if files.count > 0 {
+                    file = files[0]
+                    if let fileName = file?.name, let fileId = file?.identifier {
+                        print( methodName + "File name: " + fileName + " ID: " + fileId)
+                    }
+                }
+            }
+            completionHandler( file, nil )
+        })
     }
     
-    
-    
+}
+
+struct GoogleDriveConstants {
+    static let storageFolder = "appDataFolder"
+    static let orderByFirstCreated = "createdTime desc"
+    static let fields = "files(id, name)"
+    static let pageSize = 100
 }
