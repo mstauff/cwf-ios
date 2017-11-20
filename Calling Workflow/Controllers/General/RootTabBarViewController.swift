@@ -190,7 +190,9 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     }
     
     func removeSpinner () {
-        self.spinnerView?.removeFromSuperview()
+        DispatchQueue.main.async {
+            self.spinnerView?.removeFromSuperview()
+        }
     }
     
 }

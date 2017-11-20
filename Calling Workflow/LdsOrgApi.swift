@@ -19,7 +19,7 @@ protocol LdsOrgApi {
     func getOrgWithCallings( unitNum : Int64, _ completionHandler: @escaping ( Org?, Error? ) -> Void )
     func releaseCalling( unitNum : Int64, calling : Calling, _ completionHandler: @escaping ( Bool, Error? ) -> Void )
     func deleteCalling( unitNum : Int64, calling : Calling, _ completionHandler: @escaping ( Bool, Error? ) -> Void )
-    func updateCalling( unitNum : Int64, calling : Calling, newMemberIndId : Int64, _ completionHandler: @escaping ( Calling?, Error? ) -> Void )
+    func updateCalling( unitNum : Int64, calling : Calling, _ completionHandler: @escaping ( Calling?, Error? ) -> Void )
     
 }
 

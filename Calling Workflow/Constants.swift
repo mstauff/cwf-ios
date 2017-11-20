@@ -34,6 +34,8 @@ struct NetworkConstants {
     
     static let contentTypeHeader = "Content-Type"
     static let acceptHeader = "Accept"
+    
+    static let contentTypeHtml = "text/html"
 }
 
 struct RemoteStorageConstants {
