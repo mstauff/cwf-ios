@@ -193,9 +193,20 @@ class MemberTests: XCTestCase {
             XCTAssertEqual( Priesthood(optionalRaw: key ), value )
             
         }
+    }
+    
+    func testNameSort() {
+        let emptyMember = Member(indId: 111, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
+        let emptyMember2 = Member(indId: 222, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
+        let memList = [ emptyMember2, createMember(withName: "Smith"), emptyMember, createMember( withName: "Jones" ), createMember(withName: "Smith")].sorted(by: Member.nameSorter)
         
+        XCTAssertEqual(memList[0].name, "Jones")
+        XCTAssertNil(memList[4].name)
+    }
         
-        
+    
+    func createMember( withName name: String ) -> Member {
+        return Member(indId: Int64(name.hashValue), name: name, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
     }
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.

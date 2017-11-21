@@ -65,7 +65,7 @@ public struct Calling : JSONParsable {
     var nameWithTime : String {
         get {
             var result = ""
-            if let nameString = self.position.name  {
+            if let nameString = self.position.mediumName  {
                 result = nameString +  "(" + self.existingMonthsInCalling.description + "M)"
             }
             return result
@@ -75,11 +75,10 @@ public struct Calling : JSONParsable {
     var nameWithStatus : String {
         get {
             var result = ""
-            if let nameString = self.position.name  {
+            if let nameString = self.position.mediumName  {
                 result = nameString +  "(" + self.proposedStatus.description + ")"
             }
             return result
-            
         }
     }
     

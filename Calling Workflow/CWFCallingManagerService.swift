@@ -117,8 +117,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             
             restCallsGroup.enter()
             ldsApi.getMemberList(unitNum: unitNum) { (memberList, error) -> Void in
-                if memberList != nil && !memberList!.isEmpty {
-                    members = memberList!
+                if memberList != nil && memberList!.isNotEmpty {
+                    members = memberList!.sorted(by: Member.nameSorter)
                 } else {
                     if error != nil {
                         ldsApiError = error
