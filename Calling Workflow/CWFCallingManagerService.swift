@@ -54,7 +54,6 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     var statusToExcludeForUnit : [CallingStatus] = []
     
     let maxLoadAttempts = 1
-        
     
     init() {
         permissionMgr = PermissionManager()
@@ -73,8 +72,6 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     }
     
     public func getLdsUser( username: String, password: String, completionHandler: @escaping (LdsUser?, Error?) -> Void ) {
-        
-        
             let ldsApi = self.ldsOrgApi
             ldsApi.ldsSignin(username: username, password: password, { (error) -> Void in
                 if error != nil {
@@ -98,10 +95,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         return permissionMgr.authorizedUnits(forUser: user)
     }
     
-
-    
     /** Performs the calls that need to be made to lds.org at startup, or unit transition. First it gets the application config from our servers (which contains the lds.org endpoints to use). Next it logs in to lds.org, then it retrieves user data which includes their callings (to verify unit permissions), the unit member list and callings. Once all those have completed then we call the callback. If any one of them fails we will return an error via the callback. The data is not returned via the callback, it is just maintained internally in this class. The callback just lets the calling function know that this method has successfully completed.
-     
      This method needs to be called prior to calling the authenticate() or loadAppData() methods */
     public func loadLdsData(forUnit unitNum: Int64, ldsUser: LdsUser, completionHandler: @escaping (Bool, Error?) -> Void) {
         var members : [Member] = []
@@ -230,6 +224,15 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 }
             }
             
+            // also load the unit settings
+            dataSourceGroup.enter()
+            self.loadUnitSettings(forUnitNum: ldsUnit.unitNum) { unitSettings, error in
+                dataSourceGroup.leave()
+                if let settings = unitSettings {
+                    self.statusToExcludeForUnit = settings.disabledStatuses
+                }                
+            }
+            
             dataSourceGroup.notify(queue: DispatchQueue.main) {
                 // sort all the unit level orgs by their display order
                 org.children = mergedOrgs
@@ -272,6 +275,10 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     func updateUnitSettings( unitSettings: UnitSettings, completionHandler: @escaping( Bool, Error? ) -> Void ) {
         self.statusToExcludeForUnit = unitSettings.disabledStatuses
         dataSource.updateUnitSettings(unitSettings, completionHandler: completionHandler)
+    }
+    
+    func updateUnitSettings( withStatuses statuses : [CallingStatus], completionHandler: @escaping( Bool, Error? ) -> Void ) {
+        updateUnitSettings(unitSettings: UnitSettings( unitNum: ldsOrgUnit?.unitNum, disabledStatuses: statuses ), completionHandler: completionHandler)
     }
     
     /** Reads the given Org from google drive and calls the callback with the org converted from JSON */

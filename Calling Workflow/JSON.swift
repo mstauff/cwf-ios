@@ -51,12 +51,16 @@ public class JSONSerializerImpl : JSONSerializer  {
                 if let nsNumArray = int64Arr?.flatMap({ NSNumber( value: $0 ) }) {
                     jsonDictionary[jsonKey] = nsNumArray
                 }
+            } else if jsonVal is [String] {
+                jsonDictionary[jsonKey] = jsonVal as? [String]
             } else if jsonVal is [JSONObject] {
                 jsonDictionary[jsonKey] = (jsonVal as! Array).map() { jsonObj -> NSDictionary in
                     return prepare( jsonObject: jsonObj )
                 }
             } else if jsonVal is JSONObject {
                 jsonDictionary[jsonKey] = prepare( jsonObject: (jsonVal as? JSONObject)! )
+            } else {
+                debugPrint("JSONSerializerImpl.prepare - unable to handle value for " + jsonKey + " with value of " + jsonVal.description)
             }
         }
         return NSDictionary(dictionary: jsonDictionary)

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDelegate, UITableViewDataSource, MemberPickerDelegate, StatusPickerDelegate, UITextViewDelegate {
+class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDelegate, UITableViewDataSource, MemberPickerDelegate, StatusPickerDelegate, UITextViewDelegate, ProcessingSpinner {
     
     //MARK: - Class Members
     var callingToDisplay : Calling? = nil {
@@ -27,7 +27,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     var debouncedNotesChange : Debouncer? = nil
     let textViewDebounceTime = 0.8
     
-    var spinnerView : CWFSpinnerView? = nil
+//    var spinnerView : CWFSpinnerView? = nil
     weak var callingMgr : CWFCallingManagerService? = nil
     var isEditable = false
     
@@ -680,28 +680,19 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         return result
     }
     
-    
     //MARK: - Spinner
     func startSpinner() {
         self.navigationItem.leftBarButtonItem?.isEnabled = false
         self.navigationItem.rightBarButtonItem?.isEnabled = false
-        let spinView = CWFSpinnerView(frame: CGRect.zero, title: NSLocalizedString("Updating", comment: "Updating") as NSString)
-        
-        self.view.addSubview(spinView)
-        self.spinnerView = spinView
-        
-        let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-(==0)-[spinnerView]-(==0)-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: ["spinnerView": spinView])
-        let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[spinnerView]-|", options: NSLayoutFormatOptions.alignAllCenterX, metrics: nil, views: ["spinnerView": spinView])
-        
-        self.view.addConstraints(hConstraint)
-        self.view.addConstraints(vConstraint)
+        startProcessingSpinner( labelText: "Updating" )
     }
     
     func removeSpinner () {
         self.navigationItem.leftBarButtonItem?.isEnabled = true
         self.navigationItem.rightBarButtonItem?.isEnabled = true
-        self.spinnerView?.removeFromSuperview()
+        removeProcessingSpinner()
     }
+    
 
     
     //MARK: - Permissions
