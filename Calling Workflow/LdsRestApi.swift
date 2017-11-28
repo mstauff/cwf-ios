@@ -248,7 +248,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
          "subOrgId": 2081422,
          "positionTypeId": 216,
          "position": "any non-empty string"
-         "memberId": "17767512672",
+         "memberId": 17767512672,
          "releaseDate": "20170801",
          "releasePositionIds": [
          38816970
@@ -302,7 +302,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
                     let existingIndIdFromJson = responseJson[LcrCallingJsonKeys.memberId] as? NSNumber
                     let newExistingIndId = existingIndIdFromJson?.int64Value ?? newMemberId
                     var activeDate = Date()
-                    if let newActiveDateString = responseJson[LcrCallingJsonKeys.memberId] as? String, let newActiveDate = Date(fromLCRString: newActiveDateString) {
+                    if let newActiveDateString = responseJson[LcrCallingJsonKeys.activeDate] as? String, let newActiveDate = Date(fromLCRString: newActiveDateString) {
                         activeDate = newActiveDate
                     }
                     // create the calling based on the returned json
