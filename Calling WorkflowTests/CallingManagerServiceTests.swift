@@ -41,6 +41,10 @@ class CallingManagerServiceTests: XCTestCase {
     }
     
     class MockDataSource : DataSource {
+        func createOrg(org: Org, completionHandler: @escaping (Bool, Error?) -> Void) {
+            completionHandler( true, nil )
+        }
+        
         var isAuthenticated: Bool {
             get {
                 return true

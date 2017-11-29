@@ -9,10 +9,9 @@
 import UIKit
 import Locksmith
 
-class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
+class RootTabBarViewController: UITabBarController, LDSLoginDelegate, ProcessingSpinner {
     
     var loginDictionary : Dictionary<String, Any>?
-    var spinnerView : CWFSpinnerView?
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -33,7 +32,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     
     // MARK: - Login to ldsapi
     func signIntoLDSAPI() {
-        startSpinner()
+        startProcessingSpinner( labelText: "Logging In" )
         
         // some tests fail (it's during test/init code, not during the test itself) if this is inside the getAppConfig callback. So get the reference before the call.
         weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
@@ -175,22 +174,10 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate {
     }
     
     // MARK: - Spinner Setup
-    
-    func startSpinner() {
-        let spinnerView = CWFSpinnerView(frame: CGRect.zero, title: NSLocalizedString("Loging In", comment: "") as NSString)
-        
-        self.navigationController?.view.addSubview(spinnerView)
-        self.spinnerView = spinnerView
-        
-        let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-(==0)-[spinnerView]-(==0)-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: ["spinnerView": spinnerView])
-        let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[spinnerView]-|", options: NSLayoutFormatOptions.alignAllCenterX, metrics: nil, views: ["spinnerView": spinnerView])
-        
-        self.navigationController?.view.addConstraints(hConstraint)
-        self.navigationController?.view.addConstraints(vConstraint)
-    }
-    
-    func removeSpinner () {
-        self.spinnerView?.removeFromSuperview()
+     func removeSpinner () {
+        DispatchQueue.main.async {
+            self.removeProcessingSpinner()
+        }
     }
     
 }

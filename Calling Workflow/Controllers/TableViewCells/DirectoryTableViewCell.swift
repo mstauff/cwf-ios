@@ -116,11 +116,11 @@ class DirectoryTableViewCell: UITableViewCell {
     //Todo currently we are setting all inprogress callings to have green text. Do we need to change it?
     func setupTextForLabel(calling: Calling, member: Member, label: UILabel) {
         if calling.existingIndId == member.individualId {
-            label.text = "\(String(describing: calling.position.shortName!)) (\(calling.existingMonthsInCalling) m)"
+            label.text = calling.nameWithTime
             label.textColor = UIColor.CWFGreyTextColor
         }
         else if calling.proposedIndId == member.individualId {
-            label.text = "\(String(describing: calling.position.shortName!)) (\(calling.proposedStatus.description))"
+            label.text = calling.nameWithStatus
             label.textColor = UIColor.CWFGreenTextColor
         }
     }

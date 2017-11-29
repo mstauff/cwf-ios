@@ -16,6 +16,9 @@ public struct PositionMetadata : JSONParsable {
     /// A shorter name that can be used when we already have the org context (Teacher vs. Primary Teacher, or District Supervisor vs. High Priests Home Teaching District Supervisor)
     let shortName : String?
     
+    /// A medium name that includes the context, but uses common abbreviations (so HP 1st Asst.) to shorten names from the full name
+    let mediumName : String?
+    
     /// Set of requirements (Priesthood, gender or age) if there are any for the position
     var requirements : PositionRequirements?
     
@@ -25,14 +28,13 @@ public struct PositionMetadata : JSONParsable {
             PositionMetadata(fromJSON: $0)
         }
         return positions
-        
     }
     
-
     // todo - can eventually add who can propose 
     public init() {
         positionTypeId = -1
         shortName = nil
+        mediumName = nil
         requirements = nil
     }
     
@@ -43,6 +45,7 @@ public struct PositionMetadata : JSONParsable {
                 return nil
         }
         shortName = json[PositionMetadataJsonKeys.shortName] as? String
+        mediumName = json[PositionMetadataJsonKeys.mediumName] as? String
         positionTypeId = validPositionTypeId
         
         if let validRequirements = json[PositionMetadataJsonKeys.requirements] as? JSONObject {
@@ -50,7 +53,6 @@ public struct PositionMetadata : JSONParsable {
         } else {
             requirements = nil
         }
-        
     }
 
     /** Unused - we never need to serialize this object */
@@ -61,14 +63,14 @@ public struct PositionMetadata : JSONParsable {
     private struct PositionMetadataJsonKeys {
         static let positionTypeId = "positionTypeId"
         static let shortName = "shortName"
+        static let mediumName = "mediumName"
         static let requirements = "requirements"
     }
-
 }
 
 extension PositionMetadata : Equatable {
     static public func == (lhs: PositionMetadata, rhs: PositionMetadata ) -> Bool {
-        return lhs.positionTypeId == rhs.positionTypeId && lhs.shortName == rhs.shortName && lhs.requirements == rhs.requirements
+        return lhs.positionTypeId == rhs.positionTypeId && lhs.shortName == rhs.shortName && lhs.mediumName == rhs.mediumName && lhs.requirements == rhs.requirements
     }
 }
 

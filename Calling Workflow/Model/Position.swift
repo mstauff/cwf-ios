@@ -41,6 +41,12 @@ public struct Position : JSONParsable {
         }
     }
     
+    var mediumName : String? {
+        get {
+            return metadata.mediumName ?? metadata.shortName ?? name
+        }
+    }
+    
 
     // TODO: do we need something to indicate it's a custom calling? Or can we determine that from the positionTypeId????
     init(positionTypeId : Int, name : String?, hidden : Bool, multiplesAllowed : Bool, displayOrder : Int?, metadata: PositionMetadata) {

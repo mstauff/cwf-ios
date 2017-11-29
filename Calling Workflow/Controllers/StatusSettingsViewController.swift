@@ -8,7 +8,7 @@
 
 import UIKit
 
-class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataSource, UICollectionViewDelegate, StatusSettingsCollectionViewCellDelegate {
+class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataSource, UICollectionViewDelegate, StatusSettingsCollectionViewCellDelegate, ProcessingSpinner {
     
     let headerView : UIView = UIView()
     let collectionView : UICollectionView = UICollectionView(frame: CGRect.init(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: UICollectionViewFlowLayout())
@@ -142,8 +142,16 @@ class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataS
             }
         }
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            appDelegate.callingManager.statusToExcludeForUnit = unsavedStatusToExclude
+            startProcessingSpinner( labelText: "Updating" )
+            self.navigationItem.rightBarButtonItem?.isEnabled = false
+
+            appDelegate.callingManager.updateUnitSettings(withStatuses: unsavedStatusToExclude) { success, error in
+                DispatchQueue.main.async {
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    self.removeProcessingSpinner()
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
         }
-        self.navigationController?.popViewController(animated: true)
     }
 }

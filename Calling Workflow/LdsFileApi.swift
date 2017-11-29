@@ -98,11 +98,45 @@ class LdsFileApi : LdsOrgApi {
     }
     func releaseCalling( unitNum : Int64, calling : Calling, _ completionHandler: @escaping ( Bool, Error? ) -> Void ) {
         // todo - need to implement this - just find the calling in org-callings json and remove the active ID
+        let authenticated = signedIn
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            if authenticated {
+                
+                completionHandler( true, nil )
+            } else {
+                let errorMsg = "Error: Not signed in"
+                completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.networkError, userInfo: [ "error" : errorMsg ] ) )
+            }
+        }
+
     }
-    func deleteCalling( unitNum : Int64, calling : Calling, _ completionHandler: @escaping ( Bool, Error? ) -> Void ){}
-    func updateCalling( unitNum : Int64, calling : Calling, newMemberIndId : Int64, _ completionHandler: @escaping ( Calling?, Error? ) -> Void ){
+    func deleteCalling( unitNum : Int64, calling : Calling, _ completionHandler: @escaping ( Bool, Error? ) -> Void ){
+        let authenticated = signedIn
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            if authenticated {
+                
+                completionHandler( true, nil )
+            } else {
+                let errorMsg = "Error: Not signed in"
+                completionHandler( false, NSError( domain: ErrorConstants.domain, code: ErrorConstants.networkError, userInfo: [ "error" : errorMsg ] ) )
+            }
+        }
+
+    }
+
+    func updateCalling( unitNum : Int64, calling : Calling, _ completionHandler: @escaping ( Calling?, Error? ) -> Void ){
         // todo - need to implement this - just find the calling in org-callings json and update it
-    }
+        let authenticated = signedIn
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            if authenticated {
+                
+                completionHandler( calling, nil )
+            } else {
+                let errorMsg = "Error: Not signed in"
+                completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.networkError, userInfo: [ "error" : errorMsg ] ) )
+            }
+        }
+}
 
     
 }
