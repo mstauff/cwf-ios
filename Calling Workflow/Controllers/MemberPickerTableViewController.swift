@@ -181,7 +181,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         }
         callingText.append(NSAttributedString(string: baseProposedString))
         
-        let greenRange = NSRange.init(location: callingText.length - baseProposedString.characters.count, length: baseProposedString.characters.count)
+        let greenRange = NSRange.init(location: callingText.length - baseProposedString.count, length: baseProposedString.count)
         callingText.addAttribute(NSForegroundColorAttributeName, value: UIColor.CWFGreenTextColor, range: greenRange)
 
         cell?.subtitle.attributedText = callingText

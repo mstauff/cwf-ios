@@ -21,7 +21,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.title = NSLocalizedString("Add New Calling", comment: "Add New Calling")
+        self.navigationItem.title = parentOrg?.orgName//NSLocalizedString("Add New Calling", comment: "Add New Calling")
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveNewCalling))
         
         tableView.register(SingleFieldTableViewCell.self, forCellReuseIdentifier: "SingleFieldTableViewCell")
@@ -255,9 +255,6 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
                 appDelegate?.callingManager.addCalling(calling: self.newCalling!) {_,_ in }
             
         }
-        
-        let _ = self.navigationController?.popViewController(animated: true)
-
         self.navigationController?.popViewController(animated: true)
     }
     

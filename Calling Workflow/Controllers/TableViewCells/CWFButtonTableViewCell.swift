@@ -23,7 +23,7 @@ class CWFButtonTableViewCell: UITableViewCell {
     }
     
     func setupCell() {
-        cellButton.setTitle("Calling Actions", for: UIControlState.normal)
+        cellButton.setTitle(NSLocalizedString("Update lds.org", comment: "update string"), for: UIControlState.normal)
         cellButton.translatesAutoresizingMaskIntoConstraints = false
         
         self.addSubview(cellButton)

@@ -30,7 +30,13 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
                 if gender == Gender.Female {
                     addOrgFilterCell(title: "Class", orgType: .MemberClass, upperLevelEnums: [MemberClass.ReliefSociety], lowerLevelEnums: [MemberClass.Laurel, MemberClass.MiaMaid, MemberClass.Beehive])
                 } else {
-                    addOrgFilterCell(title: "Priesthood", orgType: .Priesthood, upperLevelEnums: [Priesthood.HighPriest, Priesthood.Elder], lowerLevelEnums: [Priesthood.Priest, Priesthood.Teacher, Priesthood.Deacon])
+                    var hasPermission = false
+                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                        hasPermission = appDelegate.callingManager.permissionMgr.hasPermission(unitRoles: appDelegate.callingManager.userRoles, domain: .PriesthoodOffice, permission: .View)
+                    }
+                    if (hasPermission) {
+                        addOrgFilterCell(title: "Priesthood", orgType: .Priesthood, upperLevelEnums: [Priesthood.HighPriest, Priesthood.Elder], lowerLevelEnums: [Priesthood.Priest, Priesthood.Teacher, Priesthood.Deacon])
+                    }
                 }
                 
             }
@@ -179,6 +185,7 @@ class FilterTableViewController: UITableViewController, FilterTableViewCellDeleg
             filterContentArray.append(cell)
     }
     
+    //MARK: - Actions
     func cancelPressed () {
         self.navigationController?.popViewController(animated: true)
     }

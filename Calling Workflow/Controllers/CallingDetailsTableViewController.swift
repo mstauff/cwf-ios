@@ -44,7 +44,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         self.callingMgr = appDelegate?.callingManager
 
         originalCalling = calling
-        navigationItem.title = calling.position.name
+        navigationItem.title = calling.position.metadata.shortName
 //        navigationController?.title = calling.position.name
         
         setupNavBarButtons()
@@ -485,11 +485,11 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         }
         let callingMgr = appDelegate.callingManager
         
-        let actionSheet = UIAlertController(title: NSLocalizedString("LCR Actions", comment: "LCR Actions"), message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        let actionSheet = UIAlertController(title: NSLocalizedString("lds.org Actions", comment: "LCR Actions"), message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
         
         //Only add Update option if there is a proposed individual
         if callingToDisplay?.proposedIndId != nil {
-            let finalizeAction = UIAlertAction(title: NSLocalizedString("Finalize Change in LCR", comment: "Finalize"), style: UIAlertActionStyle.default, handler:  {
+            let finalizeAction = UIAlertAction(title: NSLocalizedString("Finalize Change on lds.org", comment: "Finalize"), style: UIAlertActionStyle.default, handler:  {
                 (alert: UIAlertAction!) -> Void in
                 
                 //String to use as warning message when updating LCR
@@ -505,7 +505,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                 
                 //Add the rest of the message with proposed individual name
                 if let proposedId = self.callingToDisplay?.proposedIndId, let currentlyProposed = callingMgr.getMemberWithId(memberId: proposedId),let proposedName = currentlyProposed.name, let callingName = self.callingToDisplay?.position.name {
-                    alertMessage.append(NSLocalizedString("will record \(proposedName) as \(callingName) in LCR. This will make the change offical and public.", comment: "update calling message"))
+                    alertMessage.append(NSLocalizedString("will record \(proposedName) as \(callingName) on lds.org. This will make the change offical and public.", comment: "update calling message"))
                 }
                 //Initialize the alert with the message created
                 let updateAlert = UIAlertController(title: NSLocalizedString("Update Calling", comment: "Update Calling"), message: alertMessage, preferredStyle: UIAlertControllerStyle.alert)
@@ -539,12 +539,12 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             actionSheet.addAction(finalizeAction)
         }
         if let displayedCalling = callingToDisplay, displayedCalling.existingIndId != nil {
-            let releaseAction = UIAlertAction(title: NSLocalizedString("Release Current in LCR", comment: "release"), style: UIAlertActionStyle.default, handler:  {
+            let releaseAction = UIAlertAction(title: NSLocalizedString("Release Current on lds.org", comment: "release"), style: UIAlertActionStyle.default, handler:  {
                 (alert: UIAlertAction!) -> Void in
                 
                 var releaseWarningString : String = ""
                 if let existingId = displayedCalling.existingIndId, let currentlyCalled = callingMgr.getMemberWithId(memberId: existingId), let name = currentlyCalled.name, let callingName = displayedCalling.position.name {
-                    releaseWarningString = NSLocalizedString("This will release \(name) as \(callingName) on lds.org (LCR). This will make the release public (it will appear in lds.org sites, LDS Tools, etc.). Generally this should only be done after the individual has been released in Sacrament Meeting. Do you want to record the release on lds.org?", comment: "Release Warning")
+                    releaseWarningString = NSLocalizedString("This will release \(name) as \(callingName) on lds.org. This will make the release public (it will appear in lds.org sites, LDS Tools, etc.). Generally this should only be done after the individual has been released in Sacrament Meeting. Do you want to record the release on lds.org?", comment: "Release Warning")
                 }
                 let releaseAlert = UIAlertController(title: NSLocalizedString("Release From Calling", comment: "Release"), message: releaseWarningString, preferredStyle: .alert)
                 
@@ -586,16 +586,19 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                 //Message to use for the action conformation alert
                 var deleteWarningMessage : String = ""
                 
-                //If there is an existing individual display release warning.
-                if let existingId = self.callingToDisplay?.existingIndId, let existingIndividual = callingMgr.getMemberWithId(memberId: existingId), let existingName = existingIndividual.name, let callingName = self.callingToDisplay?.position.name {
-                    deleteWarningMessage.append(NSLocalizedString("This will release \(existingName) as \(callingName) on lds.org (LCR) and remove the calling from ward lists. Do you want to record the release on lds.org?", comment: "existingIndDelete"))
-                }
-                else {
-                    if let callingName = self.callingToDisplay?.position.name{
-                        deleteWarningMessage.append(NSLocalizedString("This will remove \(callingName) from ward lists and directiories. Do you want to continue?", comment: "deleteWarning"))
+                if (self.callingToDisplay?.cwfOnly == false) {
+                    //If there is an existing individual display release warning.
+                    if let existingId = self.callingToDisplay?.existingIndId, let existingIndividual = callingMgr.getMemberWithId(memberId: existingId), let existingName = existingIndividual.name, let callingName = self.callingToDisplay?.position.name {
+                        deleteWarningMessage.append(NSLocalizedString("This will release \(existingName) as \(callingName) on lds.org (LCR) and remove the calling from ward lists. Do you want to record the release on lds.org?", comment: "existingIndDelete"))
                     }
+                    else {
+                        if let callingName = self.callingToDisplay?.position.name{
+                            deleteWarningMessage.append(NSLocalizedString("This will remove \(callingName) from ward lists and directiories. Do you want to continue?", comment: "deleteWarning"))
+                        }
+                    }
+                } else {
+                    deleteWarningMessage = "This will delete the calling. Do you want to continue?"
                 }
-
                 //Init the alert using the warning string
                 let deleteAlert = UIAlertController(title: NSLocalizedString("Delete Calling", comment: "delete"), message: deleteWarningMessage, preferredStyle: .alert)
                 
