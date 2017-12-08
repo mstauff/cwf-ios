@@ -8,18 +8,19 @@
 
 import UIKit
 
-enum DataItemType {
-    case Parent
-    case Child
-    case Calling
-    case AddCalling
-}
-
-struct AccordionDataItem {
-    var dataItem : Any
-    var dataItemType : DataItemType
-    var expanded : Bool
+struct CWFAccordionVCElements {
+    enum DataItemType {
+        case Parent
+        case Child
+        case Calling
+        case AddCalling
+    }
     
+    struct AccordionDataItem {
+        var dataItem : Any
+        var dataItemType : DataItemType
+        var expanded : Bool
+    }
 }
 
 class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTableViewControllerDelegate {
@@ -44,7 +45,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         self.updatedCalling = calling
     }
     
-    var dataSource : [AccordionDataItem] = []
+    private var dataSource : [CWFAccordionVCElements.AccordionDataItem] = []
     
     // the root org gets updated after the view is loaded (because we read it asynchronously - fresh from google drive) so after it gets updated we need to redraw 
     var rootOrg : Org? {
@@ -54,7 +55,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         }
     }
     
-    var expandedParents : [AccordionDataItem] = []
+    private var expandedParents : [CWFAccordionVCElements.AccordionDataItem] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,17 +88,17 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
 
             dataSource.removeAll( keepingCapacity: true )
             if (rootOrg?.callings != nil && (rootOrg?.callings.count)! > 0 && hasPermissionToEdit()) {
-                let newDataItem = AccordionDataItem.init(dataItem: NSLocalizedString("Add Calling", comment: "select to add calling"), dataItemType: .AddCalling, expanded: true)
+                let newDataItem = CWFAccordionVCElements.AccordionDataItem.init(dataItem: NSLocalizedString("Add Calling", comment: "select to add calling"), dataItemType: .AddCalling, expanded: true)
                 dataSource.append(newDataItem)
             }
             
             for calling in (rootOrg?.callings)!{
-                let newCallingDataItem = AccordionDataItem.init(dataItem: calling, dataItemType: .Calling, expanded: false)
+                let newCallingDataItem = CWFAccordionVCElements.AccordionDataItem.init(dataItem: calling, dataItemType: .Calling, expanded: false)
                 dataSource.append(newCallingDataItem)
             }
             
             for org in (rootOrg?.children)! {
-                var newDataItem = AccordionDataItem.init(dataItem: org, dataItemType: .Parent, expanded: false)
+                var newDataItem = CWFAccordionVCElements.AccordionDataItem.init(dataItem: org, dataItemType: .Parent, expanded: false)
                 //check if it should be expanded
                 let filteredArray = expandedParents.filter() {
                     let filterOrg = $0.dataItem as! Org
@@ -121,12 +122,12 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     
     func setupChildren(org: Org) {
         for child in org.children {
-            let childDataItem = AccordionDataItem.init(dataItem: child, dataItemType: .Child, expanded: false)
+            let childDataItem = CWFAccordionVCElements.AccordionDataItem.init(dataItem: child, dataItemType: .Child, expanded: false)
             dataSource.append(childDataItem)
         }
         
         for calling in org.callings {
-            let callingDataItem = AccordionDataItem.init(dataItem: calling, dataItemType: .Calling, expanded: false)
+            let callingDataItem = CWFAccordionVCElements.AccordionDataItem.init(dataItem: calling, dataItemType: .Calling, expanded: false)
             dataSource.append(callingDataItem)
         }
     }
@@ -151,7 +152,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         
         let currentDataItem = self.dataSource[indexPath.row]
         switch currentDataItem.dataItemType {
-        case DataItemType.Parent:
+        case CWFAccordionVCElements.DataItemType.Parent:
             let cell = tableView.dequeueReusableCell(withIdentifier: "rootCell", for: indexPath) as? CWFAccordionRootTableViewCell
             if let org = currentDataItem.dataItem as? Org {
                 cell?.titleLabel.text = org.orgName
@@ -299,7 +300,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         var currentIndex = indexPath.row + 1
         
         while !foundParent && currentIndex < dataSource.count {
-            if dataSource[currentIndex].dataItemType == DataItemType.Parent {
+            if dataSource[currentIndex].dataItemType == CWFAccordionVCElements.DataItemType.Parent {
                 foundParent = true
             }
             else {
@@ -328,14 +329,14 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         var i = 0
         var indexPaths : [IndexPath] = []
         for child in (rootOrg as! Org).children {
-            let newDataItem = AccordionDataItem.init(dataItem: child, dataItemType: .Child, expanded: false)
+            let newDataItem = CWFAccordionVCElements.AccordionDataItem.init(dataItem: child, dataItemType: .Child, expanded: false)
             dataSource.insert(newDataItem, at: indexPath.row + i+1)
             indexPaths.append(IndexPath(row: indexPath.row + i+1, section: 0))
             i += 1
         }
         
         for calling in (rootOrg as! Org).callings {
-            let newDataItem = AccordionDataItem.init(dataItem: calling, dataItemType: .Calling, expanded: false)
+            let newDataItem = CWFAccordionVCElements.AccordionDataItem.init(dataItem: calling, dataItemType: .Calling, expanded: false)
             dataSource.insert(newDataItem, at: indexPath.row + i+1)
             indexPaths.append(IndexPath(row: indexPath.row + i+1, section: 0))
             i += 1

@@ -37,6 +37,8 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
         // some tests fail (it's during test/init code, not during the test itself) if this is inside the getAppConfig callback. So get the reference before the call.
         weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
         let ldscdApi = LdscdRestApi()
+        // to avoid going to the app config server, use this line. It will just use what's defined in NetworkConstants
+//        ldscdApi.appConfig = AppConfig()
         ldscdApi.getAppConfig() { (appConfig, error) in
             
             let username = self.loginDictionary?["username"] as! String

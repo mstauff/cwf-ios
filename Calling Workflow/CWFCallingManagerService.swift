@@ -49,6 +49,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     let permissionMgr : PermissionManager
     
+    public private(set) var user : LdsUser? = nil
+    
     public private(set) var userRoles : [UnitRole] = []
     
     var statusToExcludeForUnit : [CallingStatus] = []
@@ -85,6 +87,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                             completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
                             return
                         }
+                        self.user = ldsUser
                         completionHandler( ldsUser, nil )
                     }
                 }
@@ -93,6 +96,35 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     public func getUnits( forUser user: LdsUser ) -> [Int64] {
         return permissionMgr.authorizedUnits(forUser: user)
+    }
+    
+    public func reloadLdsData( forUser: LdsUser?, completionHandler: @escaping (Bool, Error?) -> Void ) {
+
+        let cachedOrParamUser = forUser == nil ? self.user : forUser
+        if let unitNum = self.ldsOrgUnit?.unitNum, let user = cachedOrParamUser {
+            loadLdsData(forUnit: unitNum, ldsUser: user) { success, error in
+                guard error == nil, success == true else {
+                    completionHandler( success, error )
+                    return
+                }
+
+                if let ldsUnit = self.ldsOrgUnit {
+                    self.loadAppData(ldsUnit: ldsUnit) { success, _, error in
+                        completionHandler( success, error )
+                    }
+                } else {
+                    // shouldn't ever happen, should be handled by the guard, but just in case
+                    let errorMsg = "Error during resync: No LDS.org data " + error.debugDescription
+                    print( errorMsg )
+                    completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
+                }
+            }
+        } else {
+            // shouldn't ever happen, should never get here if we didn't have a unit on initial load
+            let errorMsg = "Error during resync: No initial LDS.org data "
+            print( errorMsg )
+            completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
+        }
     }
     
     /** Performs the calls that need to be made to lds.org at startup, or unit transition. First it gets the application config from our servers (which contains the lds.org endpoints to use). Next it logs in to lds.org, then it retrieves user data which includes their callings (to verify unit permissions), the unit member list and callings. Once all those have completed then we call the callback. If any one of them fails we will return an error via the callback. The data is not returned via the callback, it is just maintained internally in this class. The callback just lets the calling function know that this method has successfully completed.

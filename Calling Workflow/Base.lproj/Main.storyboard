@@ -96,16 +96,16 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sign in" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fVC-3h-mkp">
-                                            <rect key="frame" x="128" y="14" width="119" height="15.5"/>
+                                            <rect key="frame" x="63" y="13" width="248" height="16"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.18823529410000001" green="0.68235294120000001" blue="0.93725490199999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="trailingMargin" secondItem="fVC-3h-mkp" secondAttribute="trailing" constant="112" id="3um-1t-QeY"/>
-                                        <constraint firstItem="fVC-3h-mkp" firstAttribute="leading" secondItem="L7w-1D-nD3" secondAttribute="leadingMargin" constant="112" id="Wzk-nE-jwW"/>
-                                        <constraint firstItem="fVC-3h-mkp" firstAttribute="top" secondItem="L7w-1D-nD3" secondAttribute="topMargin" constant="3" id="qQI-DC-Qn2"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="fVC-3h-mkp" secondAttribute="trailing" constant="48" id="3um-1t-QeY"/>
+                                        <constraint firstItem="fVC-3h-mkp" firstAttribute="leading" secondItem="L7w-1D-nD3" secondAttribute="leadingMargin" constant="47" id="Wzk-nE-jwW"/>
+                                        <constraint firstItem="fVC-3h-mkp" firstAttribute="top" secondItem="L7w-1D-nD3" secondAttribute="topMargin" constant="2" id="qQI-DC-Qn2"/>
                                         <constraint firstAttribute="bottomMargin" secondItem="fVC-3h-mkp" secondAttribute="bottom" constant="3.5" id="u77-xG-DPV"/>
                                     </constraints>
                                 </tableViewCellContentView>
