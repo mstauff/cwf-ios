@@ -57,6 +57,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     let maxLoadAttempts = 1
     
+    //MARK: - Lifecycle
+    
     init() {
         permissionMgr = PermissionManager()
     }

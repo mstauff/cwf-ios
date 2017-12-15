@@ -135,12 +135,10 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return dataSource.count
     }
 
@@ -252,11 +250,11 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                 }
                 else {
                     let cell = tableView.cellForRow(at: indexPath) as? CWFAccordionRootTableViewCell
-                    if (hasPermissionToEdit()) {
-                        cell?.newButton.isHidden = false
-                    }
                     cell?.newButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
                     if let org = dataItem.dataItem as? Org {
+                        if (hasPermissionToEdit() && org.potentialNewPositions.count > 0) {
+                            cell?.newButton.isHidden = false
+                        }
                         cell?.newButton.buttonOrg = org
                     }
                     expandCell(indexPath: indexPath)

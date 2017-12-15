@@ -23,6 +23,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
 
         self.navigationItem.title = parentOrg?.orgName//NSLocalizedString("Add New Calling", comment: "Add New Calling")
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveNewCalling))
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
         
         tableView.register(SingleFieldTableViewCell.self, forCellReuseIdentifier: "SingleFieldTableViewCell")
         tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "NoteTableViewCell")
@@ -33,8 +34,18 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         if let excludeStatuses = appDelegate?.callingManager.statusToExcludeForUnit {
             newStatusArray = CallingStatus.userValues.filter() { !excludeStatuses.contains(item: $0) }
         }
-                
-        newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: newStatusArray.first, position: newPostiton, notes: nil, parentOrg: parentOrg, cwfOnly: true)
+        
+        // Set newCalling. If there is only one potential calling use that as the new calling
+        if let newPositions = parentOrg?.potentialNewPositions {
+            switch newPositions.count {
+            //if only one calling
+            case 1:
+                newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: newStatusArray.first, position: newPositions[0], notes: nil, parentOrg: parentOrg, cwfOnly: true)
+            default:
+                newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: newStatusArray.first, position: newPostiton, notes: nil, parentOrg: parentOrg, cwfOnly: true)
+            }
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -122,6 +133,13 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
                 nextVC?.delegate = self
                 if appDelegate != nil {
                     nextVC?.members = (appDelegate?.callingManager.memberCallings)!
+                    
+                    //add in the filter options
+                    if let position = newCalling?.position, let metaData = appDelegate?.callingManager.positionMetadataMap[position.positionTypeId] {
+                        let requirements = metaData.requirements
+                        let filterOptions = requirements != nil ? FilterOptions( fromPositionRequirements: requirements! ) : FilterOptions()
+                        nextVC?.filterViewOptions = filterOptions
+                    }
                 }
                 navigationController?.pushViewController(nextVC!, animated: true)
             
@@ -234,6 +252,11 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     func setProspectiveMember(member: Member?) {
         if let setMember = member {
             newCalling?.proposedIndId = setMember.individualId
+            //TODO add check that calling is set
+            if (newCalling?.position.positionTypeId != 0) {
+                navigationItem.rightBarButtonItem?.isEnabled = true
+            }
+            
         }
         else {
             newCalling?.proposedIndId = nil
@@ -262,6 +285,9 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     
     func setReturnedPostiton(position: Position) {
         newCalling = Calling(id: newCalling?.id, cwfId: newCalling?.cwfId, existingIndId: newCalling?.existingIndId, existingStatus: newCalling?.existingStatus, activeDate: newCalling?.activeDate, proposedIndId: newCalling?.proposedIndId, status: newCalling?.proposedStatus, position: position, notes: newCalling?.notes, parentOrg: newCalling?.parentOrg, cwfOnly: true)
+        if (newCalling?.proposedIndId != nil) {
+            navigationItem.rightBarButtonItem?.isEnabled = true
+        }
         tableView.reloadData()
     }
 

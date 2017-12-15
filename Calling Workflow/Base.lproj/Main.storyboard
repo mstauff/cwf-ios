@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="THt-KO-N4t">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="THt-KO-N4t">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -30,11 +30,11 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gPy-rR-Sxt">
-                                <rect key="frame" x="125" y="188" width="125" height="30"/>
+                                <rect key="frame" x="111" y="188" width="153" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="125" id="LQW-7I-HYe"/>
+                                    <constraint firstAttribute="width" constant="153" id="LQW-7I-HYe"/>
                                 </constraints>
-                                <state key="normal" title="Sign Out Google"/>
+                                <state key="normal" title="Sign Out of Google"/>
                                 <connections>
                                     <action selector="signOutClicked:" destination="9pv-A4-QxB" eventType="touchUpInside" id="SON-VF-tVh"/>
                                 </connections>
