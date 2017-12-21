@@ -56,7 +56,7 @@
 		3CBDDCAE1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBDDCAD1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift */; };
 		3CCFF8221EF45550004E239F /* FilterCallingStatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CCFF8211EF45550004E239F /* FilterCallingStatusTableViewCell.swift */; };
 		3CE4C8D31DCA824100AAFB31 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */; };
-		3CE4C8D51DCA824100AAFB31 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */; };
+		3CE4C8D51DCA824100AAFB31 /* GoogleSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D41DCA824100AAFB31 /* GoogleSettingsViewController.swift */; };
 		3CE4C8DA1DCA824100AAFB31 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D81DCA824100AAFB31 /* Main.storyboard */; };
 		3CE4C8DC1DCA824100AAFB31 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */; };
 		3CE4C8DF1DCA824100AAFB31 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C8DD1DCA824100AAFB31 /* LaunchScreen.storyboard */; };
@@ -92,6 +92,8 @@
 		E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE81E26AC1E0091419D /* LdsRestApi.swift */; };
 		E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CEB1E26AD4F0091419D /* RestAPITests.swift */; };
 		E8352A2F1F1E6E620087CED7 /* FilterOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8352A2E1F1E6E620087CED7 /* FilterOptions.swift */; };
+		E83B34921FE1F48F0087564B /* ResetDataTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83B34911FE1F48F0087564B /* ResetDataTableViewController.swift */; };
+		E83B34941FE4521B0087564B /* MultiSelectTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83B34931FE4521B0087564B /* MultiSelectTableViewCell.swift */; };
 		E841701C1E79B4D600A5C049 /* ModelEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = E841701B1E79B4D600A5C049 /* ModelEnums.swift */; };
 		E841701E1E7C767A00A5C049 /* reconcile-test-orgs.js in Resources */ = {isa = PBXBuildFile; fileRef = E841701D1E7C767A00A5C049 /* reconcile-test-orgs.js */; };
 		E845FDD71FC3757000FE3919 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E845FDD61FC3756F00FE3919 /* SessionManager.swift */; };
@@ -201,7 +203,7 @@
 		3CCFF8211EF45550004E239F /* FilterCallingStatusTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterCallingStatusTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterCallingStatusTableViewCell.swift; sourceTree = "<group>"; };
 		3CE4C8CF1DCA824100AAFB31 /* Calling Workflow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Calling Workflow.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
+		3CE4C8D41DCA824100AAFB31 /* GoogleSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSettingsViewController.swift; sourceTree = "<group>"; };
 		3CE4C8D91DCA824100AAFB31 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3CE4C8DE1DCA824100AAFB31 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -249,6 +251,8 @@
 		E8316CE81E26AC1E0091419D /* LdsRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdsRestApi.swift; sourceTree = "<group>"; };
 		E8316CEB1E26AD4F0091419D /* RestAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestAPITests.swift; sourceTree = "<group>"; };
 		E8352A2E1F1E6E620087CED7 /* FilterOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterOptions.swift; path = Model/FilterOptions.swift; sourceTree = "<group>"; };
+		E83B34911FE1F48F0087564B /* ResetDataTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ResetDataTableViewController.swift; path = Controllers/ResetDataTableViewController.swift; sourceTree = "<group>"; };
+		E83B34931FE4521B0087564B /* MultiSelectTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MultiSelectTableViewCell.swift; path = Controllers/TableViewCells/MultiSelectTableViewCell.swift; sourceTree = "<group>"; };
 		E841701B1E79B4D600A5C049 /* ModelEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ModelEnums.swift; path = Model/ModelEnums.swift; sourceTree = "<group>"; };
 		E841701D1E7C767A00A5C049 /* reconcile-test-orgs.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "reconcile-test-orgs.js"; sourceTree = "<group>"; };
 		E845FDD61FC3756F00FE3919 /* SessionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SessionManager.swift; path = Model/SessionManager.swift; sourceTree = "<group>"; };
@@ -465,12 +469,13 @@
 				3C3737B31F13DCB000D62C2E /* CallingPickerViewController.swift */,
 				3CEBAF401DCD0D160071BE9F /* CallingsTableViewController.swift */,
 				3CEBAF421DCD0E010071BE9F /* DirectoryTableViewController.swift */,
-				3CE4C8D41DCA824100AAFB31 /* FirstViewController.swift */,
+				3CE4C8D41DCA824100AAFB31 /* GoogleSettingsViewController.swift */,
 				3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */,
 				3C0994D11E451AC500926094 /* MemberPickerTableViewController.swift */,
 				3C0E017F1E4D26100014D32B /* NewCallingTableViewController.swift */,
 				E8084F891E04814F0077FDAE /* OrganizationTableViewController.swift */,
 				3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */,
+				E83B34911FE1F48F0087564B /* ResetDataTableViewController.swift */,
 				3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */,
 				3C7345F11F420FD500E1BF40 /* StatusSettingsViewController.swift */,
 				E82F306D1F28030200E20D5E /* OrgFilterButton.swift */,
@@ -495,6 +500,7 @@
 				3CEBAF471DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift */,
 				3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */,
 				3C0AA6E31E4A86670086525D /* OneRightTwoLeftTableViewCell.swift */,
+				E83B34931FE4521B0087564B /* MultiSelectTableViewCell.swift */,
 				3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */,
 				3C0994D31E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift */,
 				3C6A365C1EC24AB100A58C33 /* Filter Cells */,
@@ -888,6 +894,7 @@
 				E8316CE91E26AC1E0091419D /* LdscdRestApi.swift in Sources */,
 				E8D51E771F0E94DC009F87DC /* Debounce.swift in Sources */,
 				3CB192011EC6801E0098AD1C /* FilterButton.swift in Sources */,
+				E83B34921FE1F48F0087564B /* ResetDataTableViewController.swift in Sources */,
 				3C3737B41F13DCB000D62C2E /* CallingPickerViewController.swift in Sources */,
 				3C3737B21F0FFD5600D62C2E /* CWFMapViewController.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
@@ -930,7 +937,7 @@
 				3CE4C9101DCA82A000AAFB31 /* Constants.swift in Sources */,
 				3C7345F21F420FD500E1BF40 /* StatusSettingsViewController.swift in Sources */,
 				3C2DFEB81F22C261007F716C /* UIImageExtension.swift in Sources */,
-				3CE4C8D51DCA824100AAFB31 /* FirstViewController.swift in Sources */,
+				3CE4C8D51DCA824100AAFB31 /* GoogleSettingsViewController.swift in Sources */,
 				E845FDD91FC6323A00FE3919 /* UIViewControllerExtensions.swift in Sources */,
 				3CEBAF411DCD0D160071BE9F /* CallingsTableViewController.swift in Sources */,
 				3CE4C9171DCA82A000AAFB31 /* RestAPI.swift in Sources */,
@@ -949,6 +956,7 @@
 				3CA55F3A1E9D7D7400022D52 /* CWFButtonTableViewCell.swift in Sources */,
 				E8084F851E0476F80077FDAE /* Calling.swift in Sources */,
 				E87A9E811E0308E800A7A618 /* HTVTMemberParser.swift in Sources */,
+				E83B34941FE4521B0087564B /* MultiSelectTableViewCell.swift in Sources */,
 				3C4347BB1ECBBEA600CC7369 /* FilterGenderTableViewCell.swift in Sources */,
 				3C4409C91E3BEE9400484935 /* CWFStatusPickerView.swift in Sources */,
 				3C6A365B1EC23D4600A58C33 /* FilterTableViewController.swift in Sources */,
