@@ -129,7 +129,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
     
     func presentDriveSignInView() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let loginVC = storyboard.instantiateViewController(withIdentifier: "FirstViewController") as? FirstViewController
+        let loginVC = storyboard.instantiateViewController(withIdentifier: "FirstViewController") as? GoogleSettingsViewController
         let navController2 = UINavigationController()
         navController2.addChildViewController(loginVC!)
         

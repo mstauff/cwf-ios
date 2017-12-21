@@ -35,11 +35,10 @@ struct LDSCredentialsVCEnums {
                 return allValues.count
             }
         }
-    }
-    
+    }    
 }
 
-class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingSpinner {
+class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingSpinner, AlertBox {
     
     var userNameField : UITextField?
     var passwordField : UITextField?
@@ -171,20 +170,8 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
             passwordField?.resignFirstResponder()
             tableView.deselectRow(at: indexPath, animated: true)
             
-            let syncMessage = NSLocalizedString("This will update your app with any changes that have been made on lds.org since the time you launched the app. You should not need to do this on a regular basis. Do you want to proceed.", comment: "Resync")
-            let syncAlert = UIAlertController(title: NSLocalizedString("Sync Data", comment: "Sync"), message: syncMessage, preferredStyle: UIAlertControllerStyle.alert)
-            
-            let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: syncOkHandler)
-            
-            let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
-                (alert: UIAlertAction!) -> Void in
-                print("Cancelled")
-            })
-            
-            syncAlert.addAction(okAction)
-            syncAlert.addAction(cancelAction)
-            
-            self.present(syncAlert, animated: true, completion: nil)
+            let syncMessage = NSLocalizedString("This will update your app with any changes that have been made on lds.org since the time you launched the app. You should not need to do this on a regular basis, only if you know there has been a change made on lds.org that you are not seeing in the app yet. Do you want to proceed.", comment: "Resync")
+            showAlert(title: NSLocalizedString("Sync Data", comment: "Sync"), message: syncMessage, includeCancel: true, okCompletionHandler: syncOkHandler)
             
         default:
             tableView.deselectRow(at: indexPath, animated: true)
@@ -194,13 +181,9 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
     func logInLDSUser(username: String, password: String) {
         //Show alert on empty strings
         if (username == "" || password == "") {
-            let alertview = UIAlertController(title: "Login Error", message: "Enter username and password to login", preferredStyle: UIAlertControllerStyle.alert)
-            let alertAction = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: UIAlertActionStyle.default, handler: nil)
-            alertview.addAction(alertAction)
-            self.present(alertview, animated: true, completion: nil)
-        }
+            showAlert(title: "Login Error", message: "Enter username and password to login", includeCancel: false, okCompletionHandler: nil)
+        } else if (ldsIdIsValid(username: username, password: password)) {
             // Check if the id and password are valid
-        else if (ldsIdIsValid(username: username, password: password)) {
             do {
                 try Locksmith.deleteDataForUserAccount(userAccount: "callingWorkFlow")
             }
@@ -216,56 +199,43 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
             }
             
             self.dismiss(animated: true, completion: nil)
-        }
+        } else {
             // Show alert on bad info
-        else {
-            let alertview = UIAlertController(title: "Login Error", message: "Invalid username or password.", preferredStyle: UIAlertControllerStyle.alert)
-            let alertAction = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: UIAlertActionStyle.default, handler: nil)
-            alertview.addAction(alertAction)
-            self.present(alertview, animated: true, completion: nil)
+            showAlert(title: "Login Error", message: "Invalid username or password", includeCancel: false, okCompletionHandler: nil)
         }
     }
     
     func ldsIdIsValid(username: String, password: String) -> Bool {
+        // todo - need to still handle this
         if (true) {
             return true
-        }
-        else {
+        } else {
             return false
         }
     }
     
-    
+    // handler for when user clicks ok on the sync warning, actually starts the sync process
     func syncOkHandler( alert: UIAlertAction ) {
         //Call to callingManager to resync
         if let callingService = self.callingMgr {
             self.startStaticFrameProcessingSpinner()
-            
             callingService.reloadLdsData(forUser: nil, completionHandler: syncCompletionHandler)
-            
         } else {
             // shouldn't happen - log/display error
         }
     }
     
+    // completion handler for the sync completing
     func syncCompletionHandler( success: Bool, error: Error? ) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { 
             self.removeProcessingSpinner()
             
             var completeMessage = "Data updated from lds.org"
             if !success {
                 completeMessage = "Error communicating with lds.org. Please retry later."
             }
-            let completeAlert = UIAlertController(title: NSLocalizedString("Sync Complete", comment: "Sync"), message: completeMessage, preferredStyle: UIAlertControllerStyle.alert)
             
-            let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.cancel, handler: {
-                (alert: UIAlertAction!) -> Void in
-                // nothing to do, just let the dialog be dismissed
-            })
-            
-            completeAlert.addAction(okAction)
-            
-            self.present(completeAlert, animated: true, completion: nil)
+            self.showAlert(title: NSLocalizedString("Sync Complete", comment: "Sync"), message: completeMessage, includeCancel: false, okCompletionHandler: nil)
         }
     }
 }

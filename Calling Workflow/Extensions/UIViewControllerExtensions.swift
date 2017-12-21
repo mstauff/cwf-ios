@@ -41,3 +41,35 @@ extension ProcessingSpinner where Self:UIViewController {
         }
     }
 }
+
+protocol AlertBox {
+    
+}
+
+extension AlertBox where Self: UIViewController {
+    // Helper for showing an alert
+    func showAlert(title : String, message: String, includeCancel: Bool, okCompletionHandler: (( UIAlertAction) -> Void)?) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: UIAlertControllerStyle.alert
+        )
+        let ok = UIAlertAction(
+            title: NSLocalizedString("OK", comment: "OK"),
+            style: UIAlertActionStyle.default,
+            handler: okCompletionHandler
+        )
+        alert.addAction(ok)
+        if includeCancel {
+            let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
+                (alert: UIAlertAction!) -> Void in
+                print("Cancelled")
+            })
+            
+            alert.addAction( cancelAction )
+        }
+        present(alert, animated: true, completion: nil)
+    }
+    
+
+}

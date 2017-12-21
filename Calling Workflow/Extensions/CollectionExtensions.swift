@@ -37,6 +37,11 @@ extension Array {
         }
     }
     
+    /// Returns the element at the specified index if it is within bounds, otherwise nil.
+    subscript (safe index: Index) -> T? {
+        return indices.contains(index) ? self[index] : nil
+    }
+    
     func toDictionary<K:Hashable, V>( _ transformer: (_: Element) -> (key: K, value: V)?)
                     -> Dictionary<K, V> {
         var map = [K: V]()

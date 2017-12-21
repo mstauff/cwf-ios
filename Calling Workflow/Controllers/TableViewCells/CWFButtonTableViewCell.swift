@@ -11,6 +11,11 @@ import UIKit
 class CWFButtonTableViewCell: UITableViewCell {
     
     let cellButton = UIButton(type: UIButtonType.roundedRect)
+    var buttonTitle = NSLocalizedString("Update lds.org", comment: "update string") {
+        didSet {
+            cellButton.setTitle(buttonTitle, for: UIControlState.normal)
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -22,8 +27,8 @@ class CWFButtonTableViewCell: UITableViewCell {
         self.setupCell()
     }
     
-    func setupCell() {
-        cellButton.setTitle(NSLocalizedString("Update lds.org", comment: "update string"), for: UIControlState.normal)
+    func setupCell( ) {
+        
         cellButton.translatesAutoresizingMaskIntoConstraints = false
         
         self.addSubview(cellButton)

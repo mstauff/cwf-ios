@@ -100,6 +100,41 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         return permissionMgr.authorizedUnits(forUser: user)
     }
     
+    /** Utility method for wiping out the json in a google drive file in case we get in a bad state. This will overwrite what's in google drive with */
+    public func resetAppData( forOrgIds orgIds : [Int64], completionHandler: @escaping (Bool, Error?) -> Void ) {
+        // ensure they have permissions (only unit admins)
+        guard permissionMgr.hasPermission(unitRoles: userRoles, domain: .UnitGoogleAccount, permission: .Update) else {
+            let errorMsg = "No permission to reset google drive data "
+            print( errorMsg )
+            completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notAuthorized, userInfo: ["error": errorMsg]))
+            return
+        }
+        // get the orgs from the lds.org data (we will use that to overwrite anything in google drive)
+        let orgs = orgIds.flatMap() { ldsOrgUnit?.getChildOrg(id: $0) }
+        let orgNames = orgs.map({$0.orgName}).joined(separator: ",")
+        print("Resetting data for " + orgNames)
+        
+        let dataSourceGroup = DispatchGroup()
+        
+        orgs.forEach() { ldsOrg in
+            dataSourceGroup.enter()
+            // write the lds.org back to google drive
+            dataSource.updateOrg(org: ldsOrg) { success, error in
+                // todo - need to add in error handling
+                // update the app data (in memory merged lds.org & google drive) with just lds.org data
+                self.appDataOrg?.updateDirectChildOrg(org: ldsOrg)
+                dataSourceGroup.leave()
+            }
+        }
+
+        dataSourceGroup.notify(queue: DispatchQueue.main) {
+            // once we're all done go through  the init process again to get all the hashtables of calling holders, etc. updated with the latest data
+            self.initDatasourceData(fromOrg: self.appDataOrg!, extraOrgs: [])
+            completionHandler(true, nil)
+        }
+        
+    }
+    
     public func reloadLdsData( forUser: LdsUser?, completionHandler: @escaping (Bool, Error?) -> Void ) {
 
         let cachedOrParamUser = forUser == nil ? self.user : forUser
