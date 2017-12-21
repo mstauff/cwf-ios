@@ -16,6 +16,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             tableView.reloadData()
         }
     }
+    var titleBarString : String? = nil
     var tableView = UITableView(frame: CGRect.zero, style: .grouped)
     var isDirty = false
 
@@ -42,11 +43,11 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         self.callingMgr = appDelegate?.callingManager
-
-        originalCalling = calling
-        navigationItem.title = calling.position.metadata.shortName
-//        navigationController?.title = calling.position.name
         
+        originalCalling = calling
+        if let viewTitle = titleBarString {
+            navigationItem.title = viewTitle
+        }
         setupNavBarButtons()
         
         // check permissions to see if we need to display options to edit the calling
@@ -102,8 +103,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         let headerView = UIView(frame: CGRect(x: 0, y: -2, width: self.view.frame.width, height: 0.1))
         headerView.backgroundColor = UIColor.orange
         tableView.tableHeaderView = headerView
-        
-        
+                
         self.view.addSubview(self.tableView)
         
         let xConstraint = NSLayoutConstraint(item: tableView, attribute: .left, relatedBy: .equal, toItem: self.view, attribute: .left, multiplier: 1, constant: 0)
@@ -119,7 +119,6 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         tableView.register(OneRightTwoLeftTableViewCell.self, forCellReuseIdentifier: "oneRightTwoLeftCell")
         tableView.register(NotesTableViewCell.self, forCellReuseIdentifier: "noteCell")
         tableView.register(CWFButtonTableViewCell.self, forCellReuseIdentifier: "buttonCell")
-
     }
 
     // MARK: - Table view data source
@@ -210,8 +209,8 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         case 0: // first section of the view is the title cell
             let cell = tableView.dequeueReusableCell(withIdentifier: "dataSubdata", for: indexPath) as? DataSubdataTableViewCell
 
-            cell?.mainLabel.text = callingToDisplay?.position.name
-            cell?.subLabel.text = callingToDisplay?.parentOrg?.orgName
+            cell?.mainLabel.text = callingToDisplay?.parentOrg?.orgName
+            cell?.subLabel.text = callingToDisplay?.position.name
             
             return cell!
             
@@ -712,10 +711,19 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     
     func canDeleteCalling() -> Bool {
         var boolToReturn = false
-        //TODO : does this need to include if this is the last one?
-        if let calling = callingToDisplay {
-            if calling.position.multiplesAllowed {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        
+        if let calling = callingToDisplay,let parentOrgId = calling.parentOrg?.id, let rootOrg = appDelegate?.callingManager.unitLevelOrg(forSubOrg: parentOrgId) {
+            if calling.cwfOnly {
                 boolToReturn = true
+            }
+            else {
+                let parentOrgArray = rootOrg.children.filter() { $0.id == calling.parentOrg?.id }
+                let parentOrg = parentOrgArray[0]
+                let callings = parentOrg.callings.filter() { $0.position.positionTypeId == calling.position.positionTypeId }
+                if calling.position.multiplesAllowed && callings.count > 1 {
+                    boolToReturn = true
+                }
             }
             
         }

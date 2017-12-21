@@ -33,7 +33,11 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                         // in the cases where we've done an update to LCR when multiples are allowed the calling ID may have changed so we need to remove the old one (by it's cwfID) before updating with the new one. If we simply update the new value with the ID it is not matched with the old calling without an ID, so it gets added as new rather than replacing
                         self.rootOrg = self.rootOrg?.updatedWith(callingToDelete: prevVal)
                     }
-                self.rootOrg = self.rootOrg?.updatedWith(changedCalling: validCalling)
+                self.resetRootOrg()
+//                self.rootOrg = self.rootOrg?.updatedWith(changedCalling: validCalling)
+            }
+            else {
+                self.resetRootOrg()
             }
         }
     }
@@ -57,6 +61,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     
     private var expandedParents : [CWFAccordionVCElements.AccordionDataItem] = []
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = false
@@ -78,7 +83,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-    }
+     }
 
     // MARK: - Setup
     func setupView() {
@@ -179,7 +184,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             
             return cell!
             
-        case .Calling:
+        default: //Calling
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "childCell", for: indexPath) as? CWFAccordionChildTableViewCell
@@ -220,11 +225,6 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             else {
                 cell?.warningButton.isHidden = true
             }
-            
-            return cell!
-            
-        default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "childCell", for: indexPath) as? CWFAccordionChildTableViewCell
             
             return cell!
         }
@@ -277,6 +277,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             self.callingToDisplay = calling
             nextVC?.callingToDisplay = calling
             nextVC?.delegate = self
+            nextVC?.titleBarString = rootOrg?.orgName
             self.navigationController?.pushViewController(nextVC!, animated: true)
 
         }
@@ -358,6 +359,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         if let org = sender.buttonOrg {
             nextVC?.parentOrg = org
         }
+        nextVC?.delegate = self
         self.navigationController?.pushViewController(nextVC!, animated: true)
     }
     
@@ -366,6 +368,18 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         let nextVC = storyBoard.instantiateViewController(withIdentifier: "NewCallingTableViewController") as? NewCallingTableViewController
         nextVC?.parentOrg = self.rootOrg
         self.navigationController?.pushViewController(nextVC!, animated: true)
+    }
+    
+    func resetRootOrg () {
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            appDelegate.callingManager.getOrgData(forOrgId: self.rootOrg!.id ) { (org, error) in
+                guard error == nil else {
+                    return
+                }
+                
+                self.rootOrg = org
+            }
+        }
     }
     
     // MARK: - Filter

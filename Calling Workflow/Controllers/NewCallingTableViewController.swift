@@ -14,6 +14,8 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     
     var newCalling : Calling?
     
+    var delegate : CallingsTableViewControllerDelegate?
+    
     let appDelegate = UIApplication.shared.delegate as? AppDelegate
     
     // MARK: - Life Cycle
@@ -276,6 +278,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
        
         if (self.newCalling != nil) {
                 appDelegate?.callingManager.addCalling(calling: self.newCalling!) {_,_ in }
+            self.delegate?.setReturnedCalling(calling: self.newCalling!)
             
         }
         self.navigationController?.popViewController(animated: true)
