@@ -120,7 +120,9 @@ class ResetDataTableViewController: CWFBaseTableViewController, AlertBox, Proces
             DispatchQueue.main.async {
                 // once the reset of google drive data has completed, dismiss the spinner and show an alert box
                 self.removeProcessingSpinner()
-                self.showAlert(title: NSLocalizedString("Complete", comment: "Complete"), message: "Data reset is complete", includeCancel: false, okCompletionHandler: nil)
+                self.showAlert(title: NSLocalizedString("Complete", comment: "Complete"), message: "Data reset is complete", includeCancel: false) { _ in
+                    self.navigationController?.popViewController(animated: true)
+                }
             }
         }
     }
