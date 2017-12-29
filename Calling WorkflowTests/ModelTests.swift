@@ -60,6 +60,7 @@ class ModelTests: XCTestCase {
         super.tearDown()
     }
     
+    //todo - add med. name tests
     func testPositionMetadataFromJson() {
         XCTAssertGreaterThan(positionMetadata.count, 0)
         var positionMap : [Int:PositionMetadata] = [:]
@@ -570,6 +571,24 @@ class ModelTests: XCTestCase {
         XCTAssertEqual( memberCallings.callings[0].id, 123 )
         XCTAssertEqual( memberCallings.proposedCallings[0].cwfId, "123-ABC" )
         XCTAssertEqual( memberCallings.proposedCallings[1].id, 500 )
+    }
+
+    func testCallingSort() {
+        let calling10 = Calling(forPosition: Position(positionTypeId: 1, name: nil, hidden: false, multiplesAllowed: false, displayOrder: 10, metadata: PositionMetadata()))
+        let calling20 = Calling(forPosition: Position(positionTypeId: 2, name: nil, hidden: false, multiplesAllowed: false, displayOrder: 20, metadata: PositionMetadata()))
+        let calling20Also = Calling(forPosition: Position(positionTypeId: 2, name: nil, hidden: false, multiplesAllowed: false, displayOrder: 20, metadata: PositionMetadata()))
+        let calling30 = Calling(forPosition: Position(positionTypeId: 3, name: nil, hidden: false, multiplesAllowed: false, displayOrder: 30, metadata: PositionMetadata()))
+        let callingNoPosition = Calling(forPosition: Position(positionTypeId: 4, name: nil, hidden: false, multiplesAllowed: false, displayOrder: nil, metadata: PositionMetadata()))
+
+        // should sort when all callings have different position display orders
+        XCTAssertEqual( [calling20, calling10].sorted(by: Calling.sortByDisplayOrder), [calling10, calling20])
+        // should sort when all elements are already in order
+        XCTAssertEqual( [calling10, calling20].sorted(by: Calling.sortByDisplayOrder), [calling10, calling20])
+        // should sort when there are some position display orders that are equivalent, and nil's should be sorted to the end
+        let sorted = [calling30, calling20Also, callingNoPosition, calling10, calling20].sorted(by: Calling.sortByDisplayOrder)
+        print( sorted.map({$0.position.displayOrder}) )
+        XCTAssertEqual( [calling30, calling20Also, callingNoPosition, calling10, calling20].sorted(by: Calling.sortByDisplayOrder),
+                [calling10, calling20Also, calling20, calling30, callingNoPosition])
     }
     
     func testPerformanceExample() {
