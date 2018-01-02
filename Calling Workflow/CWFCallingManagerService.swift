@@ -80,6 +80,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             ldsApi.ldsSignin(username: username, password: password, { (error) -> Void in
                 if error != nil {
                     print(error!)
+                    completionHandler( nil, error )
                 } else {
                     ldsApi.getCurrentUser() { (ldsUser, error) -> Void in
                         
@@ -491,11 +492,9 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                         updatedOrg.hasUnsavedChanges = true
                     } else {
                         // we don't have an exact match (probably a case where multiples are allowed)
-                        // if any potentials have an indId that matches the new actual then mark it as changed - eventually may delete, but for now we'll leave it for the user to confirm before deleting
+                        // if any potentials have an indId that matches the new actual then delete the potential
                         if potentialCalling.proposedIndId == ldsCalling.existingIndId {
-                            var updatedCalling = potentialCalling
-                            updatedCalling.conflict = .EquivalentPotentialAndActual
-                            updatedOrg = updatedOrg.updatedWith(changedCalling: updatedCalling) ?? updatedOrg
+                            updatedOrg = updatedOrg.updatedWith(callingToDelete: potentialCalling) ?? updatedOrg
                             updatedOrg.hasUnsavedChanges = true
                         }
                     }

@@ -9,7 +9,7 @@
 import UIKit
 import Locksmith
 
-class RootTabBarViewController: UITabBarController, LDSLoginDelegate, ProcessingSpinner {
+class RootTabBarViewController: UITabBarController, LDSLoginDelegate, ProcessingSpinner, AlertBox {
     
     var loginDictionary : Dictionary<String, Any>?
     
@@ -32,6 +32,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
     
     // MARK: - Login to ldsapi
     func signIntoLDSAPI() {
+        
         startProcessingSpinner( labelText: "Logging In" )
         
         // some tests fail (it's during test/init code, not during the test itself) if this is inside the getAppConfig callback. So get the reference before the call.
@@ -40,6 +41,11 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
         // to avoid going to the app config server, use this line. It will just use what's defined in NetworkConstants
 //        ldscdApi.appConfig = AppConfig()
         ldscdApi.getAppConfig() { (appConfig, error) in
+
+            if error != nil {
+                // just print it out, we'll use a default app config below
+                print( "Error retrieving app config from ldscd (redhat) server:" + error.debugDescription )
+            }
             
             let username = self.loginDictionary?["username"] as! String
             let password = self.loginDictionary?["password"] as! String
@@ -47,18 +53,23 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
             appDelegate?.callingManager.appConfig = appConfig ?? AppConfig()
             appDelegate?.callingManager.getLdsUser(username: username, password: password) { [weak self] (ldsUser, error) in
                 guard error == nil, let validUser = ldsUser else {
-                    // todo - check error for bad username/password vs. network failure (on our end or lds.org end)
                     print( "Error logging in to lds.org: " + error.debugDescription )
+                    var errorMsg = "Error logging in to lds.org. Please try again later"
+                    if let err = error as? NSError, err.code == ErrorConstants.notAuthorized {
+                        // it's a bad lds.org credentials issue
+                        errorMsg = "Invalid lds.org user. Please check your username and password"
+                    }
                     self?.removeSpinner()
+                    self?.showAlert(title: "Error", message: errorMsg, includeCancel: false, okCompletionHandler: nil)
                     return
                 }
                 
                 let potentialUnitNums = appDelegate?.callingManager.getUnits(forUser: validUser) ?? []
                 if potentialUnitNums.isEmpty {
-                    let errorMsg = "Error: No Permissions for app"
+                    let errorMsg = "Error: You do not currently have any callings that are authorized to use this application"
                     print( errorMsg )
                     self?.removeSpinner()
-                    // todo - pop a warning about user requirements
+                    self?.showAlert(title: "Error", message: errorMsg, includeCancel: false, okCompletionHandler: nil)
                 } else if potentialUnitNums.count == 1 {
                     unitNum = potentialUnitNums[0]
                 } else {
@@ -92,39 +103,19 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
                             self?.removeSpinner()
                             print( "Error loading data from LDS.org")
                             let alertText = loadingError?.localizedDescription ?? "Unknown Error"
-                            self?.showAlert(title: "LDS.org Communication Error", message: alertText)
+                            self?.showAlert(title: "LDS.org Communication Error", message: alertText, includeCancel: false, okCompletionHandler: nil)
                         }
-                    
                     }
                 }
             }
         }
     }
     
-    func showAlert(title : String, message: String) {
-        let alert = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: UIAlertControllerStyle.alert
-        )
-        let ok = UIAlertAction(
-            title: "OK",
-            style: UIAlertActionStyle.default,
-            handler: nil
-        )
-        alert.addAction(ok)
-        present(alert, animated: true, completion: nil)
-    }
     func showDriveSignInAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "ok"), style: .default, handler: {
+        self.showAlert(title: title, message: message, includeCancel: false) {
             (alert: UIAlertAction!) -> Void in
             self.presentDriveSignInView()
-        })
-        
-        alert.addAction(okAction)
-        present(alert, animated: true, completion: nil)
+        }
     }
     
     func presentDriveSignInView() {
@@ -144,8 +135,6 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
         navController2.addChildViewController(loginVC)
         
         self.present(navController2, animated: false, completion: nil)
-        
-
     }
     
     
@@ -153,8 +142,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
         //get login from keychain
         if let ldsLoginData = Locksmith.loadDataForUserAccount(userAccount: "callingWorkFlow") {
             setLoginDictionary(returnedLoginDictionary: ldsLoginData)
-        }
-        else {
+        } else {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin") as? LDSCredentialsTableViewController
             loginVC?.delegate = self
@@ -162,10 +150,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
             navController2.addChildViewController(loginVC!)
             
             self.present(navController2, animated: false, completion: nil)
-            
         }
-        
-        
     }
     
     

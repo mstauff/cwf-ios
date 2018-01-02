@@ -15,7 +15,7 @@ class LdscdRestApi : RestAPI {
     
     /* Returns (via callback) an AppConfig object with the URL's and other config data for the app */
     func getAppConfig(_ completionHandler: @escaping ( _ appConfig:AppConfig?, _ error:NSError? ) -> Void) {
-        if self.appConfig != nil {
+        if let _ = self.appConfig {
             completionHandler( self.appConfig, nil )
         } else {
             

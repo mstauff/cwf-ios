@@ -109,7 +109,16 @@ class LdsRestApi : RestAPI, LdsOrgApi {
                 completionHandler(error as NSError? )
                 return
             }
-            
+
+            // a 403 response from the server happens in cases where the login is invalid. Check for that and return a specific response so the UI can present a more detailed error message
+            guard let response = response as? HTTPURLResponse,
+                  response.statusCode != ErrorConstants.notAuthorized else {
+                let errorMsg = "Invalid login credentials for user: " + username
+                print( errorMsg )
+                completionHandler(NSError( domain: ErrorConstants.domain, code: 403, userInfo: [ "error" : errorMsg ] ) )
+                return
+            }
+
             guard data != nil else {
                 let errorMsg = "Error: No network error, but did not recieve data from \(NetworkConstants.ldsOrgEndpoints["SIGN_IN"]!)"
                 print( errorMsg )
