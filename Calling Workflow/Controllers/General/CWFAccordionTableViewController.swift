@@ -33,12 +33,13 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                         // in the cases where we've done an update to LCR when multiples are allowed the calling ID may have changed so we need to remove the old one (by it's cwfID) before updating with the new one. If we simply update the new value with the ID it is not matched with the old calling without an ID, so it gets added as new rather than replacing
                         self.rootOrg = self.rootOrg?.updatedWith(callingToDelete: prevVal)
                     }
-                self.resetRootOrg()
-//                self.rootOrg = self.rootOrg?.updatedWith(changedCalling: validCalling)
+                //Updates the ui only. No updates to Drive or LCR
+                self.rootOrg = self.rootOrg?.updatedWith(changedCalling: validCalling)
             }
             else {
                 self.resetRootOrg()
             }
+            self.tableView.reloadData()
         }
     }
     
@@ -47,6 +48,18 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     
     func setReturnedCalling(calling: Calling) {
         self.updatedCalling = calling
+    }
+    
+    // called by New Calling View Controller to update the ui only
+    func setNewCalling(calling: Calling) {
+        self.rootOrg = self.rootOrg?.updatedWith(newCalling: calling)
+        self.tableView.reloadData()
+    }
+    
+    //called by the Calling Details View Controller to update the ui only
+    func setDeletedCalling(calling: Calling) {
+        self.rootOrg = self.rootOrg?.updatedWith(callingToDelete: calling)
+        tableView.reloadData()
     }
     
     private var dataSource : [CWFAccordionVCElements.AccordionDataItem] = []

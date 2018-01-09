@@ -609,7 +609,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                         let err = error?.localizedDescription ?? "nil"
                         print("Delete result: \(success) - error: \(err)")
                         DispatchQueue.main.async {
-                            self.returnToAux(saveFirst: false)
+                            self.deleteReturn()
                         }
             
                     }
@@ -645,6 +645,14 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     
     func saveAndReturn() {
         returnToAux(saveFirst: true)
+    }
+    
+    func deleteReturn() {
+        isDirty = false
+        if let calling = self.callingToDisplay {
+            delegate?.setDeletedCalling(calling: calling)
+        }
+        self.navigationController?.popViewController(animated: true)
     }
     
     func returnToAux( saveFirst : Bool ) {

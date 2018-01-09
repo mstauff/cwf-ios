@@ -22,6 +22,8 @@ protocol LDSLoginDelegate {
 
 protocol CallingsTableViewControllerDelegate {
     func setReturnedCalling(calling: Calling)
+    func setNewCalling(calling: Calling)
+    func setDeletedCalling(calling: Calling)
 }
 
 protocol CallingPickerTableViewControllerDelegate {

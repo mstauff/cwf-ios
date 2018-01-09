@@ -276,11 +276,12 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     
     func saveNewCalling() {
        
-        if (self.newCalling != nil) {
-                appDelegate?.callingManager.addCalling(calling: self.newCalling!) {_,_ in }
-            self.delegate?.setReturnedCalling(calling: self.newCalling!)
+        if let tmpCalling = self.newCalling  {
+                appDelegate?.callingManager.addCalling(calling: tmpCalling) {_,_ in }
+            self.delegate?.setNewCalling(calling: tmpCalling)
             
         }
+        
         self.navigationController?.popViewController(animated: true)
     }
     
