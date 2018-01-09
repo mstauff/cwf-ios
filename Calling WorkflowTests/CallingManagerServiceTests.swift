@@ -10,7 +10,6 @@ import XCTest
 @testable import Calling_Workflow
 
 class CallingManagerServiceTests: XCTestCase {
-
     var callingMgr : PartialMockCallingManager = PartialMockCallingManager()
     let mockDataSource = MockDataSource()
     var org : Org?
@@ -37,6 +36,26 @@ class CallingManagerServiceTests: XCTestCase {
         
         override func unitLevelOrgType( forOrg: Int64 ) -> UnitLevelOrgType? {
             return .Primary
+        }
+    }
+
+    class MockLdsOrgApi : LdsFileApi {
+        override func ldsSignin(username: String, password: String, _ completionHandler: @escaping (NSError?) -> Void) {
+            if username == "valid" {
+                super.ldsSignin(username: username, password: password, completionHandler)
+            } else if username == "networkError" {
+                let error = NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": "network Error"])
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                    completionHandler(error)
+                }
+
+            } else if username == "badUser" {
+                let error = NSError(domain: ErrorConstants.domain, code: ErrorConstants.notAuthorized, userInfo: ["error": "Invalid user"])
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                    completionHandler(error)
+                }
+
+            }
         }
     }
     
@@ -512,6 +531,31 @@ class CallingManagerServiceTests: XCTestCase {
         waitForExpectations(timeout: 5)
         // todo - need to add more variations to this test
         
+    }
+
+    func testGetLdsUser() {
+        InjectionMap.ldsOrgApi = MockLdsOrgApi( appConfig: AppConfig() )
+        let password = "bar"
+        let validUserExpectation = self.expectation( description: "The completion handler should be called when there's a valid user")
+        let badUserExpectation = self.expectation( description: "The completion handler should be called when there's an invalid user")
+        let networkErrorExpectation = self.expectation( description: "The completion handler should be called when there's a network error")
+
+        // the mock ldsOrgApi calls the completion handler with different results based on the username we provide (hardcoded into the mock)
+        // This test exercises the logic in calling manager when a valid user, or an error are returned. We want to make sure
+        // in all cases the completion handler is still called.
+        // "valid" user returns a user
+        callingMgr.getLdsUser(username: "valid", password: password) { user, error in
+            validUserExpectation.fulfill()
+        }
+
+        // "badUser" simulates invalid credentials, while networkError simulates some type of network error. This test could be enhanced to look at the error details that get returned. for right now we just wanted to confirm the completion handler is always called
+        callingMgr.getLdsUser(username: "badUser", password: password) { user, error in
+            badUserExpectation.fulfill()
+        }
+        callingMgr.getLdsUser(username: "networkError", password: password) { user, error in
+            networkErrorExpectation.fulfill()
+        }
+        waitForExpectations(timeout: 5)
     }
 
     func createMember( withId id: Int64 ) -> Member {
