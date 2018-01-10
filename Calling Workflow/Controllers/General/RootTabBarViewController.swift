@@ -32,7 +32,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
     
     // MARK: - Login to ldsapi
     func signIntoLDSAPI() {
-        
+
         startProcessingSpinner( labelText: "Logging In" )
         
         // some tests fail (it's during test/init code, not during the test itself) if this is inside the getAppConfig callback. So get the reference before the call.
@@ -51,6 +51,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
             let password = self.loginDictionary?["password"] as! String
             var unitNum: Int64?
             appDelegate?.callingManager.appConfig = appConfig ?? AppConfig()
+            // todo - need to also hit google drive to get the user so we can use the unit number if needed to disambiguate lds units
             appDelegate?.callingManager.getLdsUser(username: username, password: password) { [weak self] (ldsUser, error) in
                 guard error == nil, let validUser = ldsUser else {
                     print( "Error logging in to lds.org: " + error.debugDescription )
@@ -64,7 +65,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
                     return
                 }
                 
-                let potentialUnitNums = appDelegate?.callingManager.getUnits(forUser: validUser) ?? []
+                let potentialUnitNums : [Int64] = appDelegate?.callingManager.getUnits(forUser: validUser) ?? []
                 if potentialUnitNums.isEmpty {
                     let errorMsg = "Error: You do not currently have any callings that are authorized to use this application"
                     print( errorMsg )
@@ -73,7 +74,8 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
                 } else if potentialUnitNums.count == 1 {
                     unitNum = potentialUnitNums[0]
                 } else {
-                    // todo - need to disambiguate
+                    // todo - if unitNum is still nil at this point we need to disambiguate somehow
+                    // We might be able to make use of the google account name to know what unit number to use, but we would need to refactor the loading of data from google drive to separate the signin from loading data (we need the signin to get the email account)
                     // there are unit names in the current-user.json, we're just not doing anything with them right now.
                 }
                 
@@ -83,7 +85,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
                         // todo - if we change this callback to provide the unitdata then ldsOrgUnit could be made private. Will that work????
                         let childView = self?.selectedViewController as? OrganizationTableViewController
                         if dataLoaded, let callingMgr = appDelegate?.callingManager, let ldsOrg = callingMgr.ldsOrgUnit {
-                            callingMgr.hasDataSourceCredentials(forUnit: 0 ) { (hasCredentials, signInError) -> Void in
+                            callingMgr.hasDataSourceCredentials(forUnit: validUnitNum ) { (hasCredentials, signInError) -> Void in
                                 if hasCredentials  {
                                     callingMgr.loadAppData(ldsUnit: ldsOrg ) { success, hasOrgsToDelete, error in
                                         self?.removeSpinner()

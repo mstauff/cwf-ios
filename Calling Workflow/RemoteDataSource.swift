@@ -43,7 +43,22 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         
         return canAuth
     }
-   
+
+    private var userName: String = ""
+
+    private var loggingInForUnitNum : Int64?
+
+    var unitNum : Int64? {
+        get {
+            // this requires the username has the unit number as the last component. Something like "ldscd-cwf-557552@gmail.com"
+            if let userNameDigits = userName.components(separatedBy: orgNameDelimiter).last {
+                return Int64(userNameDigits)
+            } else {
+                return nil
+            }
+        }
+    }
+
     override init() {
         super.init()
         // Override point for customization after application launch.
@@ -51,6 +66,10 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     
     /* Checks the keychain for an existing auth token, attempts to login if found */
     func hasValidCredentials( forUnit unitNum : Int64, completionHandler: @escaping (Bool, Error?) -> Void ) {
+
+        // we don't have anyway to access the username of the google drive user at this point. We have to save this variable off so we can validate against it in the callback after the signin is successful (we have access to profile data at that point)
+        self.loggingInForUnitNum = unitNum
+
         var configureError: NSError?
         GGLContext.sharedInstance().configureWithError(&configureError)
         assert(configureError == nil, "Error configuring Google services: \(configureError!)")
@@ -83,9 +102,24 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             //            let userId = user.userID                  // For client-side use only!
             //            let idToken = user.authentication.idToken // Safe to send to the server
             //            let fullName = user.profile.name
-        // todo - search profile name for the unit num
         driveService.authorizer = user.authentication.fetcherAuthorizer()
-        self.authCompletionHandler?( true, nil )
+        self.userName = user.profile.email
+
+        if AppConfig.validateRemoteDataAgainstLdsAccount {
+            // ensures that the unit num we're using to hit lds.org is the same as our credentialled user
+            if self.unitNum == self.loggingInForUnitNum {
+                self.authCompletionHandler?(true, nil)
+            } else {
+                let errorMsg = "Google credentials don't match requested unit number"
+                print(errorMsg)
+                let error = NSError( domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: [ "error" : errorMsg ])
+                self.authCompletionHandler?( false, error )
+            }
+        } else {
+            self.authCompletionHandler?(true, nil)
+        }
+
+
         self.authCompletionHandler = nil
     }
     

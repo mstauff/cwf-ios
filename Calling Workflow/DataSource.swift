@@ -22,7 +22,10 @@ protocol DataSource {
         get
     }
 
-    // todo - need to tie this to a unit. HOW????
+    var unitNum : Int64? {
+        get
+    }
+
     func hasValidCredentials( forUnit unitNum : Int64, completionHandler: @escaping (Bool, Error?) -> Void )
 
     func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ orgsToCreate: [Org], _ remainingOrgs: [Org], _ error: Error?) -> Void)
