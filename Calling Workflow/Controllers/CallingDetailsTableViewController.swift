@@ -664,7 +664,8 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         let _ = self.navigationController?.popViewController(animated: true)
         
     }
-    
+
+    // todo - we either need to pass in a completion handler, or define one for the controller that can handle the result of the save operation (mostly for error handling)
     func save() {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             if (self.callingToDisplay != nil) {
@@ -726,11 +727,11 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                 boolToReturn = true
             }
             else {
-                let parentOrgArray = rootOrg.children.filter() { $0.id == calling.parentOrg?.id }
-                let parentOrg = parentOrgArray[0]
-                let callings = parentOrg.callings.filter() { $0.position.positionTypeId == calling.position.positionTypeId }
-                if calling.position.multiplesAllowed && callings.count > 1 {
-                    boolToReturn = true
+                if let parentOrgId = calling.parentOrg?.id, let parentOrg = rootOrg.getChildOrg(id: parentOrgId ) {
+                    let callings = parentOrg.callings.filter() { $0.position.positionTypeId == calling.position.positionTypeId }
+                    if calling.position.multiplesAllowed && callings.count > 1 {
+                        boolToReturn = true
+                    }
                 }
             }
             
