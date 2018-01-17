@@ -468,9 +468,11 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 // it's not in the app org db so it needs to be added.
                 // first check to see if there's a potential calling in the org with same position
                 
-                // get any callings of the same position type - we already know it's in the same parent org so only thing to check is if the position is the same.
+                // get any callings of the same position type to see if there's a potential that this should replace.
+                // we already know it's in the same parent org so only thing to check is if the position is the same.
+                // If it has an ID that matches another lds.org calling then we can safely eliminate it as a potential match as well
                 let matchingPotentialCallings = appOrg.callings.filter() {
-                    $0.position == ldsCalling.position
+                    $0.position == ldsCalling.position && ( $0.id == nil || !ldsOrgCallingIds.contains( $0.id! ) )
                 }
                 var mergedProposedIndId : Int64? = nil
                 var mergedProposedStatus : CallingStatus? = nil
@@ -493,7 +495,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                     } else {
                         // we don't have an exact match (probably a case where multiples are allowed)
                         // if any potentials have an indId that matches the new actual then delete the potential
-                        if potentialCalling.proposedIndId == ldsCalling.existingIndId {
+                        // or if the potential is empty we also want to overwrite it
+                        if potentialCalling.proposedIndId == ldsCalling.existingIndId || potentialCalling.proposedIndId == nil {
                             updatedOrg = updatedOrg.updatedWith(callingToDelete: potentialCalling) ?? updatedOrg
                             updatedOrg.hasUnsavedChanges = true
                         }
@@ -513,19 +516,25 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         let callingIDsToRemove = Set(appCallingIds).subtracting(Set(ldsOrgCallingIds))
         for callingId in callingIDsToRemove {
             if var appCallingNotInLcr = appCallingsById[callingId] {
-                if let mergedCalling = updatedOrg.getCalling( appCallingNotInLcr ) {
-                    // if multiples allowed, then mark for deletion (it used to be in LCR, but no longer is there). We'll let the user confirm that the position should be removed
-                    if mergedCalling.position.multiplesAllowed  {
-                        appCallingNotInLcr.conflict = .LdsEquivalentDeleted
-                        updatedOrg = updatedOrg.updatedWith(changedCalling: appCallingNotInLcr) ?? updatedOrg
+                if let mergedCalling = updatedOrg.getCalling( withSameId: appCallingNotInLcr ) {
+                    // if multiples are allowed and there's no potential data then just go ahead and delete it.
+                    if mergedCalling.position.multiplesAllowed && mergedCalling.proposedIndId == nil{
+                        updatedOrg = updatedOrg.updatedWith(callingToDelete: appCallingNotInLcr) ?? updatedOrg
                         updatedOrg.hasUnsavedChanges = true
                     } else {
-                        // The calling is no longer in LCR (but the position likely is, could be empty because it was released outside the app, or could have a new ID if there was a change recorded in LCR outside the app). If the LCR version of the calling has an ID, then we've already merged it above, we don't want to do anything else. But if there is no id that means we haven't processed it yet, we need to update what's in the app data (google drive) with the released calling in LCR, while maintaining any proposed data
-                        if let lcrOriginalCalling = ldsOrg.getCalling( appCallingNotInLcr ), lcrOriginalCalling.id == nil {
-                            let releasedLcrCalling = mergeCallingData(fromActualCalling: lcrOriginalCalling, andProposedCalling: appCallingNotInLcr)
+                        // if multiples are not allowed, or there's potential data then we just need to remove the actual portion of the calling
+
+                        let releasedLcrCalling = mergedCalling.withActualReleased()
+                        if mergedCalling.position.multiplesAllowed {
+                            // if multiples are allowed we have to remove the calling with the ID, then add in the updated.
+                            // We can't do a straight update with the released calling, because the released version doesn't have the ID, and there's no way to definitively match without that
+                            updatedOrg = updatedOrg.updatedWith(callingToDelete: mergedCalling) ?? updatedOrg
+                            updatedOrg = updatedOrg.updatedWith(newCalling: releasedLcrCalling) ?? updatedOrg
+                        } else {
+                            // if no multiples, we can difinitively match based on calling type, so we can just do an update
                             updatedOrg = updatedOrg.updatedWith(changedCalling: releasedLcrCalling) ?? updatedOrg
-                            updatedOrg.hasUnsavedChanges = true
                         }
+                            updatedOrg.hasUnsavedChanges = true
                     }
                 }
                 // if it's not in the updatedOrg, then nothing to worry about, nothing to remove
