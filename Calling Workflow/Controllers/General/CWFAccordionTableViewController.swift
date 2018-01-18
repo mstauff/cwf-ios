@@ -384,14 +384,9 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     }
     
     func resetRootOrg () {
-        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            appDelegate.callingManager.getOrgData(forOrgId: self.rootOrg!.id ) { (org, error) in
-                guard error == nil else {
-                    return
-                }
-                
-                self.rootOrg = org
-            }
+        // grab the org out of memory without any potential changes
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let org = self.rootOrg, let unitOrg = appDelegate.callingManager.appDataOrg {
+            self.rootOrg = unitOrg.getChildOrg(id: org.id )
         }
     }
     

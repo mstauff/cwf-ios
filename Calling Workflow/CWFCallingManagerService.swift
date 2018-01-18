@@ -325,14 +325,17 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             self.unitLevelOrgsForSubOrgs = self.unitLevelOrgsForSubOrgs.merged(withDictionary: subOrgsMap)
         }
 
-        // this is only actual callings.
-        self.memberCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.existingIndId }
-        // Now proposed callings
-        self.memberPotentialCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.proposedIndId }
+        updateCallingMaps(org: org)
         self.extraAppOrgs = extraOrgs
         
     }
-    
+
+    private func updateCallingMaps(org: Org) { // this is only actual callings.
+        self.memberCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.existingIndId }
+        // Now proposed callings
+        self.memberPotentialCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.proposedIndId }
+    }
+
     func loadUnitSettings( forUnitNum unitNum: Int64, completionHandler: @escaping( UnitSettings?, Error?) -> Void ) {
         dataSource.getUnitSettings(forUnitNum: unitNum) { unitSettings, error in
             if let settings = unitSettings {
@@ -350,9 +353,32 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     func updateUnitSettings( withStatuses statuses : [CallingStatus], completionHandler: @escaping( Bool, Error? ) -> Void ) {
         updateUnitSettings(unitSettings: UnitSettings( unitNum: ldsOrgUnit?.unitNum, disabledStatuses: statuses ), completionHandler: completionHandler)
     }
+
+    /** Reads the given Org from google drive, updates the internal memory cache for orgs and the calling maps */
+    public func reloadOrgData( forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void ){
+        getOrgData(forOrgId: orgId) { org, error in
+            guard error == nil else {
+                completionHandler(nil, error)
+                return
+            }
+
+            guard let validOrg = org, let _ = self.appDataOrg else {
+                // shouldn't happen
+                let errorMsg = "Error while attempting to load org " + orgId.description + ". The org from google drive, or the in memory org were nil"
+                print( errorMsg )
+                completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
+                return
+            }
+
+            // guard above ensures that appDataOrg isn't nil, so safe to !
+            self.appDataOrg!.updateDirectChildOrg(org: validOrg)
+            self.updateCallingMaps(org: self.appDataOrg!)
+            completionHandler(validOrg, nil)
+        }
+    }
     
-    /** Reads the given Org from google drive and calls the callback with the org converted from JSON */
-    public func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
+    /** Reads the given Org from google drive and calls the callback with the org converted from JSON. This doesn't update the internal org in memory or the calling maps. This should generally only be used during the startup */
+    private func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
         if let ldsOrg = self.ldsUnitOrgsMap[orgId], let orgType = UnitLevelOrgType(rawValue: ldsOrg.orgTypeId) {
             let orgAuth = AuthorizableOrg(unitNum: ldsOrg.unitNum, unitLevelOrgId:ldsOrg.id , unitLevelOrgType: orgType, orgTypeId: ldsOrg.orgTypeId)
             guard permissionMgr.isAuthorized(unitRoles: userRoles, domain: .OrgInfo, permission: .View, targetData: orgAuth ) else  {
@@ -748,6 +774,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             }
             
             // read the org file fresh from google drive (to make sure we have the latest data before performing the change). This reduces the chance of clobbering another change in the org recorded by another user
+            // we are intentionally using getOrgData rather than loadOrgData, which also updates internal cache. Since this is asynch we don't want to get in a case of the UI rendering, then we change the model in the background and cause it to change mysteriously
             self.getOrgData(forOrgId: unitLevelOrgId) { org, error in
                 guard error == nil else {
                     if shouldRevert {
