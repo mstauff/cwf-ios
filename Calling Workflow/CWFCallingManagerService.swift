@@ -177,6 +177,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         if self.permissionMgr.hasPermission(unitRoles: self.userRoles, domain: .OrgInfo, permission: .View) {
             let ldsApi = self.ldsOrgApi
             var ldsApiError: Error? = nil
+            // todo - make this smarter to return existing data if we already have it (also need a flag to force reload)
             let restCallsGroup = DispatchGroup()
             
             restCallsGroup.enter()

@@ -33,6 +33,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
     // MARK: - Login to ldsapi
     func signIntoLDSAPI() {
 
+        // todo - we need a retry button (see VTS 229), but also need a flag to control whether we show the retry, or just blank screen
         startProcessingSpinner( labelText: "Logging In" )
         
         // some tests fail (it's during test/init code, not during the test itself) if this is inside the getAppConfig callback. So get the reference before the call.
@@ -47,21 +48,29 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
                 print( "Error retrieving app config from ldscd (redhat) server:" + error.debugDescription )
             }
             
+            // we only get to this point if we've already been through getLogin() which handles forwarding us to lds.org settings if there are no creds.
             let username = self.loginDictionary?["username"] as! String
             let password = self.loginDictionary?["password"] as! String
             var unitNum: Int64?
+
             appDelegate?.callingManager.appConfig = appConfig ?? AppConfig()
             // todo - need to also hit google drive to get the user so we can use the unit number if needed to disambiguate lds units
             appDelegate?.callingManager.getLdsUser(username: username, password: password) { [weak self] (ldsUser, error) in
                 guard error == nil, let validUser = ldsUser else {
+                    self?.removeSpinner()
+
                     print( "Error logging in to lds.org: " + error.debugDescription )
                     var errorMsg = "Error logging in to lds.org. Please try again later"
-                    if let err = error as? NSError, err.code == ErrorConstants.notAuthorized {
+                    if let err = error as NSError?, err.code == ErrorConstants.notAuthorized {
                         // it's a bad lds.org credentials issue
                         errorMsg = "Invalid lds.org user. Please check your username and password"
+                        // showAlert
+                        self?.showAlert(title: "Error", message: errorMsg, includeCancel: false) { _ in
+                            // need to forward to lds.org credentials in settings - presentLdsLogin()
+                        }
+                    } else {
+                        self?.showAlert(title: "Error", message: errorMsg, includeCancel: false, okCompletionHandler: nil)
                     }
-                    self?.removeSpinner()
-                    self?.showAlert(title: "Error", message: errorMsg, includeCancel: false, okCompletionHandler: nil)
                     return
                 }
                 
@@ -71,6 +80,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
                     print( errorMsg )
                     self?.removeSpinner()
                     self?.showAlert(title: "Error", message: errorMsg, includeCancel: false, okCompletionHandler: nil)
+                    // todo - in this case we flip the flag for showing the retry button. In this case there's no need for a retry
                 } else if potentialUnitNums.count == 1 {
                     unitNum = potentialUnitNums[0]
                 } else {
@@ -85,6 +95,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
                         // todo - if we change this callback to provide the unitdata then ldsOrgUnit could be made private. Will that work????
                         let childView = self?.selectedViewController as? OrganizationTableViewController
                         if dataLoaded, let callingMgr = appDelegate?.callingManager, let ldsOrg = callingMgr.ldsOrgUnit {
+                            // todo - rename hasDataSourceCredentials - indicate that it's also signing in
                             callingMgr.hasDataSourceCredentials(forUnit: validUnitNum ) { (hasCredentials, signInError) -> Void in
                                 if hasCredentials  {
                                     callingMgr.loadAppData(ldsUnit: ldsOrg ) { success, hasOrgsToDelete, error in
@@ -92,7 +103,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
                                         if success {
                                             childView?.organizationsToDisplay = appDelegate?.callingManager.appDataOrg?.children
                                         }
-                                        // eventually we'll need to pull the last viewed tab from some state storage and then show that tab (and maybe reload data)
+                                        // todo - still need to deal with hasOrgsToDelete
                                     }
                                 }else {
                                     self?.removeSpinner()
@@ -145,6 +156,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
         if let ldsLoginData = Locksmith.loadDataForUserAccount(userAccount: "callingWorkFlow") {
             setLoginDictionary(returnedLoginDictionary: ldsLoginData)
         } else {
+            // todo - combine this with presentLdsOrgLogin() - probably use this code as guts - presentLdsOrgLogin() isn't currently being called so it is likely insufficient
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin") as? LDSCredentialsTableViewController
             loginVC?.delegate = self
