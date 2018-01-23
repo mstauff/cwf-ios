@@ -252,7 +252,6 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         
         var org = Org(id: ldsUnit.id, unitNum: ldsUnit.unitNum, orgTypeId: ldsUnit.orgTypeId, orgName: ldsUnit.orgName, displayOrder: ldsUnit.displayOrder, children: [], callings: [])
         dataSource.initializeDrive(forOrgs: ldsOrgUnit!.children) { orgsToCreate, extraAppOrgs, error in
-            
             // if there's more orgs to create, and we haven't hit the limit of number of attempts, then try to create more.
             // We include an artificial cap to prevent us from looping forever if there's just a case where we aren't able to create the missing orgs.
             if orgsToCreate.isNotEmpty && numLoadAttempts < self.maxLoadAttempts {
@@ -267,48 +266,48 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                         completionHandler( false, false, error )
                     }                    
                 }
-            }
-            
-            let dataSourceGroup = DispatchGroup()
-            
-            var mergedOrgs: [Org] = []
-            for ldsOrg in ldsUnit.children {
-                dataSourceGroup.enter()
-                self.getOrgData(forOrgId: ldsOrg.id) { org, error in
-                    dataSourceGroup.leave()
-                    
-                    guard org != nil else {
-                        print( error.debugDescription )
-                        return // exits the callback, not loadAppData
+            } else {
+                let dataSourceGroup = DispatchGroup()
+
+                var mergedOrgs: [Org] = []
+                for ldsOrg in ldsUnit.children {
+                    dataSourceGroup.enter()
+                    self.getOrgData(forOrgId: ldsOrg.id) { org, error in
+                        dataSourceGroup.leave()
+
+                        guard org != nil else {
+                            print( error.debugDescription )
+                            return // exits the callback, not loadAppData
+                        }
+                        var mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg, unitLevelOrg: ldsOrg)
+                        // if there have been changes write them back to google drive
+                        if mergedOrg.hasUnsavedChanges {
+                            self.dataSource.updateOrg(org: mergedOrg, completionHandler: { _,_ in
+                                /* do nothing - for now.
+                                 Eventually we probably want to prompt the user to retry - but how????
+                                 */
+                            })
+                        }
+                        mergedOrg.hasUnsavedChanges = false
+                        mergedOrgs.append(mergedOrg)
                     }
-                    var mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg, unitLevelOrg: ldsOrg)
-                    // if there have been changes write them back to google drive
-                    if mergedOrg.hasUnsavedChanges {
-                        self.dataSource.updateOrg(org: mergedOrg, completionHandler: { _,_ in
-                            /* do nothing - for now.
-                             Eventually we probably want to prompt the user to retry - but how????
-                             */
-                        })
-                    }
-                    mergedOrg.hasUnsavedChanges = false
-                    mergedOrgs.append(mergedOrg)
                 }
-            }
-            
-            // also load the unit settings
-            dataSourceGroup.enter()
-            self.loadUnitSettings(forUnitNum: ldsUnit.unitNum) { unitSettings, error in
-                dataSourceGroup.leave()
-                if let settings = unitSettings {
-                    self.statusToExcludeForUnit = settings.disabledStatuses
-                }                
-            }
-            
-            dataSourceGroup.notify(queue: DispatchQueue.main) {
-                // sort all the unit level orgs by their display order
-                org.children = mergedOrgs
-                self.initDatasourceData(fromOrg: org, extraOrgs: extraAppOrgs)
-                completionHandler(error == nil, extraAppOrgs.isNotEmpty, error)
+
+                // also load the unit settings
+                dataSourceGroup.enter()
+                self.loadUnitSettings(forUnitNum: ldsUnit.unitNum) { unitSettings, error in
+                    dataSourceGroup.leave()
+                    if let settings = unitSettings {
+                        self.statusToExcludeForUnit = settings.disabledStatuses
+                    }
+                }
+
+                dataSourceGroup.notify(queue: DispatchQueue.main) {
+                    // sort all the unit level orgs by their display order
+                    org.children = mergedOrgs
+                    self.initDatasourceData(fromOrg: org, extraOrgs: extraAppOrgs)
+                    completionHandler(error == nil, extraAppOrgs.isNotEmpty, error)
+                }
             }
         }
     }
