@@ -44,14 +44,15 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         return canAuth
     }
 
-    private var userName: String = ""
+    /** The google userName. We keep a copy after login so we can parse the name for the unitNum*/
+    private(set) var userName: String? = nil
 
     private var loggingInForUnitNum : Int64?
 
     var unitNum : Int64? {
         get {
             // this requires the username has the unit number as the last component. Something like "ldscd-cwf-557552@gmail.com"
-            if let userNameDigits = userName.components(separatedBy: orgNameDelimiter).last {
+            if let userNameDigits = userName?.components(separatedBy: orgNameDelimiter).last {
                 return Int64(userNameDigits)
             } else {
                 return nil
@@ -88,6 +89,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     
     func signOut() {
         GIDSignIn.sharedInstance().signOut()
+        self.userName = nil
     }
 
     /** This is the callback for GIDSignIn signInSilently() attempt */

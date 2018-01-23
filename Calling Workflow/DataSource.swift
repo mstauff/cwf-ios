@@ -25,8 +25,13 @@ protocol DataSource {
     var unitNum : Int64? {
         get
     }
+    
+    var userName : String? {
+        get
+    }
 
     func hasValidCredentials( forUnit unitNum : Int64, completionHandler: @escaping (Bool, Error?) -> Void )
+    func signOut()
 
     func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ orgsToCreate: [Org], _ remainingOrgs: [Org], _ error: Error?) -> Void)
     func createFiles( forOrgs orgs: [Org], completionHandler: @escaping(_ success : Bool, _ errors : [Error] )-> Void ) 
