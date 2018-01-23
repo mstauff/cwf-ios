@@ -47,7 +47,7 @@ class OrganizationTableViewController: CWFBaseTableViewController {
         getOrgs()
         tableView.reloadData()
     }
-    
+        
     // MARK: - Setup
     
     func getOrgs() {

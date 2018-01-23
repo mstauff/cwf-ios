@@ -49,8 +49,11 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
     
     weak var callingMgr : CWFCallingManagerService? = nil
     
+    var addBackButton : Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         
         userNameField = nil
         passwordField = nil
@@ -136,6 +139,7 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
             // the "button" is actually just a text label in the row. The sign-in button is defined in the storyboard. We don't currently have a component for it (although we probably should at some point, for these two buttons as well as the lds.org actions button on the calling details). So we just have to grab the label off the button and set the text (from "sign in" to "Refresh Data...")
             if let btn = cell?.contentView.subviews.first(where: {$0 is UILabel}) as? UILabel {
                 btn.text = btnText
+                
             }
         default:
             let inputCell = tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath) as? InputTableViewCell
@@ -206,7 +210,12 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
     }
     
     func ldsIdIsValid(username: String, password: String) -> Bool {
-        // todo - need to still handle this
+        // This method is intended to serve to precheck passwords against the church's
+        // standards before we make a network call. This is something that the church
+        // can change and we would have to update.
+        
+        // todo - Maybe need to still handle this if we want that check.
+        
         if (true) {
             return true
         } else {

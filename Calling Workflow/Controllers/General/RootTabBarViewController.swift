@@ -18,10 +18,8 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
         super.viewDidLoad()
 
         self.tabBar.isTranslucent = false
-        
         // check the keychain for stored LDS.org credentials
         self.getLogin()
-        
         //signIntoLDSAPI()
     }
     
@@ -121,9 +119,12 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
     func presentDriveSignInView() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let loginVC = storyboard.instantiateViewController(withIdentifier: "FirstViewController") as? GoogleSettingsViewController
+        loginVC?.addBackButton = true
+        
         let navController2 = UINavigationController()
         navController2.addChildViewController(loginVC!)
         
+        self.selectedIndex = 3
         self.present(navController2, animated: false, completion: nil)
     }
     
@@ -166,5 +167,4 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
             self.removeProcessingSpinner()
         }
     }
-    
 }

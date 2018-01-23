@@ -68,6 +68,7 @@
 		3CE4C9121DCA82A000AAFB31 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9071DCA82A000AAFB31 /* JSON.swift */; };
 		3CE4C9161DCA82A000AAFB31 /* RemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */; };
 		3CE4C9171DCA82A000AAFB31 /* RestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */; };
+		3CE5D6CA20058EF1000AF4D2 /* lastView.js in Resources */ = {isa = PBXBuildFile; fileRef = 3CE5D6C920058EF1000AF4D2 /* lastView.js */; };
 		3CEBAF411DCD0D160071BE9F /* CallingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF401DCD0D160071BE9F /* CallingsTableViewController.swift */; };
 		3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF421DCD0E010071BE9F /* DirectoryTableViewController.swift */; };
 		3CEBAF451DCD0FBF0071BE9F /* Member.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF441DCD0FBF0071BE9F /* Member.swift */; };
@@ -220,6 +221,7 @@
 		3CE4C9071DCA82A000AAFB31 /* JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
 		3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteDataSource.swift; sourceTree = "<group>"; };
 		3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestAPI.swift; sourceTree = "<group>"; };
+		3CE5D6C920058EF1000AF4D2 /* lastView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = lastView.js; sourceTree = "<group>"; };
 		3CEBAF401DCD0D160071BE9F /* CallingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingsTableViewController.swift; path = Controllers/CallingsTableViewController.swift; sourceTree = "<group>"; };
 		3CEBAF421DCD0E010071BE9F /* DirectoryTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DirectoryTableViewController.swift; path = Controllers/DirectoryTableViewController.swift; sourceTree = "<group>"; };
 		3CEBAF441DCD0FBF0071BE9F /* Member.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Member.swift; path = Model/Member.swift; sourceTree = "<group>"; };
@@ -511,6 +513,7 @@
 		3CEBAF491DD151400071BE9F /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
+				3CE5D6C920058EF1000AF4D2 /* lastView.js */,
 				E899562C1EA029D4001032E5 /* Calling Workflow-Bridging-Header.h */,
 				E8189A921DDA74E700E983D4 /* cwf-object.js */,
 				E8F959661E30129700C13EC9 /* member-objects.js */,
@@ -714,6 +717,7 @@
 				E8F9596B1E30129700C13EC9 /* member-objects.js in Resources */,
 				3CE4C8DA1DCA824100AAFB31 /* Main.storyboard in Resources */,
 				E8189A931DDA74E700E983D4 /* cwf-object.js in Resources */,
+				3CE5D6CA20058EF1000AF4D2 /* lastView.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

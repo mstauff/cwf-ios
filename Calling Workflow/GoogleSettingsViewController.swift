@@ -9,6 +9,8 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
     
     var remoteDataSource : RemoteDataSource? = nil
     
+    var addBackButton : Bool = false
+    
     @IBOutlet var output: UITextView!
     @IBOutlet weak var resetDataBtn: UIButton!
     
@@ -30,6 +32,17 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "Google Account Management"
+        
+        if (addBackButton) {
+            let button = UIButton(type: .custom)
+            button.setImage(UIImage.init(named: "backButton"), for: .normal)
+            button.addTarget(self, action: #selector(dismissView), for: .touchUpInside)
+            button.frame = CGRect(x: 0, y: 0, width: 53.0, height: 31.0)
+            let backButton = UIBarButtonItem(customView: button)
+            navigationItem.setLeftBarButton(backButton, animated: true)
+
+        }
+
         // setup the callbacks for the google signin process
         GIDSignIn.sharedInstance().uiDelegate = self
         GIDSignIn.sharedInstance().delegate = self
@@ -65,5 +78,9 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
                 self.navigationController?.popViewController(animated: true)
             }
         }
+    }
+    
+    func dismissView() {
+        self.dismiss(animated: true, completion: nil)
     }
 }

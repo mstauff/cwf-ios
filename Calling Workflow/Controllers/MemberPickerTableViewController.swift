@@ -91,7 +91,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.delegate = self
-        //searchController.definesPresentationContext = true
+        searchController.definesPresentationContext = true
         
         headerForTable.addSubview(searchController.searchBar)
         
@@ -194,6 +194,17 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     }
     
     // MARK: - Search Controller
+    func didPresentSearchController(_ searchController: UISearchController) {
+        print("search Controller")
+        let searchBar = searchController.searchBar
+        
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        
+//        let xConstraint = NSLayoutConstraint(item: searchBar, attribute: .left, relatedBy: .equal, toItem: self.headerForTable, attribute: .left, multiplier: 1, constant: 0)
+//        
+//        searchController.view.addConstraints([xConstraint])
+    }
+    
     func searchBarIsEmpty() -> Bool {
         return searchController.searchBar.text?.isEmpty ?? true
     }
