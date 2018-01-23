@@ -137,7 +137,38 @@
               "position": "Primary Teacher",
               "hidden": false,
               "allowMultiple": true,
-              "comment": "They've been released outside the app"
+              "comment": "They've been released outside the app - no pending proposed data in app"
+            },
+            {
+              "memberId": null,
+              "activeDate": null,
+              "positionId": null,
+              "positionTypeId": 1482,
+              "position": "Primary Teacher",
+              "hidden": false,
+              "allowMultiple": true,
+              "comment": "They've been released outside the app - has pending proposed data in app"
+            }
+          ]
+        },
+          {
+          "displayOrder": 370,
+          "orgTypeId": 40,
+          "unitNumber": 1111,
+          "defaultOrgName": "CTR 8b",
+          "customOrgName": null,
+          "subOrgId": 2948392,
+          "children": [],
+          "callings": [
+            {
+              "memberId": 456,
+              "activeDate": "20160801",
+              "positionId": 104989332,
+              "positionTypeId": 1482,
+              "position": "Primary Teacher",
+              "hidden": false,
+              "allowMultiple": true,
+              "comment": "They've been called outside the app - should overwrite empty calling in app"
             }
           ]
         },
@@ -422,7 +453,24 @@
               "proposedIndId": null,
               "notes": null,
               "editableByOrg": true,
-              "comment": "released oustide the app"
+              "comment": "released oustide the app - no proposed data"
+            },
+              {
+              "memberId": 283,
+              "existingStatus": "ACTIVE",
+              "activeDate": "20150922",
+              "positionId": 408230,
+              "cwfId": null,
+              "positionTypeId": 1482,
+              "positionTypeEnum": "PRIMARY_WORKER_CTR_8",
+              "position": "Primary Teacher",
+              "hidden": false,
+              "allowMultiple": true,
+              "proposedStatus": "APPROVED",
+              "proposedIndId": 383,
+              "notes": null,
+              "editableByOrg": true,
+              "comment": "released oustide the app - remaining proposed data"
             },
             {
               "memberId": 222,
@@ -442,7 +490,28 @@
               "comment": "deleted oustide the app - calling doesn't exist in lcr"
             }
           ]
-        }
+        },
+          {
+              "displayOrder": 370,
+              "orgTypeId": 40,
+              "unitNumber": 1111,
+              "defaultOrgName": "CTR 8b",
+              "customOrgName": null,
+              "subOrgId": 2948392,
+              "children": [],
+              "callings": [
+                  {
+                      "memberId": null,
+                      "activeDate": null,
+                      "positionId": null,
+                      "positionTypeId": 1482,
+                      "position": "Primary Teacher",
+                      "hidden": false,
+                      "allowMultiple": true,
+                      "comment": "They've been called outside the app - should overwrite empty calling in app"
+                  }
+              ]
+          }
       ],
       "callings": []
     },

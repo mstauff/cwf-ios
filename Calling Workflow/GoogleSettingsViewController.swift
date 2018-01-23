@@ -7,20 +7,20 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
     
     var dataObject = ""
     
-    var remoteDataSource : RemoteDataSource? = nil
+    var callingMgr : CWFCallingManagerService? = nil
     
     var addBackButton : Bool = false
     
     @IBOutlet var output: UITextView!
+    var signedIn : Bool = false
+
+    @IBOutlet weak var signedInAsLabel: UILabel!
     @IBOutlet weak var resetDataBtn: UIButton!
-    
+    // this is the google signin button - we've replaced it with our own signin button that toggles the label based on state. It appears all the google version did when called is call sharedInstance().signIn()
+//    @IBOutlet weak var signInView: GIDSignInButton!
     // Button to sign out of google
-    @IBAction func signOutClicked(_ sender: Any) {
-        showAlert(title: "Change Ward Unit", message: "This will sign you out of the google drive account used by your current ward. You should only do this if you have moved out  of a ward.", includeCancel: true ) { _ in
-            GIDSignIn.sharedInstance().signOut()
-        }
-    }
     
+    @IBOutlet weak var signInOutBtn: UIButton!
     // button to reset google data (in case of some type of data corruption)
     @IBAction func resetDataClicked(_ sender: Any) {
         // initial warning box letting the user know what the next view does
@@ -28,7 +28,19 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
             self.performSegue(withIdentifier: "GoogleSettingsToResetData", sender: nil)
         }
     }
-    
+
+    @IBAction func signInOutClicked(_ sender: Any) {
+        if signedIn {
+            showAlert(title: "Change Ward Unit", message: "This will sign you out of the google drive account used by your current ward. You should only do this if you have moved out  of a ward.", includeCancel: true ) { _ in
+                self.callingMgr?.dataSource.signOut()
+                self.setSigninStatus(false, inUnit: nil)
+            }
+        } else {
+            GIDSignIn.sharedInstance().signIn()
+            // afer signin we return to Orgs, so no need to update UI
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "Google Account Management"
@@ -44,15 +56,25 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
         }
 
         // setup the callbacks for the google signin process
-        GIDSignIn.sharedInstance().uiDelegate = self
+        GIDSignIn.sharedInstance().uiDelegate = self 
         GIDSignIn.sharedInstance().delegate = self
-        
+
         // reset data button is not shown by default, only show if they're a unit admin
         resetDataBtn.isHidden = true
         
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-             let callingMgr = appDelegate.callingManager
-            resetDataBtn.isHidden = !callingMgr.permissionMgr.hasPermission(unitRoles: callingMgr.userRoles, domain: Domain.UnitGoogleAccount, permission: .Update )
+             self.callingMgr = appDelegate.callingManager
+            resetDataBtn.isHidden = !self.callingMgr!.permissionMgr.hasPermission(unitRoles: self.callingMgr!.userRoles, domain: Domain.UnitGoogleAccount, permission: .Update )
+            // if there's a username in the data source then they must have successfully logged in.
+            if let userName = self.callingMgr?.dataSource.userName {
+                // for right now we just display the unit number to confirm that the user is logged in.
+                let unitNum = self.callingMgr?.dataSource.unitNum
+                // if it's not a standard format user number (ldscd-cwf--24341@gmail.com), we can't parse out the unit number, so we just show the whole account name. Maybe eventually we'll pull the ward name from the current user json
+                let unitName = unitNum == nil ? userName : String( describing: unitNum )
+                setSigninStatus(true, inUnit: unitName)
+            } else {
+                setSigninStatus(false, inUnit: nil)
+            }
         }
     }
     
@@ -67,7 +89,6 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
         // Dispose of any resources that can be recreated.
     }
     
-    
     //MARK: - GDISignIn delegate
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         if error != nil {
@@ -78,9 +99,23 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
                 self.navigationController?.popViewController(animated: true)
             }
         }
+        if let callingMgrSignInDelegate = callingMgr?.dataSource as? GIDSignInDelegate {
+            callingMgrSignInDelegate.sign(signIn, didSignInFor: user, withError: error)
+        }
     }
     
     func dismissView() {
         self.dismiss(animated: true, completion: nil)
+    }
+
+    private func setSigninStatus( _ isSignedIn : Bool, inUnit unitName: String? ) {
+        self.signedIn = isSignedIn
+        if isSignedIn {
+            self.signInOutBtn.setTitle("Sign Out", for: .normal)
+            self.signedInAsLabel.text = unitName == nil ? "Signed In" : "Signed in to unit " + unitName!
+        } else {
+            self.signInOutBtn.setTitle("Sign In", for: .normal)
+            self.signedInAsLabel.text = "You must sign in with your ward google account created for this app to begin using the app."
+        }
     }
 }

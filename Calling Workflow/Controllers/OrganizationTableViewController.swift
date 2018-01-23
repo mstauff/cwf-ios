@@ -88,7 +88,7 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let nextView = segue.destination as? OrgDetailTableViewController
-        appDelegate?.callingManager.getOrgData(forOrgId: organizationSelected!.id ) { (org, error) in
+        appDelegate?.callingManager.reloadOrgData(forOrgId: organizationSelected!.id ) { (org, error) in
             guard error == nil else {
                 // we couldn't get the latest org from google drive. We can use the one we have in memory rather than giving the user nothing
                 nextView?.rootOrg = self.organizationSelected

@@ -14,6 +14,15 @@ struct AppConfig {
 
 }
 
+extension AppConfig {
+
+    // whether we want to ensure that the google drive account is associated with the lds unit. Should be true for prod, false for dev
+    static let validateRemoteDataAgainstLdsAccount = false
+
+    // whether we want to hit actual lds.org endpoints, or just use local sample json data. Should be true for dev, false for prod
+    static let useLocalLdsOrgData = true
+}
+
 extension AppConfig : JSONParsable {
     
     public init?( fromJSON appConfigJSON: JSONObject) {

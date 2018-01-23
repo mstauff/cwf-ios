@@ -97,7 +97,8 @@ class CallingManagerServiceTests: XCTestCase {
             
         }
 
-        
+        private(set) var unitNum: Int64? = nil
+
     }
 
     override func setUp() {
@@ -232,30 +233,37 @@ class CallingManagerServiceTests: XCTestCase {
         // read them in, pass to reconcileCallings & validate
             let reconciledOrg = callingMgr.reconcileOrg(appOrg: appOrg, ldsOrg: lcrOrg, unitLevelOrg: lcrOrg)
         let primaryOrg = reconciledOrg.getChildOrg(id: 7428354)!
-        XCTAssertEqual( primaryOrg.children.count, 4 )
+        XCTAssertEqual( primaryOrg.children.count, 5 )
         let ctr7 = reconciledOrg.getChildOrg(id: 38432972)!
-        // app & lcr both have 2 callings - but one of them has changed so it will appear as 3 callings, with one of them marked with a conflict for deletion
-        XCTAssertEqual( ctr7.callings.count, 3 )
+        // app & lcr both have 2 callings - but one of them has changed outside the app. LCR should win since there's no proposed data in app
+        XCTAssertEqual( ctr7.callings.count, 2 )
         
         // one should not have changed
         let sameCalling = ctr7.callings.first() { $0.id == 734829 }!
         XCTAssertEqual(sameCalling.existingIndId, 123)
         XCTAssertNil( sameCalling.proposedIndId )
         
-        // one should be marked for deletion
-        let oldCalling = ctr7.callings.first() { $0.id == 734820 }!
-        XCTAssertEqual( oldCalling.existingIndId, 222 )
-            XCTAssertEqual( oldCalling.conflict, ConflictCause.LdsEquivalentDeleted )
+        // Calling changed outside of app - old should be removed
+        let oldCalling = ctr7.callings.first() { $0.id == 734820 }
+        XCTAssertNil( oldCalling )
         // the other should be the new one
         let updatedCalling = ctr7.callings.first() { $0.id == 734821 }!
         XCTAssertEqual( updatedCalling.existingIndId, 234 )
         
         // someone was released outside the app - no replacement
         let ctr8 = reconciledOrg.getChildOrg(id: 752892)!
-        let callingReleasedInLcr = ctr8.callings[0]
-        XCTAssertEqual( callingReleasedInLcr.conflict, .LdsEquivalentDeleted )
-        let callingDeletedInLcr = ctr8.callings[1]
-        XCTAssertEqual( callingDeletedInLcr.conflict, .LdsEquivalentDeleted )
+        XCTAssertEqual( ctr8.callings.count, 2 )
+        let callingReleasedInLcrWithoutProposed = ctr8.callings[0]
+        XCTAssertNil( callingReleasedInLcrWithoutProposed.id )
+        // todo - need to fix code to support this test - if there's a proposed person it's not reflecting the release in the app
+        let callingReleasedInLcrWithProposed = ctr8.callings[1]
+        XCTAssertNil( callingReleasedInLcrWithProposed.id )
+
+        // someone was recorded outside the app - should replace the empty calling in the app
+        let ctr8b = reconciledOrg.getChildOrg(id: 2948392)!
+        XCTAssertEqual( ctr8b.callings.count, 1 )
+        XCTAssertEqual( ctr8b.callings[0].id, 104989332 )
+
         
         let ctr9 = reconciledOrg.getChildOrg(id: 750112)
         XCTAssertNotNil( ctr9 )

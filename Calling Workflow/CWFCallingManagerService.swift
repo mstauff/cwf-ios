@@ -177,6 +177,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         if self.permissionMgr.hasPermission(unitRoles: self.userRoles, domain: .OrgInfo, permission: .View) {
             let ldsApi = self.ldsOrgApi
             var ldsApiError: Error? = nil
+            // todo - make this smarter to return existing data if we already have it (also need a flag to force reload)
             let restCallsGroup = DispatchGroup()
             
             restCallsGroup.enter()
@@ -251,7 +252,6 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         
         var org = Org(id: ldsUnit.id, unitNum: ldsUnit.unitNum, orgTypeId: ldsUnit.orgTypeId, orgName: ldsUnit.orgName, displayOrder: ldsUnit.displayOrder, children: [], callings: [])
         dataSource.initializeDrive(forOrgs: ldsOrgUnit!.children) { orgsToCreate, extraAppOrgs, error in
-            
             // if there's more orgs to create, and we haven't hit the limit of number of attempts, then try to create more.
             // We include an artificial cap to prevent us from looping forever if there's just a case where we aren't able to create the missing orgs.
             if orgsToCreate.isNotEmpty && numLoadAttempts < self.maxLoadAttempts {
@@ -266,48 +266,48 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                         completionHandler( false, false, error )
                     }                    
                 }
-            }
-            
-            let dataSourceGroup = DispatchGroup()
-            
-            var mergedOrgs: [Org] = []
-            for ldsOrg in ldsUnit.children {
-                dataSourceGroup.enter()
-                self.getOrgData(forOrgId: ldsOrg.id) { org, error in
-                    dataSourceGroup.leave()
-                    
-                    guard org != nil else {
-                        print( error.debugDescription )
-                        return // exits the callback, not loadAppData
+            } else {
+                let dataSourceGroup = DispatchGroup()
+
+                var mergedOrgs: [Org] = []
+                for ldsOrg in ldsUnit.children {
+                    dataSourceGroup.enter()
+                    self.getOrgData(forOrgId: ldsOrg.id) { org, error in
+                        dataSourceGroup.leave()
+
+                        guard org != nil else {
+                            print( error.debugDescription )
+                            return // exits the callback, not loadAppData
+                        }
+                        var mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg, unitLevelOrg: ldsOrg)
+                        // if there have been changes write them back to google drive
+                        if mergedOrg.hasUnsavedChanges {
+                            self.dataSource.updateOrg(org: mergedOrg, completionHandler: { _,_ in
+                                /* do nothing - for now.
+                                 Eventually we probably want to prompt the user to retry - but how????
+                                 */
+                            })
+                        }
+                        mergedOrg.hasUnsavedChanges = false
+                        mergedOrgs.append(mergedOrg)
                     }
-                    var mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg, unitLevelOrg: ldsOrg)
-                    // if there have been changes write them back to google drive
-                    if mergedOrg.hasUnsavedChanges {
-                        self.dataSource.updateOrg(org: mergedOrg, completionHandler: { _,_ in
-                            /* do nothing - for now.
-                             Eventually we probably want to prompt the user to retry - but how????
-                             */
-                        })
-                    }
-                    mergedOrg.hasUnsavedChanges = false
-                    mergedOrgs.append(mergedOrg)
                 }
-            }
-            
-            // also load the unit settings
-            dataSourceGroup.enter()
-            self.loadUnitSettings(forUnitNum: ldsUnit.unitNum) { unitSettings, error in
-                dataSourceGroup.leave()
-                if let settings = unitSettings {
-                    self.statusToExcludeForUnit = settings.disabledStatuses
-                }                
-            }
-            
-            dataSourceGroup.notify(queue: DispatchQueue.main) {
-                // sort all the unit level orgs by their display order
-                org.children = mergedOrgs
-                self.initDatasourceData(fromOrg: org, extraOrgs: extraAppOrgs)
-                completionHandler(error == nil, extraAppOrgs.isNotEmpty, error)
+
+                // also load the unit settings
+                dataSourceGroup.enter()
+                self.loadUnitSettings(forUnitNum: ldsUnit.unitNum) { unitSettings, error in
+                    dataSourceGroup.leave()
+                    if let settings = unitSettings {
+                        self.statusToExcludeForUnit = settings.disabledStatuses
+                    }
+                }
+
+                dataSourceGroup.notify(queue: DispatchQueue.main) {
+                    // sort all the unit level orgs by their display order
+                    org.children = mergedOrgs
+                    self.initDatasourceData(fromOrg: org, extraOrgs: extraAppOrgs)
+                    completionHandler(error == nil, extraAppOrgs.isNotEmpty, error)
+                }
             }
         }
     }
@@ -325,14 +325,17 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             self.unitLevelOrgsForSubOrgs = self.unitLevelOrgsForSubOrgs.merged(withDictionary: subOrgsMap)
         }
 
-        // this is only actual callings.
-        self.memberCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.existingIndId }
-        // Now proposed callings
-        self.memberPotentialCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.proposedIndId }
+        updateCallingMaps(org: org)
         self.extraAppOrgs = extraOrgs
         
     }
-    
+
+    private func updateCallingMaps(org: Org) { // this is only actual callings.
+        self.memberCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.existingIndId }
+        // Now proposed callings
+        self.memberPotentialCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.proposedIndId }
+    }
+
     func loadUnitSettings( forUnitNum unitNum: Int64, completionHandler: @escaping( UnitSettings?, Error?) -> Void ) {
         dataSource.getUnitSettings(forUnitNum: unitNum) { unitSettings, error in
             if let settings = unitSettings {
@@ -350,9 +353,32 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     func updateUnitSettings( withStatuses statuses : [CallingStatus], completionHandler: @escaping( Bool, Error? ) -> Void ) {
         updateUnitSettings(unitSettings: UnitSettings( unitNum: ldsOrgUnit?.unitNum, disabledStatuses: statuses ), completionHandler: completionHandler)
     }
+
+    /** Reads the given Org from google drive, updates the internal memory cache for orgs and the calling maps */
+    public func reloadOrgData( forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void ){
+        getOrgData(forOrgId: orgId) { org, error in
+            guard error == nil else {
+                completionHandler(nil, error)
+                return
+            }
+
+            guard let validOrg = org, let _ = self.appDataOrg else {
+                // shouldn't happen
+                let errorMsg = "Error while attempting to load org " + orgId.description + ". The org from google drive, or the in memory org were nil"
+                print( errorMsg )
+                completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
+                return
+            }
+
+            // guard above ensures that appDataOrg isn't nil, so safe to !
+            self.appDataOrg!.updateDirectChildOrg(org: validOrg)
+            self.updateCallingMaps(org: self.appDataOrg!)
+            completionHandler(validOrg, nil)
+        }
+    }
     
-    /** Reads the given Org from google drive and calls the callback with the org converted from JSON */
-    public func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
+    /** Reads the given Org from google drive and calls the callback with the org converted from JSON. This doesn't update the internal org in memory or the calling maps. This should generally only be used during the startup */
+    private func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
         if let ldsOrg = self.ldsUnitOrgsMap[orgId], let orgType = UnitLevelOrgType(rawValue: ldsOrg.orgTypeId) {
             let orgAuth = AuthorizableOrg(unitNum: ldsOrg.unitNum, unitLevelOrgId:ldsOrg.id , unitLevelOrgType: orgType, orgTypeId: ldsOrg.orgTypeId)
             guard permissionMgr.isAuthorized(unitRoles: userRoles, domain: .OrgInfo, permission: .View, targetData: orgAuth ) else  {
@@ -468,9 +494,11 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 // it's not in the app org db so it needs to be added.
                 // first check to see if there's a potential calling in the org with same position
                 
-                // get any callings of the same position type - we already know it's in the same parent org so only thing to check is if the position is the same.
+                // get any callings of the same position type to see if there's a potential that this should replace.
+                // we already know it's in the same parent org so only thing to check is if the position is the same.
+                // If it has an ID that matches another lds.org calling then we can safely eliminate it as a potential match as well
                 let matchingPotentialCallings = appOrg.callings.filter() {
-                    $0.position == ldsCalling.position
+                    $0.position == ldsCalling.position && ( $0.id == nil || !ldsOrgCallingIds.contains( $0.id! ) )
                 }
                 var mergedProposedIndId : Int64? = nil
                 var mergedProposedStatus : CallingStatus? = nil
@@ -493,7 +521,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                     } else {
                         // we don't have an exact match (probably a case where multiples are allowed)
                         // if any potentials have an indId that matches the new actual then delete the potential
-                        if potentialCalling.proposedIndId == ldsCalling.existingIndId {
+                        // or if the potential is empty we also want to overwrite it
+                        if potentialCalling.proposedIndId == ldsCalling.existingIndId || potentialCalling.proposedIndId == nil {
                             updatedOrg = updatedOrg.updatedWith(callingToDelete: potentialCalling) ?? updatedOrg
                             updatedOrg.hasUnsavedChanges = true
                         }
@@ -513,19 +542,25 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         let callingIDsToRemove = Set(appCallingIds).subtracting(Set(ldsOrgCallingIds))
         for callingId in callingIDsToRemove {
             if var appCallingNotInLcr = appCallingsById[callingId] {
-                if let mergedCalling = updatedOrg.getCalling( appCallingNotInLcr ) {
-                    // if multiples allowed, then mark for deletion (it used to be in LCR, but no longer is there). We'll let the user confirm that the position should be removed
-                    if mergedCalling.position.multiplesAllowed  {
-                        appCallingNotInLcr.conflict = .LdsEquivalentDeleted
-                        updatedOrg = updatedOrg.updatedWith(changedCalling: appCallingNotInLcr) ?? updatedOrg
+                if let mergedCalling = updatedOrg.getCalling( withSameId: appCallingNotInLcr ) {
+                    // if multiples are allowed and there's no potential data then just go ahead and delete it.
+                    if mergedCalling.position.multiplesAllowed && mergedCalling.proposedIndId == nil{
+                        updatedOrg = updatedOrg.updatedWith(callingToDelete: appCallingNotInLcr) ?? updatedOrg
                         updatedOrg.hasUnsavedChanges = true
                     } else {
-                        // The calling is no longer in LCR (but the position likely is, could be empty because it was released outside the app, or could have a new ID if there was a change recorded in LCR outside the app). If the LCR version of the calling has an ID, then we've already merged it above, we don't want to do anything else. But if there is no id that means we haven't processed it yet, we need to update what's in the app data (google drive) with the released calling in LCR, while maintaining any proposed data
-                        if let lcrOriginalCalling = ldsOrg.getCalling( appCallingNotInLcr ), lcrOriginalCalling.id == nil {
-                            let releasedLcrCalling = mergeCallingData(fromActualCalling: lcrOriginalCalling, andProposedCalling: appCallingNotInLcr)
+                        // if multiples are not allowed, or there's potential data then we just need to remove the actual portion of the calling
+
+                        let releasedLcrCalling = mergedCalling.withActualReleased()
+                        if mergedCalling.position.multiplesAllowed {
+                            // if multiples are allowed we have to remove the calling with the ID, then add in the updated.
+                            // We can't do a straight update with the released calling, because the released version doesn't have the ID, and there's no way to definitively match without that
+                            updatedOrg = updatedOrg.updatedWith(callingToDelete: mergedCalling) ?? updatedOrg
+                            updatedOrg = updatedOrg.updatedWith(newCalling: releasedLcrCalling) ?? updatedOrg
+                        } else {
+                            // if no multiples, we can difinitively match based on calling type, so we can just do an update
                             updatedOrg = updatedOrg.updatedWith(changedCalling: releasedLcrCalling) ?? updatedOrg
-                            updatedOrg.hasUnsavedChanges = true
                         }
+                            updatedOrg.hasUnsavedChanges = true
                     }
                 }
                 // if it's not in the updatedOrg, then nothing to worry about, nothing to remove
@@ -739,6 +774,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             }
             
             // read the org file fresh from google drive (to make sure we have the latest data before performing the change). This reduces the chance of clobbering another change in the org recorded by another user
+            // we are intentionally using getOrgData rather than loadOrgData, which also updates internal cache. Since this is asynch we don't want to get in a case of the UI rendering, then we change the model in the background and cause it to change mysteriously
             self.getOrgData(forOrgId: unitLevelOrgId) { org, error in
                 guard error == nil else {
                     if shouldRevert {

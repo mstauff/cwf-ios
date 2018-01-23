@@ -159,28 +159,7 @@ public struct Calling : JSONParsable {
         return jsonObj;
     }
     
-    public mutating func updateExistingCalling( withIndId indId : Int64?, activeDate : Date? ) {
-        self.existingIndId = indId
-        self.activeDate = activeDate
-        self.existingStatus = .Active
-    }
-    
-    /** Returns a new version of the calling with the specified changes to the actual calling */
-    public func updatedWith( indId: Int64?, activeDate: Date?) -> Calling {
-        var updatedCalling = self
-        updatedCalling.existingIndId = indId
-        updatedCalling.activeDate = activeDate
-        updatedCalling.existingStatus = .Active
-        return updatedCalling
-    }
-    
-    public mutating func clearPotentialCalling() {
-        self.notes = nil
-        self.conflict = nil
-        self.proposedIndId = nil
-        self.proposedStatus = .None
-    }
-    
+
     /** Method returns true if the two elements are already in order, false if they're not in order*/
     public static func sortByDisplayOrder( c1: Calling, c2: Calling ) -> Bool {
         var result : Bool
@@ -193,6 +172,11 @@ public struct Calling : JSONParsable {
             result = c1.position.displayOrder! < c2.position.displayOrder!
         }
         return result
+    }
+
+    /** Returns a copy of the calling with any actual calling details removed (potential calling info is retained) */
+    public func withActualReleased() -> Calling {
+        return Calling(id: nil, cwfId: self.cwfId, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: self.proposedIndId, status: self.proposedStatus, position: self.position, notes: self.notes, parentOrg: self.parentOrg, cwfOnly: self.cwfOnly)
     }
 
     enum ChangeOperation {

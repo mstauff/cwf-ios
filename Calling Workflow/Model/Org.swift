@@ -177,9 +177,15 @@ public struct Org : JSONParsable  {
     public func getChildOrg( id: Int64 ) -> Org? {
         return self.allSubOrgs.first(where: { $0.id == id })
     }
-    
+
+    /** This finds a calling anywhere in the suborg or children where there is a matching calling based on Calling == method, which will match based on just the position type, regardless of ID if multiples are not allowed */
     public func getCalling( _ calling: Calling ) -> Calling? {
         return self.allOrgCallings.first( where: { $0 == calling } )
+    }
+
+    /** This finds a calling anywhere in the suborg or children where there is a calling with the same ID. This is more restrictive than the general purpose calling which will match a calling based solely on position type (regardless of ID)*/
+    public func getCalling( withSameId calling: Calling ) -> Calling? {
+        return self.allOrgCallings.first( where: { $0.id == calling.id } )
     }
     
     /** Updates a suborg within this org, if the org is already a child of this org. If it's not a child this method does nothing (it doesn't add it) */
