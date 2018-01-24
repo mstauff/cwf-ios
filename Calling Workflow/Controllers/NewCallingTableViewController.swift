@@ -8,7 +8,7 @@
 
 import UIKit
 
-class NewCallingTableViewController: UITableViewController, MemberPickerDelegate, StatusPickerDelegate, CallingPickerTableViewControllerDelegate {
+class NewCallingTableViewController: UITableViewController, MemberPickerDelegate, StatusPickerDelegate, CallingPickerTableViewControllerDelegate, UITextViewDelegate {
     
     var parentOrg : Org?
     
@@ -18,6 +18,9 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     
     let appDelegate = UIApplication.shared.delegate as? AppDelegate
     
+    var debouncedNotesChange : Debouncer? = nil
+    let textViewDebounceTime = 0.8
+
     // MARK: - Life Cycle
 
     override func viewDidLoad() {
@@ -233,14 +236,14 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         switch indexPath.row {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "NoteTableViewCell", for: indexPath) as? NotesTableViewCell
-
             if (newCalling?.notes != nil || newCalling?.notes != "") {
-                cell?.noteTextView.text = NSLocalizedString("Notes", comment: "")
-            }
-            else {
                 cell?.noteTextView.text = newCalling?.notes
             }
-
+            cell?.noteTextView.delegate = self
+            debouncedNotesChange = Debouncer(delay: textViewDebounceTime) { [weak self] in
+                self?.updateNotes( cell?.noteTextView )
+            }
+            
             return cell!
             
         default:
@@ -293,6 +296,17 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
             navigationItem.rightBarButtonItem?.isEnabled = true
         }
         tableView.reloadData()
+    }
+    
+    //MARK: - UI Text View Delegate
+    func textViewDidChange(_ textView: UITextView) {
+        debouncedNotesChange?.call()
+    }
+    
+    func updateNotes(_ textView : UITextView?) {
+        if let validTextView = textView {
+            self.newCalling?.notes = validTextView.text
+        }
     }
 
 }
