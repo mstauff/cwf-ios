@@ -96,7 +96,25 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 }
             })
     }
-    
+
+    public func logoutLdsUser( completionHandler: @escaping() -> Void ) {
+        self.ldsOrgApi.ldsSignout() {
+            completionHandler()
+        }
+        removeAllData()
+
+    }
+
+    private func removeAllData() {
+        self.appDataOrg = nil
+        self.ldsOrgUnit = nil
+        self.memberList = []
+        self.memberCallingsMap.removeAllValues()
+        self.memberPotentialCallingsMap.removeAllValues()
+        self.user = nil
+        self.userRoles = []
+    }
+
     public func getUnits( forUser user: LdsUser ) -> [Int64] {
         return permissionMgr.authorizedUnits(forUser: user)
     }

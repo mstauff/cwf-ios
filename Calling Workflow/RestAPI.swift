@@ -27,14 +27,18 @@ class RestAPI {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 60
         config.timeoutIntervalForResource = 300
-        session = URLSession( configuration: config )        
+        session = URLSession( configuration: config )
     }
     
 //    deinit {
         //todo: this is being called while the request is still active. Need to figure out WHY? originally had .invalidateAndCancel() here
 //        session.finishTasksAndInvalidate()
 //    }
-    
+
+    func resetSession(completionHandler: @escaping () -> Void ) {
+        session.reset(completionHandler: completionHandler)
+    }
+
     /* Function to perform the actual http request to the server. If the method is GET the bodyPayload & contentType are ignored, currently they are only used if they are included with a POST request (we don't have any need for param support on GET requests as of this writing). This method does not perform any processing on the results, it just invokes the completion handler with what came from the session.dataTask(). Note that a 4xx or 5xx returned from the server will NOT be populated in the Error object in the callback. You have to check the URLResponse.responseCode for that. The Error will only be set if there is an error in connecting to the resource, so something like no network, no route to host, etc. would result in the error being non nil */
     func performRequest( url urlString : String, httpMethod : HttpMethod, bodyPayload : String?, contentType : HttpContentType?, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void ) {
         guard let url = URL( string: urlString ) else {
