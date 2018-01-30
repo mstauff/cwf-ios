@@ -26,7 +26,7 @@ class CallingManagerServiceTests: XCTestCase {
     class PartialMockCallingManager : CWFCallingManagerService {
         var mockGoogleOrg : Org? = nil
         
-        override func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
+        func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 completionHandler(self.mockGoogleOrg, nil)
             }
@@ -96,9 +96,13 @@ class CallingManagerServiceTests: XCTestCase {
         func updateUnitSettings( _ unitSettings : UnitSettings, completionHandler : @escaping( _ success : Bool, _ error: Error?) -> Void ) {
             
         }
-
+        
+        func signOut() {
+            
+        }
+        
         private(set) var unitNum: Int64? = nil
-
+        private(set) var userName: String? = nil
     }
 
     override func setUp() {
