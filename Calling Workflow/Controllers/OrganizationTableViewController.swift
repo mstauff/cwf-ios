@@ -21,6 +21,8 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.tableView.register(CWFButtonTableViewCell, forCellReuseIdentifier: "ButtonCell")
+        
         organizationsToDisplay = []
         organizationSelected = nil
         getOrgs()
@@ -66,7 +68,7 @@ class OrganizationTableViewController: CWFBaseTableViewController {
             return organizationsToDisplay!.count
         }
         else {
-            return 0
+            return 1
         }
     }
 
@@ -75,9 +77,18 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = organizationsToDisplay?[indexPath.row].orgName
-        return cell
+        if let orgs = organizationsToDisplay {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+            cell.textLabel?.text = orgs[indexPath.row].orgName
+            return cell
+        }
+        else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ButtonCell", for: indexPath) as? CWFButtonTableViewCell
+            cell?.buttonTitle = NSLocalizedString("Retry Loading Data", comment: "retry loading from server")
+            cell?.cellButton.addTarget(self, action: #selector(reloadData), for: .touchUpInside)
+
+            return cell!
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -85,6 +96,14 @@ class OrganizationTableViewController: CWFBaseTableViewController {
         self.performSegue(withIdentifier: "OrgList to OrgDetails", sender: nil)
     }
     
+    //MARK: - Actions
+    func reloadData () {
+        if let rootController = self.tabBarController as? RootTabBarViewController {
+            rootController.signIntoLDSAPI()
+        }
+    }
+    
+    //MARK: - Exit segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let nextView = segue.destination as? OrgDetailTableViewController

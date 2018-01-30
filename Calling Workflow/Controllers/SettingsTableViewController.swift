@@ -23,6 +23,7 @@ class SettingsTableViewController: CWFBaseTableViewController {
         super.viewWillAppear(animated)
         self.tabBarController?.title = NSLocalizedString("Settings", comment: "")
         self.tabBarController?.navigationItem.rightBarButtonItem = nil
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -78,4 +79,5 @@ class SettingsTableViewController: CWFBaseTableViewController {
             tableView.deselectRow(at: indexPath, animated: true)
         }
     }
+    
 }

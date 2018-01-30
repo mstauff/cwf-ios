@@ -54,7 +54,6 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         userNameField = nil
         passwordField = nil
         
