@@ -27,8 +27,9 @@ struct LDSCredentialsVCEnums {
         case Username
         case Password
         case SignInBtn
-        
-        static let allValues = [Username, Password, SignInBtn]
+        case SignOutBtn
+
+        static let allValues = [Username, Password, SignInBtn, SignOutBtn]
         
         static var count : Int {
             get {
@@ -42,6 +43,7 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
     
     var userNameField : UITextField?
     var passwordField : UITextField?
+    var signedIn = false
     
     var keychainDataDictionary: Dictionary<String, String>?
     
@@ -50,16 +52,19 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
     weak var callingMgr : CWFCallingManagerService? = nil
     
     var addBackButton : Bool = false
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
+
         userNameField = nil
         passwordField = nil
         
         keychainDataDictionary = Locksmith.loadDataForUserAccount(userAccount: "callingWorkFlow") as! Dictionary<String, String>?
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         self.callingMgr = appDelegate?.callingManager
+        signedIn = keychainDataDictionary?["username"] != nil
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -93,7 +98,8 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case LDSCredentialsVCEnums.SectionTypes.Credentials.rawValue:
-            return LDSCredentialsVCEnums.CredentialsItemType.count
+            // if we're not signed in then we don't want to include a row for the sign out button
+            return signedIn ? LDSCredentialsVCEnums.CredentialsItemType.count : (LDSCredentialsVCEnums.CredentialsItemType.count - 1)
         case LDSCredentialsVCEnums.SectionTypes.Sync.rawValue:
             return 1
         default:
@@ -101,6 +107,23 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
         }
     }
     
+    private func initializeUsernameField( withUser username : String?) {
+
+        initializeTextField(self.userNameField, withText: username, orPlaceholderText: NSLocalizedString("lds.org Username", comment: "lds.org Username"))
+    }
+
+    private func initializePasswordField( withPassword password : String?) {
+        initializeTextField(self.passwordField, withText: password, orPlaceholderText: NSLocalizedString("lds.org Password", comment: "lds.org Password"))
+    }
+
+    private func initializeTextField( _ textField : UITextField?, withText textValue: String?, orPlaceholderText placeholderText : String?) {
+        // technically this isn't really necessary, as setting textField.text to nil actually just sets it to "", but don't want to rely on that, in case it changes in the future
+            let validTextValue = textValue == nil ? "" : textValue
+            textField?.text = validTextValue
+            let placeholder = placeholderText ?? ""
+            textField?.placeholder = NSLocalizedString(placeholder, comment: placeholder)
+    }
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell : UITableViewCell? = nil
         switch indexPath.section {
@@ -108,25 +131,26 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
             switch indexPath.row {
             case LDSCredentialsVCEnums.CredentialsItemType.Username.rawValue:
                 let usernameCell = tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath) as? InputTableViewCell
-                if (keychainDataDictionary?["username"] != nil) {
-                    usernameCell?.inputField?.text = keychainDataDictionary?["username"]
-                } else {
-                    usernameCell?.inputField?.placeholder = NSLocalizedString("LDS Username", comment: "LDS.org Username")
-                }
-                self.userNameField = usernameCell?.inputField
                 cell = usernameCell
+
+                self.userNameField = usernameCell?.inputField
+                initializeUsernameField( withUser: keychainDataDictionary?["username"])
             case LDSCredentialsVCEnums.CredentialsItemType.Password.rawValue:
                 let passwordCell = tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath) as? InputTableViewCell
-                if (keychainDataDictionary?["password"] != nil) {
-                    passwordCell?.inputField.text = keychainDataDictionary?["password"]
-                }
-                else {
-                    passwordCell?.inputField?.placeholder = NSLocalizedString("Password", comment: "Password")
-                }
                 passwordCell?.inputField?.isSecureTextEntry = true
-                passwordField = passwordCell?.inputField
+                cell = passwordCell
+
+                self.passwordField = passwordCell?.inputField
+                initializePasswordField(withPassword: keychainDataDictionary?["password"])
             case LDSCredentialsVCEnums.CredentialsItemType.SignInBtn.rawValue:
                 cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath)
+            case LDSCredentialsVCEnums.CredentialsItemType.SignOutBtn.rawValue:
+                cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath)
+                let btnText = NSLocalizedString("Sign Out", comment: "Sign Out")
+                // the "button" is actually just a text label in the row. The sign-in button is defined in the storyboard. We don't currently have a component for it (although we probably should at some point, for these two buttons as well as the lds.org actions button on the calling details). So we just have to grab the label off the button and set the text (from "sign in" to "sign out...")
+                if let btn = cell?.contentView.subviews.first(where: {$0 is UILabel}) as? UILabel {
+                    btn.text = btnText
+                }
             default:
                 let inputCell = tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath) as? InputTableViewCell
                 inputCell?.textLabel?.text = nil
@@ -138,7 +162,7 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
             // the "button" is actually just a text label in the row. The sign-in button is defined in the storyboard. We don't currently have a component for it (although we probably should at some point, for these two buttons as well as the lds.org actions button on the calling details). So we just have to grab the label off the button and set the text (from "sign in" to "Refresh Data...")
             if let btn = cell?.contentView.subviews.first(where: {$0 is UILabel}) as? UILabel {
                 btn.text = btnText
-                
+
             }
         default:
             let inputCell = tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath) as? InputTableViewCell
@@ -153,17 +177,21 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
         switch indexPath.section {
         case LDSCredentialsVCEnums.SectionTypes.Credentials.rawValue:
             switch indexPath.row {
-                
-            case LDSCredentialsVCEnums.CredentialsItemType.Username.rawValue, LDSCredentialsVCEnums.CredentialsItemType.Password.rawValue:
-                tableView.deselectRow(at: indexPath, animated: true)
-                
+                // no handler for username or password - the UITextField seems to consume the event, and even if it doesn't we were just doing the default action anyway
             case LDSCredentialsVCEnums.CredentialsItemType.SignInBtn.rawValue:
                 userNameField?.resignFirstResponder()
                 passwordField?.resignFirstResponder()
-                
+
                 logInLDSUser(username: (self.userNameField?.text)!, password: (passwordField?.text)!)
                 tableView.deselectRow(at: indexPath, animated: true)
                 
+            case LDSCredentialsVCEnums.CredentialsItemType.SignOutBtn.rawValue:
+                userNameField?.resignFirstResponder()
+                passwordField?.resignFirstResponder()
+
+                logOutLDSUser()
+                tableView.deselectRow(at: indexPath, animated: true)
+
             default:
                 tableView.deselectRow(at: indexPath, animated: true)
             }
@@ -183,42 +211,73 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
     
     func logInLDSUser(username: String, password: String) {
         //Show alert on empty strings
-        if (username == "" || password == "") {
+        if username == "" || password == "" {
             showAlert(title: "Login Error", message: "Enter username and password to login", includeCancel: false, okCompletionHandler: nil)
-        } else if (ldsIdIsValid(username: username, password: password)) {
-            // Check if the id and password are valid
+        } else  {
+            self.startStaticFrameProcessingSpinner()
             do {
                 try Locksmith.deleteDataForUserAccount(userAccount: "callingWorkFlow")
+            } catch {
+                print("error deleting login data")
+            }
+
+            // Check if the id and password are valid
+            ldsIdIsValid(username: username, password: password) { loggedIn, error in
+                DispatchQueue.main.async {
+
+                    self.removeProcessingSpinner()
+                    guard error == nil, loggedIn else {
+                        // todo - check error for network, vs. 403, etc.
+                        self.showAlert(title: "Login Error", message: "Invalid username or password", includeCancel: false, okCompletionHandler: nil)
+                        return
+                    }
+
+                    do {
+                        try Locksmith.saveData(data: ["username": username, "password": password], forUserAccount: "callingWorkFlow")
+                    } catch {
+                        print("error saving username")
+                    }
+                    // todo - transition back & reload data
+                    self.dismiss(animated: true, completion: nil)
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
+        }
+    }
+
+    func logOutLDSUser() {
+        showAlert(title: "Logout", message: "This will remove your lds.org credentials, and all lds.org data from your phone. It will not affect the data for any other users in your unit. Do you want to proceed?", includeCancel: true) { _ in
+
+            self.startStaticFrameProcessingSpinner()
+            do {
+                try Locksmith.deleteDataForUserAccount(userAccount: "callingWorkFlow")
+                self.signedIn = false
+                self.initializeUsernameField(withUser: nil)
+                self.initializePasswordField(withPassword: nil)
+                self.keychainDataDictionary = Locksmith.loadDataForUserAccount(userAccount: "callingWorkFlow") as! Dictionary<String, String>?
+
+                self.tableView.reloadData()
             }
             catch {
                 print("error deleting login data")
             }
-            
-            do {
-                try Locksmith.saveData(data: ["username": username, "password": password], forUserAccount: "callingWorkFlow")
+            self.callingMgr?.logoutLdsUser() {
+                DispatchQueue.main.async {
+                    self.removeProcessingSpinner()
+                }
             }
-            catch{
-                print("error saving username")
-            }
-            
-            self.dismiss(animated: true, completion: nil)
-        } else {
-            // Show alert on bad info
-            showAlert(title: "Login Error", message: "Invalid username or password", includeCancel: false, okCompletionHandler: nil)
         }
     }
-    
-    func ldsIdIsValid(username: String, password: String) -> Bool {
-        // This method is intended to serve to precheck passwords against the church's
-        // standards before we make a network call. This is something that the church
-        // can change and we would have to update.
-        
-        // todo - Maybe need to still handle this if we want that check.
-        
-        if (true) {
-            return true
-        } else {
-            return false
+
+    func ldsIdIsValid(username: String, password: String, completionHandler: @escaping (Bool, Error?) -> Void) {
+        if let callingManager = self.callingMgr {
+            callingManager.getLdsUser(username: username, password: password) { user, error in
+                guard error == nil, user != nil else {
+                    completionHandler( false, error )
+                    return
+                }
+                completionHandler( true, nil )
+            }
         }
     }
     

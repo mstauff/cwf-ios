@@ -138,5 +138,9 @@ class LdsFileApi : LdsOrgApi {
         }
 }
 
-    
+    func ldsSignout(_ completionHandler: @escaping () -> Void) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            completionHandler()
+        }
+    }
 }

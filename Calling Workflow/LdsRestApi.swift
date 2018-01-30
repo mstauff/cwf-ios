@@ -111,18 +111,21 @@ class LdsRestApi : RestAPI, LdsOrgApi {
             }
 
             // a 403 response from the server happens in cases where the login is invalid. Check for that and return a specific response so the UI can present a more detailed error message
-            guard let response = response as? HTTPURLResponse,
-                  response.statusCode != ErrorConstants.notAuthorized else {
+            // todo - in some cases there may be a 404 - check "Location" header in response for denied.html as another indicator, or look at (response as? HTTPURLResponse)?.url for error=authfailed
+            // todo - we're getting different results based on hitting signin-int vs. signin-uat (error comes back in error in once env., or in the response in another) need to test in prod to see real results
+            guard let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode != ErrorConstants.notAuthorized else {
                 let errorMsg = "Invalid login credentials for user: " + username
                 print( errorMsg )
-                completionHandler(NSError( domain: ErrorConstants.domain, code: 403, userInfo: [ "error" : errorMsg ] ) )
+
+                completionHandler(NSError( domain: ErrorConstants.domain, code: ErrorConstants.notAuthorized, userInfo: [ "error" : errorMsg ] ) )
                 return
             }
 
             guard data != nil else {
                 let errorMsg = "Error: No network error, but did not recieve data from \(NetworkConstants.ldsOrgEndpoints["SIGN_IN"]!)"
                 print( errorMsg )
-                completionHandler(NSError( domain: ErrorConstants.domain, code: 404, userInfo: [ "error" : errorMsg ] ) )
+                completionHandler(NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
                 return
             }
             // the obSSOCookie does not have an expires value, which means iOS will not persists the cookie beyond application life. Technically the cookie is good for 1 hour. We originally toyed with storing some cookie values in UserDefaults, but it would probably be more efficient to just read the cookie out of HTTPCookieStorage, and then use it to create a new cookie with an expires time of 1 hour (although we would need to extend it each time we interact with lds.org
@@ -132,7 +135,16 @@ class LdsRestApi : RestAPI, LdsOrgApi {
         }
         
     }
-    
+
+    func ldsSignout( _ completionHandler: @escaping() -> Void ) {
+        let url = appConfig.ldsEndpointUrls[NetworkConstants.signOutURLKey]!
+        // if we don't have a session, then mission accomplished
+        doGet(url: url ) { data, response, error in
+            // don't really care about the response
+            completionHandler(  )
+        }
+    }
+
     /*
      Gets the current user. This method is so we can get the callings that the current user has to grant permissions.
      */

@@ -12,15 +12,32 @@ import Locksmith
 class RootTabBarViewController: UITabBarController, LDSLoginDelegate, ProcessingSpinner, AlertBox {
     
     var loginDictionary : Dictionary<String, Any>?
-    
+    weak var appDelegate : AppDelegate?
+
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.appDelegate = UIApplication.shared.delegate as? AppDelegate
         self.tabBar.isTranslucent = false
-        // check the keychain for stored LDS.org credentials
-        self.getLogin()
-        //signIntoLDSAPI()
+        let ldscdApi = LdscdRestApi()
+        // to avoid going to the app config server, use this line. It will just use what's defined in NetworkConstants
+        //        ldscdApi.appConfig = AppConfig()
+        ldscdApi.getAppConfig() { (appConfig, error) in
+            DispatchQueue.main.async {
+
+                if error != nil {
+                    // just print it out, we'll use a default app config below
+                    print("Error retrieving app config from ldscd (redhat) server:" + error.debugDescription)
+                }
+                self.appDelegate?.callingManager.appConfig = appConfig ?? AppConfig()
+                // check the keychain for stored LDS.org credentials
+                self.getLogin()
+
+                //signIntoLDSAPI()
+
+            }
+
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -35,23 +52,11 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
         startProcessingSpinner( labelText: "Logging In" )
         
         // some tests fail (it's during test/init code, not during the test itself) if this is inside the getAppConfig callback. So get the reference before the call.
-        weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let ldscdApi = LdscdRestApi()
-        // to avoid going to the app config server, use this line. It will just use what's defined in NetworkConstants
-//        ldscdApi.appConfig = AppConfig()
-        ldscdApi.getAppConfig() { (appConfig, error) in
-
-            if error != nil {
-                // just print it out, we'll use a default app config below
-                print( "Error retrieving app config from ldscd (redhat) server:" + error.debugDescription )
-            }
-            
             // we only get to this point if we've already been through getLogin() which handles forwarding us to lds.org settings if there are no creds.
             let username = self.loginDictionary?["username"] as! String
             let password = self.loginDictionary?["password"] as! String
             var unitNum: Int64?
 
-            appDelegate?.callingManager.appConfig = appConfig ?? AppConfig()
             // todo - need to also hit google drive to get the user so we can use the unit number if needed to disambiguate lds units
             appDelegate?.callingManager.getLdsUser(username: username, password: password) { [weak self] (ldsUser, error) in
                 guard error == nil, let validUser = ldsUser else {
@@ -72,7 +77,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
                     return
                 }
                 
-                let potentialUnitNums : [Int64] = appDelegate?.callingManager.getUnits(forUser: validUser) ?? []
+                let potentialUnitNums : [Int64] = self?.appDelegate?.callingManager.getUnits(forUser: validUser) ?? []
                 if potentialUnitNums.isEmpty {
                     let errorMsg = "Error: You do not currently have any callings that are authorized to use this application"
                     print( errorMsg )
@@ -87,19 +92,18 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
                     // there are unit names in the current-user.json, we're just not doing anything with them right now.
                 }
                 
-                // todo - need to figure out a way to reconcile lds.org unit is same as google drive credentials
                 if let validUnitNum = unitNum {
-                    appDelegate?.callingManager.loadLdsData(forUnit: validUnitNum, ldsUser: validUser) { [weak self] (dataLoaded, loadingError) -> Void in
+                    self?.appDelegate?.callingManager.loadLdsData(forUnit: validUnitNum, ldsUser: validUser) { [weak self] (dataLoaded, loadingError) -> Void in
                         // todo - if we change this callback to provide the unitdata then ldsOrgUnit could be made private. Will that work????
                         let childView = self?.selectedViewController as? OrganizationTableViewController
-                        if dataLoaded, let callingMgr = appDelegate?.callingManager, let ldsOrg = callingMgr.ldsOrgUnit {
+                        if dataLoaded, let callingMgr = self?.appDelegate?.callingManager, let ldsOrg = callingMgr.ldsOrgUnit {
                             // todo - rename hasDataSourceCredentials - indicate that it's also signing in
                             callingMgr.hasDataSourceCredentials(forUnit: validUnitNum ) { (hasCredentials, signInError) -> Void in
                                 if hasCredentials  {
                                     callingMgr.loadAppData(ldsUnit: ldsOrg ) { success, hasOrgsToDelete, error in
                                         self?.removeSpinner()
                                         if success {
-                                            childView?.organizationsToDisplay = appDelegate?.callingManager.appDataOrg?.children
+                                            childView?.organizationsToDisplay = self?.appDelegate?.callingManager.appDataOrg?.children
                                         }
                                         // todo - still need to deal with hasOrgsToDelete
                                     }
@@ -117,7 +121,6 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Processing
                             self?.showAlert(title: "LDS.org Communication Error", message: alertText, includeCancel: false, okCompletionHandler: nil)
                         }
                     }
-                }
             }
         }
     }

@@ -14,6 +14,7 @@ protocol LdsOrgApi {
     func setAppConfig( appConfig : AppConfig )
     
     func ldsSignin(username: String, password: String,_ completionHandler: @escaping ( _ error:NSError? ) -> Void)
+    func ldsSignout( _ completionHandler: @escaping() -> Void )
     func getCurrentUser( _ completionHandler: @escaping ( LdsUser?, Error? ) -> Void )
     func getMemberList( unitNum : Int64, _ completionHandler: @escaping ( [Member]?, Error? ) -> Void )
     func getOrgWithCallings( unitNum : Int64, _ completionHandler: @escaping ( Org?, Error? ) -> Void )
