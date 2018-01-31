@@ -41,3 +41,7 @@ protocol FilterTableViewControllerDelegate {
 protocol StatusSettingsCollectionViewCellDelegate {
     func updateStatusSettings(status: CallingStatus)
 }
+
+protocol InitializeAppDataDelegate {
+    func reinitApp(useCache: Bool)
+}

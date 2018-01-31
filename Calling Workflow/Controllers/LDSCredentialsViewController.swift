@@ -44,10 +44,12 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
     var userNameField : UITextField?
     var passwordField : UITextField?
     var signedIn = false
+    var newSignIn = false
     
     var keychainDataDictionary: Dictionary<String, String>?
-    
-    var delegate : LDSLoginDelegate? = nil
+
+    var loginDelegate: LDSLoginDelegate? = nil
+    var reinitDelegate: InitializeAppDataDelegate? = nil
     
     weak var callingMgr : CWFCallingManagerService? = nil
     
@@ -71,7 +73,13 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+
+    override func viewWillDisappear(_ animated: Bool) {
+        if newSignIn {
+            reinitDelegate?.reinitApp(useCache: false)
+        }
+    }
+
     // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
         return 22.0
@@ -237,7 +245,11 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
                     } catch {
                         print("error saving username")
                     }
-                    // todo - transition back & reload data
+                    if let loginDict = Locksmith.loadDataForUserAccount(userAccount: "callingWorkFlow") {
+                        self.loginDelegate?.setLoginDictionary(returnedLoginDictionary: loginDict)
+                    }
+                    // mark that there has been a change in the signed in user so we can reload data when this VC returns
+                    self.newSignIn = true
                     self.dismiss(animated: true, completion: nil)
                     self.navigationController?.popViewController(animated: true)
                 }
@@ -271,7 +283,7 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
 
     func ldsIdIsValid(username: String, password: String, completionHandler: @escaping (Bool, Error?) -> Void) {
         if let callingManager = self.callingMgr {
-            callingManager.getLdsUser(username: username, password: password) { user, error in
+            callingManager.getLdsUser(username: username, password: password, useCachedVersion: false) { user, error in
                 guard error == nil, user != nil else {
                     completionHandler( false, error )
                     return

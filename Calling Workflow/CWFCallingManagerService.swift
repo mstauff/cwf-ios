@@ -28,7 +28,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     var memberCallings : [MemberCallings] {
         get {
             return memberList.map() {
-                 MemberCallings(member: $0, callings: memberCallingsMap.getValues(forKey: $0.individualId), proposedCallings: memberPotentialCallingsMap.getValues(forKey: $0.individualId))
+                MemberCallings(member: $0, callings: memberCallingsMap.getValues(forKey: $0.individualId), proposedCallings: memberPotentialCallingsMap.getValues(forKey: $0.individualId))
             }
         }
     }
@@ -75,8 +75,12 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         positionMetadataMap = positionsMD.toDictionaryById( {$0.positionTypeId} )
     }
     
-    public func getLdsUser( username: String, password: String, completionHandler: @escaping (LdsUser?, Error?) -> Void ) {
-            let ldsApi = self.ldsOrgApi
+    public func getLdsUser( username: String, password: String, useCachedVersion fromCache: Bool, completionHandler: @escaping (LdsUser?, Error?) -> Void ) {
+        let ldsApi = self.ldsOrgApi
+        // if we have a local user already, and the calling function doesn't force a new signin, go ahead and just return the existing user
+        if let ldsUser = self.user, fromCache {
+            completionHandler( ldsUser, nil )
+        } else {
             ldsApi.ldsSignin(username: username, password: password, { (error) -> Void in
                 if error != nil {
                     print(error!)
@@ -95,16 +99,17 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                     }
                 }
             })
+        }
     }
-
+    
     public func logoutLdsUser( completionHandler: @escaping() -> Void ) {
         self.ldsOrgApi.ldsSignout() {
             completionHandler()
         }
         removeAllData()
-
+        
     }
-
+    
     private func removeAllData() {
         self.appDataOrg = nil
         self.ldsOrgUnit = nil
@@ -114,7 +119,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         self.user = nil
         self.userRoles = []
     }
-
+    
     public func getUnits( forUser user: LdsUser ) -> [Int64] {
         return permissionMgr.authorizedUnits(forUser: user)
     }
@@ -145,7 +150,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 dataSourceGroup.leave()
             }
         }
-
+        
         dataSourceGroup.notify(queue: DispatchQueue.main) {
             // once we're all done go through  the init process again to get all the hashtables of calling holders, etc. updated with the latest data
             self.initDatasourceData(fromOrg: self.appDataOrg!, extraOrgs: [])
@@ -155,15 +160,15 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     }
     
     public func reloadLdsData( forUser: LdsUser?, completionHandler: @escaping (Bool, Error?) -> Void ) {
-
+        
         let cachedOrParamUser = forUser == nil ? self.user : forUser
         if let unitNum = self.ldsOrgUnit?.unitNum, let user = cachedOrParamUser {
-            loadLdsData(forUnit: unitNum, ldsUser: user) { success, error in
+            loadLdsData(forUnit: unitNum, ldsUser: user, useCachedVersion: false) { success, error in
                 guard error == nil, success == true else {
                     completionHandler( success, error )
                     return
                 }
-
+                
                 if let ldsUnit = self.ldsOrgUnit {
                     self.loadAppData(ldsUnit: ldsUnit) { success, _, error in
                         completionHandler( success, error )
@@ -185,44 +190,55 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     
     /** Performs the calls that need to be made to lds.org at startup, or unit transition. First it gets the application config from our servers (which contains the lds.org endpoints to use). Next it logs in to lds.org, then it retrieves user data which includes their callings (to verify unit permissions), the unit member list and callings. Once all those have completed then we call the callback. If any one of them fails we will return an error via the callback. The data is not returned via the callback, it is just maintained internally in this class. The callback just lets the calling function know that this method has successfully completed.
      This method needs to be called prior to calling the authenticate() or loadAppData() methods */
-    public func loadLdsData(forUnit unitNum: Int64, ldsUser: LdsUser, completionHandler: @escaping (Bool, Error?) -> Void) {
+    public func loadLdsData(forUnit unitNum: Int64, ldsUser: LdsUser, useCachedVersion loadFromCache: Bool, completionHandler: @escaping (Bool, Error?) -> Void) {
         var members : [Member] = []
         var ldsOrg : Org? = nil
         loadLocalPositionMetadata()
-
+        
         self.userRoles = self.permissionMgr.createUserRoles(forPositions: ldsUser.positions, inUnit: unitNum)
         
         if self.permissionMgr.hasPermission(unitRoles: self.userRoles, domain: .OrgInfo, permission: .View) {
             let ldsApi = self.ldsOrgApi
             var ldsApiError: Error? = nil
-            // todo - make this smarter to return existing data if we already have it (also need a flag to force reload)
             let restCallsGroup = DispatchGroup()
             
-            restCallsGroup.enter()
-            ldsApi.getMemberList(unitNum: unitNum) { (memberList, error) -> Void in
-                if memberList != nil && memberList!.isNotEmpty {
-                    members = memberList!.sorted(by: Member.nameSorter)
-                } else {
-                    if error != nil {
-                        ldsApiError = error
+            // If we have member data and if we can load from cache then just set the local var to the memberList (we need to do this so the initLdsOrgData method gets the correct data, otherwise instead of initing with data from cache, it has empty data)
+            if self.memberList.isNotEmpty && loadFromCache {
+                members = self.memberList
+            } else {
+                // if we can't use cached data, or we don't have cached data for the member list, go ahead and retrieve it
+                restCallsGroup.enter()
+                ldsApi.getMemberList(unitNum: unitNum) { (memberList, error) -> Void in
+                    if memberList != nil && memberList!.isNotEmpty {
+                        members = memberList!.sorted(by: Member.nameSorter)
+                    } else {
+                        if error != nil {
+                            ldsApiError = error
+                        }
                     }
+                    restCallsGroup.leave()
                 }
-                restCallsGroup.leave()
             }
             
-            restCallsGroup.enter()
-            ldsApi.getOrgWithCallings(unitNum: unitNum) { (org, error) -> Void in
-                if let validOrg = org, !validOrg.children.isEmpty {
-                    ldsOrg = validOrg
-                } else {
-                    print("no org")
-                    if error != nil {
-                        ldsApiError = error
+            // if we have calling data and we can load from cache, then use it, otherwise load it from lds.org
+            if self.ldsOrgUnit != nil && loadFromCache {
+                ldsOrg = self.ldsOrgUnit
+            } else {
+                restCallsGroup.enter()
+                ldsApi.getOrgWithCallings(unitNum: unitNum) { (org, error) -> Void in
+                    if let validOrg = org, !validOrg.children.isEmpty {
+                        ldsOrg = validOrg
+                    } else {
+                        print("no org")
+                        if error != nil {
+                            ldsApiError = error
+                        }
                     }
+                    restCallsGroup.leave()
                 }
-                restCallsGroup.leave()
             }
             
+            // this gets called if the group is empty, so if we used cache, instead of loading data from lds.org nothing ever enters the restCallsGroup, this will still get called
             restCallsGroup.notify(queue: DispatchQueue.main) {
                 if let validOrg = ldsOrg {
                     self.initLdsOrgData(memberList: members, org: validOrg, positionMetadata: self.positionMetadataMap)
@@ -264,7 +280,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     public func loadAppData( ldsUnit: Org, completionHandler: @escaping(_ success: Bool, _ hasExtraOrgs: Bool, _ error : Error?) -> Void) {
         self.loadAppData(ldsUnit: ldsUnit, numLoadAttempts: 0, completionHandler: completionHandler)
     }
-   
+    
     /** Private version of loading data, it includes the number of times it's been attempted so when it gets called recursively we can limit it based on the number of attempts. Generally it will only get called twice (first is the load, 2nd is after we create new orgs). As a failsafe in case there are just errors with creating orgs we don't want to get stuck in a reconcile in a recursive calling loop */
     func loadAppData( ldsUnit: Org, numLoadAttempts: Int, completionHandler: @escaping(_ success: Bool, _ hasExtraOrgs: Bool, _ error : Error?) -> Void) {
         
@@ -286,13 +302,13 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 }
             } else {
                 let dataSourceGroup = DispatchGroup()
-
+                
                 var mergedOrgs: [Org] = []
                 for ldsOrg in ldsUnit.children {
                     dataSourceGroup.enter()
                     self.getOrgData(forOrgId: ldsOrg.id) { org, error in
                         dataSourceGroup.leave()
-
+                        
                         guard org != nil else {
                             print( error.debugDescription )
                             return // exits the callback, not loadAppData
@@ -310,7 +326,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                         mergedOrgs.append(mergedOrg)
                     }
                 }
-
+                
                 // also load the unit settings
                 dataSourceGroup.enter()
                 self.loadUnitSettings(forUnitNum: ldsUnit.unitNum) { unitSettings, error in
@@ -319,7 +335,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                         self.statusToExcludeForUnit = settings.disabledStatuses
                     }
                 }
-
+                
                 dataSourceGroup.notify(queue: DispatchQueue.main) {
                     // sort all the unit level orgs by their display order
                     org.children = mergedOrgs
@@ -342,18 +358,18 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             subOrgsMap[childOrg.id] = childOrg.id
             self.unitLevelOrgsForSubOrgs = self.unitLevelOrgsForSubOrgs.merged(withDictionary: subOrgsMap)
         }
-
+        
         updateCallingMaps(org: org)
         self.extraAppOrgs = extraOrgs
         
     }
-
+    
     private func updateCallingMaps(org: Org) { // this is only actual callings.
         self.memberCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.existingIndId }
         // Now proposed callings
         self.memberPotentialCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.proposedIndId }
     }
-
+    
     func loadUnitSettings( forUnitNum unitNum: Int64, completionHandler: @escaping( UnitSettings?, Error?) -> Void ) {
         dataSource.getUnitSettings(forUnitNum: unitNum) { unitSettings, error in
             if let settings = unitSettings {
@@ -371,7 +387,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     func updateUnitSettings( withStatuses statuses : [CallingStatus], completionHandler: @escaping( Bool, Error? ) -> Void ) {
         updateUnitSettings(unitSettings: UnitSettings( unitNum: ldsOrgUnit?.unitNum, disabledStatuses: statuses ), completionHandler: completionHandler)
     }
-
+    
     /** Reads the given Org from google drive, updates the internal memory cache for orgs and the calling maps */
     public func reloadOrgData( forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void ){
         getOrgData(forOrgId: orgId) { org, error in
@@ -379,7 +395,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 completionHandler(nil, error)
                 return
             }
-
+            
             guard let validOrg = org, let _ = self.appDataOrg else {
                 // shouldn't happen
                 let errorMsg = "Error while attempting to load org " + orgId.description + ". The org from google drive, or the in memory org were nil"
@@ -387,7 +403,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
                 return
             }
-
+            
             // guard above ensures that appDataOrg isn't nil, so safe to !
             self.appDataOrg!.updateDirectChildOrg(org: validOrg)
             self.updateCallingMaps(org: self.appDataOrg!)
@@ -407,7 +423,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             // the new data coming out of google drive will not have the conflicts that were found between the app and LCR data. We don't want to remerge against LCR because it may be stale, so we just want to get any callings that were found to be in conflict and update them once we pull latest out of google drive
             var conflictCallingIdMap : [Int64:ConflictCause] = [:]
             if let conflictCallings = self.appDataOrg?.allOrgCallings.filter({ $0.id != nil && $0.conflict != nil })  {
-                 conflictCallingIdMap = conflictCallings.toDictionary() { return ( $0.id!, $0.conflict! ) }
+                conflictCallingIdMap = conflictCallings.toDictionary() { return ( $0.id!, $0.conflict! ) }
             }
             dataSource.getData(forOrg: ldsOrg) { org, error in
                 if error != nil {
@@ -446,7 +462,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             // if we can't validate permissions, only return lds version
             return ldsOrg
         }
-
+        
         
         let appOrgIds = Set<Int64>(appOrg.children.map( { $0.id } ))
         let ldsOrgIds = Set<Int64>(ldsOrg.children.map( { $0.id } ))
@@ -488,7 +504,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         
         // sort any callings in the org by display order
         updatedOrg.callings = updatedOrg.callings.sorted(by: Calling.sortByDisplayOrder)
-    
+        
         
         return updatedOrg
         
@@ -567,7 +583,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                         updatedOrg.hasUnsavedChanges = true
                     } else {
                         // if multiples are not allowed, or there's potential data then we just need to remove the actual portion of the calling
-
+                        
                         let releasedLcrCalling = mergedCalling.withActualReleased()
                         if mergedCalling.position.multiplesAllowed {
                             // if multiples are allowed we have to remove the calling with the ID, then add in the updated.
@@ -578,7 +594,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                             // if no multiples, we can difinitively match based on calling type, so we can just do an update
                             updatedOrg = updatedOrg.updatedWith(changedCalling: releasedLcrCalling) ?? updatedOrg
                         }
-                            updatedOrg.hasUnsavedChanges = true
+                        updatedOrg.hasUnsavedChanges = true
                     }
                 }
                 // if it's not in the updatedOrg, then nothing to worry about, nothing to remove
@@ -588,13 +604,13 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         let emptyLCRCallings = ldsOrg.callings.filter() { $0.id == nil && $0.position.multiplesAllowed }
         // for the app callings we need any that id is nil, or any that have been marked as a conflict (that's a case where the id could potentially be nil, pending user response
         let emptyAppCallings = updatedOrg.callings.filter() { ($0.id == nil || $0.conflict != nil) && !$0.cwfOnly  && $0.position.multiplesAllowed }
-
+        
         // reduce to map  by type, then look for equivalent amounts.
         let emptyLCRCallingsByType = MultiValueDictionary<Int, Calling>.initFromArray(array: emptyLCRCallings, transformer: {$0.position.positionTypeId}  )
         let emptyAppCallingsByType = MultiValueDictionary<Int, Calling>.initFromArray(array: emptyAppCallings, transformer: {$0.position.positionTypeId} )
         emptyLCRCallingsByType.dictionary.forEach() { (positionTypeId, callings) in
             let equivalentAppCallings = emptyAppCallingsByType.getValues(forKey: positionTypeId)
-                // compare size
+            // compare size
             let numCallingsDiff = abs(equivalentAppCallings.count - callings.count)
             
             
@@ -713,7 +729,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             }
         }
     }
-
+    
     public func releaseLCRCalling( callingToRelease: Calling, completionHandler: @escaping(Bool, Error?) -> Void ) {
         guard let unitNum = callingToRelease.parentOrg?.unitNum else {
             let errorMsg = "Error: calling didn't have a parent org"
@@ -735,7 +751,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             }
         }
     }
-
+    
     public func deleteLCRCalling( callingToDelete: Calling, completionHandler: @escaping(Bool, Error?) -> Void ) {
         guard let unitNum = callingToDelete.parentOrg?.unitNum else {
             let errorMsg = "Error: calling didn't have a parent org"
@@ -757,13 +773,13 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             }
         }
     }
-
+    
     //MARK: - Cached Data
     
     /** Performs the actual CRUD operations by reading the file for the org that the calling is in from google drive, performing the update, writing the entire org back to google drive, then updating the copy of the data that is cached locally. When this is all done we call the completion handler with the results */
     private func storeCallingChange(changedCalling: Calling, operation: Calling.ChangeOperation, completionHandler: @escaping (Bool, Error?) -> Void) {
         if let callingOrg = changedCalling.parentOrg, let unitLevelOrgId = self.unitLevelOrgsForSubOrgs[callingOrg.id], let unitLevelOrg = appDataOrg?.getChildOrg(id: unitLevelOrgId), let rootOrgType = UnitLevelOrgType(rawValue: unitLevelOrg.orgTypeId) {
-
+            
             let orgAuth = AuthorizableOrg(fromSubOrg: callingOrg, inUnitLevelOrg: unitLevelOrg)
             
             let perm = getPermission(forCRUDOperation: operation)
@@ -775,7 +791,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             
             let originalCalling = appDataOrg?.getCalling( changedCalling )
             // need to update appDataOrg with changes before we make asynch call - so whatever view gets drawn will have the changes
-
+            
             var shouldRevert = false
             // update the cached copy of the org, as well as the calling maps where we keep track of the callings that individuals hold. We do this before going to google drive because we need the data to be updated in the UI. If we get an error we'll revert.
             // todo - this all needs to be changed to using original & changed calling consistently rather than the operation. Currently we end up checking the operation to determine behavior in several different methods, would be better to centralize that
@@ -820,7 +836,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                             if shouldRevert {
                                 self.revertCachedCallingData(unitLevelOrg: updatedOrg, originalCalling: originalCalling, changedCalling: changedCalling, originalOperation: operation)
                             }
-
+                            
                         }
                         // if it wasn't a success we just propogate the result and any errors on to the callback
                         completionHandler(success, error)
@@ -835,12 +851,12 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 }
             }
             
-
+            
         } else {
             // either there was an error with the calling object (didn't have a parent), or the org data is wrong (i.e. the root org isn't in the dictionary) - shouldn't really happen outside of testing env.
             let errorMsg = "Error: Calling data incomplete, unable to update. Problem with containing org: " + (changedCalling.parentOrg?.id.description ?? " no org")
             completionHandler(false, NSError(domain: ErrorConstants.domain, code: ErrorConstants.illegalArgument, userInfo: ["error": errorMsg]))
-
+            
         }
     }
     
@@ -892,7 +908,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         
         return callings
     }
-
+    
     /**
      Update the cache data of actual callings
      */
@@ -913,7 +929,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         return callings
     }
     
-
+    
     
     /** converts a CRUD operation into a permission of the same type */
     private func getPermission( forCRUDOperation crudOp : Calling.ChangeOperation ) -> Permission {
@@ -928,14 +944,14 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     }
     
     /** Looks up a unit level org by its' ID and returns the type of the org. Returns nil if the org id is not in the list of unit level orgs */
-     func unitLevelOrgType( forOrg rootOrgId: Int64 ) -> UnitLevelOrgType? {
+    func unitLevelOrgType( forOrg rootOrgId: Int64 ) -> UnitLevelOrgType? {
         var orgType : UnitLevelOrgType? = nil
         if let rootOrgTypeId = self.ldsUnitOrgsMap[rootOrgId]?.orgTypeId {
             orgType = UnitLevelOrgType(rawValue: rootOrgTypeId)
         }
         return orgType
     }
-        
+    
     func unitLevelOrg( forSubOrg subOrgId: Int64) -> Org? {
         var org : Org? = nil
         if let orgId = unitLevelOrgsForSubOrgs[subOrgId], let rootOrg = ldsUnitOrgsMap[orgId] {
