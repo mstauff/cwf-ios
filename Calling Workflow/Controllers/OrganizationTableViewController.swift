@@ -99,7 +99,7 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     //MARK: - Actions
     func reloadData () {
         if let rootController = self.tabBarController as? RootTabBarViewController {
-            rootController.signIntoLDSAPI()
+            rootController.loadLdsAndAppData(useCache: true)
         }
     }
     

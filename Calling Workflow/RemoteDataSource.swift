@@ -80,6 +80,9 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         if GIDSignIn.sharedInstance().hasAuthInKeychain() {
             self.authCompletionHandler = completionHandler
             // todo - do we need to do this every time?? Any way to search for existing session
+            // this method generates an error:
+//            Main Thread Checker: UI API called on a background thread: -[UIApplication delegate]
+            // Perhaps updating to latest client will fix. Doesn't seem to adversely affect the app, but it is always there on startup
             GIDSignIn.sharedInstance().signInSilently()
         } else {
             completionHandler( false, nil )
@@ -88,6 +91,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     }
     
     func signOut() {
+        // todo - something more needs to be done here. Still able to read files from google
         GIDSignIn.sharedInstance().signOut()
         self.userName = nil
     }
@@ -129,7 +133,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     /* This method should be called after authenticate and before you try to retrieve the contents of any org. This is separate from auth or init because it needs to have the list of orgs that exist for a unit on lds.org to compare to what data we have in google drive and either create what's missing, or report what should be deleted. The callback will include a list of orgs that exist in google drive but were not passed in to the method and would be candidates for deletion. Any orgs that are passed in that don't exist in google drive will be silently created. */
     func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ orgsToCreate: [Org], _ remainingOrgs: [Org], _ error: Error?) -> Void) {
         // although we could check if we already have filesByName then no need to hit goodrive, generally this should only be called once anyway so shouldn't matter. If it does get called a 2nd time then always checking goodrive allows us to grab any latest changes. Otherwise code might call this in an attempt to "refresh" but not get latest
-        fetchFiles() { (driveFiles, error) in
+     fetchFiles() { (driveFiles, error) in
             var orgFileNames: Set<String> = Set()
             var orgMap = [String: Org]()
             // capture the filenames of orgs from lds.org for diffing against the goodrive contents. Also create a map of orgs by file name

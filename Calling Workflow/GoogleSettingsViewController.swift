@@ -8,11 +8,13 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
     var dataObject = ""
     
     var callingMgr : CWFCallingManagerService? = nil
-    
+    var reinitDelegate: InitializeAppDataDelegate? = nil
+
     var addBackButton : Bool = false
     
     @IBOutlet var output: UITextView!
     var signedIn : Bool = false
+    var newSignIn = false
 
     @IBOutlet weak var signedInAsLabel: UILabel!
     @IBOutlet weak var resetDataBtn: UIButton!
@@ -97,10 +99,17 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
             showAlert(title: "Sign-in Success", message: "You have successfully signed in to your ward's google drive account.", includeCancel: false) { _ in
                 self.dismiss(animated: true, completion: nil)
                 self.navigationController?.popViewController(animated: true)
+                self.newSignIn = true
             }
         }
         if let callingMgrSignInDelegate = callingMgr?.dataSource as? GIDSignInDelegate {
             callingMgrSignInDelegate.sign(signIn, didSignInFor: user, withError: error)
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        if let appInitDelegate = self.reinitDelegate {
+            appInitDelegate.reinitApp(useCache: false)
         }
     }
     

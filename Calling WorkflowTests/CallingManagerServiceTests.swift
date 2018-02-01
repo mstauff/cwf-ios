@@ -26,7 +26,7 @@ class CallingManagerServiceTests: XCTestCase {
     class PartialMockCallingManager : CWFCallingManagerService {
         var mockGoogleOrg : Org? = nil
         
-        func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
+        override func reloadOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 completionHandler(self.mockGoogleOrg, nil)
             }
@@ -60,6 +60,7 @@ class CallingManagerServiceTests: XCTestCase {
     }
     
     class MockDataSource : DataSource {
+        
         func createOrg(org: Org, completionHandler: @escaping (Bool, Error?) -> Void) {
             completionHandler( true, nil )
         }
@@ -94,11 +95,9 @@ class CallingManagerServiceTests: XCTestCase {
         }
         
         func updateUnitSettings( _ unitSettings : UnitSettings, completionHandler : @escaping( _ success : Bool, _ error: Error?) -> Void ) {
-            
         }
         
         func signOut() {
-            
         }
         
         private(set) var unitNum: Int64? = nil
@@ -556,15 +555,15 @@ class CallingManagerServiceTests: XCTestCase {
         // This test exercises the logic in calling manager when a valid user, or an error are returned. We want to make sure
         // in all cases the completion handler is still called.
         // "valid" user returns a user
-        callingMgr.getLdsUser(username: "valid", password: password) { user, error in
+        callingMgr.getLdsUser(username: "valid", password: password, useCachedVersion: true) { user, error in
             validUserExpectation.fulfill()
         }
 
         // "badUser" simulates invalid credentials, while networkError simulates some type of network error. This test could be enhanced to look at the error details that get returned. for right now we just wanted to confirm the completion handler is always called
-        callingMgr.getLdsUser(username: "badUser", password: password) { user, error in
+        callingMgr.getLdsUser(username: "badUser", password: password, useCachedVersion: true) { user, error in
             badUserExpectation.fulfill()
         }
-        callingMgr.getLdsUser(username: "networkError", password: password) { user, error in
+        callingMgr.getLdsUser(username: "networkError", password: password, useCachedVersion: true) { user, error in
             networkErrorExpectation.fulfill()
         }
         waitForExpectations(timeout: 5)
