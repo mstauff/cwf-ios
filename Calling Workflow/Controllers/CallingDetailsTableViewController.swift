@@ -135,24 +135,24 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case 0:// we don't want a header on the first section
-            return 0.1
+            return 1.0
         default:// all other sections get a 25 px header
             return 25
         }
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
-        return 0.1
+        return 1.0
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 0.1))
+        return UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1.0))
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch section {
         case 0:// we don't want a header on the first section. iOS wants a height greater than 0
-            return UIView(frame: CGRect(x: 0, y: -2.0, width: 0.1, height: 0.1))
+            return UIView(frame: CGRect(x: 0, y: -2.0, width: 0.1, height: 1.0))
         default:// all other sections get a 25 px header
             return UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 25.0))
         }
