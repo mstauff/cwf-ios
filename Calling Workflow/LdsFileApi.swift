@@ -26,7 +26,7 @@ class LdsFileApi : LdsOrgApi {
     }
     
     /* Simulate signin */
-    func ldsSignin(username: String, password: String,_ completionHandler: @escaping ( _ error:NSError? ) -> Void) {
+    func ldsSignin(forUser: String, withPassword: String,_ completionHandler: @escaping ( _ error:NSError? ) -> Void) {
         
         memberJSON = jsonFileReader.getJSON( fromFile: "member-objects" )
         orgJSON = jsonFileReader.getJSONArray( fromFile: "org-callings" )

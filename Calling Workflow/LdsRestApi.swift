@@ -37,10 +37,14 @@ class LdsRestApi : RestAPI, LdsOrgApi {
     
     /** Override of RestAPI.doGet() that will check to see if the current session is valid before making the call. We don't add in the failsafe of handling a redirect to the signin page as all the GET calls are made at startup, so in reality we should never have a timeout issue on a GET. If usage of this call expands in the future it would be good to make this more robust */
     override func doGet( url : String, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void ) {
-        if sessionManager.isSessionValid() {
+        doGet( fromUrl: url, withSession: true, completionHandler: completionHandler )
+    }
+    
+    func doGet( fromUrl url : String, withSession requiresSession : Bool, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void ) {
+        if sessionManager.isSessionValid() || !requiresSession {
             super.doGet(url: url, completionHandler: completionHandler)
         } else {
-            self.ldsSignin(username: userName!, password: password!) { error in
+            self.ldsSignin(forUser: userName!, withPassword: password!) { error in
                 guard error == nil else {
                     completionHandler( nil, nil, error )
                     return
@@ -52,7 +56,11 @@ class LdsRestApi : RestAPI, LdsOrgApi {
     
     /** Override of RestAPI.doPost() that takes a JSON body payload (the version that takes key/val params is not affected, it only handles the login). This basically intercepts all the updates to LCR, it checks for an active session (and logs in and then makes the call if we know the session had expired). Additionally it inspects the response in case we lost the session without knowing it. It looks to see if the response was forwarded to the lds login, if so it logs in again and then re-attempts the call. */
     override func doPost( url: String, bodyPayload : String?, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void ) {
-        if sessionManager.isSessionValid() {
+        doPost(url: url, bodyPayload: bodyPayload, withSession: true, completionHandler: completionHandler)
+    }
+    
+    func doPost( url: String, bodyPayload : String?, withSession requiresSession: Bool, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void ) {
+        if sessionManager.isSessionValid() || !requiresSession {
             super.doPost(url: url, bodyPayload: bodyPayload) { data, response, error in
                 // check for redirect to login page due to loss of lds.org session. If it's a normal result the content type would be application/json. If it's a forward to login it's text/html
                 if let httpResponse = response as? HTTPURLResponse, let responseUrl = httpResponse.url?.absoluteString, let contentType = httpResponse.allHeaderFields[NetworkConstants.contentTypeHeader] as? String, contentType.contains(NetworkConstants.contentTypeHtml) {
@@ -60,7 +68,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
                     // the session timeout will return a 200 OK, and the URL contains the sso/UI/Login
                     if RestAPI.isSuccessResponse( responseCode ) && responseUrl.contains("sso/UI/Login") {
                         // it was a session timeout, so login again and try again
-                        self.ldsSignin(username: self.userName!, password: self.password!) { error in
+                        self.ldsSignin(forUser: self.userName!, withPassword: self.password!) { error in
                             guard error == nil else {
                                 completionHandler( nil, nil, error )
                                 return
@@ -79,7 +87,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
             }
         } else {
             // we don't have a session, so re authenticate and attempt the POST
-            self.ldsSignin(username: userName!, password: password!) { error in
+            self.ldsSignin(forUser: userName!, withPassword: password!) { error in
                 guard error == nil else {
                     completionHandler( nil, nil, error )
                     return
@@ -92,13 +100,14 @@ class LdsRestApi : RestAPI, LdsOrgApi {
     /*
      Method to signin with the given username and password. The completion handler only includes an error. If this method was successful the error will be nil, there's nothing else returned. It stores the OBSSOCookie, which is basically what's required for authentication with the other lds.org services.
      */
-    func ldsSignin(username: String, password: String,_ completionHandler: @escaping ( _ error:NSError? ) -> Void) {
+    func ldsSignin(forUser: String, withPassword: String,_ completionHandler: @escaping ( _ error:NSError? ) -> Void) {
         
-        let loginCredentialParams = [ NetworkConstants.ldsOrgSignInUsernameParam : username, NetworkConstants.ldsOrgSignInPasswordParam: password ]
+        let loginCredentialParams = [ NetworkConstants.ldsOrgSignInUsernameParam : forUser, NetworkConstants.ldsOrgSignInPasswordParam: withPassword ]
         // store the username/password for use later if we lose the lds.org session
-        self.userName = username
-        self.password = password
+        self.userName = forUser
+        self.password = withPassword
         
+        print( "Attempting login for user: " + forUser )
         // ok to use ! for endpointUrls. We start with default values, and the ones that come from the network only will override the default if they exist. We don't just replace the entire set of defaults with what came from the network, which could potentially be incomplete
         doPost( url: appConfig.ldsEndpointUrls[NetworkConstants.signInURLKey]!, params: loginCredentialParams ) {
             (data, response, error) -> Void in
@@ -115,7 +124,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
             // todo - we're getting different results based on hitting signin-int vs. signin-uat (error comes back in error in once env., or in the response in another) need to test in prod to see real results
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode != ErrorConstants.notAuthorized else {
-                let errorMsg = "Invalid login credentials for user: " + username
+                let errorMsg = "Invalid login credentials for user: " + forUser
                 print( errorMsg )
 
                 completionHandler(NSError( domain: ErrorConstants.domain, code: ErrorConstants.notAuthorized, userInfo: [ "error" : errorMsg ] ) )
@@ -139,7 +148,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
     func ldsSignout( _ completionHandler: @escaping() -> Void ) {
         let url = appConfig.ldsEndpointUrls[NetworkConstants.signOutURLKey]!
         // if we don't have a session, then mission accomplished
-        doGet(url: url ) { data, response, error in
+        doGet(fromUrl: url, withSession: false) { data, response, error in
             // don't really care about the response
             completionHandler(  )
         }
@@ -168,6 +177,8 @@ class LdsRestApi : RestAPI, LdsOrgApi {
             }
             
             guard let responseData = data, let jsonData = responseData.jsonDictionaryValue else {
+                // todo - check response.url for outofservice.lds.org for more specific message
+                
                 let errorMsg = "Error: No network error, but did not recieve data from \(url)"
                 print( errorMsg )
                 completionHandler( nil, NSError( domain: ErrorConstants.domain, code: 404, userInfo: [ "error" : errorMsg ] ) )
