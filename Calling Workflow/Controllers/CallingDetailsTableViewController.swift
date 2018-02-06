@@ -136,8 +136,8 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         switch section {
         case 0:// we don't want a header on the first section
             return 1.0
-        default:// all other sections get a 25 px header
-            return 25
+        default:// all other sections get a 10 px header
+            return 10
         }
     }
     
@@ -153,8 +153,8 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         switch section {
         case 0:// we don't want a header on the first section. iOS wants a height greater than 0
             return UIView(frame: CGRect(x: 0, y: -2.0, width: 0.1, height: 1.0))
-        default:// all other sections get a 25 px header
-            return UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 25.0))
+        default:// all other sections get a 10 px header
+            return UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 10.0))
         }
     }
     
@@ -297,6 +297,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             
         case 2: // third section is the notes
             let cell = tableView.dequeueReusableCell(withIdentifier: "noteCell", for: indexPath) as? NotesTableViewCell
+            
             if (callingToDisplay?.notes != nil || callingToDisplay?.notes != "") {
                 cell?.noteTextView.text = callingToDisplay?.notes
             }
