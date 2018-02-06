@@ -31,11 +31,17 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 44
         
+        //Add the searchBar and the Delete current Person
         setupHeaderForTable()
-        
+
         setupFilterOptions()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        self.searchController.searchBar.resignFirstResponder()
+        self.searchController.dismiss(animated: false, completion: nil)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -55,29 +61,28 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     }
     
     func setupHeaderForTable () {
+        //Set the header for the table to a custom view
+        tableView.tableHeaderView = headerForTable
+        tableView.tableHeaderView?.translatesAutoresizingMaskIntoConstraints = false
         
-        headerForTable.translatesAutoresizingMaskIntoConstraints = false
-        
+        //Height for the header. Defaults to the height of a single item.
+        var height : CGFloat = 44.0
+
+        //check if we need to add the delete bar
         if let _ = currentlySelectedId {
             setupRemoveCurrentMemberView()
+            //update height to accomidate search and delete
+            height = 88.0
         }
         
         setupSearchController()
 
-        
-        tableView.tableHeaderView = headerForTable
-        
-        /*        let views : [String : UIView] = ["tableViewHeader" : tableHeaderView]
-         let hConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tableViewHeader]-|", options: NSLayoutFormatOptions.alignAllCenterY, metrics: nil, views: views)
-         let vConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tableViewHeader(==20)]-|", options: NSLayoutFormatOptions.alignAllCenterX, metrics: nil, views: views)
-         tableView.addConstraints(hConstraint)
-         tableView.addConstraints(vConstraint)
-         */
-        if let headerView = tableView.tableHeaderView {
-            let xConstraint = NSLayoutConstraint(item: headerView, attribute: .leading, relatedBy: .equal, toItem: tableView, attribute: .leading, multiplier: 1, constant: 0)
-            let yConstraint = NSLayoutConstraint(item: headerView, attribute: .top, relatedBy: .equal, toItem: tableView, attribute: .top, multiplier: 1, constant: 0)
-            let wConstraint = NSLayoutConstraint(item: headerView, attribute: .width, relatedBy: .equal, toItem: tableView, attribute: .width, multiplier: 1, constant: 0)
-            let hConstraint = NSLayoutConstraint(item: headerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: CGFloat(44*headerView.subviews.count))
+        //Add constraints to tableView to size header and update
+        if let _ = tableView.tableHeaderView {
+            let xConstraint = NSLayoutConstraint(item: tableView.tableHeaderView!, attribute: .leading, relatedBy: .equal, toItem: tableView, attribute: .leading, multiplier: 1, constant: 0)
+            let yConstraint = NSLayoutConstraint(item: tableView.tableHeaderView!, attribute: .top, relatedBy: .equal, toItem: tableView, attribute: .top, multiplier: 1, constant: 0)
+            let wConstraint = NSLayoutConstraint(item: tableView.tableHeaderView!, attribute: .width, relatedBy: .equal, toItem: tableView, attribute: .width, multiplier: 1, constant: 0)
+            let hConstraint = NSLayoutConstraint(item: tableView.tableHeaderView!, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: height)
             
             tableView.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
             tableView.needsUpdateConstraints()
@@ -86,42 +91,53 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     }
     
     func setupSearchController () {
+        //set new view to contain searchbar
+        let searchView = UIView()
+        searchView.translatesAutoresizingMaskIntoConstraints = false
+        
+        //set the delegates, options, and responders for searchController
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchController.hidesNavigationBarDuringPresentation = false
         searchController.delegate = self
-        searchController.definesPresentationContext = true
+        searchController.hidesNavigationBarDuringPresentation = false
         
-        headerForTable.addSubview(searchController.searchBar)
+        //add the searchBar to the container View
+        searchView.addSubview(searchController.searchBar)
+
+        //Add view to the headerView
+        headerForTable.addSubview(searchView)
         
-        
-        let xConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .left, relatedBy: .equal, toItem: headerForTable, attribute: .left, multiplier: 1, constant: 0)
-        let yConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .bottom, relatedBy: .equal, toItem: headerForTable, attribute: .bottom, multiplier: 1, constant: 0)
-        let wConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .width, relatedBy: .equal, toItem: headerForTable, attribute: .width, multiplier: 1, constant: 0)
-        let hConstraint = NSLayoutConstraint(item: searchController.searchBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
+        //Add Constraints to layout searchBar in Header
+        let xConstraint = NSLayoutConstraint(item: searchView, attribute: .left, relatedBy: .equal, toItem: headerForTable, attribute: .left, multiplier: 1, constant: 0)
+        let yConstraint = NSLayoutConstraint(item: searchView, attribute: .bottom, relatedBy: .equal, toItem: headerForTable, attribute: .bottom, multiplier: 1, constant: 0)
+        let wConstraint = NSLayoutConstraint(item: searchView, attribute: .width, relatedBy: .equal, toItem: headerForTable, attribute: .width, multiplier: 1, constant: 0)
+        let hConstraint = NSLayoutConstraint(item: searchView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
         
         headerForTable.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
+ 
     }
     
     func setupRemoveCurrentMemberView () {
-        let memberView = UIView()
-        memberView.translatesAutoresizingMaskIntoConstraints = false
+        //add container for the delete view
+        let removeMemberView = UIView()
+        removeMemberView.translatesAutoresizingMaskIntoConstraints = false
 
+        //add button to view for delete
         let removeButton = UIButton(type: .system)
         removeButton.setImage(UIImage.init(named: "DeleteIcon") , for: .normal)
         removeButton.addTarget(self, action: #selector(removeButtonPressed), for: .touchUpInside)
         removeButton.translatesAutoresizingMaskIntoConstraints = false
         
-        memberView.addSubview(removeButton)
+        removeMemberView.addSubview(removeButton)
         
-        let buttonXConstraint = NSLayoutConstraint(item: removeButton, attribute: .leading, relatedBy: .equal, toItem: memberView, attribute: .leading, multiplier: 1, constant: 0)
-        let buttonYConstraint = NSLayoutConstraint(item: removeButton, attribute: .top, relatedBy: .equal, toItem: memberView, attribute: .top, multiplier: 1, constant: 0)
-        let buttonHConstraint = NSLayoutConstraint(item: removeButton, attribute: .height, relatedBy: .equal, toItem: memberView, attribute: .height, multiplier: 1, constant: 0)
+        let buttonXConstraint = NSLayoutConstraint(item: removeButton, attribute: .leading, relatedBy: .equal, toItem: removeMemberView, attribute: .leading, multiplier: 1, constant: 0)
+        let buttonYConstraint = NSLayoutConstraint(item: removeButton, attribute: .top, relatedBy: .equal, toItem: removeMemberView, attribute: .top, multiplier: 1, constant: 0)
+        let buttonHConstraint = NSLayoutConstraint(item: removeButton, attribute: .height, relatedBy: .equal, toItem: removeMemberView, attribute: .height, multiplier: 1, constant: 0)
         let buttonWConstraint = NSLayoutConstraint(item: removeButton, attribute: .width, relatedBy: .equal, toItem: removeButton, attribute: .height, multiplier: 1, constant: 0)
         
-        memberView.addConstraints([buttonXConstraint, buttonYConstraint, buttonHConstraint, buttonWConstraint])
+        removeMemberView.addConstraints([buttonXConstraint, buttonYConstraint, buttonHConstraint, buttonWConstraint])
         
+        //add name label to the deleteView
         let nameLabel = UILabel()
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let selectedId = currentlySelectedId{
@@ -130,22 +146,22 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
             }
         }
         
-        memberView.addSubview(nameLabel)
+        removeMemberView.addSubview(nameLabel)
         
         let nameXConstraint = NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: removeButton, attribute: .trailing, multiplier: 1, constant: 0)
-        let nameYConstraint = NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: memberView, attribute: .top, multiplier: 1, constant: 0)
-        let nameHConstraint = NSLayoutConstraint(item: nameLabel, attribute: .bottom, relatedBy: .equal, toItem: memberView, attribute: .bottom, multiplier: 1, constant: 0)
-        let nameWConstraint = NSLayoutConstraint(item: nameLabel, attribute: .right, relatedBy: .equal, toItem: memberView, attribute: .right, multiplier: 1, constant: -15)
+        let nameYConstraint = NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: removeMemberView, attribute: .top, multiplier: 1, constant: 0)
+        let nameHConstraint = NSLayoutConstraint(item: nameLabel, attribute: .bottom, relatedBy: .equal, toItem: removeMemberView, attribute: .bottom, multiplier: 1, constant: 0)
+        let nameWConstraint = NSLayoutConstraint(item: nameLabel, attribute: .right, relatedBy: .equal, toItem: removeMemberView, attribute: .right, multiplier: 1, constant: -15)
         
-        memberView.addConstraints([nameXConstraint, nameYConstraint, nameHConstraint, nameWConstraint])
+        removeMemberView.addConstraints([nameXConstraint, nameYConstraint, nameHConstraint, nameWConstraint])
         
         
-        headerForTable.addSubview(memberView)
+        headerForTable.addSubview(removeMemberView)
         
-        let xConstraint = NSLayoutConstraint(item: memberView, attribute: .leading, relatedBy: .equal, toItem: headerForTable, attribute: .leading, multiplier: 1, constant: 0)
-        let yConstraint = NSLayoutConstraint(item: memberView, attribute: .top, relatedBy: .equal, toItem: headerForTable, attribute: .top, multiplier: 1, constant: 0)
-        let wConstraint = NSLayoutConstraint(item: memberView, attribute: .trailing, relatedBy: .equal, toItem: headerForTable, attribute: .trailing, multiplier: 1, constant: 0)
-        let hConstraint = NSLayoutConstraint(item: memberView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
+        let xConstraint = NSLayoutConstraint(item: removeMemberView, attribute: .leading, relatedBy: .equal, toItem: headerForTable, attribute: .leading, multiplier: 1, constant: 0)
+        let yConstraint = NSLayoutConstraint(item: removeMemberView, attribute: .top, relatedBy: .equal, toItem: headerForTable, attribute: .top, multiplier: 1, constant: 0)
+        let wConstraint = NSLayoutConstraint(item: removeMemberView, attribute: .trailing, relatedBy: .equal, toItem: headerForTable, attribute: .trailing, multiplier: 1, constant: 0)
+        let hConstraint = NSLayoutConstraint(item: removeMemberView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
         
         headerForTable.addConstraints([xConstraint, yConstraint, wConstraint, hConstraint])
     }
@@ -194,38 +210,24 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     }
     
     // MARK: - Search Controller
-    func didPresentSearchController(_ searchController: UISearchController) {
-        print("search Controller")
-        let searchBar = searchController.searchBar
-        
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        
-//        let xConstraint = NSLayoutConstraint(item: searchBar, attribute: .left, relatedBy: .equal, toItem: self.headerForTable, attribute: .left, multiplier: 1, constant: 0)
-//        
-//        searchController.view.addConstraints([xConstraint])
-    }
     
     func searchBarIsEmpty() -> Bool {
         return searchController.searchBar.text?.isEmpty ?? true
     }
     
     func filterContentForSearchText(searchText: String, scope: String = "All") {
+        //filter if there is text
         if searchText != "" {
             filteredMembers = filteredMembers.filter { member in
                 return (member.member.name?.lowercased().contains(searchText.lowercased()))!
             }
         }
+        //use all members if no text
+        else {
+            filteredMembers = members
+        }
         tableView.reloadData()
     }
-    
-//    func willPresentSearchController(_ searchController: UISearchController) {
-//        self.navigationController?.navigationBar.isTranslucent = true
-//  }
-//
-//    func willDismissSearchController(_ searchController: UISearchController) {
-//        self.navigationController?.navigationBar.isTranslucent = false
-//    }
-    
     
     // MARK: - Button Method
     func memberSelected(selectedMember: MemberCallings?) {

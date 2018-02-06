@@ -41,6 +41,7 @@ class LeftTitleRightLabelTableViewCell: UITableViewCell {
         
         dataLabel.translatesAutoresizingMaskIntoConstraints = false
         dataLabel.textAlignment = .right
+        dataLabel.adjustsFontSizeToFitWidth = true
         self.contentView.addSubview(dataLabel)
         
         warningButton.translatesAutoresizingMaskIntoConstraints = false
