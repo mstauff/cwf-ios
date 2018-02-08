@@ -202,7 +202,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "childCell", for: indexPath) as? CWFAccordionChildTableViewCell
             cell?.callingForCell = (currentDataItem.dataItem as! Calling)
-            
+                        
             cell?.title.text = cell?.callingForCell?.position.shortName
             if let existingId = cell?.callingForCell?.existingIndId {
                 if let existingMember = appDelegate?.callingManager.getMemberWithId(memberId: existingId) {

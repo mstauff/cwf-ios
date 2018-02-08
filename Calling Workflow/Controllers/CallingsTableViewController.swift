@@ -41,6 +41,11 @@ class CallingsTableViewController: CWFBaseTableViewController, FilterTableViewCo
         self.tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "filter"), style: .done, target: self, action: #selector(filterButtonPressed))
 
         loadCallingData()
+        
+        if let filter = self.filterObject {
+            self.setFilterOptions(memberFilterOptions: filter)
+        }
+        
         tableView.reloadData()
     }
 
