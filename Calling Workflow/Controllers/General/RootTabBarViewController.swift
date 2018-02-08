@@ -33,8 +33,6 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Initialize
                 // check the keychain for stored LDS.org credentials
                 self.getLogin()
                 
-                //signIntoLDSAPI()
-                
             }
             
         }
@@ -56,7 +54,6 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Initialize
     // MARK: - Login to ldsapi
     func loadLdsAndAppData( useCache: Bool) {
         
-        // todo - we need a retry button (see VTS 229), but also need a flag to control whether we show the retry, or just blank screen
         startProcessingSpinner( labelText: "Logging In" )
         
         // some tests fail (it's during test/init code, not during the test itself) if this is inside the getAppConfig callback. So get the reference before the call.
@@ -68,19 +65,21 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Initialize
         // todo - need to also hit google drive to get the user so we can use the unit number if needed to disambiguate lds units
         appDelegate?.callingManager.getLdsUser(username: username, password: password, useCachedVersion: useCache) { [weak self] (ldsUser, error) in
             guard error == nil, let validUser = ldsUser else {
-                self?.removeSpinner()
-                
                 print( "Error logging in to lds.org: " + error.debugDescription )
-                var errorMsg = "Error logging in to lds.org. Please try again later"
-                if let err = error as NSError?, err.code == ErrorConstants.notAuthorized {
-                    // it's a bad lds.org credentials issue
-                    errorMsg = "Invalid lds.org user. Please check your username and password"
-                    // showAlert
-                    self?.showAlert(title: "Error", message: errorMsg, includeCancel: false) { _ in
-                        // need to forward to lds.org credentials in settings - presentLdsLogin()
+                DispatchQueue.main.async {
+                    self?.removeProcessingSpinner()
+                    
+                    var errorMsg = "Error logging in to lds.org. Please try again later"
+                    if let err = error as NSError?, err.code == ErrorConstants.notAuthorized {
+                        // it's a bad lds.org credentials issue
+                        errorMsg = "Invalid lds.org user. Please check your username and password"
+                        // showAlert
+                        self?.showAlert(title: "Error", message: errorMsg, includeCancel: false) { _ in
+                            self?.presentLdsOrgLogin()
+                        }
+                    } else {
+                        self?.showAlert(title: "Error", message: errorMsg, includeCancel: false, okCompletionHandler: nil)
                     }
-                } else {
-                    self?.showAlert(title: "Error", message: errorMsg, includeCancel: false, okCompletionHandler: nil)
                 }
                 return
             }
@@ -89,9 +88,10 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Initialize
             if potentialUnitNums.isEmpty {
                 let errorMsg = "Error: You do not currently have any callings that are authorized to use this application"
                 print( errorMsg )
-                self?.removeSpinner()
-                self?.showAlert(title: "Error", message: errorMsg, includeCancel: false, okCompletionHandler: nil)
-                // todo - in this case we flip the flag for showing the retry button. In this case there's no need for a retry
+                DispatchQueue.main.async {
+                    self?.removeProcessingSpinner()
+                    self?.showAlert(title: "Error", message: errorMsg, includeCancel: false, okCompletionHandler: nil)
+                }
             } else if potentialUnitNums.count == 1 {
                 unitNum = potentialUnitNums[0]
             } else {
@@ -116,17 +116,21 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Initialize
                                     // todo - still need to deal with hasOrgsToDelete
                                 }
                             }else {
-                                self?.removeSpinner()
-                                self?.showDriveSignInAlert(title: NSLocalizedString("Invalid Google Account", comment: "invalid google account"), message:NSLocalizedString("You need to go to the Settings page, Sharing/Sync Options & then sign in with the ward google account to proceed", comment: "Notify user that they are going to the settings") )
-                                print( "No creds - forward to settings!")
-                                self?.presentDriveSignInView()
+                                DispatchQueue.main.async {
+                                    self?.removeProcessingSpinner()
+                                    self?.showDriveSignInAlert(title: NSLocalizedString("Invalid Google Account", comment: "invalid google account"), message:NSLocalizedString("You need to go to the Settings page, Sharing/Sync Options & then sign in with the ward google account to proceed", comment: "Notify user that they are going to the settings") )
+                                    print( "No creds - forward to settings!")
+                                    self?.presentDriveSignInView()
+                                }
                             }
                         }
                     } else {
-                        self?.removeSpinner()
-                        print( "Error loading data from LDS.org")
-                        let alertText = loadingError?.localizedDescription ?? "Unknown Error"
-                        self?.showAlert(title: "LDS.org Communication Error", message: alertText, includeCancel: false, okCompletionHandler: nil)
+                        DispatchQueue.main.async {
+                            self?.removeProcessingSpinner()
+                            print( "Error loading data from LDS.org")
+                            let alertText = loadingError?.localizedDescription ?? "Unknown Error"
+                            self?.showAlert(title: "LDS.org Communication Error", message: alertText, includeCancel: false, okCompletionHandler: nil)
+                        }
                     }
                 }
             }
@@ -155,10 +159,12 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Initialize
     
     func presentLdsOrgLogin() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin")
+        let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin") as? LDSCredentialsTableViewController
+        loginVC?.loginDelegate = self
+        loginVC?.reinitDelegate = self
         
         let navController2 = UINavigationController()
-        navController2.addChildViewController(loginVC)
+        navController2.addChildViewController(loginVC!)
         
         self.present(navController2, animated: false, completion: nil)
     }
@@ -171,16 +177,7 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Initialize
             loadLdsAndAppData( useCache: false )
             
         } else {
-            // todo - combine this with presentLdsOrgLogin() - probably use this code as guts - presentLdsOrgLogin() isn't currently being called so it is likely insufficient
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let loginVC = storyboard.instantiateViewController(withIdentifier: "LDSLogin") as? LDSCredentialsTableViewController
-            loginVC?.loginDelegate = self
-            loginVC?.reinitDelegate = self
-            
-            let navController2 = UINavigationController()
-            navController2.addChildViewController(loginVC!)
-            
-            self.present(navController2, animated: false, completion: nil)
+            presentLdsOrgLogin()
         }
     }
     

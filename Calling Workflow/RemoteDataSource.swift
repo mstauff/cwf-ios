@@ -91,8 +91,8 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     }
     
     func signOut() {
-        // todo - something more needs to be done here. Still able to read files from google
         GIDSignIn.sharedInstance().signOut()
+        GIDSignIn.sharedInstance().disconnect()
         self.userName = nil
     }
 

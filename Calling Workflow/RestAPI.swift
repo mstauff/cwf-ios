@@ -50,6 +50,7 @@ class RestAPI {
         var restRequest = URLRequest( url:  url )
         restRequest.addValue(HttpContentType.Json.rawValue, forHTTPHeaderField: NetworkConstants.acceptHeader)
         if httpMethod == .Post {
+            // todo - is this http encoded? If someone includes a & in their password we may have issues
             restRequest.httpMethod = httpMethod.rawValue
             if let body = bodyPayload {
 //                restRequest.httpBody = body.data( using: .utf8 )
@@ -63,8 +64,11 @@ class RestAPI {
         }
         
         print( "Request Type: " + restRequest.httpMethod! )
-        if restRequest.httpBody != nil {
-         print( "payload: " + String(data: restRequest.httpBody!, encoding: .utf8)!)
+        if let postBody = restRequest.httpBody, var postBodyString = String(data: postBody, encoding: .utf8) {
+            // print out the body request, unless it's a username/password
+            if !postBodyString.contains( "password" ) {
+                print( "payload: " + postBodyString)
+            }
         }
         let task = session.dataTask(with: restRequest, completionHandler: completionHandler)
         
@@ -97,6 +101,7 @@ class RestAPI {
     
     /* Helper method to convert a dictionary of key/value pairs to an http param string in the format of key=value&key2=val2 */
     static func toHttpParams( from params: [String:String] ) -> String {
+        // todo - should switch this to some form of .map and then .joined to elimante the manual trimming of &
         var paramString = ""
         for paramKey in params.keys {
             // since we accessing params[x] by looping through the keys it should be safe to ! the result. It's necessary because otherwise swift creates a string of "username=Optional[bob]" vs "username=bob"

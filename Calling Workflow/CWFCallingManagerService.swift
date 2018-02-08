@@ -81,7 +81,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         if let ldsUser = self.user, fromCache {
             completionHandler( ldsUser, nil )
         } else {
-            ldsApi.ldsSignin(username: username, password: password, { (error) -> Void in
+            ldsApi.ldsSignin(forUser: username, withPassword: password, { (error) -> Void in
                 if error != nil {
                     print(error!)
                     completionHandler( nil, error )

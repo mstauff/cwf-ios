@@ -108,8 +108,8 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        if let appInitDelegate = self.reinitDelegate {
-            appInitDelegate.reinitApp(useCache: false)
+        if self.newSignIn {
+            self.reinitDelegate?.reinitApp(useCache: false)
         }
     }
     

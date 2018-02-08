@@ -40,16 +40,16 @@ class CallingManagerServiceTests: XCTestCase {
     }
 
     class MockLdsOrgApi : LdsFileApi {
-        override func ldsSignin(username: String, password: String, _ completionHandler: @escaping (NSError?) -> Void) {
-            if username == "valid" {
-                super.ldsSignin(username: username, password: password, completionHandler)
-            } else if username == "networkError" {
+        override func ldsSignin(forUser: String, withPassword: String, _ completionHandler: @escaping (NSError?) -> Void) {
+            if forUser == "valid" {
+                super.ldsSignin(forUser: forUser, withPassword: withPassword, completionHandler)
+            } else if forUser == "networkError" {
                 let error = NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": "network Error"])
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                     completionHandler(error)
                 }
 
-            } else if username == "badUser" {
+            } else if forUser == "badUser" {
                 let error = NSError(domain: ErrorConstants.domain, code: ErrorConstants.notAuthorized, userInfo: ["error": "Invalid user"])
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                     completionHandler(error)

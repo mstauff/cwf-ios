@@ -190,7 +190,7 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
                 userNameField?.resignFirstResponder()
                 passwordField?.resignFirstResponder()
 
-                logInLDSUser(username: (self.userNameField?.text)!, password: (passwordField?.text)!)
+                prepareAndLogin()
                 tableView.deselectRow(at: indexPath, animated: true)
                 
             case LDSCredentialsVCEnums.CredentialsItemType.SignOutBtn.rawValue:
@@ -217,7 +217,9 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
         }
     }
     
-    func logInLDSUser(username: String, password: String) {
+    func prepareAndLogin() {
+        let username = (self.userNameField?.text)!
+        let password = (self.passwordField?.text)!
         //Show alert on empty strings
         if username == "" || password == "" {
             showAlert(title: "Login Error", message: "Enter username and password to login", includeCancel: false, okCompletionHandler: nil)
@@ -228,57 +230,46 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
             } catch {
                 print("error deleting login data")
             }
-
-            // Check if the id and password are valid
-            ldsIdIsValid(username: username, password: password) { loggedIn, error in
-                DispatchQueue.main.async {
-
-                    self.removeProcessingSpinner()
-                    guard error == nil, loggedIn else {
-                        // todo - check error for network, vs. 403, etc.
-                        self.showAlert(title: "Login Error", message: "Invalid username or password", includeCancel: false, okCompletionHandler: nil)
-                        return
-                    }
-
-                    do {
-                        try Locksmith.saveData(data: ["username": username, "password": password], forUserAccount: "callingWorkFlow")
-                    } catch {
-                        print("error saving username")
-                    }
-                    if let loginDict = Locksmith.loadDataForUserAccount(userAccount: "callingWorkFlow") {
-                        self.loginDelegate?.setLoginDictionary(returnedLoginDictionary: loginDict)
-                    }
-                    // mark that there has been a change in the signed in user so we can reload data when this VC returns
-                    self.newSignIn = true
-                    self.dismiss(animated: true, completion: nil)
-                    self.navigationController?.popViewController(animated: true)
+            // need to logout first. Otherwise getCurrentUser() may return the old user, even if the login failed.
+            if signedIn {
+                self.callingMgr?.logoutLdsUser() {
+                    // Attempt to login
+                    self.handleLogin(username: username, password: password)
                 }
+            } else {
+                // no need to logout first, just login
+                // Attempt to login
+                self.handleLogin(username: username, password: password)
             }
         }
     }
-
-    func logOutLDSUser() {
-        showAlert(title: "Logout", message: "This will remove your lds.org credentials, and all lds.org data from your phone. It will not affect the data for any other users in your unit. Do you want to proceed?", includeCancel: true) { _ in
-
-            self.startStaticFrameProcessingSpinner()
-            do {
-                try Locksmith.deleteDataForUserAccount(userAccount: "callingWorkFlow")
-                self.signedIn = false
-                self.initializeUsernameField(withUser: nil)
-                self.initializePasswordField(withPassword: nil)
-                self.keychainDataDictionary = Locksmith.loadDataForUserAccount(userAccount: "callingWorkFlow") as! Dictionary<String, String>?
-
-                self.tableView.reloadData()
-            }
-            catch {
-                print("error deleting login data")
-            }
-            self.callingMgr?.logoutLdsUser() {
-                DispatchQueue.main.async {
-                    self.removeProcessingSpinner()
+    
+    func handleLogin( username: String, password: String ) {
+        self.ldsIdIsValid(username: username, password: password) { loggedIn, error in
+            DispatchQueue.main.async {
+                
+                self.removeProcessingSpinner()
+                guard error == nil, loggedIn else {
+                    // todo - check error for network, vs. 403, etc.
+                    self.showAlert(title: "Login Error", message: "Invalid username or password", includeCancel: false, okCompletionHandler: nil)
+                    return
                 }
+                
+                do {
+                    try Locksmith.saveData(data: ["username": username, "password": password], forUserAccount: "callingWorkFlow")
+                } catch {
+                    print("error saving username")
+                }
+                if let loginDict = Locksmith.loadDataForUserAccount(userAccount: "callingWorkFlow") {
+                    self.loginDelegate?.setLoginDictionary(returnedLoginDictionary: loginDict)
+                }
+                // mark that there has been a change in the signed in user so we can reload data when this VC returns
+                self.newSignIn = true
+                self.dismiss(animated: true, completion: nil)
+                self.navigationController?.popViewController(animated: true)
             }
         }
+
     }
 
     func ldsIdIsValid(username: String, password: String, completionHandler: @escaping (Bool, Error?) -> Void) {
@@ -289,6 +280,30 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
                     return
                 }
                 completionHandler( true, nil )
+            }
+        }
+    }
+    
+    func logOutLDSUser() {
+        showAlert(title: "Logout", message: "This will remove your lds.org credentials, and all lds.org data from your phone. It will not affect the data for any other users in your unit. Do you want to proceed?", includeCancel: true) { _ in
+            
+            self.startStaticFrameProcessingSpinner()
+            do {
+                try Locksmith.deleteDataForUserAccount(userAccount: "callingWorkFlow")
+                self.signedIn = false
+                self.initializeUsernameField(withUser: nil)
+                self.initializePasswordField(withPassword: nil)
+                self.keychainDataDictionary = Locksmith.loadDataForUserAccount(userAccount: "callingWorkFlow") as! Dictionary<String, String>?
+                
+                self.tableView.reloadData()
+            }
+            catch {
+                print("error deleting login data")
+            }
+            self.callingMgr?.logoutLdsUser() {
+                DispatchQueue.main.async {
+                    self.removeProcessingSpinner()
+                }
             }
         }
     }
