@@ -66,14 +66,21 @@ class LdsRestApi : RestAPI, LdsOrgApi {
                 if let httpResponse = response as? HTTPURLResponse, let responseUrl = httpResponse.url?.absoluteString, let contentType = httpResponse.allHeaderFields[NetworkConstants.contentTypeHeader] as? String, contentType.contains(NetworkConstants.contentTypeHtml) {
                     let responseCode = httpResponse.statusCode
                     // the session timeout will return a 200 OK, and the URL contains the sso/UI/Login
-                    if RestAPI.isSuccessResponse( responseCode ) && responseUrl.contains("sso/UI/Login") {
-                        // it was a session timeout, so login again and try again
-                        self.ldsSignin(forUser: self.userName!, withPassword: self.password!) { error in
-                            guard error == nil else {
-                                completionHandler( nil, nil, error )
-                                return
+                    if RestAPI.isSuccessResponse( responseCode ) {
+                        if responseUrl.contains("sso/UI/Login") {
+                            // it was a session timeout, so login again and try again
+                            self.ldsSignin(forUser: self.userName!, withPassword: self.password!) { error in
+                                guard error == nil else {
+                                    completionHandler( nil, nil, error )
+                                    return
+                                }
+                                super.doPost(url: url, bodyPayload : bodyPayload, completionHandler: completionHandler)
                             }
-                            super.doPost(url: url, bodyPayload : bodyPayload, completionHandler: completionHandler)
+                        } else if responseUrl.contains("outofservice.lds.org") {
+                            // this is a case where lds.org returns a 200 OK, but it's just an out of service page
+                            let errorMsg = "Error: lds.org is OOS"
+                            print( errorMsg )
+                            completionHandler(nil, response, NSError( domain: ErrorConstants.domain, code: ErrorConstants.serviceError, userInfo: [ "error" : errorMsg ] ) )
                         }
                     } else {
                         // it was some other type of error, not just a timed out session, so just pass the error along
@@ -177,8 +184,6 @@ class LdsRestApi : RestAPI, LdsOrgApi {
             }
             
             guard let responseData = data, let jsonData = responseData.jsonDictionaryValue else {
-                // todo - check response.url for outofservice.lds.org for more specific message
-                
                 let errorMsg = "Error: No network error, but did not recieve data from \(url)"
                 print( errorMsg )
                 completionHandler( nil, NSError( domain: ErrorConstants.domain, code: 404, userInfo: [ "error" : errorMsg ] ) )
