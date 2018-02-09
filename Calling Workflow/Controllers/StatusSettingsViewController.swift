@@ -33,13 +33,35 @@ class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataS
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             unsavedStatusToExclude = appDelegate.callingManager.statusToExcludeForUnit
         }
+        loadStatuses()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+    /** Reload statuses from google drive, and update the UI once they're loaded*/
+    func loadStatuses() {
+        
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let unitNum = appDelegate.callingManager.ldsOrgUnit?.unitNum {
+            startProcessingSpinner( labelText: "Loading" )
+            // disable the save button while we're loading
+            self.navigationItem.rightBarButtonItem?.isEnabled = false
+            appDelegate.callingManager.loadUnitSettings(forUnitNum: unitNum) { [weak self] settings, error in
+                DispatchQueue.main.async {
+                    self?.navigationItem.rightBarButtonItem?.isEnabled = true
+                    self?.removeProcessingSpinner()
+                    
+                    // if there's no error and we got back some statuses from the server then we update the in memory copy and redraw the UI
+                    if error == nil,  let updatedStatuses = settings?.disabledStatuses {
+                        appDelegate.callingManager.statusToExcludeForUnit = updatedStatuses
+                        self?.unsavedStatusToExclude = updatedStatuses
+                        self?.collectionView.reloadData()
+                    }
+                }
+            }
+        }
+    }
     //MARK: - Setup
     
     func setupHeaderView() {
@@ -70,6 +92,10 @@ class StatusSettingsViewController: CWFBaseViewController, UICollectionViewDataS
     }
     
     func setupCollectionView() {
+//        if view.subviews.contains(item: collectionView) {
+//            collectionView.reloadData()
+//            collectionView.removeFromSuperview()
+//        }
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = self.view.backgroundColor
         collectionView.delegate = self
