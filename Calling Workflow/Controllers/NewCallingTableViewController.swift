@@ -41,10 +41,27 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         }
         
         // Set newCalling. If there is only one potential calling use that as the new calling
-        if let newPositions = parentOrg?.potentialNewPositions {
+        if var newPositions = parentOrg?.potentialNewPositions {
+            var tmpNewPositions : [Position] = []
+            for position in newPositions {
+                if position.metadata.positionTypeId == -1 {
+                    let positionMD = appDelegate?.callingManager.positionMetadataMap[position.positionTypeId] ?? PositionMetadata()
+                    var tmpPosition = position
+                    tmpPosition.metadata = positionMD
+                    tmpNewPositions.append(tmpPosition)
+                }
+                else {
+                    tmpNewPositions.append(position)
+                }
+            }
+            
+            newPositions = tmpNewPositions
+            
             switch newPositions.count {
             //if only one calling
             case 1:
+//                let positionMD = appDelegate?.callingManager.positionMetadataMap[newPositions[0].positionTypeId]
+//                let tmpPosition = 
                 newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: newStatusArray.first, position: newPositions[0], notes: nil, parentOrg: parentOrg, cwfOnly: true)
             default:
                 newCalling = Calling(id: nil, cwfId: nil, existingIndId: nil, existingStatus: nil, activeDate: nil, proposedIndId: nil, status: newStatusArray.first, position: newPostiton, notes: nil, parentOrg: parentOrg, cwfOnly: true)
@@ -279,8 +296,14 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     
     func saveNewCalling() {
        
-        if let tmpCalling = self.newCalling  {
-                appDelegate?.callingManager.addCalling(calling: tmpCalling) {_,_ in }
+        if var tmpCalling = self.newCalling  {
+            if tmpCalling.position.metadata.positionTypeId == -1 {
+                // if the metadata is not present we need to get it from the appDelegate
+                var updatedPosition = tmpCalling.position
+                updatedPosition.metadata = appDelegate?.callingManager.positionMetadataMap[tmpCalling.position.positionTypeId] ?? PositionMetadata()
+                tmpCalling = Calling( tmpCalling, position: updatedPosition )
+            }
+            appDelegate?.callingManager.addCalling(calling: tmpCalling) {_,_ in }
             self.delegate?.setNewCalling(calling: tmpCalling)
             
         }

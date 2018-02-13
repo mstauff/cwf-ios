@@ -222,9 +222,9 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
                 return (member.member.name?.lowercased().contains(searchText.lowercased()))!
             }
         }
-        //use all members if no text
+        //reset to filtered list if no text
         else {
-            filteredMembers = members
+            setupFilterOptions()
         }
         tableView.reloadData()
     }

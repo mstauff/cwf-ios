@@ -41,8 +41,23 @@ class CallingPickerViewController: CWFBaseTableViewController {
     //MARK: - Setup
     
     func setupCallings() {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        
         if let orgCallings = org?.potentialNewPositions {
-            callingsToDisplay = orgCallings
+            var tmpNewPositions : [Position] = []
+            for position in orgCallings {
+                if position.metadata.positionTypeId == -1 {
+                    let positionMD = appDelegate?.callingManager.positionMetadataMap[position.positionTypeId] ?? PositionMetadata()
+                    var tmpPosition = position
+                    tmpPosition.metadata = positionMD
+                    tmpNewPositions.append(tmpPosition)
+                }
+                else {
+                    tmpNewPositions.append(position)
+                }
+            }
+
+            callingsToDisplay = tmpNewPositions
         }
     }
     
@@ -64,7 +79,7 @@ class CallingPickerViewController: CWFBaseTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if callingsToDisplay.count > 0 {
-            cell.textLabel?.text = callingsToDisplay[indexPath.row].metadata.shortName
+            cell.textLabel?.text = callingsToDisplay[indexPath.row].metadata.mediumName
         }
         else {
             cell.textLabel?.text = NSLocalizedString("No available callings to add", comment: "no callings")
