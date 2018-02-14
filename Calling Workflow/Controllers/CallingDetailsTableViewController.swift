@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDelegate, UITableViewDataSource, MemberPickerDelegate, StatusPickerDelegate, UITextViewDelegate, ProcessingSpinner {
+class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDelegate, UITableViewDataSource, MemberPickerDelegate, StatusPickerDelegate, UITextViewDelegate, ProcessingSpinner, AlertBox {
     
     //MARK: - Class Members
     var callingToDisplay : Calling? = nil {
@@ -16,6 +16,8 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             tableView.reloadData()
         }
     }
+    var unitLevelOrg : Org? = nil
+    
     var titleBarString : String? = nil
     var tableView = UITableView(frame: CGRect.zero, style: .grouped)
     var isDirty = false
@@ -51,9 +53,9 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         setupNavBarButtons()
         
         // check permissions to see if we need to display options to edit the calling
-        if let parentOrg = calling.parentOrg, let callingMgr = self.callingMgr, let unitLevelOrg = callingMgr.unitLevelOrg(forSubOrg: parentOrg.id) {
-            
-            let authOrg = AuthorizableOrg(fromSubOrg: parentOrg, inUnitLevelOrg: unitLevelOrg)
+        if let parentOrg = calling.parentOrg, let callingMgr = self.callingMgr, let rootOrg = callingMgr.unitLevelOrg(forSubOrg: parentOrg.id) {
+            unitLevelOrg = rootOrg
+            let authOrg = AuthorizableOrg(fromSubOrg: parentOrg, inUnitLevelOrg: rootOrg)
             if callingMgr.permissionMgr.isAuthorized(unitRoles: callingMgr.userRoles, domain: .PotentialCalling, permission: .Update, targetData: authOrg ) {
                 let saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.plain, target: self, action: #selector(saveAndReturn))
                 navigationItem.setRightBarButton(saveButton, animated: true)
@@ -468,15 +470,13 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     
     func warningButtonPressed() {
         print("Warning Pressed")
-        let warningAlert = UIAlertController(title: NSLocalizedString("Warning", comment: "Warning"), message: NSLocalizedString("You have selected a member that does not meet the requirements for the calling selected. You may not be able to save these changes in LCR", comment: "warning to user about position requirements"), preferredStyle: .alert)
-        
-        let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.default, handler: {
+        let warningTitle = NSLocalizedString("Warning", comment: "Warning")
+        let warningMsg = NSLocalizedString("You have selected a member that does not meet the requirements for the calling selected. You may not be able to save these changes in LCR", comment: "warning to user about position requirements")
+        self.showAlert(title: warningTitle, message: warningMsg, includeCancel: false)
+        {
             (alert: UIAlertAction!) -> Void in
             print("ok")
-        })
-
-        warningAlert.addAction(okAction)
-        present(warningAlert, animated: true, completion: nil)
+        }
     }
     
     func callingActionsButtonPressed() {
@@ -508,32 +508,45 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                     alertMessage.append(NSLocalizedString("will record \(proposedName) as \(callingName) on lds.org. This will make the change offical and public.", comment: "update calling message"))
                 }
                 //Initialize the alert with the message created
-                let updateAlert = UIAlertController(title: NSLocalizedString("Update Calling", comment: "Update Calling"), message: alertMessage, preferredStyle: UIAlertControllerStyle.alert)
+                let updateAlertTitle = NSLocalizedString("Update Calling", comment: "Update Calling")
                 
                 //Init the action that will run when OK is pressed
-                let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
+                self.showAlert(title: updateAlertTitle, message: alertMessage, includeCancel: true) {
                     (alert: UIAlertAction!) -> Void in
                     self.startSpinner()
                     //Call to callingManager to update calling
                     callingMgr.updateLCRCalling(updatedCalling: self.callingToDisplay!) { (calling, error) in
-                        self.callingToDisplay = calling
+                        guard error == nil, let validCalling = calling else {
+                            DispatchQueue.main.async {
+                                var errorAlertMsg = NSLocalizedString("We were unable to update this calling on lds.org. You can try again later, or try to update it directly through lds.org", comment: "Cannot Update")
+                                
+                                if let err = error as NSError?, err.code == ErrorConstants.memberInvalid {
+                                    // we know it was a position requirements issue, now we just need to create a meaningful error message
+                                    // todo - need to factor "error" string out to constants for consistency and type safety
+                                    if let errorMsg = err.userInfo["error"] as? String {
+                                        errorAlertMsg = errorMsg
+                                    } else {
+                                        // try to use the specific details for the alert box, but as a backup just use a generic description
+                                        let callingName = self.callingToDisplay?.position.name ?? "the calling"
+                                        errorAlertMsg = NSLocalizedString("The proposed individual did not meet the requirements for \(callingName). They cannot be recorded on lds.org.", comment: "Error recording calling")
+                                    }
+                                }
+                                self.removeSpinner()
+                                self.showAlert(title: NSLocalizedString("Error", comment: "Error"), message: errorAlertMsg, includeCancel: false, okCompletionHandler: nil )
+                            }
+                            return
+                        }
+                        
+                        self.callingToDisplay = validCalling
                         let err = error?.localizedDescription ?? "nil"
                         print("Release result: \(calling.debugDescription) - error: \(err)")
                         DispatchQueue.main.async {
+                            self.removeSpinner()
                             self.returnToAux(saveFirst: false)
                         }
                     }
-                })
+                }
                 
-                let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
-                    (alert: UIAlertAction!) -> Void in
-                    print("Cancelled")
-                })
-                
-                updateAlert.addAction(okAction)
-                updateAlert.addAction(cancelAction)
-                
-                self.present(updateAlert, animated: true, completion: nil)
             })
 
             actionSheet.addAction(finalizeAction)
@@ -546,9 +559,10 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                 if let existingId = displayedCalling.existingIndId, let currentlyCalled = callingMgr.getMemberWithId(memberId: existingId), let name = currentlyCalled.name, let callingName = displayedCalling.position.name {
                     releaseWarningString = NSLocalizedString("This will release \(name) as \(callingName) on lds.org. This will make the release public (it will appear in lds.org sites, LDS Tools, etc.). Generally this should only be done after the individual has been released in Sacrament Meeting. Do you want to record the release on lds.org?", comment: "Release Warning")
                 }
-                let releaseAlert = UIAlertController(title: NSLocalizedString("Release From Calling", comment: "Release"), message: releaseWarningString, preferredStyle: .alert)
                 
-                let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
+                let releaseAlertTitle = NSLocalizedString("Release From Calling", comment: "Release")
+                
+                self.showAlert(title: releaseAlertTitle, message: releaseWarningString, includeCancel: true) {
                     (alert: UIAlertAction!) -> Void in
                     //call to calling manager to release individual
                     self.startSpinner()
@@ -559,23 +573,14 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                         let err = error?.localizedDescription ?? "nil"
                         print("Release result: \(success) - error: \(err)")
                         DispatchQueue.main.async {
+                            self.removeSpinner()
                             self.returnToAux(saveFirst: false)
                         }
                     }
-                })
-                
-                let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel"), style: UIAlertActionStyle.cancel, handler: {
-                    (alert: UIAlertAction!) -> Void in
-                    print("Cancelled")
-                })
-                
-                releaseAlert.addAction(okAction)
-                releaseAlert.addAction(cancelAction)
-                self.present(releaseAlert, animated: true, completion: nil)
+                }
             })
 
             actionSheet.addAction(releaseAction)
-
         }
         
         //init delete option for the action sheet
@@ -661,6 +666,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             save()
         }
         isDirty = false
+        // todo - debug this. In case where calling is added new and then saved w/o exiting org ?????
         delegate?.setReturnedCalling(calling: self.callingToDisplay!)
         let _ = self.navigationController?.popViewController(animated: true)
         

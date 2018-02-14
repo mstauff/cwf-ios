@@ -14,6 +14,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     
     private let orgFileNamesMap : [UnitLevelOrgType:String] = [ .Bishopric : "BISHOPRIC", .BranchPresidency : "BRANCH_PRES", .HighPriests : "HP", .Elders : "EQ", .ReliefSociety : "RS", .YoungMen : "YM", .YoungWomen : "YW", .SundaySchool : "SS", .Primary : "PRIMARY", .WardMissionaries : "WARD_MISSIONARY", .Other : "OTHER"]
     private let orgNameDelimiter = "-"
+    private let unitUserNameDelimiter = "."
     private let configFilePrefix = "settings-"
     
     // This is all the permissions (scopes) that the app needs
@@ -51,8 +52,8 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
 
     var unitNum : Int64? {
         get {
-            // this requires the username has the unit number as the last component. Something like "ldscd-cwf-557552@gmail.com"
-            if let userNameDigits = userName?.components(separatedBy: orgNameDelimiter).last {
+            // this requires the username has the unit number as the last component. Something like "ldscd.cwf.557552@gmail.com"
+            if let userNameDigits = userName?.components(separatedBy: unitUserNameDelimiter).last {
                 return Int64(userNameDigits)
             } else {
                 return nil

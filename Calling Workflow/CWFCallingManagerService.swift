@@ -706,7 +706,6 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         }
         
         self.ldsOrgApi.updateCalling(unitNum: unitNum, calling: updatedCalling) { callingFromLcr, error in
-            // this can return errors based on the individual (if they don't meet requirements) - check for it here. May need to handle it deeper down - there's explanation in the JSON, can we make sense of that here?
             guard error == nil, let validCallingFromLcr = callingFromLcr else {
                 completionHandler( callingFromLcr, error )
                 return
