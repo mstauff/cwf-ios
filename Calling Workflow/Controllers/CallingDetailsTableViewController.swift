@@ -675,8 +675,27 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     // todo - we either need to pass in a completion handler, or define one for the controller that can handle the result of the save operation (mostly for error handling)
     func save() {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            if (self.callingToDisplay != nil) {
-                appDelegate.callingManager.updateCalling(updatedCalling: self.callingToDisplay!) {_,_ in }
+            if let validCalling = self.callingToDisplay {
+                // we only need the name for reporting in cases where the update fails. Default to generic "that calling" if we can't get a name
+                let callingName = validCalling.position.name ?? "that calling"
+                appDelegate.callingManager.updateCalling(updatedCalling: self.callingToDisplay!) {success, error in
+                    // if there was an error then we need to inform the user
+                    if error != nil || !success {
+                        let updateErrorAlert = UIAlertController(title: NSLocalizedString("Error", comment: "Error"), message: NSLocalizedString("Unable to record changes to \(callingName). Please try again later.", comment: "Error saving changes"), preferredStyle: .alert)
+                        let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.cancel, handler: nil)
+
+                        //Add the buttons to the alert and display to the user.
+                        updateErrorAlert.addAction(okAction)
+
+                        showAlertFromBackground(alert: updateErrorAlert, completion: nil)
+
+                        // we have previously updated the calling VC with the change so it can be updated in the UI while the async update is happening. In this case, now that the update has failed we need to update it again with the calling as it was before the change was made
+                        if self.originalCalling != nil {
+                            self.delegate?.setReturnedCalling(calling: self.originalCalling!)
+                        }
+                        
+                    }
+                }
             }
         }
 
