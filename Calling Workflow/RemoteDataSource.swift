@@ -52,8 +52,9 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
 
     var unitNum : Int64? {
         get {
+            // todo - make this a better regex that just pulls out the unit number
             // this requires the username has the unit number as the last component. Something like "ldscd.cwf.557552@gmail.com"
-            if let userNameDigits = userName?.components(separatedBy: unitUserNameDelimiter).last {
+            if let userNameDigits = userName?.components(separatedBy: "@").first?.components(separatedBy: unitUserNameDelimiter).last {
                 return Int64(userNameDigits)
             } else {
                 return nil
