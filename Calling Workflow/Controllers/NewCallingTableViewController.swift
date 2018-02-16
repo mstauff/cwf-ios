@@ -303,7 +303,24 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
                 updatedPosition.metadata = appDelegate?.callingManager.positionMetadataMap[tmpCalling.position.positionTypeId] ?? PositionMetadata()
                 tmpCalling = Calling( tmpCalling, position: updatedPosition )
             }
-            appDelegate?.callingManager.addCalling(calling: tmpCalling) {_,_ in }
+            // we only need the name for reporting in cases where the update fails. Default to generic "that calling" if we can't get a name
+            let callingName = tmpCalling.position.name ?? "that calling"
+            appDelegate?.callingManager.addCalling(calling: tmpCalling)  {success, error in
+                // if there was an error then we need to inform the user
+                if error != nil || !success {
+                    let updateErrorAlert = UIAlertController(title: NSLocalizedString("Error", comment: "Error"), message: NSLocalizedString("Unable to add \(callingName). Please try again later.", comment: "Error saving changes"), preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.cancel, handler: nil)
+                    
+                    //Add the buttons to the alert and display to the user.
+                    updateErrorAlert.addAction(okAction)
+                    
+                    showAlertFromBackground(alert: updateErrorAlert, completion: nil)
+                    
+                    // we have previously updated the calling VC with the change so it can be updated in the UI while the async update is happening. In this case, now that the update has failed we need to remove it
+                    self.delegate?.setDeletedCalling(calling: tmpCalling)
+                }
+            }
+            
             self.delegate?.setNewCalling(calling: tmpCalling)
             
         }
