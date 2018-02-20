@@ -347,10 +347,18 @@ class LdsRestApi : RestAPI, LdsOrgApi {
 
                     completionHandler(updatedCalling, nil)
                 } else {
-                    // ok to ! data becuase we guard against it being nil above
-                    let errorMsg = "Error: No 200 OK received on calling update. Response=\(httpResponse.debugDescription) Data=\(data.debugDescription). Request payload=\(payloadJsonObj.debugDescription)"
+                    var errorMsg = "Error: No 200 OK received on calling update. Response=\(httpResponse.debugDescription) Data=\(data.debugDescription). Request payload=\(payloadJsonObj.debugDescription)"
+                    var errorCode = ErrorConstants.serviceError
+
+                    // if the user can't be recorded on LCR they return an "errors" field in the JSON like:
+                    // "errors":{"memberId":["John Doe is not qualified to fill this calling."]}
+                    // so look for the presence of a errors object with a memberId field and use the first element as the error message
+                    if let error = responseJson["errors"] as? JSONObject, let memberErrorArray = error["memberId"] as? [String], let memberIdErrorMsg = memberErrorArray[safe: 0]  {
+                            errorCode = ErrorConstants.memberInvalid
+                            errorMsg = memberIdErrorMsg
+                    }
                     print( errorMsg )
-                    completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.serviceError, userInfo: [ "error" : errorMsg ] ) )
+                    completionHandler( nil, NSError( domain: ErrorConstants.domain, code: errorCode, userInfo: [ "error" : errorMsg ] ) )
                 }
             }
         } else {

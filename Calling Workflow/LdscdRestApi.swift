@@ -19,7 +19,7 @@ class LdscdRestApi : RestAPI {
             completionHandler( self.appConfig, nil )
         } else {
             
-            doGet(url: NetworkConstants.configUrl, completionHandler: { (data, response, error) -> Void in
+            doGet(url: AppConfig.configUrl, completionHandler: { (data, response, error) -> Void in
                 
                 print( "Response: \(response.debugDescription) Data: " + data.debugDescription + " Error: " + error.debugDescription )
                 
@@ -41,7 +41,7 @@ class LdscdRestApi : RestAPI {
                 }
                 
                 guard let responseData = data else {
-                    let errorMsg = "Error: No network error, but did not recieve data from \(NetworkConstants.configUrl)"
+                    let errorMsg = "Error: No network error, but did not recieve data from \(AppConfig.configUrl)"
                     print( errorMsg )
                     completionHandler( nil, NSError( domain: ErrorConstants.domain, code: 404, userInfo: [ "error" : errorMsg ] ) )
                     return

@@ -1,0 +1,11 @@
+//
+//  Test.xcconfig
+//  Calling Workflow
+//
+//  Created by Matt Stauffer on 2/20/18.
+//  Copyright © 2018 colsen. All rights reserved.
+//
+// Run against test.lds.org data
+APPCONFIG_URL = http:\/\/dev-config-server-ldscd.7e14.starter-us-west-2.openshiftapps.com/cwf/config?env=test&signIn=signin-int
+USE_LDS_ORG_DATA = true
+AUTHORIZE_REMOTE_DATA_WITH_LDS_ACCT = false

@@ -1,0 +1,11 @@
+//
+//  Release.xcconfig
+//  Calling Workflow
+//
+//  Created by Matt Stauffer on 2/19/18.
+//  Copyright © 2018 colsen. All rights reserved.
+//
+// Run with prod lds.org data
+APPCONFIG_URL = http:\/\/dev-config-server-ldscd.7e14.starter-us-west-2.openshiftapps.com/cwf/config
+USE_LDS_ORG_DATA = true
+AUTHORIZE_REMOTE_DATA_WITH_LDS_ACCT = true

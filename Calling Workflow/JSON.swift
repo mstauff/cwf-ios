@@ -60,7 +60,13 @@ public class JSONSerializerImpl : JSONSerializer  {
             } else if jsonVal is JSONObject {
                 jsonDictionary[jsonKey] = prepare( jsonObject: (jsonVal as? JSONObject)! )
             } else {
-                debugPrint("JSONSerializerImpl.prepare - unable to handle value for " + jsonKey + " with value of " + jsonVal.description)
+                if jsonVal is NSNull {
+                    //  ignore - no need to add
+                    //the JSONObject stores nil fields as NSNull - those are valid, we just don't need to include them in the JSON
+                } else {
+                    // it's some value we didn't handle - log so we can track down the issue
+                    debugPrint("JSONSerializerImpl.prepare - unable to handle value for " + jsonKey + " with value of " + jsonVal.description)
+                }
             }
         }
         return NSDictionary(dictionary: jsonDictionary)
