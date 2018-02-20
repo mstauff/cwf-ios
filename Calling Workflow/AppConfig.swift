@@ -15,12 +15,20 @@ struct AppConfig {
 }
 
 extension AppConfig {
-
+    // These values are defined in Debug.xcconfig, Test.xcconfig and Release.xcconfig files. We provide a default prod value in case there are errors loading any of the vars
+    
     // whether we want to ensure that the google drive account is associated with the lds unit. Should be true for prod, false for dev
-    static let validateRemoteDataAgainstLdsAccount = false
+    static let authRemoteDataWithLdsAcct = (configValue(forKey: "Authorize Remote Data with LDS account") ?? "true").boolValue
 
     // whether we want to hit actual lds.org endpoints, or just use local sample json data. Should be true for dev, false for prod
-    static let useLocalLdsOrgData = true
+    static let useLdsOrgData =  (configValue(forKey: "Use LDS org data") ?? "true").boolValue
+    
+    static let configUrl = configValue(forKey: "AppConfig URL") ?? "http://dev-config-server-ldscd.7e14.starter-us-west-2.openshiftapps.com/cwf/config"
+    
+    static private func configValue(forKey key: String) -> String? {
+        return (Bundle.main.infoDictionary?[key] as? String)?
+            .replacingOccurrences(of: "\\", with: "")
+    }
 }
 
 extension AppConfig : JSONParsable {

@@ -113,7 +113,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         driveService.authorizer = user.authentication.fetcherAuthorizer()
         self.userName = user.profile.email
 
-        if AppConfig.validateRemoteDataAgainstLdsAccount {
+        if AppConfig.authRemoteDataWithLdsAcct {
             // ensures that the unit num we're using to hit lds.org is the same as our credentialled user
             if self.unitNum == self.loggingInForUnitNum {
                 self.authCompletionHandler?(true, nil)
