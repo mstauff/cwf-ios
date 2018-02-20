@@ -133,9 +133,9 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
-        case 0:
+        case 0:// calling picker section
             switch indexPath.row {
-            case 0:
+            case 0://calling picker row
                 let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
                 let nextVC = storyboard.instantiateViewController(withIdentifier: "CallingPickerViewController") as? CallingPickerViewController
                 if let org = parentOrg {
@@ -147,9 +147,9 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
             default:
                 tableView.deselectRow(at: indexPath, animated: true)
             }
-        case 1:
+        case 1:// member/status picker section
             switch indexPath.row {
-            case 0:
+            case 0: // member picker row
                 let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
                 let nextVC = storyboard.instantiateViewController(withIdentifier: "MemberPickerTableViewController") as? MemberPickerTableViewController
                 nextVC?.delegate = self
@@ -165,13 +165,14 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
                 }
                 navigationController?.pushViewController(nextVC!, animated: true)
             
-            case 1:
+            case 1:// status picker row
                 let actionSheet = getStatusActionSheet(delegate: self)
                 self.present(actionSheet, animated: true, completion: nil)
 
             default:
                 tableView.deselectRow(at: indexPath, animated: true)
             }
+            
         default:
             tableView.deselectRow(at: indexPath, animated: true)
 
@@ -253,8 +254,11 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         switch indexPath.row {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "NoteTableViewCell", for: indexPath) as? NotesTableViewCell
-            if (newCalling?.notes != nil || newCalling?.notes != "") {
+            if (newCalling?.notes != nil && newCalling?.notes != "") {
                 cell?.noteTextView.text = newCalling?.notes
+            }
+            else {
+                cell?.noteTextView.text = NSLocalizedString("Notes", comment: "notes text label")
             }
             cell?.noteTextView.delegate = self
             debouncedNotesChange = Debouncer(delay: textViewDebounceTime) { [weak self] in
@@ -325,11 +329,16 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
     func textViewDidChange(_ textView: UITextView) {
         debouncedNotesChange?.call()
     }
-    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.text == NSLocalizedString("Notes", comment: "notes text label") {
+            textView.text = ""
+        }
+    }
     func updateNotes(_ textView : UITextView?) {
         if let validTextView = textView {
             self.newCalling?.notes = validTextView.text
         }
     }
+    
 
 }

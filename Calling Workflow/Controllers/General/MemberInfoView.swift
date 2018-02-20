@@ -33,20 +33,17 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
     
     
     func setupView() {
-        if (isDown) {
-            setupInfoView()
-
-            setupHeaderView()
-            
-        
-        }
-        else {
-            setupInfoView()
-            setupHeaderView()
-        }
+        setupHeaderView()
+        setupInfoView()
     }
     
     func setupHeaderView() {
+        for subview in headerView.subviews {
+            subview.removeFromSuperview()
+        }
+        headerView.removeConstraints(headerView.constraints)
+        headerView.removeFromSuperview()
+        
         headerView.translatesAutoresizingMaskIntoConstraints = false
         headerView.backgroundColor = UIColor.CWFNavBarTintColor
         
@@ -60,8 +57,9 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         headerView.addSubview(nameLabel)
         
         if isDown == false {
+            let height = 44 + UIApplication.shared.statusBarFrame.height
             let headerWidthConstraint = NSLayoutConstraint(item: headerView, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
-            let headerHeightConstraint = NSLayoutConstraint(item: headerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
+            let headerHeightConstraint = NSLayoutConstraint(item: headerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: height)
             let headerHorizontalConstraint = NSLayoutConstraint(item: headerView, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
             let headerVirticalConstraint = NSLayoutConstraint(item: headerView, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .topMargin, multiplier: 1, constant: 0)
             
@@ -72,25 +70,32 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
             let headerWidthConstraint = NSLayoutConstraint(item: headerView, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
             let headerHeightConstraint = NSLayoutConstraint(item: headerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 44)
             let headerHorizontalConstraint = NSLayoutConstraint(item: headerView, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
-            let headerVirticalConstraint = NSLayoutConstraint(item: headerView, attribute: .bottom, relatedBy: .equal, toItem: infoView, attribute: .top, multiplier: 1, constant: 0)
+            let headerVirticalConstraint = NSLayoutConstraint(item: headerView, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .centerY, multiplier: 1, constant: 0)
             
             self.view.addConstraints([headerWidthConstraint, headerHeightConstraint, headerHorizontalConstraint, headerVirticalConstraint])
         }
         
         let hConstraint = NSLayoutConstraint(item: nameLabel, attribute: .centerX, relatedBy: .equal, toItem: headerView, attribute: .centerX, multiplier: 1, constant: 0)
-        let vConstraint = NSLayoutConstraint(item: nameLabel, attribute: .centerY, relatedBy: .equal, toItem: headerView, attribute: .centerY, multiplier: 1, constant: 0)
+        let vConstraint = NSLayoutConstraint(item: nameLabel, attribute: .bottom, relatedBy: .equal, toItem: headerView, attribute: .bottom, multiplier: 1, constant: -10)
         self.view.addConstraints([hConstraint, vConstraint])
 
     }
     
     func setupInfoView() {
+        infoView.removeFromSuperview()
+        for subview in infoView.subviews {
+            subview.removeFromSuperview()
+        }
+        infoView.removeConstraints(infoView.constraints)
         
         infoView.translatesAutoresizingMaskIntoConstraints = false
         infoView.backgroundColor = UIColor.white
         
         self.view.addSubview(infoView)
         
-        let infoHConstraint = NSLayoutConstraint(item: infoView, attribute: .height, relatedBy: .equal, toItem: self.view, attribute: .height, multiplier: 0.45, constant: 0)
+        var lastViewWasSeperator : Bool = false
+        
+        let infoHConstraint = NSLayoutConstraint(item: infoView, attribute: .top, relatedBy: .equal, toItem: self.headerView, attribute: .bottom, multiplier: 1, constant: 0)
         let infoWConstraint = NSLayoutConstraint(item: infoView, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: 1, constant: 0)
         let infoVConstraint = NSLayoutConstraint(item: infoView, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 0)
         let infoHoConstraint = NSLayoutConstraint(item: infoView, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
@@ -108,15 +113,19 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         }
         callingText.append(NSAttributedString(string: baseProposedString))
         
-        let greenRange = NSRange.init(location: callingText.length - baseProposedString.characters.count, length: baseProposedString.characters.count)
+        let greenRange = NSRange.init(location: callingText.length - baseProposedString.count, length: baseProposedString.count)
         callingText.addAttribute(NSForegroundColorAttributeName, value: UIColor.CWFGreenTextColor, range: greenRange)
         callingBar.setupInfoBarItem(dataText: callingText, leftIcon: nil, rightIcon: nil)
         
         if callingBar.dataLabel.text == "" {
-            callingBar.backgroundColor = UIColor.lightGray
+//            callingBar.backgroundColor = UIColor.lightGray
+            callingBar.dataLabel.text = NSLocalizedString("No Current Callings", comment: "no callings for member")
+            callingBar.dataLabel.textColor = UIColor.gray
         }
 
         infoView.addSubview(callingBar)
+        lastViewWasSeperator = false
+        var lastView : UIView = callingBar
         
         let callingBarConstraintH = NSLayoutConstraint(item: callingBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 54)
         let callingBarConstraintW = NSLayoutConstraint(item: callingBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
@@ -125,22 +134,26 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         
         infoView.addConstraints([callingBarConstraintH, callingBarConstraintW, callingBarConstraintO, callingBarConstraintV])
         
-        let firstBar = UIView()
-        firstBar.translatesAutoresizingMaskIntoConstraints = false
-        firstBar.backgroundColor = UIColor.darkGray
+        if !lastViewWasSeperator {
+            let firstBar = UIView()
+            firstBar.translatesAutoresizingMaskIntoConstraints = false
+            firstBar.backgroundColor = UIColor.darkGray
 
-        infoView.addSubview(firstBar)
+            infoView.addSubview(firstBar)
+            lastViewWasSeperator = true
         
-        let fBarConstraintH = NSLayoutConstraint(item: firstBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 3)
-        let fBarConstraintW = NSLayoutConstraint(item: firstBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
-        let fBarConstraintX = NSLayoutConstraint(item: firstBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
-        let fBarConstraintY = NSLayoutConstraint(item: firstBar, attribute: .top, relatedBy: .equal, toItem: callingBar, attribute: .bottom, multiplier: 1, constant: 0)
-        
-        infoView.addConstraints([fBarConstraintH, fBarConstraintW, fBarConstraintX, fBarConstraintY])
+            let fBarConstraintH = NSLayoutConstraint(item: firstBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 3)
+            let fBarConstraintW = NSLayoutConstraint(item: firstBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
+            let fBarConstraintX = NSLayoutConstraint(item: firstBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
+            let fBarConstraintY = NSLayoutConstraint(item: firstBar, attribute: .top, relatedBy: .equal, toItem: callingBar, attribute: .bottom, multiplier: 1, constant: 0)
+
+            infoView.addConstraints([fBarConstraintH, fBarConstraintW, fBarConstraintX, fBarConstraintY])
+            lastView = firstBar
+
+        }
         
         // Get the phone numbers to display
         
-        var lastView: UIView = firstBar
         var phoneNumberAndTypeArray: [(phone: String, type: String)] = []
        
         if let individualPhone = memberToView?.member.individualPhone {
@@ -163,26 +176,26 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
             let phoneConstraintY = NSLayoutConstraint(item: currentPhoneBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
             
             infoView.addConstraints([phoneConstraintH, phoneConstraintW, phoneConstraintX, phoneConstraintY])
-            
+            lastViewWasSeperator = false
             lastView = currentPhoneBar
         }
         
-        
-        
-        
-        let secondBar = UIView()
-        secondBar.translatesAutoresizingMaskIntoConstraints = false
-        secondBar.backgroundColor = UIColor.darkGray
-        
-        infoView.addSubview(secondBar)
-        
-        let sBarConstraintH = NSLayoutConstraint(item: secondBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 3)
-        let sBarConstraintW = NSLayoutConstraint(item: secondBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
-        let sBarConstraintX = NSLayoutConstraint(item: secondBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
-        let sBarConstraintY = NSLayoutConstraint(item: secondBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
-        
-        infoView.addConstraints([sBarConstraintH, sBarConstraintW, sBarConstraintX, sBarConstraintY])
-        lastView = secondBar
+        if !lastViewWasSeperator {
+            let secondBar = UIView()
+            secondBar.translatesAutoresizingMaskIntoConstraints = false
+            secondBar.backgroundColor = UIColor.darkGray
+            
+            infoView.addSubview(secondBar)
+            
+            let sBarConstraintH = NSLayoutConstraint(item: secondBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 3)
+            let sBarConstraintW = NSLayoutConstraint(item: secondBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
+            let sBarConstraintX = NSLayoutConstraint(item: secondBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
+            let sBarConstraintY = NSLayoutConstraint(item: secondBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
+            
+            infoView.addConstraints([sBarConstraintH, sBarConstraintW, sBarConstraintX, sBarConstraintY])
+            lastView = secondBar
+            lastViewWasSeperator = true
+        }
         
         if let emailString = memberToView?.member.individualEmail {
             let emailBar = MemberInfoBarItemView()
@@ -198,6 +211,7 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
             
             infoView.addConstraints([emailConstraintH, emailConstraintW, emailConstraintX, emailConstraintY])
             lastView = emailBar
+            lastViewWasSeperator = false
         }
         else {
             let emailBar = MemberInfoBarItemView()
@@ -211,20 +225,24 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
             
             infoView.addConstraints([emailConstraintH, emailConstraintW, emailConstraintX, emailConstraintY])
             lastView = emailBar
+            lastViewWasSeperator = false
         }
         
-        let thirdBar = UIView()
-        thirdBar.translatesAutoresizingMaskIntoConstraints = false
-        thirdBar.backgroundColor = UIColor.darkGray
-        
-        infoView.addSubview(thirdBar)
-        let tBarConstraintH = NSLayoutConstraint(item: thirdBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 3)
-        let tBarConstraintW = NSLayoutConstraint(item: thirdBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
-        let tBarConstraintX = NSLayoutConstraint(item: thirdBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
-        let tBarConstraintY = NSLayoutConstraint(item: thirdBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
-        
-        infoView.addConstraints([tBarConstraintH, tBarConstraintW, tBarConstraintX, tBarConstraintY])
-        lastView = thirdBar
+        if !lastViewWasSeperator {
+            let thirdBar = UIView()
+            thirdBar.translatesAutoresizingMaskIntoConstraints = false
+            thirdBar.backgroundColor = UIColor.darkGray
+            
+            infoView.addSubview(thirdBar)
+            let tBarConstraintH = NSLayoutConstraint(item: thirdBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 3)
+            let tBarConstraintW = NSLayoutConstraint(item: thirdBar, attribute: .width, relatedBy: .equal, toItem: infoView, attribute: .width, multiplier: 1, constant: 0)
+            let tBarConstraintX = NSLayoutConstraint(item: thirdBar, attribute: .left, relatedBy: .equal, toItem: infoView, attribute: .left, multiplier: 1, constant: 0)
+            let tBarConstraintY = NSLayoutConstraint(item: thirdBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
+            
+            infoView.addConstraints([tBarConstraintH, tBarConstraintW, tBarConstraintX, tBarConstraintY])
+            lastView = thirdBar
+            lastViewWasSeperator = true
+        }
         
         let addressBar = MemberInfoBarItemView()
         if let addressText = memberToView?.member.getAddressAsString() {
@@ -242,6 +260,8 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         let addressConstraintY = NSLayoutConstraint(item: addressBar, attribute: .top, relatedBy: .equal, toItem: lastView, attribute: .bottom, multiplier: 1, constant: 0)
         
         infoView.addConstraints([addressConstraintH, addressConstraintW, addressConstraintX, addressConstraintY])
+        lastView = addressBar
+        lastViewWasSeperator = false
 
     }
     
