@@ -33,6 +33,21 @@ class LeftTitleRightLabelTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if let origin = self.accessoryView?.frame.origin, let size = self.accessoryView?.frame.size {
+            let newOrigin = CGPoint(x: self.frame.size.width - (size.width + 10), y: origin.y)
+            self.accessoryView?.frame = CGRect(origin: newOrigin, size:size)
+        }
+        if let accesoryViewWidth = self.accessoryView?.frame.size.width {
+            let newSize = CGSize(width: self.frame.size.width - accesoryViewWidth, height: self.contentView.frame.size.height)
+            self.contentView.frame = CGRect(origin: contentView.frame.origin, size: newSize)
+        }
+            
+    }
+    
+    //MARK: - Cell Setup
+    
     func setupCell() {
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
