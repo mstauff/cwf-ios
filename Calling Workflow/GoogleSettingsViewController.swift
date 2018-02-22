@@ -69,10 +69,15 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
             resetDataBtn.isHidden = !self.callingMgr!.permissionMgr.hasPermission(unitRoles: self.callingMgr!.userRoles, domain: Domain.UnitGoogleAccount, permission: .Update )
             // if there's a username in the data source then they must have successfully logged in.
             if let userName = self.callingMgr?.dataSource.userName {
+                var unitName : String
                 // for right now we just display the unit number to confirm that the user is logged in.
-                let unitNum = self.callingMgr?.dataSource.unitNum
                 // if it's not a standard format user number (ldscd-cwf--24341@gmail.com), we can't parse out the unit number, so we just show the whole account name. Maybe eventually we'll pull the ward name from the current user json
-                let unitName = unitNum == nil ? userName : String( describing: unitNum )
+                if let unitNum = self.callingMgr?.dataSource.unitNum {
+                    // We have to be sure and pass an Int, not Int? to this init method. If it's Int? then the String becomes "Optional('47142')", the Optional text becomes part of the string
+                    unitName = String( describing: unitNum )
+                } else {
+                    unitName = userName
+                }
                 setSigninStatus(true, inUnit: unitName)
             } else {
                 setSigninStatus(false, inUnit: nil)
