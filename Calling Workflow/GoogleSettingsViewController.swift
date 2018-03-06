@@ -13,7 +13,8 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
     var addBackButton : Bool = false
     
     @IBOutlet var output: UITextView!
-    var signedIn : Bool = false
+    var signedIn = false
+    var didSignOut = false
     var newSignIn = false
 
     @IBOutlet weak var signedInAsLabel: UILabel!
@@ -35,11 +36,14 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
         if signedIn {
             showAlert(title: "Change Ward Unit", message: "This will sign you out of the google drive account used by your current ward. You should only do this if you have moved out  of a ward.", includeCancel: true ) { _ in
                 self.callingMgr?.dataSource.signOut()
+                // set the signed in status so the UI can be updated
                 self.setSigninStatus(false, inUnit: nil)
+                // mark that there was a signed in user that signed out so we know how to reload data when we leave this view
+                self.didSignOut = true
             }
         } else {
             GIDSignIn.sharedInstance().signIn()
-            // afer signin we return to Orgs, so no need to update UI
+            // afer signin we return to Orgs, so no need to update UI elements in this view
         }
     }
 
@@ -69,10 +73,15 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
             resetDataBtn.isHidden = !self.callingMgr!.permissionMgr.hasPermission(unitRoles: self.callingMgr!.userRoles, domain: Domain.UnitGoogleAccount, permission: .Update )
             // if there's a username in the data source then they must have successfully logged in.
             if let userName = self.callingMgr?.dataSource.userName {
+                var unitName : String
                 // for right now we just display the unit number to confirm that the user is logged in.
-                let unitNum = self.callingMgr?.dataSource.unitNum
                 // if it's not a standard format user number (ldscd-cwf--24341@gmail.com), we can't parse out the unit number, so we just show the whole account name. Maybe eventually we'll pull the ward name from the current user json
-                let unitName = unitNum == nil ? userName : String( describing: unitNum )
+                if let unitNum = self.callingMgr?.dataSource.unitNum {
+                    // We have to be sure and pass an Int, not Int? to this init method. If it's Int? then the String becomes "Optional('47142')", the Optional text becomes part of the string
+                    unitName = String( describing: unitNum )
+                } else {
+                    unitName = userName
+                }
                 setSigninStatus(true, inUnit: unitName)
             } else {
                 setSigninStatus(false, inUnit: nil)
@@ -109,7 +118,8 @@ class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUI
     
     override func viewWillDisappear(_ animated: Bool) {
         if self.newSignIn {
-            self.reinitDelegate?.reinitApp(useCache: false)
+            // if there was a user that changed (signed out, then back in), we don't want to use any cached data. But if they just signed in for the first time (they didn't sign out first because they weren't logged in) then we can use cached data (this basically prevents us from having to reload all the lds.org data for first time users)
+            self.reinitDelegate?.reinitApp(useCache: !self.didSignOut)
         }
     }
     
