@@ -6,6 +6,7 @@
 //  Copyright © 2017 colsen. All rights reserved.
 //
 
+import UIKit
 import Foundation
 protocol ProcessingSpinner {
 }

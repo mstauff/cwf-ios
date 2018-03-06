@@ -34,9 +34,14 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     weak var callingMgr : CWFCallingManagerService? = nil
     var isEditable = false
     
+    var keyboardIsUp : Bool = false
+    var notesTextView : UITextView? = nil
+    
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
         setupTableView()
         
         guard let calling = callingToDisplay else {
@@ -66,7 +71,30 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         
 
     }
+    
+    func keyboardWillShow(_ notification: Notification) {
+        if !keyboardIsUp {
+            if let keyboardFrame : NSValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+                let keyboardHeight = keyboardFrame.cgRectValue.height
 
+                self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.size.width, height: self.view.frame.size.height - keyboardHeight)
+                tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: tableView.contentOffset.y + keyboardHeight), animated: true)
+                keyboardIsUp = true
+            }
+        }
+    }
+    
+    func keyboardWillHide(_ notification: Notification) {
+        if keyboardIsUp {
+            if let keyboardFrame : NSValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+                let keyboardHeight = keyboardFrame.cgRectValue.height
+                self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.size.width, height: (self.view.frame.size.height + keyboardHeight))
+                tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: (tableView.contentOffset.y - keyboardHeight)), animated: true)
+                keyboardIsUp = false
+            }
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -299,9 +327,14 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             
         case 2: // third section is the notes
             let cell = tableView.dequeueReusableCell(withIdentifier: "noteCell", for: indexPath) as? NotesTableViewCell
+            self.notesTextView = cell?.noteTextView
+            cell?.noteTextView.delegate = self
             
-            if (callingToDisplay?.notes != nil || callingToDisplay?.notes != "") {
+            if (callingToDisplay?.notes != nil && callingToDisplay?.notes != "") {
                 cell?.noteTextView.text = callingToDisplay?.notes
+            }
+            else {
+                cell?.noteTextView.text = NSLocalizedString("Notes", comment: "notes text label")
             }
             cell?.noteTextView.delegate = self
             debouncedNotesChange = Debouncer(delay: textViewDebounceTime) { [weak self] in
@@ -331,6 +364,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         switch indexPath.section {
         case 1:
             tableView.deselectRow(at: indexPath, animated: false)
+            self.notesTextView?.resignFirstResponder()
 
             switch indexPath.row {
             case 0:
@@ -340,6 +374,8 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                 }
             
             case 1:
+                self.notesTextView?.resignFirstResponder()
+
                 // Tapped the proposed calling holder. Transition to member contact info
                 if let proposedId = callingToDisplay?.proposedIndId, let memberCallings = appDelegate?.callingManager.getMemberCallings(forMemberId: proposedId){
                     self.displayContactInfoForMember(member: memberCallings)
@@ -395,9 +431,20 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     }
     
     //MARK: - UI Text View Delegate
-    func textViewDidChange(_ textView: UITextView) {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.text == NSLocalizedString("Notes", comment: "notes text label") {
+            textView.text = ""
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
         debouncedNotesChange?.call()
     }
+    
+//    func textViewDidChange(_ textView: UITextView) {
+//        //self.callingToDisplay?.notes = textView.text
+//        debouncedNotesChange?.call()
+//    }
     
     func updateNotes(_ textView : UITextView?) {
         if let validTextView = textView {
@@ -405,7 +452,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             self.callingToDisplay?.notes = validTextView.text
         }
     }
-
+    
     //MARK: - Show Contact Info
     func displayContactInfoForMember(member: MemberCallings) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -650,6 +697,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     }
     
     func saveAndReturn() {
+        self.updateNotes(self.notesTextView)
         returnToAux(saveFirst: true)
     }
     
