@@ -8,8 +8,15 @@
 
 import UIKit
 
-class NotesTableViewCell: UITableViewCell {
+class NotesTableViewCell: UITableViewCell, UITextViewDelegate {
+    let notesLabel = NSLocalizedString("Notes", comment: "notes text label")
     
+    var textContents : String? {
+        get {
+            return noteTextView.text == notesLabel ? nil : noteTextView.text
+        }
+    }
+
     let noteTextView : UITextView = UITextView()
 
     override func awakeFromNib() {
@@ -26,6 +33,7 @@ class NotesTableViewCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.setupCell()
+        self.noteTextView.delegate = self
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -34,7 +42,7 @@ class NotesTableViewCell: UITableViewCell {
     
     func setupCell() {
         noteTextView.translatesAutoresizingMaskIntoConstraints = false
-        noteTextView.text = NSLocalizedString("Notes", comment: "")
+        noteTextView.text = notesLabel
         self.addSubview(noteTextView)
         
         initConstraints()
@@ -48,4 +56,16 @@ class NotesTableViewCell: UITableViewCell {
         self.addConstraints(vConstraint)
     }
 
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if noteTextView.text == notesLabel {
+            noteTextView.text = ""
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if noteTextView.text != nil && noteTextView.text.isEmpty {
+            noteTextView.text = notesLabel
+        }
+    }
+    
 }
