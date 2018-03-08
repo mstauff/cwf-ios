@@ -421,7 +421,11 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             keyboardInfo.isUp = false
             self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.size.width, height: (self.view.frame.size.height + keyboardInfo.height))
             if self.view.frame.height < 400 + keyboardInfo.height{
-                tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: (tableView.contentOffset.y - keyboardInfo.height)), animated: true)
+                var keyboardContentOffset = tableView.contentOffset.y - keyboardInfo.height
+                if keyboardContentOffset < -64.0 {
+                    keyboardContentOffset = -64.0
+                }
+                tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: keyboardContentOffset), animated: true)
             }
             else {
                 tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: 0), animated: true)
