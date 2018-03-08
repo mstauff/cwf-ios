@@ -306,11 +306,11 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
     func textButtonPressed () {
         print("Text Button Pressed")
         if let phoneString = memberToView?.member.phone {
-            if true { //MFMessageComposeViewController.canSendText() {
+            if MFMessageComposeViewController.canSendText() {
                 let messageVC = MFMessageComposeViewController()
                 messageVC.recipients = [phoneString]
                 messageVC.messageComposeDelegate = self
-                navigationController?.pushViewController(messageVC, animated: true)
+                present( messageVC, animated: true, completion: nil)
             }
             else {
                 let alert = UIAlertController(title: NSLocalizedString("Messaging not available", comment: "") , message: NSLocalizedString("Device not ready to send messabes", comment: ""), preferredStyle: .alert)
