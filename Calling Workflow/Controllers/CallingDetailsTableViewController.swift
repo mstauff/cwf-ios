@@ -462,6 +462,9 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             if self.view.frame.height < 400 + keyboardInfo.height{
                 tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: (tableView.contentOffset.y - keyboardInfo.height)), animated: true)
             }
+            else {
+                tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: 0), animated: true)
+            }
         }
     }
     
