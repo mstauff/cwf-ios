@@ -34,12 +34,17 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     weak var callingMgr : CWFCallingManagerService? = nil
     var isEditable = false
     
-    var keyboardIsUp : Bool = false
+    struct keyboardInfoStruct {
+        var isUp : Bool = false
+        var height : CGFloat = 0.0
+    }
+    var keyboardInfo = keyboardInfoStruct.init(isUp: false, height: 0)
     var notesTextView : UITextView? = nil
-    
+
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
         setupTableView()
@@ -70,29 +75,6 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         }
         
 
-    }
-    
-    func keyboardWillShow(_ notification: Notification) {
-        if !keyboardIsUp {
-            if let keyboardFrame : NSValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue {
-                let keyboardHeight = keyboardFrame.cgRectValue.height
-
-                self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.size.width, height: self.view.frame.size.height - keyboardHeight)
-                tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: tableView.contentOffset.y + keyboardHeight), animated: true)
-                keyboardIsUp = true
-            }
-        }
-    }
-    
-    func keyboardWillHide(_ notification: Notification) {
-        if keyboardIsUp {
-            if let keyboardFrame : NSValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue {
-                let keyboardHeight = keyboardFrame.cgRectValue.height
-                self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.size.width, height: (self.view.frame.size.height + keyboardHeight))
-                tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: (tableView.contentOffset.y - keyboardHeight)), animated: true)
-                keyboardIsUp = false
-            }
-        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -453,6 +435,37 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         }
     }
     
+    //MARK: - Keyboard Delegates
+    func keyboardWillShow(_ notification: Notification) {
+        //If we are using a small device we want to move up the view and adjust size of view.
+        if !keyboardInfo.isUp {
+            keyboardInfo.isUp = true
+            if let keyboardFrame : NSValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+                keyboardInfo.height = keyboardFrame.cgRectValue.height
+                
+                self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.size.width, height: self.view.frame.size.height - keyboardInfo.height)
+                if self.view.frame.height < 400 {
+                    tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: tableView.contentOffset.y + keyboardInfo.height), animated: true)
+                }
+                else {
+                    tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: 0), animated: true)
+                }
+            }
+        }
+    }
+    
+    func keyboardWillHide(_ notification: Notification) {
+        //Resets the view to the original size from before the keyboard appeared.
+        if keyboardInfo.isUp {
+            keyboardInfo.isUp = false
+            self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.size.width, height: (self.view.frame.size.height + keyboardInfo.height))
+            if self.view.frame.height < 400 + keyboardInfo.height{
+                tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: (tableView.contentOffset.y - keyboardInfo.height)), animated: true)
+            }
+        }
+    }
+    
+
     //MARK: - Show Contact Info
     func displayContactInfoForMember(member: MemberCallings) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
