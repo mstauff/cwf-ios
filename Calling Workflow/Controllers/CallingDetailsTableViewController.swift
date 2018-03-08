@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDelegate, UITableViewDataSource, MemberPickerDelegate, StatusPickerDelegate, UITextViewDelegate, ProcessingSpinner, AlertBox {
+class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDelegate, UITableViewDataSource, MemberPickerDelegate, StatusPickerDelegate, ProcessingSpinner, AlertBox {
     
     //MARK: - Class Members
     var callingToDisplay : Calling? = nil {
@@ -26,9 +26,6 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     var memberDetailView : MemberInfoView? = nil
     
     var delegate : CallingsTableViewControllerDelegate?
-
-    var debouncedNotesChange : Debouncer? = nil
-    let textViewDebounceTime = 0.8
     
 //    var spinnerView : CWFSpinnerView? = nil
     weak var callingMgr : CWFCallingManagerService? = nil
@@ -39,12 +36,12 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         var height : CGFloat = 0.0
     }
     var keyboardInfo = keyboardInfoStruct.init(isUp: false, height: 0)
-    var notesTextView : UITextView? = nil
+    var notesCell : NotesTableViewCell? = nil
 
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
         setupTableView()
@@ -71,20 +68,15 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                 navigationItem.setRightBarButton(saveButton, animated: true)
                 isEditable = true
             }
-            
         }
-        
-
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    
     // MARK: - Setup
-    
     func setupNavBarButtons() {
         let button = UIButton(type: .custom)
         button.setImage(UIImage.init(named: "backButton"), for: .normal)
@@ -144,6 +136,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             return 2
         }
     }
+    
     func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case 0:// we don't want a header on the first section
@@ -267,7 +260,6 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                     if !meetsRequirements {
                         cell?.warningButton.isHidden = false
                         cell?.warningButton.addTarget(self, action: #selector(warningButtonPressed), for: .touchUpInside)
-                        
                     }
                     else {
                         cell?.warningButton.isHidden = true
@@ -309,18 +301,10 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             
         case 2: // third section is the notes
             let cell = tableView.dequeueReusableCell(withIdentifier: "noteCell", for: indexPath) as? NotesTableViewCell
-            self.notesTextView = cell?.noteTextView
-            cell?.noteTextView.delegate = self
+            self.notesCell = cell
             
-            if (callingToDisplay?.notes != nil && callingToDisplay?.notes != "") {
-                cell?.noteTextView.text = callingToDisplay?.notes
-            }
-            else {
-                cell?.noteTextView.text = NSLocalizedString("Notes", comment: "notes text label")
-            }
-            cell?.noteTextView.delegate = self
-            debouncedNotesChange = Debouncer(delay: textViewDebounceTime) { [weak self] in
-                self?.updateNotes( cell?.noteTextView )
+            if let callingNotes = callingToDisplay?.notes, !callingNotes.isEmpty {
+                cell?.noteTextView.text = callingToDisplay!.notes
             }
             
             return cell!
@@ -346,7 +330,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         switch indexPath.section {
         case 1:
             tableView.deselectRow(at: indexPath, animated: false)
-            self.notesTextView?.resignFirstResponder()
+            self.notesCell?.noteTextView.resignFirstResponder()
 
             switch indexPath.row {
             case 0:
@@ -356,7 +340,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                 }
             
             case 1:
-                self.notesTextView?.resignFirstResponder()
+                self.notesCell?.noteTextView.resignFirstResponder()
 
                 // Tapped the proposed calling holder. Transition to member contact info
                 if let proposedId = callingToDisplay?.proposedIndId, let memberCallings = appDelegate?.callingManager.getMemberCallings(forMemberId: proposedId){
@@ -412,29 +396,6 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         tableView.reloadData()
     }
     
-    //MARK: - UI Text View Delegate
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text == NSLocalizedString("Notes", comment: "notes text label") {
-            textView.text = ""
-        }
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        debouncedNotesChange?.call()
-    }
-    
-//    func textViewDidChange(_ textView: UITextView) {
-//        //self.callingToDisplay?.notes = textView.text
-//        debouncedNotesChange?.call()
-//    }
-    
-    func updateNotes(_ textView : UITextView?) {
-        if let validTextView = textView {
-            isDirty = true
-            self.callingToDisplay?.notes = validTextView.text
-        }
-    }
-    
     //MARK: - Keyboard Delegates
     func keyboardWillShow(_ notification: Notification) {
         //If we are using a small device we want to move up the view and adjust size of view.
@@ -442,7 +403,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             keyboardInfo.isUp = true
             if let keyboardFrame : NSValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue {
                 keyboardInfo.height = keyboardFrame.cgRectValue.height
-                
+
                 self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.size.width, height: self.view.frame.size.height - keyboardInfo.height)
                 if self.view.frame.height < 400 {
                     tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: tableView.contentOffset.y + keyboardInfo.height), animated: true)
@@ -453,7 +414,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             }
         }
     }
-    
+
     func keyboardWillHide(_ notification: Notification) {
         //Resets the view to the original size from before the keyboard appeared.
         if keyboardInfo.isUp {
@@ -464,7 +425,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             }
         }
     }
-    
+
 
     //MARK: - Show Contact Info
     func displayContactInfoForMember(member: MemberCallings) {
@@ -503,6 +464,10 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     }
     
     func backButtonPressed() {
+        // check if notes have changed & set isDirty if they have
+        if let notes = notesCell {
+            isDirty = isDirty || ( notes.textContents != nil && notes.textContents != callingToDisplay?.notes )
+        }
         if isDirty {
             let saveAlert = UIAlertController(title: NSLocalizedString("Discard Changes?", comment: "discard"), message: NSLocalizedString("You have unsaved changes that will be discarded if you continue.", comment: "discard message"), preferredStyle: UIAlertControllerStyle.alert)
             
@@ -710,7 +675,6 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     }
     
     func saveAndReturn() {
-        self.updateNotes(self.notesTextView)
         returnToAux(saveFirst: true)
     }
     
@@ -737,6 +701,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
     func save() {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             if let validCalling = self.callingToDisplay {
+                self.updateNotes(self.notesCell)
                 // we only need the name for reporting in cases where the update fails. Default to generic "that calling" if we can't get a name
                 let callingName = validCalling.position.name ?? "that calling"
                 appDelegate.callingManager.updateCalling(updatedCalling: self.callingToDisplay!) {success, error in
@@ -760,6 +725,13 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             }
         }
 
+    }
+    
+    /** Update the model notes if there are any. */
+    func updateNotes(_ notesCell : NotesTableViewCell?) {
+        if let validNotes = notesCell, let noteText = validNotes.textContents{
+            self.callingToDisplay?.notes = noteText
+        }
     }
     
     /** Check if a member meets the position requirements for a calling, if there are any. Returns true if the member meets the requirements, false if there's a violation
@@ -790,8 +762,6 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         self.navigationItem.rightBarButtonItem?.isEnabled = true
         removeProcessingSpinner()
     }
-    
-
     
     //MARK: - Permissions
     func hasPermissionToView() -> Bool {
