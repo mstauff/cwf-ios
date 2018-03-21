@@ -8,23 +8,31 @@ target 'Calling Workflow' do
   #      pod 'GTMOAuth2', '~> 1.1.0'
   pod 'Google/SignIn'
   pod 'Locksmith'
+  use_frameworks!
 
   # Pods for Calling Workflow
+end
 
-  target 'Calling WorkflowTests' do
+target 'Calling WorkflowTests' do
 #      inherit! :search_paths
 
-      pod 'GoogleAPIClient/Drive', '~> 1.0.2'
+  pod 'GoogleAPIClient/Drive', '~> 1.0.2'
 #      pod 'GTMOAuth2', '~> 1.1.0'
-    pod 'Google/SignIn'
-      pod 'Locksmith'
+pod 'Google/SignIn'
+  pod 'Locksmith'
+  use_frameworks!
 
-    # Pods for testing
-  end
+# Pods for testing
+end
 
-  target 'Calling WorkflowUITests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
+target 'Calling WorkflowUITests' do
+  #      inherit! :search_paths
+  
+  pod 'GoogleAPIClient/Drive', '~> 1.0.2'
+  #      pod 'GTMOAuth2', '~> 1.1.0'
+  pod 'Google/SignIn'
+  pod 'Locksmith'
+  
+  use_frameworks!
+  # Pods for testing
 end

@@ -28,6 +28,11 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
         let swipeUpRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeUpAction(_:)))
         swipeUpRecognizer.direction = .up
         self.view.addGestureRecognizer(swipeUpRecognizer)
+        
+        let swipeDownRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeDownAction(_:)))
+        swipeDownRecognizer.direction = .down
+        self.view.addGestureRecognizer(swipeDownRecognizer)
+        
         self.setupView()
     }
     
@@ -321,7 +326,11 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
     }
     
     func dismissMemberDetails(_ sender:UITapGestureRecognizer) {
-        self.dismiss(animated: true, completion: nil)
+        let location = sender.location(in: self.infoView)
+        if location.y < 0 {
+            self.dismiss(animated: true, completion: nil)
+        }
+        
     }
   
     func swipeUpAction (_ gesture: UIGestureRecognizer) {
@@ -330,6 +339,10 @@ class MemberInfoView: UIViewController, MFMailComposeViewControllerDelegate, MKM
             self.setupView()
         }
         
+    }
+    
+    func swipeDownAction (_ gesture: UIGestureRecognizer) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     //MARK: - Email Delegate

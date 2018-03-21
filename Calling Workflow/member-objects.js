@@ -28,11 +28,11 @@
             "children": [],
             "phone": "4445556666",
             "address": {
-                "streetAddress": null,
+                "streetAddress": "580 East State Road",
                 "streetAddress2": null,
-                "city": null,
-                "state": null,
-                "postal": null
+                "city": "American Fork",
+                "state": "Utah",
+                "postal": 84003
             },
             "emailAddress": "hh@email.com",
             "responsibleHTAuxiliaryId": 908949,

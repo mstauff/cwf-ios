@@ -32,7 +32,32 @@ class CWFMapViewController: CWFBaseViewController, MKMapViewDelegate {
         let wConstraint = NSLayoutConstraint(item: mapView, attribute: .trailing, relatedBy: .equal, toItem: view, attribute: .trailing, multiplier: 1, constant: 0)
         
         view.addConstraints([xConstraint, yConstraint, hConstraint, wConstraint])
-        // Do any additional setup after loading the view.
+        
+        setupAddress()
+    }
+    
+    func setupAddress() {
+        let addressAsString = addressToDisplay[0] + "," + addressToDisplay[1]
+        let geoCoder = CLGeocoder()
+        geoCoder.geocodeAddressString(addressAsString) { [weak self] placemarks, error in
+            if let placemark = placemarks?.first, let location = placemark.location {
+                let mark = MKPlacemark(placemark: placemark)
+                if var region = self?.mapView.region {
+                    region.center = location.coordinate
+                    region.span.longitudeDelta /= 100.0
+                    region.span.latitudeDelta /= 100.0
+                    self?.mapView.setRegion(region, animated: true)
+                    self?.mapView.addAnnotation(mark)
+                }
+            }
+            
+        }
+        
+//        let dropPin = MKPointAnnotation()
+//        dropPin.coordinate = CLLocationCoordinate2DMake(40.730, -74.003)
+//        dropPin.title = "Here you go"
+//
+//        mapView.addAnnotation(dropPin)
     }
 
     override func didReceiveMemoryWarning() {
