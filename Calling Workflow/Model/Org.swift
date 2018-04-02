@@ -23,6 +23,8 @@ public struct Org : JSONParsable  {
      */
     let unitNum : Int64
     
+    var parentUnitNum : Int64?
+    
     /**
      The CDOL orgTypeId. We debated between making this an enum, or leaving it just the int. We went with int because although we do make use of the org type as an enum for the root level orgs within a unit (RS, EQ, Primary, etc.) we don't want to have to create an enum for all the sub orgs within those (EQ Pres., CTR 7, etc.). Since an Org represents both types of structures we decided to just use the int, and then in the cases where it's appropriate and necessary we can retrieve the corresponding UnitLevelOrgType for a given orgTypeId
      */
@@ -94,10 +96,7 @@ public struct Org : JSONParsable  {
     
     /// Indicates that this org is new to our data (i.e. the org was created in LCR). This enum will allow us to visually mark the org so the user can be aware of the change.
     var conflict : ConflictCause? = nil
-    
-    // Do we need these? Probably not for the app, but maybe we will to be able to send necessary data to LCR for calling updates
-    //    var parentOrg : Org
-    
+        
     /** Function to create an array of Orgs from an array of JSON objects. When we get LCR data for a unit it comes as an array of all the root level orgs in a unit. It isn't contained in a parent Org structure, so this is a convenience method for processing those root level orgs in one call */
     static func orgArrays( fromJSONArray json: [JSONObject]) -> [Org] {
         let orgs : [Org] = json.flatMap() {
@@ -302,7 +301,7 @@ public struct Org : JSONParsable  {
     public static func sortByDisplayOrder( org1: Org, org2: Org ) -> Bool {
         return org1.displayOrder < org2.displayOrder
     }
-
+    
 }
 
 extension Org : Equatable {
@@ -321,6 +320,44 @@ private struct OrgJsonKeys {
     static let callings = "callings"
     static let orgName = "defaultOrgName"
     static let customOrgName = "customOrgName"
+    static let members = "members"
+    static let memberIndId = "individualId"
     
     static let lcrOrgTypeId = "firstOrgTypeId"
 }
+
+protocol OrgParser {
+    func memberOrgAssignments( fromJSON orgJson: JSONObject ) -> [Int64:Int64]
+}
+
+/** This object reads a JSON Org from LCR. It was added when we had a need to extract info that is in the JSON but is not part of our standard Org object (so in the case of member class assignments Org.memebers is needed, but we don't normally parse that out of an org). This object can be used to extract additional details, and also it would make sense at some point to migrate the code that's currently in Org.init(fromJson) to this object. */
+public class LCROrgParser : OrgParser {
+    /** Returns a dictionary of individual ID's that are assigned to an org or suborg within a LCR JSON org. In the case of EQ, HP, RS, the members are at the root level, in the case of YM/YW the members are not at the root level, they're broken down into suborgs. This method will traverse down into the suborg structure to extract them. The dictionary that is returned is one where the key is the individual ID and the value is the org ID they are assigned to.
+     */
+    func memberOrgAssignments(fromJSON orgJson: JSONObject) -> [Int64 : Int64] {
+        var orgAssignmentById : [Int64:Int64] = [:]
+        // If we have a member array on the org, and an org ID then go ahead and parse them out
+        if let members = orgJson[OrgJsonKeys.members] as? [JSONObject], members.isNotEmpty, let orgIdString = orgJson[OrgJsonKeys.id] {
+            orgAssignmentById = members.toDictionary(){ json in
+                if let orgId = (orgIdString as? NSNumber)?.int64Value, let individualId = (json[ OrgJsonKeys.memberIndId ] as? NSNumber)?.int64Value {
+                    return ( individualId, orgId )
+                } else {
+                    return nil
+                }
+            }
+            // if there wasn't any data in the Org.memebers then look in child orgs for members. This would be used in the case of YW & YM, the members are not tied directly to the org, they are in the suborgs.
+            // currently we don't have a case where there are members both in the sub-org and in the children, it's always one or the other. If we find a  case with both this would need to be adjusted.
+        } else if let childOrgsJson = orgJson[OrgJsonKeys.children] as? [JSONObject], childOrgsJson.isNotEmpty{
+            orgAssignmentById = childOrgsJson.reduce(orgAssignmentById) { dict, json in
+                dict.merged(withDictionary: self.memberOrgAssignments(fromJSON: json))
+            }
+        }
+        
+        return orgAssignmentById
+
+    }
+    
+    
+}
+
+

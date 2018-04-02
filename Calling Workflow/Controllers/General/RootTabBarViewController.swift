@@ -98,6 +98,12 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Initialize
                 // todo - if unitNum is still nil at this point we need to disambiguate somehow
                 // We might be able to make use of the google account name to know what unit number to use, but we would need to refactor the loading of data from google drive to separate the signin from loading data (we need the signin to get the email account)
                 // there are unit names in the current-user.json, we're just not doing anything with them right now.
+                let errorMsg = "Error: Multiple units are not currently supported"
+                print( errorMsg )
+                DispatchQueue.main.async {
+                    self?.removeProcessingSpinner()
+                    self?.showAlert(title: "Error", message: errorMsg, includeCancel: false, okCompletionHandler: nil)
+                }
             }
             
             if let validUnitNum = unitNum {

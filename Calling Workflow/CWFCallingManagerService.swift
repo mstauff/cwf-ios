@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiInjected {
+class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApiInjected, LdscdApiInjected {
     
     var ldsOrgUnit: Org? = nil
     var appDataOrg: Org? = nil
@@ -24,6 +24,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
     // implied ldscdApi  comes from LdscdApiInjected
     // implied ldsOrgApi  comes from LdsOrgApiInjected
     // implied dataSource  comes from DataSourceInjected
+    // implied dataCache comes from DataCacheInjected
     
     var memberCallings : [MemberCallings] {
         get {
@@ -203,6 +204,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             let restCallsGroup = DispatchGroup()
             
             // If we have member data and if we can load from cache then just set the local var to the memberList (we need to do this so the initLdsOrgData method gets the correct data, otherwise instead of initing with data from cache, it has empty data)
+            // todo - rename loadFromCache - loadFromMemory to avoid confusion with the DataCache added for member class assignment support
             if self.memberList.isNotEmpty && loadFromCache {
                 members = self.memberList
             } else {
@@ -225,7 +227,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 ldsOrg = self.ldsOrgUnit
             } else {
                 restCallsGroup.enter()
-                ldsApi.getOrgWithCallings(unitNum: unitNum) { (org, error) -> Void in
+                ldsApi.getOrgWithCallings(subOrgId: unitNum) { (org, error) -> Void in
                     if let validOrg = org, !validOrg.children.isEmpty {
                         ldsOrg = validOrg
                     } else {
@@ -242,6 +244,7 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
             restCallsGroup.notify(queue: DispatchQueue.main) {
                 if let validOrg = ldsOrg {
                     self.initLdsOrgData(memberList: members, org: validOrg, positionMetadata: self.positionMetadataMap)
+                    self.loadMemberClasses( forOrg: validOrg, nil )
                 }
                 // once all the calls have returned then call the callback
                 completionHandler(ldsApiError == nil, ldsApiError)
@@ -268,6 +271,101 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
                 // filter out any that are not valid members, or if we're limiting by age if they have an age then it must be greater than the min allowed. If there's not an age we include them (err on the side of caution)
                 $0.individualId > 0 && (includeChildren || $0.age == nil || $0.age! >= MemberConstants.minimumAge)
         }
+    }
+    
+    func loadMemberClasses( forOrg baseOrg : Org, _ completionHandler: (( Bool, Error? ) -> Void)? ) {
+        // array of dictionaries returned from ldsApi.getOrgMembers - this is to hold data in a collection as it gets pulled out of cache, or from the network. Once we have all the data we eventually combine down into one dictionary.
+        var memberAssignmentsMap : [Int64: Int64] = [:]
+        let synchronizedQueue = DispatchQueue(label: "MemberAssignmentsQueue")
+        
+        // filter out any orgs that we don't need membership for (keep EQ, RS, YW, etc. filter out Bishopric, SS, etc.)
+        let orgsToLoad = baseOrg.children.filter() {
+            self.appConfig.classAssignmentOrgTypes.contains(item: $0.orgTypeId)
+        }
+        
+        // start processing disk reads and network calls on a background thread
+        DispatchQueue.global(qos: .background).async {
+            // first try loading from cache
+            let cachedChildOrgs = orgsToLoad.flatMap() {
+                self.dataCache.retrieve(forKey: self.cacheKey(forOrg: $0))
+            }
+            
+            // If they are in local cache then check if they've expired.
+            let cacheDataExpired = cachedChildOrgs.reduce(false) { result, org in
+                result || org.isExpired
+            }
+            
+            let restCallsGroup = DispatchGroup()
+            
+            // if nothing was in the cache, or anything in the cache had expired then load from the network
+            if cachedChildOrgs.isEmpty || cacheDataExpired {
+                print( "No class assignments in cache, or expired, loading from network" )
+                orgsToLoad.forEach() { org in
+                    restCallsGroup.enter()
+                    // load the members for each org from LCR. It's the same call as we use to get the org, it's just you have to request them on an org level (rather than a ward level) to get the member assignments. If you request the entire ward the members field for each org is empty
+                    self.ldsOrgApi.getOrgMembers( ofSubOrgId: org.id ) { classMembers, error in
+                        
+                        guard error == nil else {
+                            restCallsGroup.leave()
+                            return
+                        }
+                        // if there are any members that were returned then add them to the array of dictionaries (we'll combine all the dictionaries later)
+                        if classMembers.count > 0 {
+                            // need to add the results to the memberAssignmentsMap - wrap in queue to protect from threading issues when multiple getOrgs calls return at same time
+                            synchronizedQueue.async {
+                                memberAssignmentsMap = memberAssignmentsMap.merged(withDictionary: classMembers)
+                            }
+                        }
+                        // convert the dictionary to a jsonobject (jsonobj. is a dictionary<String, AnyObject>, so just need the types to be correct)
+                        let classMembersJson = classMembers.mapDictionary() {
+                            (String( describing: $0 ), $1 as AnyObject )
+                            } as JSONObject
+                        // store the results in cache
+                        self.dataCache.store(json: classMembersJson, forKey: self.cacheKey(forOrg: org), expiringIn: CacheObject.defaultExpiration)
+                        restCallsGroup.leave()
+                    }
+                }
+            } else {
+                // the data was already in cache, so we just need to convert it from JSONObject to [Int64:Int64]
+                print( "Loaded class assignments from Memory Cache")
+                memberAssignmentsMap = cachedChildOrgs.flatMap() {
+                    let cachedOrgJson = $0.data[0]
+                    return cachedOrgJson.mapToDictionary() {
+                        if let intKey = Int64( $0.key ), $0.value is Int64, let intVal = $0.value as? NSNumber {
+                            return (intKey, Int64(intVal))
+                        } else {
+                            return nil
+                        }
+                    }
+                    }.reduce( memberAssignmentsMap ){ // After we convert from jsonobjects to dictionaries, then we reduce to a single dictionary
+                        $0.merged( withDictionary:$1 )
+                }
+            }
+            
+            // once we get back all the results from the network, or if we never made any network calls
+            restCallsGroup.notify(queue: DispatchQueue.main) {
+                // update member objects with results
+                self.memberList = self.updateWithClassAssignments( members: self.memberList, fromClassAssignments: memberAssignmentsMap )
+                if let callback = completionHandler {
+                    callback( true, nil )
+                }
+            }
+        }
+    }
+    
+    private func cacheKey( forOrg org : Org ) -> String {
+        return "class-assignments-\(org.id)"
+    }
+    
+    /** Returns a new list of member objects with the classes they are assigned to updated in the member objects */
+    private func updateWithClassAssignments( members: [Member], fromClassAssignments orgAssignmentByIndId: [Int64:Int64] ) -> [Member] {
+        let updatedMembers = members.map() { (member) -> Member in
+            var updatedMember = member
+            updatedMember.classAssignment = orgAssignmentByIndId[ member.individualId ]
+            return updatedMember
+        }
+        
+        return updatedMembers
     }
     
     /** Authenticate with the application's data source (currently google drive). We need to pass in the current view controller because if the user isn't already authenticated the google API will display a login screen for the user to authenticate. This should always be called before calling loadAppData() */
@@ -364,7 +462,8 @@ class CWFCallingManagerService: DataSourceInjected, LdsOrgApiInjected, LdscdApiI
         
     }
     
-    private func updateCallingMaps(org: Org) { // this is only actual callings.
+    private func updateCallingMaps(org: Org) {
+        // this is only actual callings.
         self.memberCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.existingIndId }
         // Now proposed callings
         self.memberPotentialCallingsMap = MultiValueDictionary<Int64, Calling>.initFromArray(array: org.allOrgCallings) { $0.proposedIndId }

@@ -152,6 +152,7 @@
 		E8316CE91E26AC1E0091419D /* LdscdRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */; };
 		E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE81E26AC1E0091419D /* LdsRestApi.swift */; };
 		E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CEB1E26AD4F0091419D /* RestAPITests.swift */; };
+		E832423620475CAE00FA2DC3 /* org-members.js in Resources */ = {isa = PBXBuildFile; fileRef = E832423520475CAE00FA2DC3 /* org-members.js */; };
 		E8352A2F1F1E6E620087CED7 /* FilterOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8352A2E1F1E6E620087CED7 /* FilterOptions.swift */; };
 		E83B34921FE1F48F0087564B /* ResetDataTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83B34911FE1F48F0087564B /* ResetDataTableViewController.swift */; };
 		E83B34941FE4521B0087564B /* MultiSelectTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83B34931FE4521B0087564B /* MultiSelectTableViewCell.swift */; };
@@ -183,6 +184,9 @@
 		E8E8CD341ECBB87A00156450 /* Authorizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD331ECBB87A00156450 /* Authorizable.swift */; };
 		E8E8CD361ECBB8A800156450 /* PermissionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD351ECBB8A800156450 /* PermissionResolver.swift */; };
 		E8E8CD381ECBBCAE00156450 /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD371ECBBCAE00156450 /* PermissionManager.swift */; };
+		E8F1FC8D205351DC007AC0D5 /* org-members.js in Resources */ = {isa = PBXBuildFile; fileRef = E8F1FC8C205351DC007AC0D5 /* org-members.js */; };
+		E8F1FC8F205353C9007AC0D5 /* JsonFileLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1FC8E205353C9007AC0D5 /* JsonFileLoader.swift */; };
+		E8F1FC91205C35CC007AC0D5 /* DataCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F1FC90205C35CC007AC0D5 /* DataCache.swift */; };
 		E8F959681E30129700C13EC9 /* CWFCallingManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */; };
 		E8F959691E30129700C13EC9 /* LdsFileApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959641E30129700C13EC9 /* LdsFileApi.swift */; };
 		E8F9596A1E30129700C13EC9 /* LdsOrgApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959651E30129700C13EC9 /* LdsOrgApi.swift */; };
@@ -324,6 +328,7 @@
 		E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdscdRestApi.swift; sourceTree = "<group>"; };
 		E8316CE81E26AC1E0091419D /* LdsRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdsRestApi.swift; sourceTree = "<group>"; };
 		E8316CEB1E26AD4F0091419D /* RestAPITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestAPITests.swift; sourceTree = "<group>"; };
+		E832423520475CAE00FA2DC3 /* org-members.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "org-members.js"; sourceTree = "<group>"; };
 		E8352A2E1F1E6E620087CED7 /* FilterOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterOptions.swift; path = Model/FilterOptions.swift; sourceTree = "<group>"; };
 		E83B34911FE1F48F0087564B /* ResetDataTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ResetDataTableViewController.swift; path = Controllers/ResetDataTableViewController.swift; sourceTree = "<group>"; };
 		E83B34931FE4521B0087564B /* MultiSelectTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MultiSelectTableViewCell.swift; path = Controllers/TableViewCells/MultiSelectTableViewCell.swift; sourceTree = "<group>"; };
@@ -356,6 +361,9 @@
 		E8E8CD331ECBB87A00156450 /* Authorizable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Authorizable.swift; path = Model/Permissions/Authorizable.swift; sourceTree = "<group>"; };
 		E8E8CD351ECBB8A800156450 /* PermissionResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PermissionResolver.swift; path = Model/Permissions/PermissionResolver.swift; sourceTree = "<group>"; };
 		E8E8CD371ECBBCAE00156450 /* PermissionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PermissionManager.swift; path = Model/Permissions/PermissionManager.swift; sourceTree = "<group>"; };
+		E8F1FC8C205351DC007AC0D5 /* org-members.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "org-members.js"; sourceTree = "<group>"; };
+		E8F1FC8E205353C9007AC0D5 /* JsonFileLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonFileLoader.swift; sourceTree = "<group>"; };
+		E8F1FC90205C35CC007AC0D5 /* DataCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCache.swift; sourceTree = "<group>"; };
 		E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFCallingManagerService.swift; sourceTree = "<group>"; };
 		E8F959641E30129700C13EC9 /* LdsFileApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdsFileApi.swift; sourceTree = "<group>"; };
 		E8F959651E30129700C13EC9 /* LdsOrgApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdsOrgApi.swift; sourceTree = "<group>"; };
@@ -464,6 +472,7 @@
 				3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */,
 				3CE4C9051DCA82A000AAFB31 /* Constants.swift */,
 				E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */,
+				E8F1FC90205C35CC007AC0D5 /* DataCache.swift */,
 				E8084F8B1E088A870077FDAE /* DataSource.swift */,
 				E8D51E761F0E94DC009F87DC /* Debounce.swift */,
 				3CE4C9071DCA82A000AAFB31 /* JSON.swift */,
@@ -501,6 +510,8 @@
 				E8A91ED61EBCF4E00061EC12 /* PermissionsTests.swift */,
 				E873609C1EF1AE3F00032750 /* MultiValueDictionaryTests.swift */,
 				E8D51E781F0E9C88009F87DC /* FilterOptionsTests.swift */,
+				E8F1FC8C205351DC007AC0D5 /* org-members.js */,
+				E8F1FC8E205353C9007AC0D5 /* JsonFileLoader.swift */,
 			);
 			path = "Calling WorkflowTests";
 			sourceTree = "<group>";
@@ -603,6 +614,7 @@
 				3CE4C9021DCA82A000AAFB31 /* AppConfig.swift */,
 				3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */,
 				3CE4C8DD1DCA824100AAFB31 /* LaunchScreen.storyboard */,
+				E832423520475CAE00FA2DC3 /* org-members.js */,
 			);
 			name = "Support Files";
 			sourceTree = "<group>";
@@ -801,6 +813,7 @@
 			files = (
 				3CE4C8DF1DCA824100AAFB31 /* LaunchScreen.storyboard in Resources */,
 				E8A91ED11EB7C7910061EC12 /* position-metadata.js in Resources */,
+				E832423620475CAE00FA2DC3 /* org-members.js in Resources */,
 				E875C58C1EAE7E5C00E04499 /* current-user.js in Resources */,
 				3CE4C9111DCA82A000AAFB31 /* GoogleService-Info.plist in Resources */,
 				E8F9596C1E30129700C13EC9 /* org-callings.js in Resources */,
@@ -819,6 +832,7 @@
 				E8A91ED31EB7C7C90061EC12 /* position-metadata.js in Resources */,
 				E8189A8A1DDA2D4600E983D4 /* cwf-object.js in Resources */,
 				E8CC956A1E01E722007EBA47 /* member-objects.js in Resources */,
+				E8F1FC8D205351DC007AC0D5 /* org-members.js in Resources */,
 				E841701E1E7C767A00A5C049 /* reconcile-test-orgs.js in Resources */,
 				E8F9596E1E3026AC00C13EC9 /* org-callings.js in Resources */,
 			);
@@ -1042,6 +1056,7 @@
 				3C6A365E1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift in Sources */,
 				3CE4C9101DCA82A000AAFB31 /* Constants.swift in Sources */,
 				3C7345F21F420FD500E1BF40 /* StatusSettingsViewController.swift in Sources */,
+				E8F1FC91205C35CC007AC0D5 /* DataCache.swift in Sources */,
 				3C2DFEB81F22C261007F716C /* UIImageExtension.swift in Sources */,
 				3CE4C8D51DCA824100AAFB31 /* GoogleSettingsViewController.swift in Sources */,
 				E845FDD91FC6323A00FE3919 /* UIViewControllerExtensions.swift in Sources */,
@@ -1086,6 +1101,7 @@
 			files = (
 				E8A91ED71EBCF4E00061EC12 /* PermissionsTests.swift in Sources */,
 				E8B13CCC1E3BD80A004FD60C /* DataSourceTests.swift in Sources */,
+				E8F1FC8F205353C9007AC0D5 /* JsonFileLoader.swift in Sources */,
 				E8316CEC1E26AD4F0091419D /* RestAPITests.swift in Sources */,
 				E85E7EE41E49223B00CE05CD /* CallingManagerServiceTests.swift in Sources */,
 				E8D51E791F0E9C88009F87DC /* FilterOptionsTests.swift in Sources */,
