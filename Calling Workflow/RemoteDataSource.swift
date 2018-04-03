@@ -9,6 +9,8 @@
 import Foundation
 import GoogleAPIClient
 import GTMOAuth2
+import GoogleSignIn
+import Google
 
 class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     
@@ -71,25 +73,28 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     func hasValidCredentials( forUnit unitNum : Int64, completionHandler: @escaping (Bool, Error?) -> Void ) {
 
         // we don't have anyway to access the username of the google drive user at this point. We have to save this variable off so we can validate against it in the callback after the signin is successful (we have access to profile data at that point)
-        self.loggingInForUnitNum = unitNum
+        DispatchQueue.main.async {
 
-        var configureError: NSError?
-        GGLContext.sharedInstance().configureWithError(&configureError)
-        assert(configureError == nil, "Error configuring Google services: \(configureError!)")
-        
-        GIDSignIn.sharedInstance().delegate = self
-        GIDSignIn.sharedInstance().scopes = requiredScopes
-        if GIDSignIn.sharedInstance().hasAuthInKeychain() {
-            self.authCompletionHandler = completionHandler
-            // todo - do we need to do this every time?? Any way to search for existing session
-            // this method generates an error:
-//            Main Thread Checker: UI API called on a background thread: -[UIApplication delegate]
-            // Perhaps updating to latest client will fix. Doesn't seem to adversely affect the app, but it is always there on startup
-            GIDSignIn.sharedInstance().signInSilently()
-        } else {
-            completionHandler( false, nil )
+            self.loggingInForUnitNum = unitNum
+
+            var configureError: NSError?
+            GGLContext.sharedInstance().configureWithError(&configureError)
+            assert(configureError == nil, "Error configuring Google services: \(configureError!)")
+            
+            GIDSignIn.sharedInstance().delegate = self
+            GIDSignIn.sharedInstance().scopes = self.requiredScopes
+            if GIDSignIn.sharedInstance().hasAuthInKeychain() {
+                self.authCompletionHandler = completionHandler
+                // todo - do we need to do this every time?? Any way to search for existing session
+                // this method generates an error:
+    //            Main Thread Checker: UI API called on a background thread: -[UIApplication delegate]
+                // Perhaps updating to latest client will fix. Doesn't seem to adversely affect the app, but it is always there on startup
+                GIDSignIn.sharedInstance().signInSilently()
+                
+            } else {
+                completionHandler( false, nil )
+            }
         }
-        
     }
     
     func signOut() {

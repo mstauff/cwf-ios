@@ -34,63 +34,99 @@
 		3C4347BB1ECBBEA600CC7369 /* FilterGenderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4347BA1ECBBEA600CC7369 /* FilterGenderTableViewCell.swift */; };
 		3C4347BD1ECBC20A00CC7369 /* FilterOrgTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4347BC1ECBC20A00CC7369 /* FilterOrgTableViewCell.swift */; };
 		3C4409C91E3BEE9400484935 /* CWFStatusPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */; };
-		3C5563DE2061A4F700F31F7A /* RootTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */; };
-		3C5563DF2061A60900F31F7A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C8DD1DCA824100AAFB31 /* LaunchScreen.storyboard */; };
-		3C5563E02061A64200F31F7A /* ControllerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBDDCAB1E48FC2F00F211F5 /* ControllerProtocols.swift */; };
-		3C5563E12061A65500F31F7A /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E845FDD81FC6323A00FE3919 /* UIViewControllerExtensions.swift */; };
-		3C5563E22061A66700F31F7A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */; };
-		3C5563E32061A6C500F31F7A /* Member.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF441DCD0FBF0071BE9F /* Member.swift */; };
-		3C5563E42061A6D100F31F7A /* ModelEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = E841701B1E79B4D600A5C049 /* ModelEnums.swift */; };
-		3C5563E52061A6DA00F31F7A /* Calling.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F811E0476F80077FDAE /* Calling.swift */; };
-		3C5563E62061A6E700F31F7A /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F831E0476F80077FDAE /* Position.swift */; };
-		3C5563E72061A6F700F31F7A /* FilterOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8352A2E1F1E6E620087CED7 /* FilterOptions.swift */; };
-		3C5563E82061A70E00F31F7A /* CWFCallingManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */; };
-		3C5563E92061A72B00F31F7A /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F8B1E088A870077FDAE /* DataSource.swift */; };
-		3C5563EA2061A73300F31F7A /* LdsOrgApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959651E30129700C13EC9 /* LdsOrgApi.swift */; };
-		3C5563EB2061A73900F31F7A /* LdscdRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */; };
-		3C5563EC2061A76800F31F7A /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9071DCA82A000AAFB31 /* JSON.swift */; };
-		3C5563ED2061A76F00F31F7A /* PositionMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = E875C58F1EB3BC8300E04499 /* PositionMetadata.swift */; };
-		3C5563EE2061A79300F31F7A /* Org.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F821E0476F80077FDAE /* Org.swift */; };
-		3C5563EF2061A79E00F31F7A /* UnitSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D4EFAF1F54BADF0053E3E4 /* UnitSettings.swift */; };
-		3C5563F02061A7B000F31F7A /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9021DCA82A000AAFB31 /* AppConfig.swift */; };
-		3C5563F12061A7B700F31F7A /* LdsUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87D00B91E26EF7000FA722B /* LdsUser.swift */; };
-		3C5563F22061A7EB00F31F7A /* PositionRequirements.swift in Sources */ = {isa = PBXBuildFile; fileRef = E875C58D1EB2926800E04499 /* PositionRequirements.swift */; };
-		3C5563F32061A7F200F31F7A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9051DCA82A000AAFB31 /* Constants.swift */; };
-		3C5563F42061A7F900F31F7A /* MemberCallings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D51E741F0AC370009F87DC /* MemberCallings.swift */; };
-		3C5563F52061A81C00F31F7A /* Debounce.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D51E761F0E94DC009F87DC /* Debounce.swift */; };
-		3C5563F62061A82500F31F7A /* LdsFileApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959641E30129700C13EC9 /* LdsFileApi.swift */; };
-		3C5563F72061A82B00F31F7A /* LdsRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE81E26AC1E0091419D /* LdsRestApi.swift */; };
-		3C5563F82061A82E00F31F7A /* RemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */; };
-		3C5563F92061A83100F31F7A /* RestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */; };
-		3C5563FA2061A83500F31F7A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D81DCA824100AAFB31 /* Main.storyboard */; };
-		3C5563FB2061A83800F31F7A /* CallingDetailsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */; };
-		3C5563FC2061A83B00F31F7A /* CallingPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3737B31F13DCB000D62C2E /* CallingPickerViewController.swift */; };
-		3C5563FD2061A84800F31F7A /* CollectionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F7E1E0476C10077FDAE /* CollectionExtensions.swift */; };
-		3C5563FE2061A84C00F31F7A /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F7D1E0476C10077FDAE /* DataExtensions.swift */; };
-		3C5563FF2061A84F00F31F7A /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B13CC91E3BC749004FD60C /* DateExtensions.swift */; };
-		3C5564002061A85200F31F7A /* MemberExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2428211EE1D848006DA7E8 /* MemberExtensions.swift */; };
-		3C5564012061A85500F31F7A /* MultiValueDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */; };
-		3C5564022061A85800F31F7A /* UIButtonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CB191FE1EC67E330098AD1C /* UIButtonExtensions.swift */; };
-		3C5564032061A85B00F31F7A /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */; };
-		3C5564042061A85D00F31F7A /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2DFEB71F22C261007F716C /* UIImageExtension.swift */; };
-		3C5564052061A86300F31F7A /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E825658C203C8A09004A4AC7 /* StringExtensions.swift */; };
-		3C5564062061A86900F31F7A /* PermissionEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD301ECBB81900156450 /* PermissionEnums.swift */; };
-		3C5564072061A86C00F31F7A /* Authorizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD331ECBB87A00156450 /* Authorizable.swift */; };
-		3C5564082061A87000F31F7A /* PermissionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD351ECBB8A800156450 /* PermissionResolver.swift */; };
-		3C5564092061A87200F31F7A /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD371ECBBCAE00156450 /* PermissionManager.swift */; };
-		3C55640A2061A88000F31F7A /* UnitLevelOrgType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F841E0476F80077FDAE /* UnitLevelOrgType.swift */; };
-		3C55640B2061A88500F31F7A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E7E1E01FC6A00A7A618 /* Utils.swift */; };
-		3C55640C2061A88B00F31F7A /* HTVTMemberParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */; };
-		3C55640D2061A89400F31F7A /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E845FDD61FC3756F00FE3919 /* SessionManager.swift */; };
-		3C55640E2061A8A600F31F7A /* lastView.js in Resources */ = {isa = PBXBuildFile; fileRef = 3CE5D6C920058EF1000AF4D2 /* lastView.js */; };
-		3C55640F2061A8AC00F31F7A /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A921DDA74E700E983D4 /* cwf-object.js */; };
-		3C5564102061A8AF00F31F7A /* member-objects.js in Resources */ = {isa = PBXBuildFile; fileRef = E8F959661E30129700C13EC9 /* member-objects.js */; };
-		3C5564112061A8B300F31F7A /* org-callings.js in Resources */ = {isa = PBXBuildFile; fileRef = E8F959671E30129700C13EC9 /* org-callings.js */; };
-		3C5564122061A8B800F31F7A /* position-metadata.js in Resources */ = {isa = PBXBuildFile; fileRef = E8A91ED01EB7C7910061EC12 /* position-metadata.js */; };
-		3C5564132061A8B800F31F7A /* current-user.js in Resources */ = {isa = PBXBuildFile; fileRef = E875C58B1EAE7E5C00E04499 /* current-user.js */; };
-		3C5564142061A8B800F31F7A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C9061DCA82A000AAFB31 /* GoogleService-Info.plist */; };
-		3C5564152061A8C900F31F7A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */; };
-		3C5564162061ACB700F31F7A /* CWFBaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */; };
+		3C535FC5206992BC002DAA84 /* Calling_WorkflowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8F41DCA824100AAFB31 /* Calling_WorkflowUITests.swift */; };
+		3C535FDA20699AC3002DAA84 /* RootTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */; };
+		3C535FDB20699D1C002DAA84 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D21DCA824100AAFB31 /* AppDelegate.swift */; };
+		3C535FDC20699D1C002DAA84 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9051DCA82A000AAFB31 /* Constants.swift */; };
+		3C535FDD20699D1C002DAA84 /* CWFCallingManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959631E30129700C13EC9 /* CWFCallingManagerService.swift */; };
+		3C535FDE20699D1C002DAA84 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F8B1E088A870077FDAE /* DataSource.swift */; };
+		3C535FDF20699D1C002DAA84 /* Debounce.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D51E761F0E94DC009F87DC /* Debounce.swift */; };
+		3C535FE020699D1C002DAA84 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9071DCA82A000AAFB31 /* JSON.swift */; };
+		3C535FE120699D1C002DAA84 /* LdscdRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */; };
+		3C535FE220699D1C002DAA84 /* LdsFileApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959641E30129700C13EC9 /* LdsFileApi.swift */; };
+		3C535FE320699D1C002DAA84 /* LdsOrgApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F959651E30129700C13EC9 /* LdsOrgApi.swift */; };
+		3C535FE420699D1C002DAA84 /* LdsRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE81E26AC1E0091419D /* LdsRestApi.swift */; };
+		3C535FE520699D1C002DAA84 /* RemoteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */; };
+		3C535FE620699D1C002DAA84 /* RestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */; };
+		3C535FE72069A296002DAA84 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D81DCA824100AAFB31 /* Main.storyboard */; };
+		3C535FE82069A29C002DAA84 /* CallingDetailsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */; };
+		3C535FE92069A29C002DAA84 /* CallingPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3737B31F13DCB000D62C2E /* CallingPickerViewController.swift */; };
+		3C535FEA2069A29C002DAA84 /* CallingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF401DCD0D160071BE9F /* CallingsTableViewController.swift */; };
+		3C535FEB2069A29C002DAA84 /* DirectoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF421DCD0E010071BE9F /* DirectoryTableViewController.swift */; };
+		3C535FEC2069A29C002DAA84 /* GoogleSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8D41DCA824100AAFB31 /* GoogleSettingsViewController.swift */; };
+		3C535FED2069A29C002DAA84 /* LDSCredentialsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF641DD3A4C400F9847E /* LDSCredentialsViewController.swift */; };
+		3C535FEE2069A29C002DAA84 /* MemberPickerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0994D11E451AC500926094 /* MemberPickerTableViewController.swift */; };
+		3C535FEF2069A29C002DAA84 /* NewCallingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0E017F1E4D26100014D32B /* NewCallingTableViewController.swift */; };
+		3C535FF02069A29C002DAA84 /* OrganizationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F891E04814F0077FDAE /* OrganizationTableViewController.swift */; };
+		3C535FF12069A29C002DAA84 /* OrgDetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF601DD28A3B00F9847E /* OrgDetailTableViewController.swift */; };
+		3C535FF22069A29C002DAA84 /* ResetDataTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83B34911FE1F48F0087564B /* ResetDataTableViewController.swift */; };
+		3C535FF32069A29C002DAA84 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF621DD399C600F9847E /* SettingsTableViewController.swift */; };
+		3C535FF42069A29C002DAA84 /* StatusSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7345F11F420FD500E1BF40 /* StatusSettingsViewController.swift */; };
+		3C535FF52069A29C002DAA84 /* OrgFilterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82F306D1F28030200E20D5E /* OrgFilterButton.swift */; };
+		3C535FF62069A2A2002DAA84 /* CWFAccordionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C11A31E1E70C14D00EC9F38 /* CWFAccordionTableViewController.swift */; };
+		3C535FF72069A2A2002DAA84 /* CWFBaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FC1E08593C00109B27 /* CWFBaseTableViewController.swift */; };
+		3C535FF82069A2A2002DAA84 /* CWFMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3737B11F0FFD5600D62C2E /* CWFMapViewController.swift */; };
+		3C535FF92069A2A2002DAA84 /* CWFSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA0C94B1F4D4058003FA7B8 /* CWFSpinnerView.swift */; };
+		3C535FFA2069A2A2002DAA84 /* CWFStatusPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */; };
+		3C535FFB2069A2A2002DAA84 /* FilterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CB192001EC6801E0098AD1C /* FilterButton.swift */; };
+		3C535FFC2069A2A2002DAA84 /* FilterTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6A365A1EC23D4600A58C33 /* FilterTableViewController.swift */; };
+		3C535FFD2069A2A2002DAA84 /* MemberInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C88170E1E68D8A10037151B /* MemberInfoView.swift */; };
+		3C535FFE2069A2A2002DAA84 /* ViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0E01811E4D42740014D32B /* ViewUtils.swift */; };
+		3C535FFF2069A2A8002DAA84 /* ControllerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBDDCAB1E48FC2F00F211F5 /* ControllerProtocols.swift */; };
+		3C5360002069A2B0002DAA84 /* StatusSettingsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C55DEBA1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift */; };
+		3C5360012069A2B0002DAA84 /* CWFAccordionChildTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3CF3B71E71FB2300143868 /* CWFAccordionChildTableViewCell.swift */; };
+		3C5360022069A2B0002DAA84 /* CWFAccordionRootTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3CF3B51E71F20A00143868 /* CWFAccordionRootTableViewCell.swift */; };
+		3C5360032069A2B0002DAA84 /* CWFButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA55F391E9D7D7400022D52 /* CWFButtonTableViewCell.swift */; };
+		3C5360042069A2B0002DAA84 /* DataSubdataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F41E36A20400FD0D34 /* DataSubdataTableViewCell.swift */; };
+		3C5360052069A2B0002DAA84 /* DirectoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C38B8901EFD798100436BF4 /* DirectoryTableViewCell.swift */; };
+		3C5360062069A2B0002DAA84 /* InputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */; };
+		3C5360072069A2B0002DAA84 /* LeftTitleRightLabelTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBDDCAD1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift */; };
+		3C5360082069A2B0002DAA84 /* NameCallingProposedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF471DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift */; };
+		3C5360092069A2B0002DAA84 /* NotesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */; };
+		3C53600A2069A2B0002DAA84 /* OneRightTwoLeftTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0AA6E31E4A86670086525D /* OneRightTwoLeftTableViewCell.swift */; };
+		3C53600B2069A2B0002DAA84 /* MultiSelectTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83B34931FE4521B0087564B /* MultiSelectTableViewCell.swift */; };
+		3C53600C2069A2B0002DAA84 /* SingleFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */; };
+		3C53600D2069A2B0002DAA84 /* TitleAdjustableSubtitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0994D31E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift */; };
+		3C53600E2069A2B5002DAA84 /* FilterAgeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4347B61ECB97FC00CC7369 /* FilterAgeTableViewCell.swift */; };
+		3C53600F2069A2B5002DAA84 /* FilterApplyButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2D0C511ECCFA39009A1511 /* FilterApplyButtonTableViewCell.swift */; };
+		3C5360102069A2B5002DAA84 /* FilterBaseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4347B81ECBA60400CC7369 /* FilterBaseTableViewCell.swift */; };
+		3C5360112069A2B5002DAA84 /* FilterCallingNumberTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CB191FA1EC639170098AD1C /* FilterCallingNumberTableViewCell.swift */; };
+		3C5360122069A2B5002DAA84 /* FilterGenderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4347BA1ECBBEA600CC7369 /* FilterGenderTableViewCell.swift */; };
+		3C5360132069A2B5002DAA84 /* FilterOrgTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4347BC1ECBC20A00CC7369 /* FilterOrgTableViewCell.swift */; };
+		3C5360142069A2B5002DAA84 /* FilterTimeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C691E611ECA4A8B00CD7672 /* FilterTimeTableViewCell.swift */; };
+		3C5360152069A2B5002DAA84 /* FilterTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6A365D1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift */; };
+		3C5360162069A2B5002DAA84 /* FilterCallingStatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CCFF8211EF45550004E239F /* FilterCallingStatusTableViewCell.swift */; };
+		3C5360172069A2B5002DAA84 /* FilterCallingOrgTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C38B88E1EFC58E200436BF4 /* FilterCallingOrgTableViewCell.swift */; };
+		3C5360182069A2BA002DAA84 /* CollectionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F7E1E0476C10077FDAE /* CollectionExtensions.swift */; };
+		3C5360192069A2BA002DAA84 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F7D1E0476C10077FDAE /* DataExtensions.swift */; };
+		3C53601A2069A2BA002DAA84 /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B13CC91E3BC749004FD60C /* DateExtensions.swift */; };
+		3C53601B2069A2BA002DAA84 /* MemberExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2428211EE1D848006DA7E8 /* MemberExtensions.swift */; };
+		3C53601C2069A2BA002DAA84 /* MultiValueDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85E7EE51E53B6D700CE05CD /* MultiValueDictionary.swift */; };
+		3C53601D2069A2BA002DAA84 /* UIButtonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CB191FE1EC67E330098AD1C /* UIButtonExtensions.swift */; };
+		3C53601E2069A2BA002DAA84 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C866F001E6F681B00BD6DDA /* UIColorExtension.swift */; };
+		3C53601F2069A2BA002DAA84 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2DFEB71F22C261007F716C /* UIImageExtension.swift */; };
+		3C5360202069A2BA002DAA84 /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E845FDD81FC6323A00FE3919 /* UIViewControllerExtensions.swift */; };
+		3C5360212069A2BA002DAA84 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E825658C203C8A09004A4AC7 /* StringExtensions.swift */; };
+		3C5360222069A48B002DAA84 /* PermissionEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD301ECBB81900156450 /* PermissionEnums.swift */; };
+		3C5360232069A48B002DAA84 /* Authorizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD331ECBB87A00156450 /* Authorizable.swift */; };
+		3C5360242069A48B002DAA84 /* PermissionResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD351ECBB8A800156450 /* PermissionResolver.swift */; };
+		3C5360252069A48B002DAA84 /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8CD371ECBBCAE00156450 /* PermissionManager.swift */; };
+		3C5360262069A48F002DAA84 /* ModelEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = E841701B1E79B4D600A5C049 /* ModelEnums.swift */; };
+		3C5360272069A48F002DAA84 /* Calling.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F811E0476F80077FDAE /* Calling.swift */; };
+		3C5360282069A48F002DAA84 /* FilterOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8352A2E1F1E6E620087CED7 /* FilterOptions.swift */; };
+		3C5360292069A48F002DAA84 /* Org.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F821E0476F80077FDAE /* Org.swift */; };
+		3C53602A2069A48F002DAA84 /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F831E0476F80077FDAE /* Position.swift */; };
+		3C53602B2069A48F002DAA84 /* UnitLevelOrgType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8084F841E0476F80077FDAE /* UnitLevelOrgType.swift */; };
+		3C53602C2069A48F002DAA84 /* Member.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEBAF441DCD0FBF0071BE9F /* Member.swift */; };
+		3C53602D2069A48F002DAA84 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E7E1E01FC6A00A7A618 /* Utils.swift */; };
+		3C53602E2069A48F002DAA84 /* HTVTMemberParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87A9E801E0308E800A7A618 /* HTVTMemberParser.swift */; };
+		3C53602F2069A48F002DAA84 /* LdsUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87D00B91E26EF7000FA722B /* LdsUser.swift */; };
+		3C5360302069A48F002DAA84 /* PositionRequirements.swift in Sources */ = {isa = PBXBuildFile; fileRef = E875C58D1EB2926800E04499 /* PositionRequirements.swift */; };
+		3C5360312069A48F002DAA84 /* PositionMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = E875C58F1EB3BC8300E04499 /* PositionMetadata.swift */; };
+		3C5360322069A48F002DAA84 /* MemberCallings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D51E741F0AC370009F87DC /* MemberCallings.swift */; };
+		3C5360332069A48F002DAA84 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E845FDD61FC3756F00FE3919 /* SessionManager.swift */; };
+		3C5360342069A48F002DAA84 /* UnitSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D4EFAF1F54BADF0053E3E4 /* UnitSettings.swift */; };
+		3C5360352069A6EE002DAA84 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9021DCA82A000AAFB31 /* AppConfig.swift */; };
 		3C55DEBB1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C55DEBA1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift */; };
 		3C691E621ECA4A8B00CD7672 /* FilterTimeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C691E611ECA4A8B00CD7672 /* FilterTimeTableViewCell.swift */; };
 		3C6928301F50A80D00E209D9 /* RootTabBarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C69282F1F50A80D00E209D9 /* RootTabBarUITests.swift */; };
@@ -119,7 +155,6 @@
 		3CE4C8DC1DCA824100AAFB31 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C8DB1DCA824100AAFB31 /* Assets.xcassets */; };
 		3CE4C8DF1DCA824100AAFB31 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C8DD1DCA824100AAFB31 /* LaunchScreen.storyboard */; };
 		3CE4C8EA1DCA824100AAFB31 /* Calling_WorkflowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8E91DCA824100AAFB31 /* Calling_WorkflowTests.swift */; };
-		3CE4C8F51DCA824100AAFB31 /* Calling_WorkflowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C8F41DCA824100AAFB31 /* Calling_WorkflowUITests.swift */; };
 		3CE4C90D1DCA82A000AAFB31 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9021DCA82A000AAFB31 /* AppConfig.swift */; };
 		3CE4C9101DCA82A000AAFB31 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4C9051DCA82A000AAFB31 /* Constants.swift */; };
 		3CE4C9111DCA82A000AAFB31 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C9061DCA82A000AAFB31 /* GoogleService-Info.plist */; };
@@ -828,16 +863,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3C55640F2061A8AC00F31F7A /* cwf-object.js in Resources */,
-				3C5564132061A8B800F31F7A /* current-user.js in Resources */,
-				3C5564142061A8B800F31F7A /* GoogleService-Info.plist in Resources */,
-				3C5564102061A8AF00F31F7A /* member-objects.js in Resources */,
-				3C5564152061A8C900F31F7A /* Assets.xcassets in Resources */,
-				3C5564112061A8B300F31F7A /* org-callings.js in Resources */,
-				3C5564122061A8B800F31F7A /* position-metadata.js in Resources */,
-				3C5563DF2061A60900F31F7A /* LaunchScreen.storyboard in Resources */,
-				3C55640E2061A8A600F31F7A /* lastView.js in Resources */,
-				3C5563FA2061A83500F31F7A /* Main.storyboard in Resources */,
+				3C535FE72069A296002DAA84 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -901,7 +927,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run \'pod install\' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		8E6950FB36AC6BB56B7DDA52 /* [CP] Copy Pods Resources */ = {
@@ -921,7 +947,7 @@
 		};
 		9194A4EB91B7C257E0352AA2 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -936,7 +962,7 @@
 		};
 		A443C3EBA1237FE26A822244 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -961,7 +987,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run \'pod install\' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		DA023DFD27EBA61BBBFF8B4E /* [CP] Check Pods Manifest.lock */ = {
@@ -976,7 +1002,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run \'pod install\' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1101,56 +1127,100 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3C5564072061A86C00F31F7A /* Authorizable.swift in Sources */,
-				3C5563E92061A72B00F31F7A /* DataSource.swift in Sources */,
-				3C5563E72061A6F700F31F7A /* FilterOptions.swift in Sources */,
-				3C5563E62061A6E700F31F7A /* Position.swift in Sources */,
-				3C5563F82061A82E00F31F7A /* RemoteDataSource.swift in Sources */,
-				3C5563F02061A7B000F31F7A /* AppConfig.swift in Sources */,
-				3C5563DE2061A4F700F31F7A /* RootTabBarViewController.swift in Sources */,
-				3C5563F92061A83100F31F7A /* RestAPI.swift in Sources */,
-				3C5564052061A86300F31F7A /* StringExtensions.swift in Sources */,
-				3CE4C8F51DCA824100AAFB31 /* Calling_WorkflowUITests.swift in Sources */,
-				3C5563EE2061A79300F31F7A /* Org.swift in Sources */,
-				3C5564092061A87200F31F7A /* PermissionManager.swift in Sources */,
+				3C535FF82069A2A2002DAA84 /* CWFMapViewController.swift in Sources */,
+				3C535FE620699D1C002DAA84 /* RestAPI.swift in Sources */,
+				3C53600F2069A2B5002DAA84 /* FilterApplyButtonTableViewCell.swift in Sources */,
+				3C5360232069A48B002DAA84 /* Authorizable.swift in Sources */,
+				3C535FEF2069A29C002DAA84 /* NewCallingTableViewController.swift in Sources */,
+				3C535FEB2069A29C002DAA84 /* DirectoryTableViewController.swift in Sources */,
+				3C535FE320699D1C002DAA84 /* LdsOrgApi.swift in Sources */,
+				3C53600A2069A2B0002DAA84 /* OneRightTwoLeftTableViewCell.swift in Sources */,
+				3C5360242069A48B002DAA84 /* PermissionResolver.swift in Sources */,
+				3C5360222069A48B002DAA84 /* PermissionEnums.swift in Sources */,
+				3C53602F2069A48F002DAA84 /* LdsUser.swift in Sources */,
+				3C535FE520699D1C002DAA84 /* RemoteDataSource.swift in Sources */,
+				3C535FFD2069A2A2002DAA84 /* MemberInfoView.swift in Sources */,
+				3C535FE120699D1C002DAA84 /* LdscdRestApi.swift in Sources */,
+				3C5360082069A2B0002DAA84 /* NameCallingProposedTableViewCell.swift in Sources */,
+				3C535FF52069A29C002DAA84 /* OrgFilterButton.swift in Sources */,
+				3C5360282069A48F002DAA84 /* FilterOptions.swift in Sources */,
+				3C5360022069A2B0002DAA84 /* CWFAccordionRootTableViewCell.swift in Sources */,
+				3C53601C2069A2BA002DAA84 /* MultiValueDictionary.swift in Sources */,
+				3C535FEE2069A29C002DAA84 /* MemberPickerTableViewController.swift in Sources */,
+				3C535FDA20699AC3002DAA84 /* RootTabBarViewController.swift in Sources */,
+				3C535FE020699D1C002DAA84 /* JSON.swift in Sources */,
+				3C535FF22069A29C002DAA84 /* ResetDataTableViewController.swift in Sources */,
+				3C5360172069A2B5002DAA84 /* FilterCallingOrgTableViewCell.swift in Sources */,
+				3C53602E2069A48F002DAA84 /* HTVTMemberParser.swift in Sources */,
+				3C53600E2069A2B5002DAA84 /* FilterAgeTableViewCell.swift in Sources */,
+				3C53602C2069A48F002DAA84 /* Member.swift in Sources */,
+				3C5360212069A2BA002DAA84 /* StringExtensions.swift in Sources */,
+				3C535FFF2069A2A8002DAA84 /* ControllerProtocols.swift in Sources */,
+				3C5360322069A48F002DAA84 /* MemberCallings.swift in Sources */,
+				3C5360312069A48F002DAA84 /* PositionMetadata.swift in Sources */,
+				3C5360062069A2B0002DAA84 /* InputTableViewCell.swift in Sources */,
+				3C5360132069A2B5002DAA84 /* FilterOrgTableViewCell.swift in Sources */,
+				3C5360262069A48F002DAA84 /* ModelEnums.swift in Sources */,
+				3C53601F2069A2BA002DAA84 /* UIImageExtension.swift in Sources */,
+				3C5360092069A2B0002DAA84 /* NotesTableViewCell.swift in Sources */,
+				3C5360192069A2BA002DAA84 /* DataExtensions.swift in Sources */,
+				3C53600D2069A2B0002DAA84 /* TitleAdjustableSubtitleTableViewCell.swift in Sources */,
+				3C5360052069A2B0002DAA84 /* DirectoryTableViewCell.swift in Sources */,
+				3C535FDF20699D1C002DAA84 /* Debounce.swift in Sources */,
+				3C5360272069A48F002DAA84 /* Calling.swift in Sources */,
+				3C535FF92069A2A2002DAA84 /* CWFSpinnerView.swift in Sources */,
+				3C535FF42069A29C002DAA84 /* StatusSettingsViewController.swift in Sources */,
 				3C303BF01F5A13D200C80C25 /* CallingDetailsUITests.swift in Sources */,
-				3C5563E02061A64200F31F7A /* ControllerProtocols.swift in Sources */,
-				3C5563FB2061A83800F31F7A /* CallingDetailsTableViewController.swift in Sources */,
-				3C5564062061A86900F31F7A /* PermissionEnums.swift in Sources */,
-				3C5563E52061A6DA00F31F7A /* Calling.swift in Sources */,
-				3C5563F52061A81C00F31F7A /* Debounce.swift in Sources */,
-				3C5563F12061A7B700F31F7A /* LdsUser.swift in Sources */,
-				3C5563EA2061A73300F31F7A /* LdsOrgApi.swift in Sources */,
-				3C55640D2061A89400F31F7A /* SessionManager.swift in Sources */,
-				3C5563E42061A6D100F31F7A /* ModelEnums.swift in Sources */,
-				3C5564162061ACB700F31F7A /* CWFBaseTableViewController.swift in Sources */,
-				3C5563E22061A66700F31F7A /* AppDelegate.swift in Sources */,
-				3C5563F22061A7EB00F31F7A /* PositionRequirements.swift in Sources */,
-				3C5563FD2061A84800F31F7A /* CollectionExtensions.swift in Sources */,
-				3C5563ED2061A76F00F31F7A /* PositionMetadata.swift in Sources */,
-				3C5564012061A85500F31F7A /* MultiValueDictionary.swift in Sources */,
-				3C5563FF2061A84F00F31F7A /* DateExtensions.swift in Sources */,
-				3C5564042061A85D00F31F7A /* UIImageExtension.swift in Sources */,
-				3C5563F42061A7F900F31F7A /* MemberCallings.swift in Sources */,
-				3C5563E12061A65500F31F7A /* UIViewControllerExtensions.swift in Sources */,
 				3C6928301F50A80D00E209D9 /* RootTabBarUITests.swift in Sources */,
-				3C5564082061A87000F31F7A /* PermissionResolver.swift in Sources */,
-				3C5563E82061A70E00F31F7A /* CWFCallingManagerService.swift in Sources */,
-				3C5563EC2061A76800F31F7A /* JSON.swift in Sources */,
-				3C5563FC2061A83B00F31F7A /* CallingPickerViewController.swift in Sources */,
-				3C5563FE2061A84C00F31F7A /* DataExtensions.swift in Sources */,
-				3C5563E32061A6C500F31F7A /* Member.swift in Sources */,
-				3C5563EF2061A79E00F31F7A /* UnitSettings.swift in Sources */,
-				3C5564032061A85B00F31F7A /* UIColorExtension.swift in Sources */,
-				3C5563EB2061A73900F31F7A /* LdscdRestApi.swift in Sources */,
-				3C5564022061A85800F31F7A /* UIButtonExtensions.swift in Sources */,
-				3C5563F32061A7F200F31F7A /* Constants.swift in Sources */,
-				3C55640B2061A88500F31F7A /* Utils.swift in Sources */,
-				3C5564002061A85200F31F7A /* MemberExtensions.swift in Sources */,
-				3C55640C2061A88B00F31F7A /* HTVTMemberParser.swift in Sources */,
-				3C55640A2061A88000F31F7A /* UnitLevelOrgType.swift in Sources */,
-				3C5563F72061A82B00F31F7A /* LdsRestApi.swift in Sources */,
-				3C5563F62061A82500F31F7A /* LdsFileApi.swift in Sources */,
+				3C5360352069A6EE002DAA84 /* AppConfig.swift in Sources */,
+				3C535FDB20699D1C002DAA84 /* AppDelegate.swift in Sources */,
+				3C535FC5206992BC002DAA84 /* Calling_WorkflowUITests.swift in Sources */,
+				3C53600C2069A2B0002DAA84 /* SingleFieldTableViewCell.swift in Sources */,
+				3C5360032069A2B0002DAA84 /* CWFButtonTableViewCell.swift in Sources */,
+				3C5360042069A2B0002DAA84 /* DataSubdataTableViewCell.swift in Sources */,
+				3C53601E2069A2BA002DAA84 /* UIColorExtension.swift in Sources */,
+				3C5360122069A2B5002DAA84 /* FilterGenderTableViewCell.swift in Sources */,
+				3C535FFB2069A2A2002DAA84 /* FilterButton.swift in Sources */,
+				3C535FE220699D1C002DAA84 /* LdsFileApi.swift in Sources */,
+				3C535FED2069A29C002DAA84 /* LDSCredentialsViewController.swift in Sources */,
+				3C535FDC20699D1C002DAA84 /* Constants.swift in Sources */,
+				3C535FF02069A29C002DAA84 /* OrganizationTableViewController.swift in Sources */,
+				3C5360072069A2B0002DAA84 /* LeftTitleRightLabelTableViewCell.swift in Sources */,
+				3C53600B2069A2B0002DAA84 /* MultiSelectTableViewCell.swift in Sources */,
+				3C53602A2069A48F002DAA84 /* Position.swift in Sources */,
+				3C535FEC2069A29C002DAA84 /* GoogleSettingsViewController.swift in Sources */,
+				3C535FFC2069A2A2002DAA84 /* FilterTableViewController.swift in Sources */,
+				3C5360182069A2BA002DAA84 /* CollectionExtensions.swift in Sources */,
+				3C535FFA2069A2A2002DAA84 /* CWFStatusPickerView.swift in Sources */,
+				3C5360142069A2B5002DAA84 /* FilterTimeTableViewCell.swift in Sources */,
+				3C53601B2069A2BA002DAA84 /* MemberExtensions.swift in Sources */,
+				3C53601A2069A2BA002DAA84 /* DateExtensions.swift in Sources */,
+				3C535FF32069A29C002DAA84 /* SettingsTableViewController.swift in Sources */,
+				3C535FFE2069A2A2002DAA84 /* ViewUtils.swift in Sources */,
+				3C5360152069A2B5002DAA84 /* FilterTitleTableViewCell.swift in Sources */,
+				3C5360332069A48F002DAA84 /* SessionManager.swift in Sources */,
+				3C5360202069A2BA002DAA84 /* UIViewControllerExtensions.swift in Sources */,
+				3C5360302069A48F002DAA84 /* PositionRequirements.swift in Sources */,
+				3C53601D2069A2BA002DAA84 /* UIButtonExtensions.swift in Sources */,
+				3C5360002069A2B0002DAA84 /* StatusSettingsCollectionViewCell.swift in Sources */,
+				3C535FF12069A29C002DAA84 /* OrgDetailTableViewController.swift in Sources */,
+				3C5360112069A2B5002DAA84 /* FilterCallingNumberTableViewCell.swift in Sources */,
+				3C5360342069A48F002DAA84 /* UnitSettings.swift in Sources */,
+				3C53602D2069A48F002DAA84 /* Utils.swift in Sources */,
+				3C535FDE20699D1C002DAA84 /* DataSource.swift in Sources */,
+				3C535FE82069A29C002DAA84 /* CallingDetailsTableViewController.swift in Sources */,
+				3C5360252069A48B002DAA84 /* PermissionManager.swift in Sources */,
+				3C535FF72069A2A2002DAA84 /* CWFBaseTableViewController.swift in Sources */,
+				3C535FE420699D1C002DAA84 /* LdsRestApi.swift in Sources */,
+				3C535FEA2069A29C002DAA84 /* CallingsTableViewController.swift in Sources */,
+				3C5360162069A2B5002DAA84 /* FilterCallingStatusTableViewCell.swift in Sources */,
+				3C535FDD20699D1C002DAA84 /* CWFCallingManagerService.swift in Sources */,
+				3C535FF62069A2A2002DAA84 /* CWFAccordionTableViewController.swift in Sources */,
+				3C5360292069A48F002DAA84 /* Org.swift in Sources */,
+				3C5360102069A2B5002DAA84 /* FilterBaseTableViewCell.swift in Sources */,
+				3C5360012069A2B0002DAA84 /* CWFAccordionChildTableViewCell.swift in Sources */,
+				3C535FE92069A29C002DAA84 /* CallingPickerViewController.swift in Sources */,
+				3C53602B2069A48F002DAA84 /* UnitLevelOrgType.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

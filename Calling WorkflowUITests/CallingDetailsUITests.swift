@@ -32,11 +32,12 @@ class CallingDetailsUITests: XCTestCase {
     }
     
     func testSomething() {
-        
         let tablesQuery = XCUIApplication().tables
-        tablesQuery.staticTexts["Elders Quorum"].tap()
-        tablesQuery.staticTexts["Elders Quorum Presidency"].tap()
-        tablesQuery.staticTexts["Family5, Husband (9 months)"].tap()
-        //XCTAssertEqual(, <#T##expression2: [Equatable]##[Equatable]#>)
+        tablesQuery/*@START_MENU_TOKEN@*/.staticTexts["Elders Quorum"]/*[[".cells.staticTexts[\"Elders Quorum\"]",".staticTexts[\"Elders Quorum\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        tablesQuery/*@START_MENU_TOKEN@*/.staticTexts["Instructors"]/*[[".cells.staticTexts[\"Instructors\"]",".staticTexts[\"Instructors\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        XCUIApplication().navigationBars["Elders Quorum"].otherElements["Elders Quorum"].tap()
+        
+        //XCTAssert(XCUIApplication().navigationBars.otherElements, <#T##message: String##String#>)
+        
     }
 }

@@ -9,20 +9,23 @@
 import XCTest
 
 class RootTabBarUITests: XCTestCase {
-        
+    
+    var app : XCUIApplication!
+    var rootTabBarController : RootTabBarViewController? = nil
+    
     override func setUp() {
         super.setUp()
         
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let _ = storyboard.instantiateViewController(withIdentifier: "RootTabBarViewController") as? RootTabBarViewController
-        
+        rootTabBarController = nil
         // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
         // UI tests must launch the application that they test. Doing this in setup will make sure it happens for each test method.
-        XCUIApplication().launch()
+        app = XCUIApplication()
+        app.launch()
         
         // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        
     }
     
     override func tearDown() {
@@ -30,14 +33,20 @@ class RootTabBarUITests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
+    func testNumberOfTabs() {
         // Use recording to get started writing UI tests.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+        XCTAssert(XCUIApplication().tabBars.buttons.count == 4, "There are 4 Buttons")
+        
+        
         
     }
     
-    func tabCountUITest () {
+    func testLdslogin() {
+        XCUIApplication().navigationBars["Bishopric"].buttons["backButton"].tap()
         
     }
+    
+
     
 }

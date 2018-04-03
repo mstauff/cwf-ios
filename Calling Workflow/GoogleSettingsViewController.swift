@@ -2,6 +2,7 @@
 import GoogleAPIClient
 import GTMOAuth2
 import UIKit
+import GoogleSignIn
 
 class GoogleSettingsViewController: CWFBaseViewController, AlertBox, GIDSignInUIDelegate, GIDSignInDelegate {
     
