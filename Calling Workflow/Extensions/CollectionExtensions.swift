@@ -24,6 +24,24 @@ extension Dictionary {
     func filteredDictionary( _ isIncluded: (Key, Value ) -> Bool ) -> [Key:Value] {
         return self.filter(isIncluded).toDictionary( {$0} )
     }
+    
+    /** Convert a Dictionary from one type to another type (the default .map() converts a dictionary to an array)*/
+    func mapDictionary<K:Hashable, V>( _ transformer: ( _ : Element) -> (key: K, value : V)?) -> Dictionary<K, V> {
+        var map = [K: V]()
+        for element in self {
+            if let (key, value) = transformer(element) {
+                map[key] = value
+            }
+        }
+        return map
+    }
+}
+
+/** Extension of Dictionaries that are JSON Objects to convert from the generic JSON object to a specific type of Dictionary */
+extension Dictionary where Key: ExpressibleByStringLiteral, Value: AnyObject {
+    func mapToDictionary<K:Hashable, V>( _ transformer: ( _ : Element ) -> (key: K, value: V)?) -> Dictionary<K,V> {
+        return mapDictionary(transformer)
+    }
 }
 
 extension Array {

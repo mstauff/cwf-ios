@@ -11,6 +11,9 @@ import Foundation
 struct AppConfig {
     // default list of endpoints in case we can't contact the config URL
     var ldsEndpointUrls = NetworkConstants.ldsOrgEndpoints
+    
+    // Which org types we need to load class member lists for. This isn't likely to change, so we're just storing it here rather than load it from network config
+    let classAssignmentOrgTypes : [Int] = [UnitLevelOrgType.HighPriests.rawValue, UnitLevelOrgType.Elders.rawValue, UnitLevelOrgType.ReliefSociety.rawValue, UnitLevelOrgType.YoungMen.rawValue, UnitLevelOrgType.YoungWomen.rawValue]
 
 }
 

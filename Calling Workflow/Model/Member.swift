@@ -38,6 +38,9 @@ public struct Member {
     /* Priesthood office of the member if they hold it, and if it is available from the service. HTVT includes it, some others do not.*/
     let priesthood : Priesthood?
     
+    /* Class (Quorum, YW, RS, etc.) that the member is assigned to, if any. Although in LCR there are multiple course assingments those are for SS (2nd hour), and then quorum or RS/YW (3rd hour). For purposes of callings we only need the 3rd hour assignment, and they should be mutually exclusive (can't be assigned to EQ & HP at the same time, or Laurels & RS) so we're gonig to only store a single assignment. Could go with an array in the future if needed. */
+    var classAssignment : Int64? = nil
+    
     /* This is the property that should be queried for a user's phone number. Individual phone will be used if it has a value, if not we will fall back to the household phone */
     var phone : String? {
         get  {

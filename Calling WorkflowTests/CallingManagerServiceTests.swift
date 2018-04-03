@@ -16,6 +16,8 @@ class CallingManagerServiceTests: XCTestCase {
     var positionsOrg : Org?
     var lcrOrg = Org( id: 111, unitNum: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
     var appOrg  = Org( id: 111,unitNum: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue )
+    var memberList : [Member] = []
+    let jsonReader = JsonFileLoader()
 
     class MockPermissionMgr : PermissionManager {
         override func isAuthorized(unitRoles: [UnitRole], domain: Domain, permission: Permission, targetData: Authorizable) -> Bool {
@@ -40,6 +42,8 @@ class CallingManagerServiceTests: XCTestCase {
     }
 
     class MockLdsOrgApi : LdsFileApi {
+        let jsonReader = JsonFileLoader()
+        var orgMemberJson : [JSONObject] = []
         override func ldsSignin(forUser: String, withPassword: String, _ completionHandler: @escaping (NSError?) -> Void) {
             if forUser == "valid" {
                 super.ldsSignin(forUser: forUser, withPassword: withPassword, completionHandler)
@@ -56,6 +60,22 @@ class CallingManagerServiceTests: XCTestCase {
                 }
 
             }
+        }
+        
+        override func getOrgMembers(ofSubOrgId subOrgId: Int64, _ completionHandler: @escaping ([Int64 : Int64], Error?) -> Void) {
+            if orgMemberJson.isEmpty {
+                orgMemberJson = jsonReader.loadJsonArrayFromFile("org-members")
+            }
+            let orgParser = LCROrgParser()
+            var orgAssignmentByIndId : [Int64:Int64] = [:]
+            for currOrgJson in orgMemberJson {
+                if currOrgJson[ "subOrgId" ] as? Int == Int( subOrgId ) {
+                    orgAssignmentByIndId = orgParser.memberOrgAssignments(fromJSON: currOrgJson)
+                    break
+                }
+            }
+            completionHandler(orgAssignmentByIndId, nil)
+            
         }
     }
     
@@ -110,6 +130,8 @@ class CallingManagerServiceTests: XCTestCase {
         lcrOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "lcrOrg")
         appOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "appOrg")
         positionsOrg = getSingleOrgFromFile(fileName: "org-callings")
+        memberList = getMemberList()
+        
         
         callingMgr = PartialMockCallingManager(org: nil, iMemberArray: [], permissionMgr: MockPermissionMgr() )
         InjectionMap.dataSource = mockDataSource
@@ -123,20 +145,23 @@ class CallingManagerServiceTests: XCTestCase {
         super.tearDown()
     }
     
+    
+    func getMemberList() -> [Member] {
+        let json = jsonReader.loadJsonFromFile("member-objects")
+        let memberJson = json["families"] as! [JSONObject]
+        let parser = HTVTMemberParser()
+        var memberList : [Member] = []
+        for jsonFamily in memberJson {
+            let members = parser.parseFamilyFrom(json: jsonFamily)
+            memberList.append( contentsOf: members )
+        }
+        return memberList
+    }
+    
     func getOrgFromFile( fileName: String, orgJsonName: String ) -> Org? {
         var result : Org? = nil
-        let bundle = Bundle( for: type(of: self) )
-        if let filePath = bundle.path(forResource: fileName, ofType: "js"),
-            let fileData = NSData(contentsOfFile: filePath) {
-            
-            let jsonData = Data( referencing: fileData )
-            print( jsonData.debugDescription )
-            let testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:AnyObject]
-            result = Org( fromJSON: (testJSON?[orgJsonName] as? JSONObject)! )
-            
-        } else {
-            print( "No File Path found for file" )
-        }
+        let allOrgsJSON = jsonReader.loadJsonFromFile(fileName)
+        result = Org( fromJSON: (allOrgsJSON[orgJsonName] as? JSONObject)! )
 
         return result
     }
@@ -567,6 +592,48 @@ class CallingManagerServiceTests: XCTestCase {
             networkErrorExpectation.fulfill()
         }
         waitForExpectations(timeout: 5)
+    }
+    
+    func testLoadLdsData() {
+        var ward = Org(id: 1234, unitNum: 1234, orgTypeId: 7)
+        let hpOrg = Org(id: 99020000, unitNum: 1234, orgTypeId: UnitLevelOrgType.HighPriests.rawValue)
+        let eqOrg = Org(id: 99030000, unitNum: 1234, orgTypeId: UnitLevelOrgType.Elders.rawValue)
+        let rsOrg = Org(id: 99040000, unitNum: 1234, orgTypeId: UnitLevelOrgType.ReliefSociety.rawValue)
+        let ssOrg = Org(id: 9907832, unitNum: 1234, orgTypeId: UnitLevelOrgType.SundaySchool.rawValue)
+        var ymOrg = Org(id: 99050000, unitNum: 1234, orgTypeId: UnitLevelOrgType.YoungMen.rawValue)
+        let priestOrg = Org(id: 99050300, unitNum: 1234, orgTypeId: 1)
+        let teacherOrg = Org(id: 99050350, unitNum: 1234, orgTypeId: 1)
+        let deaconOrg = Org(id: 99050400, unitNum: 1234, orgTypeId: 1)
+        ymOrg.children = [priestOrg, teacherOrg, deaconOrg]
+        ward.children = [hpOrg, eqOrg, rsOrg, ymOrg, ssOrg]
+        let asyncCompleteExpectation = self.expectation( description: "The completion handler should be called when processing is complete")
+        callingMgr.initLdsOrgData(memberList: self.memberList, org: ward, positionMetadata: [:])
+        
+        InjectionMap.ldsOrgApi = MockLdsOrgApi( appConfig: AppConfig() )
+            self.callingMgr.loadMemberClasses( forOrg : ward ) { _, _ in
+                let memberMap = self.callingMgr.memberList.toDictionaryById() { $0.individualId }
+                // someone assigned in HP
+                var assignOrgId = memberMap[11111]!.classAssignment
+                XCTAssertEqual( assignOrgId, 99020000)
+                // someone assigned in a org->suborg (Priest Quorum)
+                assignOrgId = memberMap[33333]!.classAssignment
+                XCTAssertEqual( assignOrgId, 99050400)
+                // someone that shouldn't be assigned
+                assignOrgId = memberMap[44444]!.classAssignment
+                XCTAssertNil( assignOrgId )
+                asyncCompleteExpectation.fulfill()
+                let assignedOrgs : [Int64] = memberMap.values.flatMap() {
+                    $0.classAssignment
+                }
+                // nobody should be assigned to Teachers
+                XCTAssertFalse( assignedOrgs.contains(99050350))
+                // should have 2 people assigned to RS (there's 4 members in the json, but only 2 of the ID's match members in member-objects.js)
+                XCTAssertEqual( assignedOrgs.filter(){ $0 == 99040000 }.count, 2)
+                
+            }
+
+        
+        waitForExpectations(timeout: 8)
     }
 
     func createMember( withId id: Int64 ) -> Member {

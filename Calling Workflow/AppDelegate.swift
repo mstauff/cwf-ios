@@ -58,5 +58,6 @@ struct InjectionMap {
     static var dataSource:DataSource = RemoteDataSource()
     static var ldsOrgApi:LdsOrgApi = AppConfig.useLdsOrgData ? LdsRestApi( appConfig: AppConfig() ) :  LdsFileApi( appConfig: AppConfig() )
     static var ldscdApi:LdscdRestApi = LdscdRestApi( )
+    static var dataCache: DataCache = FileDataCache(storageLocationUrl: nil)
 }
 

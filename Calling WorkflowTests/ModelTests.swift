@@ -20,6 +20,7 @@ class ModelTests: XCTestCase {
     private var fullLcrOrg = Org( id: 1,  unitNum: 123,orgTypeId: 1 )
     private var positionMetadata : Array<PositionMetadata> = []
     private var unitSettings = UnitSettings()
+    private var assignmentOrgJSON : [JSONObject] = []
 
     override func setUp() {
         super.setUp()
@@ -40,6 +41,7 @@ class ModelTests: XCTestCase {
             standardOrg = Org( fromJSON: (testJSON?["orgWithCallingsInSubOrg"] as? JSONObject)! )!
             multiDepthOrg = Org( fromJSON: (testJSON?["orgWithMultiDepthSubOrg"] as? JSONObject)! )!
             unitSettings = UnitSettings( fromJSON: (testJSON?["unitSettings"] as? JSONObject)! )!
+            
 
         } else {
             print( "No File Path found for file" )
@@ -53,6 +55,7 @@ class ModelTests: XCTestCase {
 //            print( "No File Path found for postionMetadata file" )
 //        }
         fullLcrOrg.children = Org.orgArrays(fromJSONArray: jsonFileReader.getJSONArray(fromFile: "org-callings"))
+        assignmentOrgJSON = jsonFileReader.getJSONArray(fromFile: "org-members")
     }
     
     override func tearDown() {
@@ -210,6 +213,34 @@ class ModelTests: XCTestCase {
         print( "JSON:" + jsonString! )
         
     
+    }
+    
+    func testCacheDataJson() {
+        let json = standardOrg.toJSONObject()
+        var expireDate = DateComponents()
+        expireDate.minute = 1
+        let cacheData = CacheObject( withData: json , expiringIn: expireDate)
+        let cacheJson = cacheData.toJSONObject()
+        
+        let rehydratedCache = CacheObject( fromJSON: cacheJson )!
+        let expireTimeComparison = Calendar.current.compare(cacheData.expireTime!, to: rehydratedCache.expireTime!, toGranularity: .second)
+        XCTAssertEqual(expireTimeComparison, .orderedSame)
+        XCTAssertEqual( cacheData.data.count, rehydratedCache.data.count )
+        let rehydratedOrg = Org( fromJSON:  rehydratedCache.data[0] )!
+        XCTAssertEqual( standardOrg, rehydratedOrg )
+
+    }
+    
+    func testCacheObjectExpiration() {
+        var yesterday = DateComponents()
+        yesterday.day = -1
+        // Create something that expired in the past - should report that it's expired
+        var cacheObj = CacheObject(withData: [], expiringIn: yesterday)
+        XCTAssertTrue( cacheObj.isExpired )
+        // create object with default expiration - 7 days future. Should not be expired
+        cacheObj = CacheObject(withData: [])
+        XCTAssertFalse( cacheObj.isExpired )
+        
     }
 
     func testCallingMonths() {
@@ -589,6 +620,16 @@ class ModelTests: XCTestCase {
         print( sorted.map({$0.position.displayOrder}) )
         XCTAssertEqual( [calling30, calling20Also, callingNoPosition, calling10, calling20].sorted(by: Calling.sortByDisplayOrder),
                 [calling10, calling20Also, calling20, calling30, callingNoPosition])
+    }
+    
+    func testOrgAssignments() {
+        let orgParser = LCROrgParser()
+        let hpAssignments = orgParser.memberOrgAssignments(fromJSON: assignmentOrgJSON[0])
+        XCTAssertEqual( hpAssignments, [11111: 99020000, 501: 99020000, 20113: 99020000])
+        let eqAssignments = orgParser.memberOrgAssignments(fromJSON: assignmentOrgJSON[1])
+        XCTAssertEqual( eqAssignments, [30113: 99030000])
+        let ymAssignments = orgParser.memberOrgAssignments(fromJSON: assignmentOrgJSON[3])
+        XCTAssertEqual( ymAssignments, [503111:99050300,503112:99050300,503113:99050300,33333:99050400,504113:99050400,])
     }
     
     func testPerformanceExample() {

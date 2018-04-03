@@ -15,6 +15,7 @@ class LdsFileApi : LdsOrgApi {
     private var signedIn = false
     private var memberJSON = JSONObject()
     private var orgJSON : [JSONObject] = []
+    private var orgMembersJSON : [JSONObject] = []
     private var currentUserJSON = JSONObject()
     private let jsonFileReader = JSONFileReader()
     
@@ -30,6 +31,7 @@ class LdsFileApi : LdsOrgApi {
         
         memberJSON = jsonFileReader.getJSON( fromFile: "member-objects" )
         orgJSON = jsonFileReader.getJSONArray( fromFile: "org-callings" )
+        orgMembersJSON = jsonFileReader.getJSONArray(fromFile: "org-members")
         currentUserJSON = jsonFileReader.getJSON( fromFile: "current-user" )
             signedIn = true
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
@@ -78,11 +80,11 @@ class LdsFileApi : LdsOrgApi {
         }
     }
     
-    func getOrgWithCallings( unitNum : Int64, _ completionHandler: @escaping ( Org?, Error? ) -> Void ) {
+    func getOrgWithCallings( subOrgId : Int64, _ completionHandler: @escaping ( Org?, Error? ) -> Void ) {
         let authenticated = signedIn
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
             if authenticated {
-                var unitOrg = Org( id: unitNum, unitNum: unitNum, orgTypeId: UnitLevelOrgType.Ward.rawValue )
+                var unitOrg = Org( id: subOrgId, unitNum: subOrgId, orgTypeId: UnitLevelOrgType.Ward.rawValue )
                     for jsonOrg in self.orgJSON {
                         if let childOrg = Org(fromJSON: jsonOrg) {
                             unitOrg.children.append( childOrg )
@@ -137,6 +139,27 @@ class LdsFileApi : LdsOrgApi {
             }
         }
 }
+
+    func getOrgMembers( ofSubOrgId subOrgId : Int64, _ completionHandler: @escaping([Int64:Int64], Error?) -> Void ) {
+        let authenticated = signedIn
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            let orgParser = LCROrgParser()
+            if authenticated {
+                var orgAssignmentByIndId : [Int64:Int64] = [:]
+                for currOrgJson in self.orgMembersJSON {
+                    if currOrgJson[ "subOrgId" ] as? Int == Int( subOrgId ) {
+                        orgAssignmentByIndId = orgParser.memberOrgAssignments(fromJSON: currOrgJson)
+                        break
+                    }
+                }
+                completionHandler(orgAssignmentByIndId, nil)
+            } else {
+                let errorMsg = "Error: Not signed in"
+                completionHandler( [:], NSError( domain: ErrorConstants.domain, code: ErrorConstants.networkError, userInfo: [ "error" : errorMsg ] ) )
+            }
+        }
+    }
+
 
     func ldsSignout(_ completionHandler: @escaping () -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
