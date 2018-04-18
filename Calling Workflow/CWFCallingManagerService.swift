@@ -103,6 +103,8 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
                                 completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
                                 return
                             }
+                            self.user = ldsUser
+                            completionHandler( self.user, nil )
 
                         }
                     }
