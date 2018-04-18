@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApiInjected, LdscdApiInjected {
+class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApiInjected, LdscdApiInjected, OrgServiceInjected{
     
     var ldsOrgUnit: Org? = nil
     var appDataOrg: Org? = nil
@@ -25,6 +25,7 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
     // implied ldsOrgApi  comes from LdsOrgApiInjected
     // implied dataSource  comes from DataSourceInjected
     // implied dataCache comes from DataCacheInjected
+    // implied orgService comes from OrgServiceInjected
     
     var memberCallings : [MemberCallings] {
         get {
@@ -89,14 +90,21 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
                 } else {
                     ldsApi.getCurrentUser() { (ldsUser, error) -> Void in
                         
-                        guard error == nil, let _ = ldsUser else {
-                            let errorMsg = "Error getting LDS User details: " + error.debugDescription
-                            print( errorMsg )
-                            completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
-                            return
+                        if AppConfig.devMode {
+                            // todo - this is a workaround for getCurrentUser() being broken in test.lds.org
+                            let bishopPos = Position(positionTypeId: 4, name: nil, unitNum: 56030, hidden: false, multiplesAllowed: false, displayOrder: nil, metadata: PositionMetadata())
+                            let fakeUser = LdsUser(individualId: 111, positions: [bishopPos])
+                            self.user = ldsUser == nil ? fakeUser : ldsUser
+                            completionHandler( self.user, nil )
+                        } else {
+                            guard error == nil, let _ = ldsUser else {
+                                let errorMsg = "Error getting LDS User details: " + error.debugDescription
+                                print( errorMsg )
+                                completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
+                                return
+                            }
+
                         }
-                        self.user = ldsUser
-                        completionHandler( ldsUser, nil )
                     }
                 }
             })
@@ -298,7 +306,7 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
             let restCallsGroup = DispatchGroup()
             
             // if nothing was in the cache, or anything in the cache had expired then load from the network
-            if cachedChildOrgs.isEmpty || cacheDataExpired {
+            if cachedChildOrgs.isEmpty || cacheDataExpired  {
                 print( "No class assignments in cache, or expired, loading from network" )
                 orgsToLoad.forEach() { org in
                     restCallsGroup.enter()
@@ -315,13 +323,13 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
                             synchronizedQueue.async {
                                 memberAssignmentsMap = memberAssignmentsMap.merged(withDictionary: classMembers)
                             }
+                            // convert the dictionary to a jsonobject (jsonobj. is a dictionary<String, AnyObject>, so just need the types to be correct)
+                            let classMembersJson = classMembers.mapDictionary() {
+                                (String( describing: $0 ), $1 as AnyObject )
+                                } as JSONObject
+                            // store the results in cache
+                            self.dataCache.store(json: classMembersJson, forKey: self.cacheKey(forOrg: org), expiringIn: CacheObject.defaultExpiration)
                         }
-                        // convert the dictionary to a jsonobject (jsonobj. is a dictionary<String, AnyObject>, so just need the types to be correct)
-                        let classMembersJson = classMembers.mapDictionary() {
-                            (String( describing: $0 ), $1 as AnyObject )
-                            } as JSONObject
-                        // store the results in cache
-                        self.dataCache.store(json: classMembersJson, forKey: self.cacheKey(forOrg: org), expiringIn: CacheObject.defaultExpiration)
                         restCallsGroup.leave()
                     }
                 }
@@ -411,8 +419,11 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
                             print( error.debugDescription )
                             return // exits the callback, not loadAppData
                         }
-                        var mergedOrg = self.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg, unitLevelOrg: ldsOrg)
-                        // if there have been changes write them back to google drive
+                        var mergedOrg = self.orgService.reconcileOrg(appOrg: org!, ldsOrg: ldsOrg, unitLevelOrg: ldsOrg)
+                        
+                        // we need to look for any orgs that have been removed in LCR, and use the org service to remove them from the org if there are no outstanding calling changes
+                        mergedOrg.children = mergedOrg.children.map() { self.orgService.resolveSuborgConflicts(inOrg: $0) }
+                        
                         if mergedOrg.hasUnsavedChanges {
                             self.dataSource.updateOrg(org: mergedOrg, completionHandler: { _,_ in
                                 /* do nothing - for now.
@@ -434,9 +445,20 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
                     }
                 }
                 
+                // these are the orgs that aren't in LCR and don't have any in process callings - they can be safely removed
+                let orgsToDelete = extraAppOrgs.filter() { $0.allInProcessCallings.isEmpty }
+                self.dataSource.deleteOrgs(orgs: orgsToDelete, completionHandler: nil)
+                
+                // these are the orgs that aren't in LCR, but they still have in process callings, so we need to add them in to the rest of the orgs that have been merged between LCR & app data so they appear in the app. Here we need to mark them as being in conflict, as they don't get marked in reconcile orgs (they never actually go through that code since they don't exist in both places)
+                let conflictOrgs = extraAppOrgs.filter() { $0.allInProcessCallings.isNotEmpty }.map() { orgIn -> Org in
+                    var org = orgIn
+                    org.conflict = .LdsEquivalentDeleted
+                    return org
+                }
+                
                 dataSourceGroup.notify(queue: DispatchQueue.main) {
                     // sort all the unit level orgs by their display order
-                    org.children = mergedOrgs
+                    org.children = mergedOrgs + conflictOrgs
                     self.initDatasourceData(fromOrg: org, extraOrgs: extraAppOrgs)
                     completionHandler(error == nil, extraAppOrgs.isNotEmpty, error)
                 }
@@ -512,7 +534,14 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
     
     /** Reads the given Org from google drive and calls the callback with the org converted from JSON. This doesn't update the internal org in memory or the calling maps. This should generally only be used during the startup */
     private func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
-        if let ldsOrg = self.ldsUnitOrgsMap[orgId], let orgType = UnitLevelOrgType(rawValue: ldsOrg.orgTypeId) {
+        // we prefer to use the one from LCR, but in some cases that may not be available (if the org has been deleted), so we'll use the google drive org as a fallback. This is only to do permission check, and to provide the details necessary to retrieve from remote data source
+        var selectedOrg = self.ldsUnitOrgsMap[orgId]
+        if selectedOrg == nil {
+            // we could probably just pull from appDataOrg, it should always be there, but it's O(n) rather than O(1) with the map, so we'll use the map, as in most cases it will be there. This is the fallback in case the org has been removed from LCR
+            selectedOrg = appDataOrg?.getChildOrg(id: orgId)
+        }
+        
+        if let ldsOrg = selectedOrg, let orgType = UnitLevelOrgType(rawValue: ldsOrg.orgTypeId) {
             let orgAuth = AuthorizableOrg(unitNum: ldsOrg.unitNum, unitLevelOrgId:ldsOrg.id , unitLevelOrgType: orgType, orgTypeId: ldsOrg.orgTypeId)
             guard permissionMgr.isAuthorized(unitRoles: userRoles, domain: .OrgInfo, permission: .View, targetData: orgAuth ) else  {
                 completionHandler(ldsOrg, nil)
@@ -544,198 +573,7 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
         }
     }
     
-    /** Takes an org from the application data source (currently google drive) and compares it to an org coming from lds.org (currently LCR) and reconciles any differences between the two. The lds.org version is authoritative, so we generally modify the application version to match that. But we try to be smart about it so if we have an actual calling from LCR for a CTR7 teacher without a match in google drive, we would check to see if we have a potential calling in google drive for that same calling and individual (basically it was started in the app, but then recorded officially directly in LCR). If there's a match we update the potential with the actual.
-     
-     As a general rule if there is an outstanding change that appears to be finalized in the LDS version, we don't delete, we mark it so the user can confirm deletion. The one pseudo-exception is a case where a calling had a potential change in the app, and then the LDS version has that change finalized. In that case we had an existing ID from LCR so we know it is a match and we don't really delete a record, we just remove the potential details. In other cases where there was a potential being considered (but didn't have an ID from LCR), and then in the LDS version it has been finalized we just mark the potential for the user to confirm.
-     
-     We follow a similar pattern with orgs, if the org is in the app but no loner in the LDS data we mark it for the user to confirm. If an org is in the LDS data and not in the app, we just add it.   */
-    func reconcileOrg(appOrg: Org, ldsOrg: Org, unitLevelOrg: Org) -> Org {
-        var updatedOrg = appOrg
-        
-        if let orgType = UnitLevelOrgType(rawValue: unitLevelOrg.orgTypeId) {
-            let orgAuth = AuthorizableOrg(unitNum: ldsOrg.unitNum, unitLevelOrgId:unitLevelOrg.id , unitLevelOrgType: orgType, orgTypeId: ldsOrg.orgTypeId)
-            guard permissionMgr.isAuthorized(unitRoles: userRoles, domain: .OrgInfo, permission: .View, targetData: orgAuth ) else  {
-                return ldsOrg
-            }
-        } else {
-            // if we can't validate permissions, only return lds version
-            return ldsOrg
-        }
-        
-        
-        let appOrgIds = Set<Int64>(appOrg.children.map( { $0.id } ))
-        let ldsOrgIds = Set<Int64>(ldsOrg.children.map( { $0.id } ))
-        
-        // get the IDs that are only in the app, no longer in LCR. These need to be marked for deletion
-        let appUniqueIds = appOrgIds.subtracting( ldsOrgIds )
-        // get the IDs that are only in LCR, these will need to be added to the app data
-        let ldsUniqueIds = ldsOrgIds.subtracting( appOrgIds )
-        var updatedChildren : [Org] = []
-        for appOrgChild in appOrg.children {
-            // if the child org is in the list of app only children, then it no longer exists in LCR, so we need to mark it as a conflict that should be removed
-            if appUniqueIds.contains( appOrgChild.id ) {
-                var updatedChild = appOrgChild
-                updatedChild.conflict = .LdsEquivalentDeleted
-                updatedChildren.append( updatedChild )
-                updatedOrg.hasUnsavedChanges = true
-            } else {
-                // otherwise, it exists in both places, so we recursively call to reconcile the child orgs
-                let reconciledChildOrg = reconcileOrg(appOrg: appOrgChild, ldsOrg: ldsOrg.getChildOrg(id: appOrgChild.id)!, unitLevelOrg: unitLevelOrg )
-                updatedChildren.append( reconciledChildOrg )
-                
-                // if we've already marked that there are changes to this org then we don't want to overwrite that with false from a child that didn't change, so if it's already marked for this org we use that, if not we'll look to the child to see if it's changed
-                updatedOrg.hasUnsavedChanges = updatedOrg.hasUnsavedChanges || reconciledChildOrg.hasUnsavedChanges
-            }
-        }
-        
-        // if it's only in the lds org structure it's a new org that needs to be added to the app
-        for ldsOrgChildId in ldsUniqueIds {
-            if let ldsOrgChild = ldsOrg.getChildOrg(id: ldsOrgChildId) {
-                updatedChildren.append( ldsOrgChild )
-                updatedOrg.hasUnsavedChanges = true
-            }
-        }
-        // sort the child orgs by display order
-        updatedOrg.children = updatedChildren.sorted(by: Org.sortByDisplayOrder)
-        
-        // now reconcile the callings in the current org
-        updatedOrg = reconcileCallings(inSubOrg: updatedOrg, ldsOrgVersion: ldsOrg)
-        
-        // sort any callings in the org by display order
-        updatedOrg.callings = updatedOrg.callings.sorted(by: Calling.sortByDisplayOrder)
-        
-        
-        return updatedOrg
-        
-    }
-    
-    /**Takes an org from the app data source (currently google drive) and compares the callings in it to the callings in an org from LCR to look for any differences. LCR is the authoritative source so we're mostly looking to make the app data match it, but we try to do it smartly where we looking for corresponding proposed changes that might match actual changes, and either automatically update the proposed data, or if we're not sure if something in the app data should be removed we mark it as being in conflict so it can be displayed to the user and resolved by them */
-    private func reconcileCallings(inSubOrg appOrg: Org, ldsOrgVersion ldsOrg: Org) -> Org {
-        // we could take and return [Calling] as params and return objects, but we also need to indicate if there were any changes that were made (currently stored in org.hasUnsavedChanges). That would require we return a tuple of (Bool, [Calling]), so rather than do that we'll stick with the Org object as the params & return type
-        var updatedOrg = appOrg
-        let appCallingsById = updatedOrg.callings.toDictionaryById() { $0.id }
-        let appCallingIds = appCallingsById.keys
-        
-        let ldsOrgCallingsById = ldsOrg.callings.toDictionaryById() { $0.id }
-        let ldsOrgCallingIds = ldsOrgCallingsById.keys
-        
-        
-        for (ldsCallingId, ldsCalling) in ldsOrgCallingsById {
-            
-            // If the ID from lcr is already in our DB then there's nothing that's changed about it (you can't change the person holding the calling without getting a new calling ID). We could have changes from the app (with proposed or notes) but there are no changes on the LDS.org side that would need to be merged in.
-            if !appCallingIds.contains(ldsCallingId) {
-                // it's not in the app org db so it needs to be added.
-                // first check to see if there's a potential calling in the org with same position
-                
-                // get any callings of the same position type to see if there's a potential that this should replace.
-                // we already know it's in the same parent org so only thing to check is if the position is the same.
-                // If it has an ID that matches another lds.org calling then we can safely eliminate it as a potential match as well
-                let matchingPotentialCallings = appOrg.callings.filter() {
-                    $0.position == ldsCalling.position && ( $0.id == nil || !ldsOrgCallingIds.contains( $0.id! ) )
-                }
-                var mergedProposedIndId : Int64? = nil
-                var mergedProposedStatus : CallingStatus? = nil
-                var mergedNotes : String? = nil
-                
-                // xcode warning says this should be a let constant since it never gets changed, but if you make it a let then it won't compile with a "let pattern can't appear nested in already immutable context"
-                for var potentialCalling in matchingPotentialCallings {
-                    // if we have an exact match - based on position w/o multiples then delete the potential (the actual will be added below when we add new callings from LCR)
-                    // todo - review this - may be a better way - detect that nothing has changed so don't delete the google drive version and add the LCR version
-                    if potentialCalling == ldsCalling  {
-                        // if it's a different person that holds the actual calling, we'll merge the proposed individual into the actual, before we remove the proposed calling. If they do match then we just want to remove the proposed without merging any details
-                        if potentialCalling.proposedIndId != ldsCalling.existingIndId {
-                            // it's a different person that was proposed, so we'll merge them into the actual
-                            mergedProposedIndId = potentialCalling.proposedIndId
-                            mergedProposedStatus = potentialCalling.proposedStatus
-                            mergedNotes = potentialCalling.notes
-                        }
-                        updatedOrg = updatedOrg.updatedWith(callingToDelete: potentialCalling) ?? updatedOrg
-                        updatedOrg.hasUnsavedChanges = true
-                    } else {
-                        // we don't have an exact match (probably a case where multiples are allowed)
-                        // if any potentials have an indId that matches the new actual then delete the potential
-                        // or if the potential is empty we also want to overwrite it
-                        if potentialCalling.proposedIndId == ldsCalling.existingIndId || potentialCalling.proposedIndId == nil {
-                            updatedOrg = updatedOrg.updatedWith(callingToDelete: potentialCalling) ?? updatedOrg
-                            updatedOrg.hasUnsavedChanges = true
-                        }
-                    }
-                }
-                
-                // Now need to add the existing calling from LCR
-                if let ldsCallingOrg = ldsCalling.parentOrg, let appCallingOrg = appOrg.id == ldsCallingOrg.id ? appOrg : appOrg.getChildOrg(id: ldsCallingOrg.id) {
-                    let callingFromLcr = Calling(id: ldsCalling.id, cwfId: nil, existingIndId: ldsCalling.existingIndId, existingStatus: .Active, activeDate: ldsCalling.activeDate, proposedIndId: mergedProposedIndId, status: mergedProposedStatus, position: ldsCalling.position, notes: mergedNotes, parentOrg: appCallingOrg, cwfOnly: false)
-                    updatedOrg = updatedOrg.updatedWith(newCalling: callingFromLcr) ?? updatedOrg
-                    updatedOrg.hasUnsavedChanges = true
-                }
-            }
-        }
-        
-        // we've addressed any differences between callings that exist in LCR but weren't up to date in the app. Now we need to look for any that are still in the app but aren't in LCR. For this step we only care about callings with actual ID's (that means they were at one point in LCR, but are no longer). Any callings in the app without an ID are just proposed callings that shouldn't exist in LCR yet, so we ignore those
-        let callingIDsToRemove = Set(appCallingIds).subtracting(Set(ldsOrgCallingIds))
-        for callingId in callingIDsToRemove {
-            if var appCallingNotInLcr = appCallingsById[callingId] {
-                if let mergedCalling = updatedOrg.getCalling( withSameId: appCallingNotInLcr ) {
-                    // if multiples are allowed and there's no potential data then just go ahead and delete it.
-                    if mergedCalling.position.multiplesAllowed && mergedCalling.proposedIndId == nil{
-                        updatedOrg = updatedOrg.updatedWith(callingToDelete: appCallingNotInLcr) ?? updatedOrg
-                        updatedOrg.hasUnsavedChanges = true
-                    } else {
-                        // if multiples are not allowed, or there's potential data then we just need to remove the actual portion of the calling
-                        
-                        let releasedLcrCalling = mergedCalling.withActualReleased()
-                        if mergedCalling.position.multiplesAllowed {
-                            // if multiples are allowed we have to remove the calling with the ID, then add in the updated.
-                            // We can't do a straight update with the released calling, because the released version doesn't have the ID, and there's no way to definitively match without that
-                            updatedOrg = updatedOrg.updatedWith(callingToDelete: mergedCalling) ?? updatedOrg
-                            updatedOrg = updatedOrg.updatedWith(newCalling: releasedLcrCalling) ?? updatedOrg
-                        } else {
-                            // if no multiples, we can difinitively match based on calling type, so we can just do an update
-                            updatedOrg = updatedOrg.updatedWith(changedCalling: releasedLcrCalling) ?? updatedOrg
-                        }
-                        updatedOrg.hasUnsavedChanges = true
-                    }
-                }
-                // if it's not in the updatedOrg, then nothing to worry about, nothing to remove
-            }
-        }
-        
-        let emptyLCRCallings = ldsOrg.callings.filter() { $0.id == nil && $0.position.multiplesAllowed }
-        // for the app callings we need any that id is nil, or any that have been marked as a conflict (that's a case where the id could potentially be nil, pending user response
-        let emptyAppCallings = updatedOrg.callings.filter() { ($0.id == nil || $0.conflict != nil) && !$0.cwfOnly  && $0.position.multiplesAllowed }
-        
-        // reduce to map  by type, then look for equivalent amounts.
-        let emptyLCRCallingsByType = MultiValueDictionary<Int, Calling>.initFromArray(array: emptyLCRCallings, transformer: {$0.position.positionTypeId}  )
-        let emptyAppCallingsByType = MultiValueDictionary<Int, Calling>.initFromArray(array: emptyAppCallings, transformer: {$0.position.positionTypeId} )
-        emptyLCRCallingsByType.dictionary.forEach() { (positionTypeId, callings) in
-            let equivalentAppCallings = emptyAppCallingsByType.getValues(forKey: positionTypeId)
-            // compare size
-            let numCallingsDiff = abs(equivalentAppCallings.count - callings.count)
-            
-            
-            if equivalentAppCallings.count < callings.count {
-                // we need to add the empty from LCR to updated Org
-                for _ in 1...numCallingsDiff {
-                    updatedOrg.callings.append( Calling( forPosition: callings[0].position ) )
-                }
-                updatedOrg.hasUnsavedChanges = true
-            } else if equivalentAppCallings.count > callings.count {
-                // of the empty callings that are candidates to remove we need to make sure that they don't have any proposed data, and then we remove up to numCallingsDiff of completely empty callings.
-                let cwfIdsToRemove = equivalentAppCallings.filter() {
-                    $0.proposedIndId == nil && $0.proposedStatus == .None && $0.notes == nil
-                    }.prefix(numCallingsDiff).flatMap() { $0.cwfId }
-                if cwfIdsToRemove.isNotEmpty {
-                    updatedOrg.callings = updatedOrg.callings.filter() { $0.cwfId != nil && !cwfIdsToRemove.contains(item: $0.cwfId!) }
-                    updatedOrg.hasUnsavedChanges = true
-                }
-            }
-            
-        }
-        
-        return updatedOrg
-    }
-    
-    /** 
+    /**
      utility method to combine existing calling data and proposed calling data into a single calling object
      */
     private func mergeCallingData( fromActualCalling existingCalling: Calling, andProposedCalling proposedCalling: Calling ) -> Calling {
@@ -1052,8 +890,13 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
     
     func unitLevelOrg( forSubOrg subOrgId: Int64) -> Org? {
         var org : Org? = nil
-        if let orgId = unitLevelOrgsForSubOrgs[subOrgId], let rootOrg = ldsUnitOrgsMap[orgId] {
-            org = rootOrg
+        if let orgId = unitLevelOrgsForSubOrgs[subOrgId] {
+            if let rootOrg = ldsUnitOrgsMap[orgId] {
+                org = rootOrg
+            } else {
+                // the org may not be in the map if it's one that is no longer in LCR, so try looking it up from appData
+                org = appDataOrg?.getChildOrg(id: orgId)
+            }
         }
         
         return org

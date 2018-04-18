@@ -110,7 +110,8 @@ class RootTabBarViewController: UITabBarController, LDSLoginDelegate, Initialize
                 self?.appDelegate?.callingManager.loadLdsData(forUnit: validUnitNum, ldsUser: validUser, useCachedVersion: useCache) { [weak self] (dataLoaded, loadingError) -> Void in
                     // todo - if we change this callback to provide the unitdata then ldsOrgUnit could be made private. Will that work????
                     let childView = self?.selectedViewController as? OrganizationTableViewController
-                    if dataLoaded, let callingMgr = self?.appDelegate?.callingManager, let ldsOrg = callingMgr.ldsOrgUnit {
+                    // we want to make sure we got data back from LDS.org before we move on to load from google drive. If in some case we got back succeess but no actual data and just proceed to loading google data it would remove all the files because they don't exist in LCR - it would treat them as if they had all been deleted.
+                    if dataLoaded, let callingMgr = self?.appDelegate?.callingManager, let ldsOrg = callingMgr.ldsOrgUnit, ldsOrg.children.isNotEmpty {
                         // todo - rename hasDataSourceCredentials - indicate that it's also signing in
                         callingMgr.hasDataSourceCredentials(forUnit: validUnitNum ) { (hasCredentials, signInError) -> Void in
                             if hasCredentials  {

@@ -148,6 +148,8 @@
 		E8189A8B1DDA2D4600E983D4 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8189A891DDA2D4600E983D4 /* ModelTests.swift */; };
 		E8189A931DDA74E700E983D4 /* cwf-object.js in Resources */ = {isa = PBXBuildFile; fileRef = E8189A921DDA74E700E983D4 /* cwf-object.js */; };
 		E825658D203C8A09004A4AC7 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E825658C203C8A09004A4AC7 /* StringExtensions.swift */; };
+		E8270E182072EA9500E26A93 /* OrgService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8270E172072EA9500E26A93 /* OrgService.swift */; };
+		E82F0AB4208660F700984025 /* OrgServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82F0AB3208660F700984025 /* OrgServiceTests.swift */; };
 		E82F306E1F28030200E20D5E /* OrgFilterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82F306D1F28030200E20D5E /* OrgFilterButton.swift */; };
 		E8316CE91E26AC1E0091419D /* LdscdRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */; };
 		E8316CEA1E26AC1E0091419D /* LdsRestApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8316CE81E26AC1E0091419D /* LdsRestApi.swift */; };
@@ -324,6 +326,8 @@
 		E8256586203B6650004A4AC7 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		E825658B203C8543004A4AC7 /* Test.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Test.xcconfig; sourceTree = "<group>"; };
 		E825658C203C8A09004A4AC7 /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StringExtensions.swift; path = Extensions/StringExtensions.swift; sourceTree = "<group>"; };
+		E8270E172072EA9500E26A93 /* OrgService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrgService.swift; sourceTree = "<group>"; };
+		E82F0AB3208660F700984025 /* OrgServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrgServiceTests.swift; sourceTree = "<group>"; };
 		E82F306D1F28030200E20D5E /* OrgFilterButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OrgFilterButton.swift; path = Controllers/OrgFilterButton.swift; sourceTree = "<group>"; };
 		E8316CE71E26AC1E0091419D /* LdscdRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdscdRestApi.swift; sourceTree = "<group>"; };
 		E8316CE81E26AC1E0091419D /* LdsRestApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LdsRestApi.swift; sourceTree = "<group>"; };
@@ -480,6 +484,7 @@
 				E8F959641E30129700C13EC9 /* LdsFileApi.swift */,
 				E8F959651E30129700C13EC9 /* LdsOrgApi.swift */,
 				E8316CE81E26AC1E0091419D /* LdsRestApi.swift */,
+				E8270E172072EA9500E26A93 /* OrgService.swift */,
 				3CE4C90B1DCA82A000AAFB31 /* RemoteDataSource.swift */,
 				3CE4C90C1DCA82A000AAFB31 /* RestAPI.swift */,
 				3CE4C8D81DCA824100AAFB31 /* Main.storyboard */,
@@ -494,6 +499,7 @@
 		3CE4C8E81DCA824100AAFB31 /* Calling WorkflowTests */ = {
 			isa = PBXGroup;
 			children = (
+				E82F0AB3208660F700984025 /* OrgServiceTests.swift */,
 				E8316CEB1E26AD4F0091419D /* RestAPITests.swift */,
 				E8084F7B1E046D5D0077FDAE /* DateExtensions.swift */,
 				E841701D1E7C767A00A5C049 /* reconcile-test-orgs.js */,
@@ -915,7 +921,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run \'pod install\' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		8E6950FB36AC6BB56B7DDA52 /* [CP] Copy Pods Resources */ = {
@@ -975,7 +981,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run \'pod install\' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		DA023DFD27EBA61BBBFF8B4E /* [CP] Check Pods Manifest.lock */ = {
@@ -990,7 +996,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run \'pod install\' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1020,6 +1026,7 @@
 				E85E7EE61E53B6D700CE05CD /* MultiValueDictionary.swift in Sources */,
 				E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */,
 				3CBDDCAE1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift in Sources */,
+				E8270E182072EA9500E26A93 /* OrgService.swift in Sources */,
 				E8E8CD341ECBB87A00156450 /* Authorizable.swift in Sources */,
 				E8084F861E0476F80077FDAE /* Org.swift in Sources */,
 				3C20DF611DD28A3B00F9847E /* OrgDetailTableViewController.swift in Sources */,
@@ -1099,6 +1106,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E82F0AB4208660F700984025 /* OrgServiceTests.swift in Sources */,
 				E8A91ED71EBCF4E00061EC12 /* PermissionsTests.swift in Sources */,
 				E8B13CCC1E3BD80A004FD60C /* DataSourceTests.swift in Sources */,
 				E8F1FC8F205353C9007AC0D5 /* JsonFileLoader.swift in Sources */,
@@ -1233,6 +1241,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_MODE = true;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1287,6 +1296,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_MODE = false;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1439,6 +1449,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_MODE = false;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;

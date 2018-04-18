@@ -94,8 +94,20 @@ public struct Org : JSONParsable  {
 
     var hasUnsavedChanges = false
     
-    /// Indicates that this org is new to our data (i.e. the org was created in LCR). This enum will allow us to visually mark the org so the user can be aware of the change.
-    var conflict : ConflictCause? = nil
+    /// Indicates that this org is somehow in conflict with what's in LCR (generally that it has been removed from LCR). This enum will allow us to visually mark the org so the user can be aware of the change.
+    var conflict : ConflictCause? = nil {
+        didSet {
+            // if the org no longer exists in LCR then we propogate that down to all sub orgs, since they will no longer exist either.
+            if conflict == .LdsEquivalentDeleted {
+                self.children = self.children.map() {
+                    var child = $0
+                    child.conflict = conflict
+                    return child
+                }
+            }
+        }
+        
+    }
         
     /** Function to create an array of Orgs from an array of JSON objects. When we get LCR data for a unit it comes as an array of all the root level orgs in a unit. It isn't contained in a parent Org structure, so this is a convenience method for processing those root level orgs in one call */
     static func orgArrays( fromJSONArray json: [JSONObject]) -> [Org] {
@@ -211,6 +223,40 @@ public struct Org : JSONParsable  {
         return depth
     }
     
+    /** Returns an optional int indicating whether the org is a child of this org, or a child at some depth of this org. If this method returns nil it indicates the child org is not found int this org at all. A return of 0 means it is a direct child of the current org (it exists in org.children[]). If it returns greater than 0 that indicates that it is a child within one of the child suborgs of this org */
+    public func getOrgDepth( subOrg: Org ) -> Int? {
+        var depth : Int? = nil
+        if self.children.contains( subOrg ) {
+            depth = 0
+        } else {
+            for childOrg in self.children {
+                if let childDepth = childOrg.getOrgDepth(subOrg: subOrg) {
+                    depth = childDepth + 1
+                    break;
+                }
+            }
+        }
+        return depth
+    }
+    
+    public func updatedWith( childOrgRemoved childOrg : Org ) -> Org? {
+        // the org has to be somewhere within this org for us to update it
+        guard let orgDepth = self.getOrgDepth(subOrg: childOrg) else {
+            return nil
+        }
+        
+        var updatedOrg = self
+        // if the org exists in the current org (not a child org further down) then we go ahead and remove it from the children
+        if orgDepth == 0 {
+            updatedOrg.children = updatedOrg.children.filter({ $0 != childOrg })
+        } else {
+            // otherwise the org is in a child org, so we go through all the children and attempt to remove it. If the calling isn't in a given child org the method will return nil in which case we just use the org as it is. If the org does contain the calling then the method returns a new copy of the org and we will place that in the list of child orgs
+            updatedOrg.children = self.children.map() { $0.updatedWith(childOrgRemoved: childOrg) ?? $0 }
+        }
+        
+        return updatedOrg
+    }
+    
     /** Returns a new org with all callings within the org updated with any new metadata contained in the dictionary passed in to the method */
     public func updatedWith( positionMetadata: [Int:PositionMetadata] ) -> Org {
         var updatedOrg = self
@@ -321,7 +367,7 @@ private struct OrgJsonKeys {
     static let orgName = "defaultOrgName"
     static let customOrgName = "customOrgName"
     static let members = "members"
-    static let memberIndId = "individualId"
+    static let memberIndId = "id"
     
     static let lcrOrgTypeId = "firstOrgTypeId"
 }

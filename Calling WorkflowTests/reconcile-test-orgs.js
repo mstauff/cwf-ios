@@ -600,5 +600,158 @@
       ],
       "callings": []
     }
-  ]
+  ],
+   "orgConflictLcr": [
+        {
+            "orgTypeId": 77,
+            "unitNumber": 1111,
+            "defaultOrgName": "Primary",
+            "displayOrder": 700,
+            "customOrgName": null,
+            "subOrgId": 7428354,
+            "children": [
+                {
+                    "displayOrder": 310,
+                    "orgTypeId": 35,
+                    "unitNumber": 1111,
+                    "defaultOrgName": "CTR 6 - suborg in both - no conflict",
+                    "customOrgName": null,
+                    "subOrgId": 47283,
+                    "children": [],
+                    "callings": []
+                }
+            ],
+            "callings": []
+        },
+        {
+            "orgTypeId": 73,
+            "unitNumber": 1111,
+            "defaultOrgName": "Young Men",
+            "displayOrder": 1500,
+            "customOrgName": null,
+            "subOrgId": 839202,
+            "children": [],
+            "callings": []
+        }
+    ],
+   "orgConflictApp" :[
+        {
+            "orgTypeId": 77,
+            "unitNumber": 1111,
+            "defaultOrgName": "Primary",
+            "displayOrder": 700,
+            "customOrgName": null,
+            "subOrgId": 7428354,
+            "children": [
+                {
+                    "displayOrder": 310,
+                    "orgTypeId": 35,
+                    "unitNumber": 1111,
+                    "defaultOrgName": "CTR 6 - suborg in both - no conflict",
+                    "customOrgName": null,
+                    "subOrgId": 47283,
+                    "children": [],
+                    "callings": []
+                },
+                {
+                    "displayOrder": 320,
+                    "orgTypeId": 35,
+                    "unitNumber": 1111,
+                    "defaultOrgName": "CTR 7 - only in app - no pending, should be removed",
+                    "customOrgName": null,
+                    "subOrgId": 38432972,
+                    "children": [],
+                    "callings": []
+                },
+                {
+                    "displayOrder": 350,
+                    "orgTypeId": 40,
+                    "unitNumber": 1111,
+                    "defaultOrgName": "CTR 8 - only in app - has pending - should be marked conflict",
+                    "customOrgName": null,
+                    "subOrgId": 752892,
+                    "children": [],
+                    "callings": [
+                        {
+                            "memberId": 283,
+                            "existingStatus": "ACTIVE",
+                            "activeDate": "20150922",
+                            "positionId": 408230,
+                            "cwfId": null,
+                            "positionTypeId": 1482,
+                            "positionTypeEnum": "PRIMARY_WORKER_CTR_8",
+                            "position": "Primary Teacher",
+                            "hidden": false,
+                            "allowMultiple": true,
+                            "proposedStatus": "APPROVED",
+                            "proposedIndId": 383,
+                            "notes": null,
+                            "editableByOrg": true
+                        }
+                        ]
+                }
+            ],
+            "callings": []
+        },
+        {
+            "orgTypeId": 73,
+            "unitNumber": 1111,
+            "defaultOrgName": "Young Men",
+            "displayOrder": 1500,
+            "customOrgName": null,
+            "subOrgId": 839202,
+            "children": [
+                {
+                    "displayOrder": 1400,
+                    "orgTypeId": 739,
+                    "unitNumber": 1111,
+                    "defaultOrgName": "Boy Scouts - only in app - outstanding callings in sub-org - this and suborgs should be marked conflict",
+                    "customOrgName": null,
+                    "subOrgId": 839500,
+                    "children": [
+                        {
+                            "displayOrder": 1440,
+                            "orgTypeId": 1700,
+                            "unitNumber": 1111,
+                            "defaultOrgName": "Varsity",
+                            "customOrgName": null,
+                            "subOrgId": 839510,
+                            "children": [],
+                            "callings": [
+                                {
+                                    "memberId": null,
+                                    "existingStatus": null,
+                                    "activeDate": null,
+                                    "positionId": null,
+                                    "cwfId": "278423-384728-237482-2247",
+                                    "positionTypeId": 1459,
+                                    "positionTypeEnum": "VARSITY_COACH",
+                                    "position": "Varsity Coach",
+                                    "hidden": false,
+                                    "allowMultiple": false,
+                                    "proposedStatus": "PROPOSED",
+                                    "proposedIndId": 890,
+                                    "notes": "calling two levels deep",
+                                    "editableByOrg": true
+                                }
+                            ]
+                        },
+                        {
+                            "displayOrder": 1450,
+                            "orgTypeId": 1800,
+                            "unitNumber": 1111,
+                            "defaultOrgName": "Scouts",
+                            "customOrgName": null,
+                            "subOrgId": 839512,
+                            "children": [],
+                            "callings": []
+                        }
+                    ],
+                    "callings": []
+                }
+            ],
+            "callings": []
+        }
+    ]
+
 }
