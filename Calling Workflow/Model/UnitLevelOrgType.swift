@@ -19,7 +19,6 @@ public enum UnitLevelOrgType : Int  {
     
     case Bishopric = 1179
     case BranchPresidency = 1200
-    case HighPriests = 69
     case Elders = 70
     case ReliefSociety = 74
     case YoungMen = 73
@@ -30,9 +29,9 @@ public enum UnitLevelOrgType : Int  {
     case BranchMissionaries = 1283
     case Other = 1185
     
-    static let wardOrgTypes = [Bishopric, HighPriests, Elders, ReliefSociety, YoungMen, YoungWomen, SundaySchool, Primary, WardMissionaries, Other]
+    static let wardOrgTypes = [Bishopric, Elders, ReliefSociety, YoungMen, YoungWomen, SundaySchool, Primary, WardMissionaries, Other]
     
-    static let branchOrgTypes = [BranchPresidency, HighPriests, Elders, ReliefSociety, YoungMen, YoungWomen, SundaySchool, Primary, BranchMissionaries, Other]
+    static let branchOrgTypes = [BranchPresidency, Elders, ReliefSociety, YoungMen, YoungWomen, SundaySchool, Primary, BranchMissionaries, Other]
     
 }
 

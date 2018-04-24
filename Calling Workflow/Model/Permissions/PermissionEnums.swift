@@ -65,12 +65,6 @@ public enum PositionType : Int {
     case BranchExecSec = 1278
     // case BranchAsstClerk = 790
     
-    case HPGroupLeader = 133
-    case HP1stAssistant = 134
-    case HP2ndAssistant = 135
-    case HPSecretary = 136
-    //    case HPAsstSecretary = ???
-    
     case EQPres = 138
     case EQ1stCounselor = 139
     case EQ2ndCounselor = 140
@@ -109,8 +103,6 @@ public enum PositionType : Int {
             return RoleType.UnitAdmin
         case .BranchPres, .Branch1stCounselor, .Branch2ndCounselor, .BranchExecSec, .BranchClerk :
             return RoleType.UnitAdmin
-        case .HPGroupLeader, .HP1stAssistant, .HP2ndAssistant, .HPSecretary :
-            return .PriesthoodOrgAdmin
         case .EQPres, .EQ1stCounselor, .EQ2ndCounselor, .EQSecretary :
             return .PriesthoodOrgAdmin
         case .YMPres, .YM1stCounselor, .YM2ndCounselor, .YMSecretary :
@@ -136,8 +128,6 @@ public enum PositionType : Int {
             return .Bishopric
         case .BranchPres, .Branch1stCounselor, .Branch2ndCounselor, .BranchExecSec, .BranchClerk :
             return .BranchPresidency
-        case .HPGroupLeader, .HP1stAssistant, .HP2ndAssistant, .HPSecretary :
-            return .HighPriests
         case .EQPres, .EQ1stCounselor, .EQ2ndCounselor, .EQSecretary :
             return .Elders
         case .YMPres, .YM1stCounselor, .YM2ndCounselor, .YMSecretary :
