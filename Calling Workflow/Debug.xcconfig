@@ -9,3 +9,4 @@
 APPCONFIG_URL = http:\/\/dev-config-server-ldscd.7e14.starter-us-west-2.openshiftapps.com/cwf/config?env=test&signIn=signin-int
 USE_LDS_ORG_DATA = false
 AUTHORIZE_REMOTE_DATA_WITH_LDS_ACCT = false
+DEVELOPMENT_MODE = true

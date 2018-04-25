@@ -24,8 +24,8 @@
         }
     },
     {
-        "positionTypeId": 1395,
-        "shortName": "District Supervisor",
+        "positionTypeId": 1394,
+        "shortName": "Ministering Supervisor",
         "requirements": {
             "gender" : "MALE",
             "priesthood": ["DEACON", "TEACHER", "PRIEST","ELDER", "HIGH_PRIEST"]

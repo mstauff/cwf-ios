@@ -192,6 +192,16 @@ class LdsRestApi : RestAPI, LdsOrgApi {
                 return
             }
             print( "Current User: \(jsonData)" )
+            // todo - need to create a shell org that has the unitNum & parentUnitNum, and return it in the completion handler, OR find a new call that can get the parentUnitNum for the unitNum (we will need this eventually for getting stake callings)
+            //            let potentialUnitNums = userPositions.flatMap() { $0.unitNum }
+            //            var parentUnitJson : JSONObject? = nil
+            //            if let units = json["units"] as? [JSONObject] {
+            //                // get a parentUnit object that has
+            //                // todo - pseudocode
+            //                //            parentUnitJson = units.first(where: { $0["localUnits"].string.contains(potentialUnitNums)})
+            //            }
+            
+            
 
             completionHandler( LdsUser( fromJSON: jsonData ), nil )
         }
@@ -243,14 +253,12 @@ class LdsRestApi : RestAPI, LdsOrgApi {
     
     func getOrgWithCallings( subOrgId : Int64, _ completionHandler: @escaping ( Org?, Error? ) -> Void ) {
         // this method is only called at startup where we should always have a session, so not going to worry about checking it here. If we add a resync option that includes a new ward list then we may need to add session checking
-        getOrgJson(subOrgId: subOrgId ) { data, error in
-            // todo - guard error
+        getOrgJson(subOrgId: nil ) { data, error in
             guard error == nil, let responseData = data else {
                 completionHandler( nil, error )
                 return
             }
             
-            // todo - where do we get the orgTypeId????
             var org : Org = Org(id: subOrgId, unitNum: subOrgId, orgTypeId: UnitLevelOrgType.Ward.rawValue, orgName: "", displayOrder: 1, children: [], callings: [])
 
             let childOrgsJson = responseData.jsonArrayValue
@@ -261,9 +269,16 @@ class LdsRestApi : RestAPI, LdsOrgApi {
     }
     
     /** Both getOrgWithCallings and getOrgMembers use the same call to get an org from LCR, this method does the fetch from LCR and returns the JSON, then those calls pull out different elements of the JSON that are needed. */
-    func getOrgJson( subOrgId : Int64, _ completionHandler: @escaping( Data?, Error? ) -> Void ) {
-        var url = appConfig.ldsEndpointUrls[NetworkConstants.callingsListURLKey]! + "?lang=eng"
-        url = url.replacingOccurrences(of: ":unitNum", with: String(subOrgId))
+    func getOrgJson( subOrgId : Int64?, _ completionHandler: @escaping( Data?, Error? ) -> Void ) {
+        // if there's a suborgId then we are looking for a specific sub-org (EQ, YM) and the URL includes a subOrgId= param. If there's no subOrgId then we're just looking for the entire ward/stake, so no subOrgId is needed (also we append the lang parameter different)
+        var url : String = ""
+        if let validSubOrgId = subOrgId {
+            url = appConfig.ldsEndpointUrls[NetworkConstants.classAssignmentsURLKey]! + "&lang=eng"
+            url = url.replacingOccurrences(of: ":subOrgId", with: String(validSubOrgId))
+        } else {
+            url = appConfig.ldsEndpointUrls[NetworkConstants.callingsListURLKey]! + "?lang=eng"
+        }
+        
         doGet(url: url ) { data, response, error in
             guard error == nil else {
                 print( "Error: attempting to read callings from lds.org " + error.debugDescription )

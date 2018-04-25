@@ -52,14 +52,13 @@ class PermissionsTests: XCTestCase {
         let branchPresPosIds = [12,59,60,789,1278]
         let stakePosIds = [1,2, 3,94,51,52]
         let unitAdminPositionIds = bishopricPosIds + branchPresPosIds + stakePosIds
-        let hpPosIds = [133,134,135,136]
         let eqPosIds = [138,139,140,141]
         let rsPosIds = [143,144,145,146]
         let ymPosIds = [158,159,160,161]
         let ywPosIds = [183,184,185,186]
         let ssPosIds = [204,205,206,207]
         let priPosIds = [210,211,212,213]
-        let priesthoodAdminPositionIds = hpPosIds + eqPosIds + ymPosIds
+        let priesthoodAdminPositionIds =  eqPosIds + ymPosIds
         let orgAdminPositionIds = rsPosIds + ywPosIds + ssPosIds + priPosIds
         let validPositionIds = unitAdminPositionIds + orgAdminPositionIds + priesthoodAdminPositionIds
         // make sure we don't accidentally remove any rights
@@ -75,8 +74,7 @@ class PermissionsTests: XCTestCase {
         }
         
         let testCases : [(posIds: [Int], orgType: UnitLevelOrgType?, expectedRoleType: RoleType)] =
-        [ (hpPosIds, .HighPriests, .PriesthoodOrgAdmin),
-          (eqPosIds, .Elders, .PriesthoodOrgAdmin),
+        [ (eqPosIds, .Elders, .PriesthoodOrgAdmin),
           (rsPosIds, .ReliefSociety, .OrgAdmin),
           (ymPosIds, .YoungMen, .PriesthoodOrgAdmin),
           (ywPosIds, .YoungWomen, .OrgAdmin),

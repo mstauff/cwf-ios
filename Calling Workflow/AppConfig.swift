@@ -13,18 +13,22 @@ struct AppConfig {
     var ldsEndpointUrls = NetworkConstants.ldsOrgEndpoints
     
     // Which org types we need to load class member lists for. This isn't likely to change, so we're just storing it here rather than load it from network config
-    let classAssignmentOrgTypes : [Int] = [UnitLevelOrgType.HighPriests.rawValue, UnitLevelOrgType.Elders.rawValue, UnitLevelOrgType.ReliefSociety.rawValue, UnitLevelOrgType.YoungMen.rawValue, UnitLevelOrgType.YoungWomen.rawValue]
+    let classAssignmentOrgTypes : [Int] = [UnitLevelOrgType.Elders.rawValue, UnitLevelOrgType.ReliefSociety.rawValue, UnitLevelOrgType.YoungMen.rawValue, UnitLevelOrgType.YoungWomen.rawValue]
 
 }
 
 extension AppConfig {
     // These values are defined in Debug.xcconfig, Test.xcconfig and Release.xcconfig files. We provide a default prod value in case there are errors loading any of the vars
+    // To add new build based vars add here and in info.plist add the mapping from "AppConfig Url" to APPCONFIG_URL
     
     // whether we want to ensure that the google drive account is associated with the lds unit. Should be true for prod, false for dev
     static let authRemoteDataWithLdsAcct = (configValue(forKey: "Authorize Remote Data with LDS account") ?? "true").boolValue
 
     // whether we want to hit actual lds.org endpoints, or just use local sample json data. Should be true for dev, false for prod
-    static let useLdsOrgData =  (configValue(forKey: "Use LDS org data") ?? "true").boolValue
+    static let useLdsOrgData = (configValue(forKey: "Use LDS org data") ?? "true").boolValue
+    
+    // this is a catch all flag for any temp code that should only exist in dev - rather than commenting out prod code and using some temp code that could potentially be forgotten about before a prod build
+    static let devMode = (configValue(forKey: "Devevlopment Mode") ?? "false").boolValue
     
     static let configUrl = configValue(forKey: "AppConfig URL") ?? "http://dev-config-server-ldscd.7e14.starter-us-west-2.openshiftapps.com/cwf/config"
     

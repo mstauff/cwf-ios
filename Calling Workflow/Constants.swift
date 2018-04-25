@@ -12,14 +12,15 @@ struct NetworkConstants {
 
     static let memberListURLKey = "MEMBER_LIST"
     static let callingsListURLKey = "CALLING_LIST"
+    static let classAssignmentsURLKey = "CLASS_ASSIGNMENTS"
     static let userDataURLKey = "USER_DATA"
     static let signInURLKey = "SIGN_IN"
     static let signOutURLKey = "SIGN_OUT"
     static let updateCallingURLKey = "UPDATE_CALLING"
     
     // these are defaults - they will potentially be overridden by results from the configUrl
-//    static let ldsOrgEndpoints = [ memberListURLKey : "https://stage.lds.org/htvt/services/v1/:unitNum/members", callingsListURLKey : "https://test.lds.org/mls/mbr/services/orgs/sub-orgs-with-callings", userDataURLKey : "https://test.lds.org/directory/services/v2/ldstools/current-user-detail", signInURLKey : "https://ident-int.lds.org/login.html", signOutURLKey: "https://test.lds.org/signinout/?lang=eng&signmeout", updateCallingURLKey : "https://test.lds.org/mls/mbr/services/orgs/callings?lang=eng" ]
-    static let ldsOrgEndpoints = [ memberListURLKey : "https://www.lds.org/htvt/services/v1/:unitNum/members", callingsListURLKey : "https://www.lds.org/mls/mbr/services/orgs/sub-orgs-with-callings", userDataURLKey : "https://www.lds.org/mobiledirectory/services/v2/ldstools/current-user-detail", signInURLKey : "https://signin.lds.org/login.html", signOutURLKey: "https://www.lds.org/signinout/?lang=eng&signmeout", updateCallingURLKey : "https://www.lds.org/mls/mbr/services/orgs/callings?lang=eng" ]
+    //    static let ldsOrgEndpoints = [ memberListURLKey : "https://stage.lds.org/htvt/services/v1/:unitNum/members", callingsListURLKey : "https://test.lds.org/mls/mbr/services/orgs/sub-orgs-with-callings", classAssignmentsURLKey : "https://test.lds.org/mls/mbr/services/orgs/sub-orgs-with-callings/?subOrgId=:subOrgId", userDataURLKey : "https://test.lds.org/directory/services/v2/ldstools/current-user-detail", signInURLKey : "https://ident-int.lds.org/login.html", signOutURLKey: "https://test.lds.org/signinout/?lang=eng&signmeout", updateCallingURLKey : "https://test.lds.org/mls/mbr/services/orgs/callings?lang=eng" ]
+    static let ldsOrgEndpoints = [ memberListURLKey : "https://www.lds.org/htvt/services/v1/:unitNum/members", callingsListURLKey : "https://www.lds.org/mls/mbr/services/orgs/sub-orgs-with-callings", classAssignmentsURLKey : "https://www.lds.org/mls/mbr/services/orgs/sub-orgs-with-callings/?subOrgId=:subOrgId", userDataURLKey : "https://www.lds.org/mobiledirectory/services/v2/ldstools/current-user-detail", signInURLKey : "https://signin.lds.org/login.html", signOutURLKey: "https://www.lds.org/signinout/?lang=eng&signmeout", updateCallingURLKey : "https://www.lds.org/mls/mbr/services/orgs/callings?lang=eng" ]
 
     // if hitting "https://test.lds.org/htvt/services/v1/:unitNum/members" for member list then the data is wrapped in an object with property data.families (that's the array that contains the ward list).
     // if hitting https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/member-detaillist/:unitNum the data is just a raw array that gets returned. As of 9/17 we're hitting the htvt service because it includes priesthood information

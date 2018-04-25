@@ -83,9 +83,9 @@ class ModelTests: XCTestCase {
         let firstCounselor = positionMap[54]!
         XCTAssertEqual(firstCounselor.shortName, "1st Counselor")
         
-        let htDistLeader = positionMap[3635]!
-        XCTAssertEqual(htDistLeader.requirements?.priesthood.count, 3)
-        XCTAssertTrue( (htDistLeader.requirements?.priesthood.contains(item: .Priest))!)
+        let eqPres = positionMap[138]!
+        XCTAssertEqual(eqPres.requirements?.priesthood.count, 2)
+        XCTAssertTrue( (eqPres.requirements?.priesthood.contains(item: .HighPriest))!)
         
         let rsPres = positionMap[143]!
         XCTAssertEqual(rsPres.requirements?.gender, .Female)

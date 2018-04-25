@@ -14,7 +14,7 @@ import Google
 
 class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     
-    private let orgFileNamesMap : [UnitLevelOrgType:String] = [ .Bishopric : "BISHOPRIC", .BranchPresidency : "BRANCH_PRES", .HighPriests : "HP", .Elders : "EQ", .ReliefSociety : "RS", .YoungMen : "YM", .YoungWomen : "YW", .SundaySchool : "SS", .Primary : "PRIMARY", .WardMissionaries : "WARD_MISSIONARY", .Other : "OTHER"]
+    private let orgFileNamesMap : [UnitLevelOrgType:String] = [ .Bishopric : "BISHOPRIC", .BranchPresidency : "BRANCH_PRES", .Elders : "EQ", .ReliefSociety : "RS", .YoungMen : "YM", .YoungWomen : "YW", .SundaySchool : "SS", .Primary : "PRIMARY", .WardMissionaries : "WARD_MISSIONARY", .Other : "OTHER"]
     private let orgNameDelimiter = "-"
     private let unitUserNameDelimiter = "."
     private let configFilePrefix = "settings-"
@@ -140,7 +140,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     /* This method should be called after authenticate and before you try to retrieve the contents of any org. This is separate from auth or init because it needs to have the list of orgs that exist for a unit on lds.org to compare to what data we have in google drive and either create what's missing, or report what should be deleted. The callback will include a list of orgs that exist in google drive but were not passed in to the method and would be candidates for deletion. Any orgs that are passed in that don't exist in google drive will be silently created. */
     func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ orgsToCreate: [Org], _ remainingOrgs: [Org], _ error: Error?) -> Void) {
         // although we could check if we already have filesByName then no need to hit goodrive, generally this should only be called once anyway so shouldn't matter. If it does get called a 2nd time then always checking goodrive allows us to grab any latest changes. Otherwise code might call this in an attempt to "refresh" but not get latest
-     fetchFiles() { (driveFiles, error) in
+        fetchFiles() { (driveFiles, error) in
             var orgFileNames: Set<String> = Set()
             var orgMap = [String: Org]()
             // capture the filenames of orgs from lds.org for diffing against the goodrive contents. Also create a map of orgs by file name
@@ -157,28 +157,73 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
                     }
                 }
             }
-
+            
             // put all the files from goodrive in a dictionary indexed by their name
             self.filesByName = driveFiles.toDictionaryById({$0.name})
-
-
+            
+            
             let gooDriveFileNameSet = Set<String>(self.filesByName.keys)
-
+            
             // filesToCreate are those that were passed in but don't exist in gooDrive
             let filesToCreate = orgFileNames.subtracting( gooDriveFileNameSet )
             let orgsToCreate = filesToCreate.flatMap() { orgMap[$0] }
-
-            let filesToRemove = gooDriveFileNameSet.subtracting( orgFileNames )
-            // todo - test this - probably wrong, as any files that are not in lds.org will not be in orgMap, so trying to look them up by name will just result in a nil
-            let orgsToRemove : [Org] = filesToRemove.flatMap() { fileName in
+            
+            // these are unit level orgs that no longer exist in LCR - the entire file needs to be removed
+            let filesToRemove = gooDriveFileNameSet.subtracting( orgFileNames ).filter() { fileName in
                 // we only want to include files for orgs, not the config files. Eventually may want to filter this based on org being in the same unit as well
-                return fileName.contains(RemoteStorageConstants.dataFileExtension) ? orgMap[fileName] : nil
+                return fileName.contains(RemoteStorageConstants.dataFileExtension)
+            }
+            var orgsToRemove : [Org] = []
+            
+            // we don't actually remove the files - that's business logic layer decision what to do (CWFCallingManagerService uses the delete method to actually remove them). Here we just group them into any that should be removed
+            let fetchFilesGroup = DispatchGroup()
+            filesToRemove.forEach() {
+                fetchFilesGroup.enter()
+                self.getData(forFile: $0) { org, error in
+                    fetchFilesGroup.leave()
+                    guard error == nil, let validOrg = org else {
+                        return
+                    }
+                    orgsToRemove.append( validOrg )
+                    
+                }
             }
             
-            completionHandler( orgsToCreate, orgsToRemove, nil )
+            fetchFilesGroup.notify(queue: DispatchQueue.main) {
+                completionHandler( orgsToCreate, orgsToRemove, nil )
+            }
+            
+            
         }
     }
-    
+
+    func deleteOrgs( orgs: [Org], completionHandler: ((_ success : Bool, _ errors : [Error] )-> Void)? ) {
+        if orgs.isEmpty {
+            if let callback = completionHandler {
+                callback( true, [] )
+            }
+        } else {
+            var deletionErrors : [Error] = []
+            let deleteFilesGroup = DispatchGroup()
+            orgs.forEach() {
+                deleteFilesGroup.enter()
+                if let filename = getFileName(forOrg: $0), let file = filesByName[filename]{
+                    self.deleteFile(fileId: file.identifier) { error in
+                        if let err = error {
+                            deletionErrors.append( err )
+                        }
+                        deleteFilesGroup.leave()
+                    }
+                }
+            }
+            deleteFilesGroup.notify(queue: DispatchQueue.main) {
+                if let callback = completionHandler {
+                    callback( deletionErrors.isEmpty, deletionErrors )
+                }
+            }
+        }
+    }
+
     func createFiles( forOrgs orgs: [Org], completionHandler: @escaping(_ success : Bool, _ errors : [Error] )-> Void ) {
         
         if orgs.isEmpty {
@@ -204,23 +249,29 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
     /* Gets the contents for the org out of google drive. The org from lds.org is required as a param because we need both the org ID and the org type to get the correct data out of google drive */
     func getData(forOrg org : Org, completionHandler : @escaping (_ org : Org?, _ error : Error? ) -> Void ){
         if let orgFileName = getFileName( forOrg : org ) {
-            fetchFileContents(fileName: orgFileName ) { fileContents, error in
-                guard error == nil else {
-                    print( "Error getting data for \(orgFileName): " + error.debugDescription )
-                    completionHandler( nil, error )
-                    return
-                }
-                do {
-                    let orgJson = try JSONSerialization.jsonObject(with: fileContents!, options: [])
-                    let orgResults = Org( fromJSON: orgJson as! JSONObject )
-                    completionHandler( orgResults, nil )
-                } catch {
-                    completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.jsonParseError, userInfo: [:]) )
-                }
-            }
+            getData(forFile: orgFileName, completionHandler: completionHandler)
         } else {
             completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [:] ) )
         }
+    }
+    
+    /** Gets the contents for the given file name out of google drive */
+    func getData( forFile orgFileName : String, completionHandler: @escaping( _ org : Org?, _ error : Error? )-> Void ) {
+        fetchFileContents(fileName: orgFileName ) { fileContents, error in
+            guard error == nil else {
+                print( "Error getting data for \(orgFileName): " + error.debugDescription )
+                completionHandler( nil, error )
+                return
+            }
+            do {
+                let orgJson = try JSONSerialization.jsonObject(with: fileContents!, options: [])
+                let orgResults = Org( fromJSON: orgJson as! JSONObject )
+                completionHandler( orgResults, nil )
+            } catch {
+                completionHandler( nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.jsonParseError, userInfo: [:]) )
+            }
+        }
+
     }
     
     /* Creates an org if it doesn't exist. If the org already exists then we call the callback with an error (code is ErrorConstants.illegalArgument)*/
@@ -424,6 +475,22 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
             // query google drive for any files with the given name (in case it does exist in google drive, just wasn't loaded at startup for whatever reason
             fetchFile(byName: fileName, completionHandler: completionHandler)
         }
+    }
+    
+    func deleteFile( fileId: String, completionHandler:@escaping( _ error: Error? ) -> Void ) {
+        let query = GTLQueryDrive.queryForFilesDelete(withFileId: fileId)
+        driveService.executeQuery(query!, completionHandler: { (data, response, error) -> Void in
+            
+            print( "Delete File Response: \(response.debugDescription) Data: " + data.debugDescription + " Error: " + error.debugDescription )
+            guard error == nil else {
+                print( "Error: " + error.debugDescription )
+                completionHandler( error )
+                return
+            }
+            
+            completionHandler( nil )
+        })
+
     }
 
     /* creates a file in google drive */

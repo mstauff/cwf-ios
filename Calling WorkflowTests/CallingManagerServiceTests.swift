@@ -25,6 +25,12 @@ class CallingManagerServiceTests: XCTestCase {
         }
     }
     
+    class PartialMockDataCache : FileDataCache {
+        // cache that doesn't store anything
+        override func retrieve( forKey : String ) -> CacheObject? { return nil }
+
+    }
+    
     class PartialMockCallingManager : CWFCallingManagerService {
         var mockGoogleOrg : Org? = nil
         
@@ -80,6 +86,12 @@ class CallingManagerServiceTests: XCTestCase {
     }
     
     class MockDataSource : DataSource {
+        func deleteOrgs(orgs: [Org], completionHandler: ((Bool, [Error]) -> Void)?) {
+            if let callback = completionHandler {
+                callback( true, [] )
+            }
+        }
+        
         
         func createOrg(org: Org, completionHandler: @escaping (Bool, Error?) -> Void) {
             completionHandler( true, nil )
@@ -126,10 +138,10 @@ class CallingManagerServiceTests: XCTestCase {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        org = getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithCallingsInSubOrg")!
-        lcrOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "lcrOrg")
-        appOrg.children = getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "appOrg")
-        positionsOrg = getSingleOrgFromFile(fileName: "org-callings")
+        org = jsonReader.getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithCallingsInSubOrg")!
+        lcrOrg.children = jsonReader.getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "lcrOrg")
+        appOrg.children = jsonReader.getOrgsFromFile(fileName: "reconcile-test-orgs", orgJsonName: "appOrg")
+        positionsOrg = jsonReader.getSingleOrgFromFile(fileName: "org-callings")
         memberList = getMemberList()
         
         
@@ -156,50 +168,6 @@ class CallingManagerServiceTests: XCTestCase {
             memberList.append( contentsOf: members )
         }
         return memberList
-    }
-    
-    func getOrgFromFile( fileName: String, orgJsonName: String ) -> Org? {
-        var result : Org? = nil
-        let allOrgsJSON = jsonReader.loadJsonFromFile(fileName)
-        result = Org( fromJSON: (allOrgsJSON[orgJsonName] as? JSONObject)! )
-
-        return result
-    }
-
-    func getSingleOrgFromFile( fileName: String ) -> Org? {
-        var result = Org(id: 111, unitNum: 111, orgTypeId: UnitLevelOrgType.Ward.rawValue)
-        let bundle = Bundle( for: type(of: self) )
-        if let filePath = bundle.path(forResource: fileName, ofType: "js"),
-            let fileData = NSData(contentsOfFile: filePath) {
-            
-            let jsonData = Data( referencing: fileData )
-            print( jsonData.debugDescription )
-            let testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [AnyObject]
-            result.children = Org.orgArrays( fromJSONArray: (testJSON as? [JSONObject])! )
-            
-        } else {
-            print( "No File Path found for file" )
-        }
-        
-        return result
-    }
-    
-    func getOrgsFromFile( fileName: String, orgJsonName: String ) -> [Org] {
-        var result : [Org] = []
-        let bundle = Bundle( for: type(of: self) )
-        if let filePath = bundle.path(forResource: fileName, ofType: "js"),
-            let fileData = NSData(contentsOfFile: filePath) {
-            
-            let jsonData = Data( referencing: fileData )
-            print( jsonData.debugDescription )
-            let testJSON = try! JSONSerialization.jsonObject(with: jsonData, options: []) as? [String:AnyObject]
-            result = Org.orgArrays( fromJSONArray: (testJSON?[orgJsonName] as? [JSONObject])! )
-            
-        } else {
-            print( "No File Path found for file" )
-        }
-        
-        return result
     }
     
     func testmapForCallingsByIndId() {
@@ -257,9 +225,10 @@ class CallingManagerServiceTests: XCTestCase {
     }
     
     func testReconcileCallings() {
+        let orgService = OrgService()
         // create a reconcileAppOrg & reconcileLdsOrg in the json file
         // read them in, pass to reconcileCallings & validate
-            let reconciledOrg = callingMgr.reconcileOrg(appOrg: appOrg, ldsOrg: lcrOrg, unitLevelOrg: lcrOrg)
+            let reconciledOrg = orgService.reconcileOrg(appOrg: appOrg, ldsOrg: lcrOrg, unitLevelOrg: lcrOrg)
         let primaryOrg = reconciledOrg.getChildOrg(id: 7428354)!
         XCTAssertEqual( primaryOrg.children.count, 5 )
         let ctr7 = reconciledOrg.getChildOrg(id: 38432972)!
@@ -491,7 +460,7 @@ class CallingManagerServiceTests: XCTestCase {
     }
 
     func testUpdateCalling() {
-        let bishopric = getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithDirectCallings")!
+        let bishopric = jsonReader.getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithDirectCallings")!
 
         let unitOrg = Org(id: 123, unitNum: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [bishopric], callings: [])
         callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
@@ -529,7 +498,7 @@ class CallingManagerServiceTests: XCTestCase {
     }
 
     func testReleaseCalling() {
-        let bishopric = getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithDirectCallings")!
+        let bishopric = jsonReader.getOrgFromFile(fileName: "cwf-object", orgJsonName: "orgWithDirectCallings")!
         
         let unitOrg = Org(id: 123, unitNum: 123, orgTypeId: 7, orgName: "Test Ward", displayOrder: 0, children: [bishopric], callings: [])
         callingMgr.initLdsOrgData(memberList: [], org: unitOrg, positionMetadata: [:])
@@ -596,7 +565,6 @@ class CallingManagerServiceTests: XCTestCase {
     
     func testLoadLdsData() {
         var ward = Org(id: 1234, unitNum: 1234, orgTypeId: 7)
-        let hpOrg = Org(id: 99020000, unitNum: 1234, orgTypeId: UnitLevelOrgType.HighPriests.rawValue)
         let eqOrg = Org(id: 99030000, unitNum: 1234, orgTypeId: UnitLevelOrgType.Elders.rawValue)
         let rsOrg = Org(id: 99040000, unitNum: 1234, orgTypeId: UnitLevelOrgType.ReliefSociety.rawValue)
         let ssOrg = Org(id: 9907832, unitNum: 1234, orgTypeId: UnitLevelOrgType.SundaySchool.rawValue)
@@ -605,37 +573,39 @@ class CallingManagerServiceTests: XCTestCase {
         let teacherOrg = Org(id: 99050350, unitNum: 1234, orgTypeId: 1)
         let deaconOrg = Org(id: 99050400, unitNum: 1234, orgTypeId: 1)
         ymOrg.children = [priestOrg, teacherOrg, deaconOrg]
-        ward.children = [hpOrg, eqOrg, rsOrg, ymOrg, ssOrg]
+        ward.children = [eqOrg, rsOrg, ymOrg, ssOrg]
         let asyncCompleteExpectation = self.expectation( description: "The completion handler should be called when processing is complete")
         callingMgr.initLdsOrgData(memberList: self.memberList, org: ward, positionMetadata: [:])
         
         InjectionMap.ldsOrgApi = MockLdsOrgApi( appConfig: AppConfig() )
-            self.callingMgr.loadMemberClasses( forOrg : ward ) { _, _ in
-                let memberMap = self.callingMgr.memberList.toDictionaryById() { $0.individualId }
-                // someone assigned in HP
-                var assignOrgId = memberMap[11111]!.classAssignment
-                XCTAssertEqual( assignOrgId, 99020000)
-                // someone assigned in a org->suborg (Priest Quorum)
-                assignOrgId = memberMap[33333]!.classAssignment
-                XCTAssertEqual( assignOrgId, 99050400)
-                // someone that shouldn't be assigned
-                assignOrgId = memberMap[44444]!.classAssignment
-                XCTAssertNil( assignOrgId )
-                asyncCompleteExpectation.fulfill()
-                let assignedOrgs : [Int64] = memberMap.values.flatMap() {
-                    $0.classAssignment
-                }
-                // nobody should be assigned to Teachers
-                XCTAssertFalse( assignedOrgs.contains(99050350))
-                // should have 2 people assigned to RS (there's 4 members in the json, but only 2 of the ID's match members in member-objects.js)
-                XCTAssertEqual( assignedOrgs.filter(){ $0 == 99040000 }.count, 2)
-                
+        // we need a mock data cache, otherwise as we make changes in the test data files they don't get reflected in the tests, because it's pulling old data out of cache.
+        InjectionMap.dataCache = PartialMockDataCache(storageLocationUrl: nil)
+        self.callingMgr.loadMemberClasses( forOrg : ward ) { _, _ in
+            let memberMap = self.callingMgr.memberList.toDictionaryById() { $0.individualId }
+            // someone assigned in HP
+            var assignOrgId = memberMap[11111]!.classAssignment
+                            XCTAssertEqual( assignOrgId, 99030000)
+            // someone assigned in a org->suborg (Priest Quorum)
+            assignOrgId = memberMap[33333]!.classAssignment
+            XCTAssertEqual( assignOrgId, 99050400)
+            // someone that shouldn't be assigned
+            assignOrgId = memberMap[44444]!.classAssignment
+            XCTAssertNil( assignOrgId )
+            asyncCompleteExpectation.fulfill()
+            let assignedOrgs : [Int64] = memberMap.values.flatMap() {
+                $0.classAssignment
             }
-
+            // nobody should be assigned to Teachers
+            XCTAssertFalse( assignedOrgs.contains(99050350))
+            // should have 2 people assigned to RS (there's 4 members in the json, but only 2 of the ID's match members in member-objects.js)
+            XCTAssertEqual( assignedOrgs.filter(){ $0 == 99040000 }.count, 2)
+            
+        }
+        
         
         waitForExpectations(timeout: 8)
     }
-
+    
     func createMember( withId id: Int64 ) -> Member {
         return Member(indId: id, name: nil, indPhone: nil, housePhone: nil, indEmail: nil, householdEmail: nil, streetAddress: [], birthdate: nil, gender: nil, priesthood: nil)
         
