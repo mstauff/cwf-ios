@@ -9,7 +9,7 @@
 import UIKit
 
 class OrganizationTableViewController: CWFBaseTableViewController {
-    
+        
     var organizationsToDisplay: [Org]?{
         didSet {
             tableView.reloadData()
@@ -21,7 +21,7 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.tableView.register(CWFButtonTableViewCell, forCellReuseIdentifier: "ButtonCell")
+        self.tableView.register(CWFButtonTableViewCell.self, forCellReuseIdentifier: "ButtonCell")
         
         organizationsToDisplay = []
         organizationSelected = nil
@@ -78,9 +78,19 @@ class OrganizationTableViewController: CWFBaseTableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let orgs = organizationsToDisplay {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            cell.textLabel?.text = orgs[indexPath.row].orgName
-            return cell
+            let org = orgs[indexPath.row]
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? OrgTableViewCell
+            cell?.titleLabel?.text = org.orgName
+            
+            if let _ = org.conflict {
+                cell?.conflictButton.addTarget(self, action: #selector(conflictButtonPressed), for: .touchUpInside)
+                cell?.conflictButton.isHidden = false
+                
+            }
+            else {
+                cell?.conflictButton.isHidden = true
+            }
+            return cell!
         }
         else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ButtonCell", for: indexPath) as? CWFButtonTableViewCell
@@ -97,6 +107,15 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     }
     
     //MARK: - Actions
+    func conflictButtonPressed () {
+        let alert = UIAlertController(title: NSLocalizedString("Missing Organization", comment: ""), message: NSLocalizedString("no longer exists on lds.org and should be removed, but there are outstanding changes in some callings. If these proposed changes are no longer needed you can remove the organization with the 'Remove' button. If you want to review the callings with outstanding changes you can choose 'keep for now'", comment: "Deleted org error message"), preferredStyle: .alert)
+        let removeAction = UIAlertAction(title: NSLocalizedString("Remove", comment: "Remove"), style: UIAlertActionStyle.destructive, handler: nil)
+        let keepAction = UIAlertAction(title: NSLocalizedString("Keep For Now", comment: "Keep For Now"), style: UIAlertActionStyle.default, handler: nil)
+        alert.addAction(removeAction)
+        alert.addAction(keepAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     func reloadData () {
         if let rootController = self.tabBarController as? RootTabBarViewController {
             rootController.loadLdsAndAppData(useCache: true)

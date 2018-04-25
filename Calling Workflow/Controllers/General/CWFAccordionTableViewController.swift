@@ -173,8 +173,13 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             if let org = currentDataItem.dataItem as? Org {
                 cell?.titleLabel.text = org.orgName
                 cell?.newButton.buttonOrg = org
-                if self.expandedParents.contains(where: {org == $0.dataItem as? Org}) {
-                    cell?.newButton.isHidden = false
+                if org.conflict == nil {
+                    if self.expandedParents.contains(where: {org == $0.dataItem as? Org}) {
+                        cell?.newButton.isHidden = false
+                    }
+                    else {
+                        cell?.newButton.isHidden = true
+                    }
                 }
                 else {
                     cell?.newButton.isHidden = true
@@ -265,10 +270,15 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                     let cell = tableView.cellForRow(at: indexPath) as? CWFAccordionRootTableViewCell
                     cell?.newButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
                     if let org = dataItem.dataItem as? Org {
-                        if (hasPermissionToEdit() && org.potentialNewPositions.count > 0) {
-                            cell?.newButton.isHidden = false
+                        if org.conflict == nil {
+                            if (hasPermissionToEdit() && org.potentialNewPositions.count > 0) {
+                                cell?.newButton.isHidden = false
+                            }
+                            cell?.newButton.buttonOrg = org
                         }
-                        cell?.newButton.buttonOrg = org
+                        else {
+                            cell?.newButton.isHidden = true
+                        }
                     }
                     expandCell(indexPath: indexPath)
                 }

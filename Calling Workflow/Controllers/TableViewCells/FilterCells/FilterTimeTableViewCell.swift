@@ -44,6 +44,7 @@ class FilterTimeTableViewCell: FilterBaseTableViewCell {
     }
 
     func setupSlider () {
+        let margin = CWFMarginFloat() + 10
         sliderView.translatesAutoresizingMaskIntoConstraints = false
         sliderView.minimumValue = 0.0
         sliderView.maximumValue = 60.0
@@ -53,8 +54,8 @@ class FilterTimeTableViewCell: FilterBaseTableViewCell {
         
         let yConstraint = NSLayoutConstraint(item: sliderView, attribute: .top, relatedBy: .equal, toItem: titleLabel, attribute: .bottom, multiplier: 1, constant: 0)
         let hConstraint = NSLayoutConstraint(item: sliderView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 30)
-        let lConstraint = NSLayoutConstraint(item: sliderView, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 15)
-        let rConstraint = NSLayoutConstraint(item: sliderView, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: -15)
+        let lConstraint = NSLayoutConstraint(item: sliderView, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: margin)
+        let rConstraint = NSLayoutConstraint(item: sliderView, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: -margin)
         
         self.addConstraints([yConstraint, hConstraint, lConstraint, rConstraint])
         

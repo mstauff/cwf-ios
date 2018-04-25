@@ -65,6 +65,7 @@ class FilterOrgTableViewCell: FilterBaseTableViewCell {
     }
     
     func addClasses(enumValues: [FilterButtonEnum], belowView: UIView, isUpper: Bool) {
+        let margin = CWFMarginFloat() + 10
         var previousView: UIView? = nil
         
         for currentEnum in enumValues {
@@ -88,9 +89,9 @@ class FilterOrgTableViewCell: FilterBaseTableViewCell {
             
             // this is just for positioning. The first item is positioned specifically, then the rest are just relative to the previous item
             if previousView == nil {
-                xConstraint = NSLayoutConstraint(item: currentButton, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 15)
+                xConstraint = NSLayoutConstraint(item: currentButton, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: margin)
             } else {
-                xConstraint = NSLayoutConstraint(item: currentButton, attribute: .left, relatedBy: .equal, toItem: previousView!, attribute: .right, multiplier: 1, constant: 15)
+                xConstraint = NSLayoutConstraint(item: currentButton, attribute: .left, relatedBy: .equal, toItem: previousView!, attribute: .right, multiplier: 1, constant: margin)
             }
             
             self.addConstraints([xConstraint, yConstraint])

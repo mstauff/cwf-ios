@@ -313,7 +313,16 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             let cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath) as? CWFButtonTableViewCell
             cell?.cellButton.setTitle(NSLocalizedString("Calling Actions", comment: "Calling Actions"), for: UIControlState.normal)
             cell?.cellButton.addTarget(self, action: #selector(callingActionsButtonPressed), for: .touchUpInside)
-            
+            if callingToDisplay?.conflict != nil {
+                cell?.cellButton.isUserInteractionEnabled = false
+                cell?.tintColor = UIColor.white
+                cell?.backgroundColor = UIColor.lightGray
+            }
+            else {
+                cell?.cellButton.isUserInteractionEnabled = true
+                cell?.backgroundColor = UIColor.white
+                cell?.tintColor = UIColor.CWFGreyTextColor
+            }
             return cell!
             
         default:

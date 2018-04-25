@@ -104,6 +104,11 @@ struct MemberClassFilter : MemberFilter {
         var includeInList = false
         // todo - this eventually needs to change to use actual class assignments from and LCR service call
         var currentMemberClass : MemberClass? = nil
+        
+        //TODO This method doesn't work. It needs to know what int the class assignment 
+//        if let memberClassAssigned = member.member.classAssignment {
+//            includeInList = memberClass.contains(item: memberClassAssigned)
+//        }
         if member.member.gender == Gender.Female, let age = member.member.age {
             if age >= 18 {
                 currentMemberClass = .ReliefSociety
