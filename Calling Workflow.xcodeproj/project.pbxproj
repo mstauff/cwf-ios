@@ -34,6 +34,7 @@
 		3C4347BB1ECBBEA600CC7369 /* FilterGenderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4347BA1ECBBEA600CC7369 /* FilterGenderTableViewCell.swift */; };
 		3C4347BD1ECBC20A00CC7369 /* FilterOrgTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4347BC1ECBC20A00CC7369 /* FilterOrgTableViewCell.swift */; };
 		3C4409C91E3BEE9400484935 /* CWFStatusPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */; };
+		3C4E49B820904EF1008E75A5 /* OrgTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4E49B720904EF1008E75A5 /* OrgTableViewCell.swift */; };
 		3C5563DE2061A4F700F31F7A /* RootTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA596FD1E08593C00109B27 /* RootTabBarViewController.swift */; };
 		3C5563DF2061A60900F31F7A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CE4C8DD1DCA824100AAFB31 /* LaunchScreen.storyboard */; };
 		3C5563E02061A64200F31F7A /* ControllerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBDDCAB1E48FC2F00F211F5 /* ControllerProtocols.swift */; };
@@ -247,6 +248,7 @@
 		3C4347BA1ECBBEA600CC7369 /* FilterGenderTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterGenderTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterGenderTableViewCell.swift; sourceTree = "<group>"; };
 		3C4347BC1ECBC20A00CC7369 /* FilterOrgTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterOrgTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterOrgTableViewCell.swift; sourceTree = "<group>"; };
 		3C4409C81E3BEE9400484935 /* CWFStatusPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CWFStatusPickerView.swift; path = Controllers/General/CWFStatusPickerView.swift; sourceTree = "<group>"; };
+		3C4E49B720904EF1008E75A5 /* OrgTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OrgTableViewCell.swift; path = Controllers/TableViewCells/OrgTableViewCell.swift; sourceTree = "<group>"; };
 		3C55DEBA1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StatusSettingsCollectionViewCell.swift; path = Controllers/TableViewCells/StatusSettingsCollectionViewCell.swift; sourceTree = "<group>"; };
 		3C691E611ECA4A8B00CD7672 /* FilterTimeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterTimeTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterTimeTableViewCell.swift; sourceTree = "<group>"; };
 		3C69282F1F50A80D00E209D9 /* RootTabBarUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootTabBarUITests.swift; sourceTree = "<group>"; };
@@ -583,7 +585,6 @@
 		3CEBAF461DD14A630071BE9F /* TableViewCells */ = {
 			isa = PBXGroup;
 			children = (
-				3C55DEBA1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift */,
 				3C3CF3B71E71FB2300143868 /* CWFAccordionChildTableViewCell.swift */,
 				3C3CF3B51E71F20A00143868 /* CWFAccordionRootTableViewCell.swift */,
 				3CA55F391E9D7D7400022D52 /* CWFButtonTableViewCell.swift */,
@@ -591,11 +592,13 @@
 				3C38B8901EFD798100436BF4 /* DirectoryTableViewCell.swift */,
 				3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */,
 				3CBDDCAD1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift */,
+				E83B34931FE4521B0087564B /* MultiSelectTableViewCell.swift */,
 				3CEBAF471DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift */,
 				3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */,
 				3C0AA6E31E4A86670086525D /* OneRightTwoLeftTableViewCell.swift */,
-				E83B34931FE4521B0087564B /* MultiSelectTableViewCell.swift */,
+				3C4E49B720904EF1008E75A5 /* OrgTableViewCell.swift */,
 				3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */,
+				3C55DEBA1F424A6B009871F6 /* StatusSettingsCollectionViewCell.swift */,
 				3C0994D31E451E4A00926094 /* TitleAdjustableSubtitleTableViewCell.swift */,
 				3C6A365C1EC24AB100A58C33 /* Filter Cells */,
 			);
@@ -1024,6 +1027,7 @@
 				3C3737B21F0FFD5600D62C2E /* CWFMapViewController.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
 				E85E7EE61E53B6D700CE05CD /* MultiValueDictionary.swift in Sources */,
+				3C4E49B820904EF1008E75A5 /* OrgTableViewCell.swift in Sources */,
 				E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */,
 				3CBDDCAE1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift in Sources */,
 				E8270E182072EA9500E26A93 /* OrgService.swift in Sources */,
