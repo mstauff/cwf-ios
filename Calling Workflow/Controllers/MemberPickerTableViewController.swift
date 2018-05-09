@@ -231,6 +231,7 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     
     // MARK: - Button Method
     func memberSelected(selectedMember: MemberCallings?) {
+        self.searchController.isActive = false
         if let member = selectedMember {
             delegate?.setProspectiveMember(member: member.member)
         }

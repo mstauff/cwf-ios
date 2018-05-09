@@ -83,9 +83,9 @@ class OrganizationTableViewController: CWFBaseTableViewController {
             cell?.titleLabel?.text = org.orgName
             
             if let _ = org.conflict {
-                cell?.conflictButton.addTarget(self, action: #selector(conflictButtonPressed), for: .touchUpInside)
+                cell?.conflictButton.addTarget(self, action: #selector(conflictButtonPressed(sender:)), for: .touchUpInside)
                 cell?.conflictButton.isHidden = false
-                
+                cell?.conflictButton.buttonOrg = org
             }
             else {
                 cell?.conflictButton.isHidden = true
@@ -107,8 +107,12 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     }
     
     //MARK: - Actions
-    func conflictButtonPressed () {
-        let alert = UIAlertController(title: NSLocalizedString("Missing Organization", comment: ""), message: NSLocalizedString("no longer exists on lds.org and should be removed, but there are outstanding changes in some callings. If these proposed changes are no longer needed you can remove the organization with the 'Remove' button. If you want to review the callings with outstanding changes you can choose 'keep for now'", comment: "Deleted org error message"), preferredStyle: .alert)
+    func conflictButtonPressed (sender : UIButtonWithOrg) {
+        var orgName : String = "Organization"
+        if let name = sender.buttonOrg?.orgName {
+            orgName = name
+        }
+        let alert = UIAlertController(title: NSLocalizedString("Missing Organization", comment: ""), message: NSLocalizedString("\(orgName) no longer exists on lds.org and should be removed, but there are outstanding changes in some callings. If these proposed changes are no longer needed you can remove the organization with the 'Remove' button. If you want to review the callings with outstanding changes you can choose 'keep for now'", comment: "Deleted org error message"), preferredStyle: .alert)
         let removeAction = UIAlertAction(title: NSLocalizedString("Remove", comment: "Remove"), style: UIAlertActionStyle.destructive, handler: nil)
         let keepAction = UIAlertAction(title: NSLocalizedString("Keep For Now", comment: "Keep For Now"), style: UIAlertActionStyle.default, handler: nil)
         alert.addAction(removeAction)

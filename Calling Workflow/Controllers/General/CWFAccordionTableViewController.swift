@@ -176,13 +176,19 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                 if org.conflict == nil {
                     if self.expandedParents.contains(where: {org == $0.dataItem as? Org}) {
                         cell?.newButton.isHidden = false
+                        cell?.newButton.setBackgroundImage(UIImage.init(named: "add"), for: .normal)
+                        cell?.newButton.setTitle(nil, for: .normal)
+                        cell?.newButton.addTarget(self, action: #selector(addButtonPressed(sender:)), for: .touchUpInside)
                     }
                     else {
                         cell?.newButton.isHidden = true
                     }
                 }
                 else {
-                    cell?.newButton.isHidden = true
+                    cell?.newButton.isHidden = false
+                    cell?.newButton.setBackgroundImage(nil, for: .normal)
+                    cell?.newButton.setTitle("⚠️", for: .normal)
+                    cell?.newButton.addTarget(self, action: #selector(orgDeletedWarningPressed), for: .touchUpInside)
                 }
             }
             return cell!
@@ -277,7 +283,10 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                             cell?.newButton.buttonOrg = org
                         }
                         else {
-                            cell?.newButton.isHidden = true
+                            cell?.newButton.isHidden = false
+                            cell?.newButton.setBackgroundImage(nil, for: .normal)
+                            cell?.newButton.setTitle("⚠️", for: .normal)
+                            cell?.newButton.addTarget(self, action: #selector(orgDeletedWarningPressed), for: .touchUpInside)
                         }
                     }
                     expandCell(indexPath: indexPath)
@@ -375,7 +384,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         self.tableView.endUpdates()
     }
 
-    func addButtonPressed(sender: AccordionUIButton) {
+    func addButtonPressed(sender: UIButtonWithOrg) {
         
         let storyBoard = UIStoryboard.init(name: "Main", bundle:nil)
         let nextVC = storyBoard.instantiateViewController(withIdentifier: "NewCallingTableViewController") as? NewCallingTableViewController
@@ -422,6 +431,19 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         let alert = UIAlertController(title: NSLocalizedString("Error", comment: ""), message: NSLocalizedString("There was an error uploading changes", comment: "error uploading message"), preferredStyle: .alert)
         let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.default, handler: nil)
         alert.addAction(okAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func orgDeletedWarningPressed(sender: UIButtonWithOrg) {
+        var orgName : String = "Organization"
+        if let org = sender.buttonOrg {
+            orgName = org.orgName
+        }
+        let alert = UIAlertController(title: NSLocalizedString("Missing Organization", comment: ""), message: NSLocalizedString("\(orgName) no longer exists on lds.org and should be removed, but there are outstanding changes in some callings. If these proposed changes are no longer needed you can remove the organization with the 'Remove' button. If you want to review the callings with outstanding changes you can choose 'keep for now'", comment: "Deleted org error message"), preferredStyle: .alert)
+        let removeAction = UIAlertAction(title: NSLocalizedString("Remove", comment: "Remove"), style: UIAlertActionStyle.destructive, handler: nil)
+        let keepAction = UIAlertAction(title: NSLocalizedString("Keep For Now", comment: "Keep For Now"), style: UIAlertActionStyle.default, handler: nil)
+        alert.addAction(removeAction)
+        alert.addAction(keepAction)
         self.present(alert, animated: true, completion: nil)
     }
 }
