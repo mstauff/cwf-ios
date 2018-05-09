@@ -29,6 +29,8 @@ public struct Position : JSONParsable {
     
     let multiplesAllowed : Bool
     
+    let custom : Bool
+    
     let displayOrder : Int?
     
     /// This should not change once set, but because it comes from a different source (not in the position JSON that comes from LCR, we need it to be var so we can set it after the position is init'ed from JSON)
@@ -48,12 +50,15 @@ public struct Position : JSONParsable {
     }
     
 
-    // TODO: do we need something to indicate it's a custom calling? Or can we determine that from the positionTypeId????
     init(positionTypeId : Int, name : String?, hidden : Bool, multiplesAllowed : Bool, displayOrder : Int?, metadata: PositionMetadata) {
-        self.init(positionTypeId: positionTypeId, name: name, unitNum: nil, hidden: hidden, multiplesAllowed: multiplesAllowed, displayOrder : displayOrder, metadata: metadata)
+        self.init(positionTypeId: positionTypeId, name: name, unitNum: nil, hidden: hidden, multiplesAllowed: multiplesAllowed, displayOrder : displayOrder, metadata: metadata, custom: false)
     }
     
     init(positionTypeId : Int, name : String?, unitNum : Int64?, hidden : Bool, multiplesAllowed : Bool, displayOrder : Int?, metadata: PositionMetadata) {
+        self.init(positionTypeId: positionTypeId, name: name, unitNum: unitNum, hidden: hidden, multiplesAllowed: multiplesAllowed, displayOrder : displayOrder, metadata: metadata, custom: false)
+    }
+    
+    init(positionTypeId : Int, name : String?, unitNum : Int64?, hidden : Bool, multiplesAllowed : Bool, displayOrder : Int?, metadata: PositionMetadata, custom: Bool) {
         self.positionTypeId = positionTypeId
         self.name = name
         self.hidden = hidden
@@ -61,6 +66,11 @@ public struct Position : JSONParsable {
         self.multiplesAllowed = multiplesAllowed
         self.metadata = metadata
         self.displayOrder = displayOrder
+        self.custom = custom
+    }
+    
+    init( customPosition name: String, inUnitNum unitNum: Int64? ) {
+        self.init(positionTypeId: 0, name: name, unitNum: unitNum, hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata(), custom: true)
     }
     
     public init?(fromJSON json: JSONObject) {
@@ -81,6 +91,7 @@ public struct Position : JSONParsable {
         // They should be written as booleans, but we also want to support them if they are strings ("true" vs true). We default to true if it's not in the JSON, or if it's an empty string.
         multiplesAllowed = JSONParseUtil.boolean(fromJsonField: json[PositionJsonKeys.allowMultiples], defaultingTo: true)
         hidden = JSONParseUtil.boolean(fromJsonField: json[PositionJsonKeys.hidden], defaultingTo: false)
+        custom = JSONParseUtil.boolean(fromJsonField: json[PositionJsonKeys.custom], defaultingTo: false)
 
 
         displayOrder = json[PositionJsonKeys.displayOrder] as? Int
@@ -101,6 +112,7 @@ public struct Position : JSONParsable {
         }
         jsonObj[PositionJsonKeys.hidden] = self.hidden  as AnyObject
         jsonObj[PositionJsonKeys.allowMultiples] = self.multiplesAllowed as AnyObject
+        jsonObj[PositionJsonKeys.custom] = self.custom as AnyObject
         return jsonObj;
     }
     
@@ -108,7 +120,8 @@ public struct Position : JSONParsable {
 
 extension Position : Equatable {
     static public func == (lhs : Position, rhs : Position ) -> Bool {
-        return lhs.positionTypeId == rhs.positionTypeId
+        // if the positionTypeId is 0 or less then it's a custom position, that hasn't been assigned a positionTypeId from LCR, so those are always unique. Once it's been given a positionTypeId by LCR then we can use that
+        return lhs.positionTypeId > 0 ? lhs.positionTypeId == rhs.positionTypeId : false
     }
 }
 
@@ -124,6 +137,7 @@ private struct PositionJsonKeys {
     static let hidden = "hidden"
     static let allowMultiples = "allowMultiple"
     static let displayOrder = "positionDisplayOrder"
+    static let custom = "custom"
     // this is not included in LCR org/calling data, but is included in current user details call and we need it to validate permissions
     static let unitNum = "unitNo"
 }
