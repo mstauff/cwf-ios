@@ -796,7 +796,8 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         
         if let calling = callingToDisplay,let parentOrgId = calling.parentOrg?.id, let rootOrg = appDelegate?.callingManager.unitLevelOrg(forSubOrg: parentOrgId) {
-            if calling.cwfOnly {
+            // if it only exists in CWF, means was added from the app then it can always be deleted. Similarly, any custom callings can always be deleted.
+            if calling.cwfOnly || calling.position.custom {
                 boolToReturn = true
             }
             else {
