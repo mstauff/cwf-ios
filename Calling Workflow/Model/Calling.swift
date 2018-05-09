@@ -197,8 +197,8 @@ extension Calling : Equatable {
         
         // The parentOrg and the position have to be the same for it to be considered for a match based on any other criteria. We don't know for sure it's a match just based on those 2 factors, but we do know it's NOT a match if those at least aren't the same
         if lhs.parentOrg == rhs.parentOrg && lhs.position == rhs.position {
-            // If the LCR ID's are not nil and they are the same then we know it's a match, or if multiples are not allowed then we know it's a match (we've already determined it's the same position, so if we can only have 1 EQ Sec. then we know we're the same calling)
-            if (lhs.id != nil && lhs.id == rhs.id) || !lhs.position.multiplesAllowed {
+            // If the LCR ID's are not nil and they are the same then we know it's a match, or if multiples are not allowed then we know it's a match (we've already determined it's the same position, so if we can only have 1 EQ Sec. then we know we're the same calling), also if it's a custom calling and the position matches (based on positionTypeId) then it's the same. LCR gives a unique positionTypeId to each custom position.
+            if (lhs.id != nil && lhs.id == rhs.id) || !lhs.position.multiplesAllowed || lhs.position.custom {
                 result = true
             } else if lhs.cwfId != nil {
                 // the final check is our own internal cwfId. If that matches then it's the same calling.
