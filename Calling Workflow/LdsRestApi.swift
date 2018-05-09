@@ -338,7 +338,8 @@ class LdsRestApi : RestAPI, LdsOrgApi {
          "releasePositionIds": [
          38816970
          ]
-         add is the same as update except you don't need releasePositionIds or releaseDate
+         - add is the same as update except you don't need releasePositionIds or releaseDate
+         - for custom callings you just need to make sure to include the position name, custom=true, and positionTypeId should be nil if not set from LCR (on an add)
          */
         guard let org = calling.parentOrg, let newMemberId = calling.proposedIndId else {
             // todo - need more message for case of no proposedIndId
@@ -353,7 +354,9 @@ class LdsRestApi : RestAPI, LdsOrgApi {
         // we need to include the "position" field in the JSON payload. It doesn't appear to matter what the string is, it just has to be a non-empty string. We could just hard code it to "foo", but we'll at least try playing nice by using the position name (which should be just what we received from LCR in the first place), and then if it's nil for whatever reason we have a fall back value of "unused"
         let positionName = calling.position.name ?? LdsRestApi.defaultPositionText
         var payloadJsonObj : JSONObject = [ LcrCallingJsonKeys.unitNum : unitNum as AnyObject, LcrCallingJsonKeys.subOrgId : org.id as AnyObject, LcrCallingJsonKeys.orgTypeId : org.orgTypeId as AnyObject, LcrCallingJsonKeys.positionTypeId : calling.position.positionTypeId as AnyObject, LcrCallingJsonKeys.memberId : newMemberId as AnyObject, LcrCallingJsonKeys.activeDate : todayAsLcrString as AnyObject, LcrCallingJsonKeys.position: positionName as AnyObject ]
-        
+        if calling.position.custom {
+            payloadJsonObj[LcrCallingJsonKeys.custom] = true as AnyObject
+        }
         if let callingId = calling.id {
             // there is someone already in the calling, so we need to release them
             payloadJsonObj[LcrCallingJsonKeys.releaseDate] = todayAsLcrString as AnyObject
@@ -463,6 +466,16 @@ class LdsRestApi : RestAPI, LdsOrgApi {
          "position": "any non-empty string"
          "hidden" : true
          }
+         
+         if it's custom use pendingDelete=true vs hidden=true:
+         {
+         "unitNumber": 56030,
+         "subOrgTypeId": 1252,
+         "subOrgId": 2081422,
+         "positionTypeId" : 208,
+         "position": "Custom Name",
+         "pendingDelete" : true
+         }
 
          */
         guard let org = calling.parentOrg else {
@@ -473,7 +486,13 @@ class LdsRestApi : RestAPI, LdsOrgApi {
             return
         }
         var payloadJsonObj = lcrJsonPayload( forCalling: calling, inOrg: org, unitNum: unitNum )
-        payloadJsonObj[LcrCallingJsonKeys.hide] = "true" as AnyObject
+        if calling.position.custom {
+            payloadJsonObj[LcrCallingJsonKeys.pendingDelete] = "true" as AnyObject
+        } else {
+            payloadJsonObj[LcrCallingJsonKeys.hide] = "true" as AnyObject
+
+        }
+        payloadJsonObj[LcrCallingJsonKeys.positionTypeId] = calling.position.positionTypeId as AnyObject
         removeCalling(bodyPayload: payloadJsonObj, completionHandler)
     }
     
@@ -554,4 +573,6 @@ private struct LcrCallingJsonKeys {
     static let releasePositionIds = "releasePositionIds"
     static let justCalled = "justCalled"
     static let hide = "hidden"
+    static let pendingDelete = "pendingDelete"
+    static let custom = "custom"
 }

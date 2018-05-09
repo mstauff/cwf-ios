@@ -178,6 +178,15 @@ class OrgService {
             }
         }
         
+        let emptyLCRCustomCallingTypeIds = ldsOrg.allOrgCallings.filter(){$0.id == nil && $0.position.custom}.map() { $0.position.positionTypeId }
+        let emptyCustomCallingsToRemove = appOrg.allOrgCallings.filter() {$0.id == nil && $0.position.custom && !emptyLCRCustomCallingTypeIds.contains(item: $0.position.positionTypeId)}
+        if emptyCustomCallingsToRemove.isNotEmpty {
+            for emptyCustomCalling in emptyCustomCallingsToRemove {
+                updatedOrg = updatedOrg.updatedWith(callingToDelete: emptyCustomCalling) ?? updatedOrg
+            }
+            updatedOrg.hasUnsavedChanges = true
+        }
+        
         let emptyLCRCallings = ldsOrg.callings.filter() { $0.id == nil && $0.position.multiplesAllowed }
         // for the app callings we need any that id is nil, or any that have been marked as a conflict (that's a case where the id could potentially be nil, pending user response
         let emptyAppCallings = updatedOrg.callings.filter() { ($0.id == nil || $0.conflict != nil) && !$0.cwfOnly  && $0.position.multiplesAllowed }
