@@ -17,7 +17,7 @@ public enum CallingStatus : String {
     case Proposed = "PROPOSED"
     case Submitted = "SUBMITTED"
     case Approved = "APPROVED"
-    case ReSubmit = "RE_SUBMIT"
+    case Resubmit = "RESUBMIT"
     case NotApproved = "NOT_APPROVED"
     case OnHold = "ON_HOLD"
     case AppointmentSet = "APPOINTMENT_SET"
@@ -31,7 +31,7 @@ public enum CallingStatus : String {
     case Unknown = "UNKNOWN"
     case None = "NONE"
     
-    static let allValues = [ Proposed, Submitted, Approved, ReSubmit, NotApproved, OnHold, AppointmentSet, Extended, Accepted, Refused, ReadyToSustain, Sustained, SetApart, Recorded, Unknown, None]
+    static let allValues = [ Proposed, Submitted, Approved, Resubmit, NotApproved, OnHold, AppointmentSet, Extended, Accepted, Refused, ReadyToSustain, Sustained, SetApart, Recorded, Unknown, None]
     // Unknown is reserved for system use - cannot be selected by the user
     static let userValues = allValues.filter() {$0 != .Unknown}
     static let descriptionDictionary : [CallingStatus:String] = allValues.toDictionary() {
