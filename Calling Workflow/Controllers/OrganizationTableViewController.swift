@@ -151,7 +151,25 @@ class OrganizationTableViewController: CWFBaseTableViewController {
         alert.setValue(messageTextAttributed, forKey: "attributedMessage")
         
         //add the actions to the alert
-        let removeAction = UIAlertAction(title: NSLocalizedString("Remove", comment: "Remove"), style: UIAlertActionStyle.destructive, handler: nil)
+        let removeAction = UIAlertAction(title: NSLocalizedString("Remove", comment: "Remove"), style: UIAlertActionStyle.destructive, handler: {
+            (alert: UIAlertAction!) -> Void in
+            if let org = sender.buttonOrg {
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                appDelegate?.callingManager.removeOrg(org: org) { success, error in
+                    // if there was an error then we need to inform the user
+                    if error != nil || !success {
+                        let updateErrorAlert = UIAlertController(title: NSLocalizedString("Error", comment: "Error"), message: NSLocalizedString("Unable to remove \(org.orgName). Please try again later.", comment: "Error removing org"), preferredStyle: .alert)
+                        let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.cancel, handler: nil)
+                        
+                        //Add the buttons to the alert and display to the user.
+                        updateErrorAlert.addAction(okAction)
+                        
+                        showAlertFromBackground(alert: updateErrorAlert, completion: nil)
+                    }
+                    self.tableView.reloadData()
+                }
+            }
+        })
         let keepAction = UIAlertAction(title: NSLocalizedString("Keep For Now", comment: "Keep For Now"), style: UIAlertActionStyle.default, handler: nil)
         alert.addAction(removeAction)
         alert.addAction(keepAction)
