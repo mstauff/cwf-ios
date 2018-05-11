@@ -150,6 +150,27 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         }
     }
     
+    func setupNewButton (button : UIButtonWithOrg?) {
+        button?.removeTarget(nil, action: nil, for: .allEvents)
+        if self.expandedParents.contains(where: {button?.buttonOrg == $0.dataItem as? Org}) {
+            button?.isHidden = false
+            button?.setBackgroundImage(UIImage.init(named: "add"), for: .normal)
+            button?.setTitle(nil, for: .normal)
+            button?.addTarget(self, action: #selector(addButtonPressed(sender:)), for: .touchUpInside)
+        }
+        else {
+            button?.isHidden = true
+        }
+    }
+    
+    func setupWarningButton (button : UIButtonWithOrg?) {
+        button?.removeTarget(self, action: #selector(addButtonPressed(sender:)), for: .touchUpInside)
+        button?.isHidden = false
+        button?.setBackgroundImage(nil, for: .normal)
+        button?.setTitle("⚠️", for: .normal)
+        button?.addTarget(self, action: #selector(orgDeletedWarningPressed(sender:)), for: .touchUpInside)
+    }
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -174,21 +195,14 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                 cell?.titleLabel.text = org.orgName
                 cell?.newButton.buttonOrg = org
                 if org.conflict == nil {
-                    if self.expandedParents.contains(where: {org == $0.dataItem as? Org}) {
-                        cell?.newButton.isHidden = false
-                        cell?.newButton.setBackgroundImage(UIImage.init(named: "add"), for: .normal)
-                        cell?.newButton.setTitle(nil, for: .normal)
-                        cell?.newButton.addTarget(self, action: #selector(addButtonPressed(sender:)), for: .touchUpInside)
-                    }
-                    else {
-                        cell?.newButton.isHidden = true
-                    }
+                    setupNewButton(button: cell?.newButton)
                 }
                 else {
-                    cell?.newButton.isHidden = false
-                    cell?.newButton.setBackgroundImage(nil, for: .normal)
-                    cell?.newButton.setTitle("⚠️", for: .normal)
-                    cell?.newButton.addTarget(self, action: #selector(orgDeletedWarningPressed), for: .touchUpInside)
+                    setupWarningButton(button: cell?.newButton)
+//                    cell?.newButton.isHidden = false
+//                    cell?.newButton.setBackgroundImage(nil, for: .normal)
+//                    cell?.newButton.setTitle("⚠️", for: .normal)
+//                    cell?.newButton.addTarget(self, action: #selector(orgDeletedWarningPressed), for: .touchUpInside)
                 }
             }
             return cell!
@@ -196,8 +210,10 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         case .AddCalling:
             let cell = tableView.dequeueReusableCell(withIdentifier: "rootCell", for: indexPath) as? CWFAccordionRootTableViewCell
             cell?.titleLabel.text = currentDataItem.dataItem as? String
-            cell?.newButton.isHidden = false
-            cell?.newButton.addTarget(self, action: #selector(rootAddButtonPressed(sender:)), for: .touchUpInside)
+            if rootOrg?.conflict == nil {
+                cell?.newButton.isHidden = false
+                cell?.newButton.addTarget(self, action: #selector(rootAddButtonPressed(sender:)), for: .touchUpInside)
+            }
             return cell!
         
         case .Child:
@@ -269,16 +285,18 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             else {
                 if (dataItem.expanded) {
                     let cell = tableView.cellForRow(at: indexPath) as? CWFAccordionRootTableViewCell
-                    cell?.newButton.isHidden = true
+                    if cell?.newButton.buttonOrg?.conflict == nil {
+                        cell?.newButton.isHidden = true
+                    }
                     collapseCell(indexPath: indexPath)
                 }
                 else {
                     let cell = tableView.cellForRow(at: indexPath) as? CWFAccordionRootTableViewCell
-                    cell?.newButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
                     if let org = dataItem.dataItem as? Org {
                         if org.conflict == nil {
                             if (hasPermissionToEdit() && org.potentialNewPositions.count > 0) {
                                 cell?.newButton.isHidden = false
+                                cell?.newButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
                             }
                             cell?.newButton.buttonOrg = org
                         }
@@ -436,10 +454,47 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     
     func orgDeletedWarningPressed(sender: UIButtonWithOrg) {
         var orgName : String = "Organization"
-        if let org = sender.buttonOrg {
-            orgName = org.orgName
+        //Get the name for the org with the conflict
+        if let name = sender.buttonOrg?.orgName {
+            orgName = name
         }
-        let alert = UIAlertController(title: NSLocalizedString("Missing Organization", comment: ""), message: NSLocalizedString("\(orgName) no longer exists on lds.org and should be removed, but there are outstanding changes in some callings. If these proposed changes are no longer needed you can remove the organization with the 'Remove' button. If you want to review the callings with outstanding changes you can choose 'keep for now'", comment: "Deleted org error message"), preferredStyle: .alert)
+        var messageText = NSLocalizedString("\(orgName) no longer exists on lds.org and should be removed, but there are outstanding changes in some callings. If these proposed changes are no longer needed you can remove the organization with the 'Remove' button. If you want to review the callings with outstanding changes you can choose 'keep for now'\n", comment: "Deleted org error message")
+        
+        if let callingsWithChanges = sender.buttonOrg?.allInProcessCallings{
+            var callingsString = ""
+            if callingsWithChanges.count > 0 {
+                callingsString += NSLocalizedString("\n Callings With Changes:\n", comment: "callings with changes")
+            }
+            var names : [String] = []
+            for calling in callingsWithChanges {
+                if let callingName = calling.position.mediumName {
+                    names.append(callingName)
+                }
+            }
+            for name in names {
+                callingsString += "\n•  \(name)"
+            }
+            messageText += callingsString
+        }
+      
+        //setup the attributed message so we can format the string left aligned
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .left
+        
+        //set the message and its attributes
+        let messageTextAttributed = NSMutableAttributedString(
+            string: messageText,
+            attributes: [
+                NSParagraphStyleAttributeName: paragraphStyle,
+                NSForegroundColorAttributeName: UIColor.black,
+                NSFontAttributeName: UIFont.init(name: "Arial", size: 14)
+            ])
+        
+        //Create the alert and add the message
+        let alert = UIAlertController(title: NSLocalizedString("Missing Organization", comment: ""), message: "", preferredStyle: .alert)
+        alert.setValue(messageTextAttributed, forKey: "attributedMessage")
+        
+        //add the actions to the alert
         let removeAction = UIAlertAction(title: NSLocalizedString("Remove", comment: "Remove"), style: UIAlertActionStyle.destructive, handler: nil)
         let keepAction = UIAlertAction(title: NSLocalizedString("Keep For Now", comment: "Keep For Now"), style: UIAlertActionStyle.default, handler: nil)
         alert.addAction(removeAction)

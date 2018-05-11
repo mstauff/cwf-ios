@@ -109,10 +109,48 @@ class OrganizationTableViewController: CWFBaseTableViewController {
     //MARK: - Actions
     func conflictButtonPressed (sender : UIButtonWithOrg) {
         var orgName : String = "Organization"
+        //Get the name for the org with the conflict
         if let name = sender.buttonOrg?.orgName {
             orgName = name
         }
-        let alert = UIAlertController(title: NSLocalizedString("Missing Organization", comment: ""), message: NSLocalizedString("\(orgName) no longer exists on lds.org and should be removed, but there are outstanding changes in some callings. If these proposed changes are no longer needed you can remove the organization with the 'Remove' button. If you want to review the callings with outstanding changes you can choose 'keep for now'", comment: "Deleted org error message"), preferredStyle: .alert)
+        var messageText = NSLocalizedString("\(orgName) no longer exists on lds.org and should be removed, but there are outstanding changes in some callings. If these proposed changes are no longer needed you can remove the organization with the 'Remove' button. If you want to review the callings with outstanding changes you can choose 'keep for now'\n", comment: "Deleted org error message")
+        
+        if let callingsWithChanges = sender.buttonOrg?.allInProcessCallings{
+            var callingsString = ""
+            if callingsWithChanges.count > 0 {
+                callingsString += NSLocalizedString("\n Callings With Changes:\n", comment: "callings with changes")
+            }
+            var names : [String] = []
+            for calling in callingsWithChanges {
+                if let callingName = calling.position.mediumName {
+                    names.append(callingName)
+                }
+            }
+            for name in names {
+                callingsString += "\n•  \(name)"
+            }
+            messageText += callingsString
+        }
+        
+        
+        //setup the attributed message so we can format the string left aligned
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .left
+        
+        //set the message and its attributes
+        let messageTextAttributed = NSMutableAttributedString(
+            string: messageText,
+            attributes: [
+                NSParagraphStyleAttributeName: paragraphStyle,
+                NSForegroundColorAttributeName: UIColor.black,
+                NSFontAttributeName: UIFont.init(name: "Arial", size: 14)
+            ])
+        
+        //Create the alert and add the message
+        let alert = UIAlertController(title: NSLocalizedString("Missing Organization", comment: ""), message: "", preferredStyle: .alert)
+        alert.setValue(messageTextAttributed, forKey: "attributedMessage")
+        
+        //add the actions to the alert
         let removeAction = UIAlertAction(title: NSLocalizedString("Remove", comment: "Remove"), style: UIAlertActionStyle.destructive, handler: nil)
         let keepAction = UIAlertAction(title: NSLocalizedString("Keep For Now", comment: "Keep For Now"), style: UIAlertActionStyle.default, handler: nil)
         alert.addAction(removeAction)
