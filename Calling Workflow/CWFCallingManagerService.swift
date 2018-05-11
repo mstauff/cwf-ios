@@ -449,7 +449,7 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
                 
                 // these are the orgs that aren't in LCR and don't have any in process callings - they can be safely removed
                 let orgsToDelete = extraAppOrgs.filter() { $0.allInProcessCallings.isEmpty }
-                self.dataSource.deleteOrgs(orgs: orgsToDelete, completionHandler: nil)
+                self.dataSource.deleteFiles(forOrgs: orgsToDelete, completionHandler: nil)
                 
                 // these are the orgs that aren't in LCR, but they still have in process callings, so we need to add them in to the rest of the orgs that have been merged between LCR & app data so they appear in the app. Here we need to mark them as being in conflict, as they don't get marked in reconcile orgs (they never actually go through that code since they don't exist in both places)
                 let conflictOrgs = extraAppOrgs.filter() { $0.allInProcessCallings.isNotEmpty }.map() { orgIn -> Org in
@@ -612,7 +612,37 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
         return self.memberPotentialCallingsMap.getValues(forKey: member.individualId)
     }
     
-    //MARK: - Update/Add Calling in app data store
+    //MARK: - Update data in app data store
+    /** Remove an org/sub-org from the data store */
+    public func removeOrg( org orgToDelete: Org, completionHandler: @escaping(Bool, Error?) -> Void ) {
+        var completionHandlerCalled = false
+        // this should always be true, we shouldn't be able to have an org that doesn't exist in appDataOrg, but err on the side of caution
+        if var unit = self.appDataOrg,  let orgDepth = unit.getOrgDepth(subOrg: orgToDelete) {
+            if orgDepth == 0 {
+                // it's a root level org, so we need to remove the entire file
+                self.dataSource.deleteFiles(forOrgs: [orgToDelete] ) { success, errors in
+                    // also remove from in-memory org structure & update cache of member callings
+                    unit = unit.updatedWith(childOrgRemoved: orgToDelete) ?? unit
+                    self.initDatasourceData(fromOrg: unit, extraOrgs: [])
+                    completionHandlerCalled = true
+                    completionHandler( success, errors[safe: 0] )
+                }
+            } else if orgDepth > 0 {
+                // it's a sub-org, so we need to update a file
+                let parentOrg = unit.children.first(where: { $0.getOrgDepth(subOrg: orgToDelete) != nil })
+                if let updatedParentOrg = parentOrg?.updatedWith(childOrgRemoved: orgToDelete) {
+                    unit.updateDirectChildOrg(org: updatedParentOrg)
+                    self.initDatasourceData(fromOrg: unit, extraOrgs: [])
+                    completionHandlerCalled = true
+                    self.dataSource.updateOrg(org: updatedParentOrg, completionHandler: completionHandler )
+                }
+            }
+        }
+        if !completionHandlerCalled {
+            // just to cover our bases. Shouldn't ever happen.
+            completionHandler( false, nil )
+        }
+    }
     
     /** Adds a potential calling in the app's data store */
     public func addCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {

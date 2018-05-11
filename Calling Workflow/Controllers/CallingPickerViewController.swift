@@ -79,7 +79,7 @@ class CallingPickerViewController: CWFBaseTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if callingsToDisplay.count > 0 {
-            cell.textLabel?.text = callingsToDisplay[indexPath.row].metadata.mediumName
+            cell.textLabel?.text = callingsToDisplay[indexPath.row].mediumName
         }
         else {
             cell.textLabel?.text = NSLocalizedString("No available callings to add", comment: "no callings")
