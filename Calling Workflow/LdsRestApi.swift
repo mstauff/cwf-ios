@@ -489,7 +489,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
         if calling.position.custom {
             payloadJsonObj[LcrCallingJsonKeys.pendingDelete] = "true" as AnyObject
         } else {
-            payloadJsonObj[LcrCallingJsonKeys.hide] = "true" as AnyObject
+            payloadJsonObj[LcrCallingJsonKeys.hidden] = "true" as AnyObject
 
         }
         payloadJsonObj[LcrCallingJsonKeys.positionTypeId] = calling.position.positionTypeId as AnyObject
@@ -572,7 +572,7 @@ private struct LcrCallingJsonKeys {
     static let memberId = "memberId"
     static let releasePositionIds = "releasePositionIds"
     static let justCalled = "justCalled"
-    static let hide = "hidden"
+    static let hidden = "hidden"
     static let pendingDelete = "pendingDelete"
     static let custom = "custom"
 }
