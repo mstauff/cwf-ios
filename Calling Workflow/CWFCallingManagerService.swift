@@ -619,21 +619,21 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
         // this should always be true, we shouldn't be able to have an org that doesn't exist in appDataOrg, but err on the side of caution
         if var unit = self.appDataOrg,  let orgDepth = unit.getOrgDepth(subOrg: orgToDelete) {
             if orgDepth == 0 {
+                completionHandlerCalled = true
                 // it's a root level org, so we need to remove the entire file
                 self.dataSource.deleteFiles(forOrgs: [orgToDelete] ) { success, errors in
                     // also remove from in-memory org structure & update cache of member callings
                     unit = unit.updatedWith(childOrgRemoved: orgToDelete) ?? unit
                     self.initDatasourceData(fromOrg: unit, extraOrgs: [])
-                    completionHandlerCalled = true
                     completionHandler( success, errors[safe: 0] )
                 }
             } else if orgDepth > 0 {
+                completionHandlerCalled = true
                 // it's a sub-org, so we need to update a file
                 let parentOrg = unit.children.first(where: { $0.getOrgDepth(subOrg: orgToDelete) != nil })
                 if let updatedParentOrg = parentOrg?.updatedWith(childOrgRemoved: orgToDelete) {
                     unit.updateDirectChildOrg(org: updatedParentOrg)
                     self.initDatasourceData(fromOrg: unit, extraOrgs: [])
-                    completionHandlerCalled = true
                     self.dataSource.updateOrg(org: updatedParentOrg, completionHandler: completionHandler )
                 }
             }
