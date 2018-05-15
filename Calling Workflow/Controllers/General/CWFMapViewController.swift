@@ -37,20 +37,28 @@ class CWFMapViewController: CWFBaseViewController, MKMapViewDelegate {
     }
     
     func setupAddress() {
-        let addressAsString = addressToDisplay[0] + "," + addressToDisplay[1]
+        let addressAsString = addressToDisplay[0] + ", " + addressToDisplay[1]
         let geoCoder = CLGeocoder()
         geoCoder.geocodeAddressString(addressAsString) { [weak self] placemarks, error in
-            if let placemark = placemarks?.first, let location = placemark.location {
-                let mark = MKPlacemark(placemark: placemark)
-                if var region = self?.mapView.region {
-                    region.center = location.coordinate
-                    region.span.longitudeDelta /= 100.0
-                    region.span.latitudeDelta /= 100.0
-                    self?.mapView.setRegion(region, animated: true)
-                    self?.mapView.addAnnotation(mark)
+            if error == nil {
+                if let placemark = placemarks?.first, let location = placemark.location {
+                    let mark = MKPlacemark(placemark: placemark)
+                    if var region = self?.mapView.region {
+                        region.center = location.coordinate
+                        region.span.longitudeDelta /= 1000.0
+                        region.span.latitudeDelta /= 1000.0
+                        self?.mapView.setRegion(region, animated: true)
+                        self?.mapView.addAnnotation(mark)
+                    }
                 }
             }
-            
+            else {
+                let errorAlert = UIAlertController(title: NSLocalizedString("Location Not Found", comment: "no location"), message:NSLocalizedString("Maps could not find the location \n\(addressAsString)", comment: "could not find location"), preferredStyle: .alert)
+                let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: .default, handler: nil)
+                errorAlert.addAction(okAction)
+                
+                self?.present(errorAlert, animated: true, completion: nil)
+            }
         }
         
 //        let dropPin = MKPointAnnotation()
