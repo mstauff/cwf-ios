@@ -199,10 +199,6 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                 }
                 else {
                     setupWarningButton(button: cell?.newButton)
-//                    cell?.newButton.isHidden = false
-//                    cell?.newButton.setBackgroundImage(nil, for: .normal)
-//                    cell?.newButton.setTitle("⚠️", for: .normal)
-//                    cell?.newButton.addTarget(self, action: #selector(orgDeletedWarningPressed), for: .touchUpInside)
                 }
             }
             return cell!

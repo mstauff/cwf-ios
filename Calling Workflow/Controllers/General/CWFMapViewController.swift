@@ -37,7 +37,14 @@ class CWFMapViewController: CWFBaseViewController, MKMapViewDelegate {
     }
     
     func setupAddress() {
-        let addressAsString = addressToDisplay[0] + ", " + addressToDisplay[1]
+        var addressAsString = addressToDisplay[0]
+        if addressToDisplay[1] != "" {
+            addressAsString += ", " + addressToDisplay[1]
+        }
+        if (addressToDisplay.count > 2 && addressToDisplay[2] != "") {
+            addressAsString += ", " + addressToDisplay[2]
+        }
+        
         let geoCoder = CLGeocoder()
         geoCoder.geocodeAddressString(addressAsString) { [weak self] placemarks, error in
             if error == nil {
