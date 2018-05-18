@@ -625,7 +625,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         }
         
         //init delete option for the action sheet
-        if canDeleteCalling() {
+        if callingMgr.orgService.canDeleteCalling(callingToDelete: callingToDisplay, fromUnitOrg: callingMgr.appDataOrg) {
             let deleteAction = UIAlertAction(title: NSLocalizedString("Delete Calling", comment: "delete calling"), style: UIAlertActionStyle.default, handler:  {
                 (alert: UIAlertAction!) -> Void in
                 
@@ -791,25 +791,4 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         }
     }
     
-    func canDeleteCalling() -> Bool {
-        var boolToReturn = false
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        
-        if let calling = callingToDisplay,let parentOrgId = calling.parentOrg?.id, let rootOrg = appDelegate?.callingManager.unitLevelOrg(forSubOrg: parentOrgId) {
-            if calling.cwfOnly {
-                boolToReturn = true
-            }
-            else {
-                if let parentOrgId = calling.parentOrg?.id, let parentOrg = rootOrg.getChildOrg(id: parentOrgId ) {
-                    let callings = parentOrg.callings.filter() { $0.position.positionTypeId == calling.position.positionTypeId }
-                    if calling.position.multiplesAllowed && callings.count > 1 {
-                        boolToReturn = true
-                    }
-                }
-            }
-            
-        }
-        
-        return boolToReturn
-    }
 }
