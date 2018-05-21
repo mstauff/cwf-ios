@@ -449,13 +449,16 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     }
     
     func orgDeletedWarningPressed(sender: UIButtonWithOrg) {
+        
         var orgName : String = "Organization"
-        //Get the name for the org with the conflict
+        //Get the name for the org with the conflict if not found default to "Organization
         if let name = sender.buttonOrg?.orgName {
             orgName = name
         }
+        
         var messageText = NSLocalizedString("\(orgName) no longer exists on lds.org and should be removed, but there are outstanding changes in some callings. If these proposed changes are no longer needed you can remove the organization with the 'Remove' button. If you want to review the callings with outstanding changes you can choose 'keep for now'\n", comment: "Deleted org error message")
         
+        //Load the callings with changes to be displayed
         if let callingsWithChanges = sender.buttonOrg?.allInProcessCallings{
             var callingsString = ""
             if callingsWithChanges.count > 0 {
@@ -483,7 +486,7 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             attributes: [
                 NSParagraphStyleAttributeName: paragraphStyle,
                 NSForegroundColorAttributeName: UIColor.black,
-                NSFontAttributeName: UIFont.init(name: "Arial", size: 14)
+                NSFontAttributeName: UIFont.init(name: "Arial", size: 14)!
             ])
         
         //Create the alert and add the message
@@ -506,13 +509,61 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                         
                         showAlertFromBackground(alert: updateErrorAlert, completion: nil)
                     }
+                    else {
+                        
+                        self.updateDeletedOrg(orgDeleted: org)
+
+                    }
                     self.tableView.reloadData()
                 }
             }
         })
+        //setup action that does nothing
         let keepAction = UIAlertAction(title: NSLocalizedString("Keep For Now", comment: "Keep For Now"), style: UIAlertActionStyle.default, handler: nil)
+        
+        //Add actions and present alert
         alert.addAction(removeAction)
         alert.addAction(keepAction)
         self.present(alert, animated: true, completion: nil)
     }
+
+    func updateDeletedOrg(orgDeleted: Org) {
+        //create an array to keep track of the data items that need to be deleted
+        var indexesToRemove : [Int] = []
+        //loop through the data source
+        for i in 0...dataSource.count-1 {
+            let data = dataSource[i]
+            //check if the data is the org that was deleted
+            if (data.dataItemType == .Parent && (data.dataItem as? Org == orgDeleted)) {
+                //add it to the data items to remove
+                indexesToRemove.append(i)
+                //check if it is the last data item. If not check for callings
+                if i < dataSource.count - 1 {
+                    //loop throug the remaining data items checking for callings
+                    for j in i+1...dataSource.count-1 {
+                        let nextData = dataSource[j]
+                        //if a calling is found add it to be deleted. If another element is found stop searching
+                        if nextData.dataItemType == .Calling {
+                            indexesToRemove.append(j)
+                        }
+                        else {
+                            break
+                        }
+                    }
+                }
+                break
+            }
+        }
+        //remove items from the datasource in reverse order
+        for index in indexesToRemove.reversed() {
+            dataSource.remove(at: index)
+        }
+        //remove org from expanded parents if it is there.
+        self.expandedParents = self.expandedParents.filter() { $0.dataItem as? Org != orgDeleted }
+
+        self.tableView.reloadData()
+    }
+
 }
+
+
