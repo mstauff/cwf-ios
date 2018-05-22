@@ -277,6 +277,7 @@ public struct Org : JSONParsable  {
         return updatedOrg
     }
     
+    // as of 5/18 this method is not used. I'm leaving it in place in case we decide we want to mark conflicts on individual callings in the future
     public func updatedWith( conflictCallingIds: [Int64:ConflictCause] ) -> Org {
         var updatedOrg = self
         updatedOrg.callings = updatedOrg.callings.map() {
@@ -291,7 +292,26 @@ public struct Org : JSONParsable  {
         
         return updatedOrg
     }
-    
+
+    /** Returns a new org with the conflict causes added to any orgs that are specified. This recursively updates all child orgs*/
+    public func updatedWith( conflictOrgIds: [Int64:ConflictCause] ) -> Org {
+        guard !conflictOrgIds.isEmpty else {
+            return self
+        }
+        
+        var updatedOrg = self
+        updatedOrg.children = updatedOrg.children.map() {
+            var org = $0
+            if let conflictCause = conflictOrgIds[org.id]  {
+                org.conflict = conflictCause
+            }
+            org.children = org.children.map() {$0.updatedWith(conflictOrgIds: conflictOrgIds)}
+            return org
+        }
+        
+        return updatedOrg
+    }
+
     /** Returns a new org with the original calling changed to the updated calling. Returns nil if the calling isn't in this Org.  */
     public func updatedWith( changedCalling: Calling ) -> Org? {
         return updatedWithCallingChange( updatedCalling: changedCalling, operation: .Update )
