@@ -8,11 +8,11 @@
 
 import UIKit
 
-class CallingPickerViewController: CWFBaseTableViewController {
+class CallingPickerViewController: CWFBaseTableViewController, CallingPickerCustomCellDelegate {
     
     var org : Org? = nil
 
-    var callingsToDisplay : [Position] = [] {
+    var positionsToDisplay : [Position] = [] {
         didSet {
             tableView.reloadData()
         }
@@ -29,6 +29,8 @@ class CallingPickerViewController: CWFBaseTableViewController {
         tableView.estimatedRowHeight = 44
 
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(CallingPickerCustomTableViewCell.self, forCellReuseIdentifier: "customCell")
+
         // Do any additional setup after loading the view.
         setupCallings()
     }
@@ -57,38 +59,58 @@ class CallingPickerViewController: CWFBaseTableViewController {
                 }
             }
 
-            callingsToDisplay = tmpNewPositions
+            positionsToDisplay = tmpNewPositions
         }
     }
     
 
     //MARK: - Table View Delegates
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 1
+    }
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if callingsToDisplay.count > 0 {
-            return callingsToDisplay.count
+        if positionsToDisplay.count > 0 {
+            //we want the number of callings plus a custom calling cell
+            return positionsToDisplay.count + 1
         }
         else {
+            // This will be the custom calling cell
             return 1
         }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        if callingsToDisplay.count > 0 {
-            cell.textLabel?.text = callingsToDisplay[indexPath.row].metadata.mediumName
+        if positionsToDisplay.count > 0 && indexPath.row < positionsToDisplay.count {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+            cell.textLabel?.text = positionsToDisplay[indexPath.row].mediumName
+            return cell
         }
         else {
-            cell.textLabel?.text = NSLocalizedString("No available callings to add", comment: "no callings")
+            let cell = tableView.dequeueReusableCell(withIdentifier: "customCell", for: indexPath) as? CallingPickerCustomTableViewCell
+            cell?.delegate = self
+            return cell!
         }
-        return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.delegate?.setReturnedPostiton(position: callingsToDisplay[indexPath.row])
+        if (positionsToDisplay.count > 0 && indexPath.row < positionsToDisplay.count) {
+            self.delegate?.setReturnedPostiton(position: positionsToDisplay[indexPath.row])
+            self.navigationController?.popViewController(animated: true)
+        }
+        else {
+            print("custom calling pressed")
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func setCustomTitle(titleString: String) {
+        let position = Position(customPosition: titleString, inUnitNum: org?.unitNum)
+        self.delegate?.setReturnedPostiton(position: position)
         self.navigationController?.popViewController(animated: true)
     }
 }
