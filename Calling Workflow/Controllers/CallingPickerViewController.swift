@@ -99,8 +99,19 @@ class CallingPickerViewController: CWFBaseTableViewController, CallingPickerCust
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if (positionsToDisplay.count > 0 && indexPath.row < positionsToDisplay.count) {
-            self.delegate?.setReturnedPostiton(position: positionsToDisplay[indexPath.row])
-            self.navigationController?.popViewController(animated: true)
+            //Get the position from the datasource
+            let selectedPosition = positionsToDisplay[indexPath.row]
+            
+            //If a custom calling is selected we don't reuse the position. We create a new position and send that.
+            if !selectedPosition.custom {
+                self.delegate?.setReturnedPostiton(position: selectedPosition)
+                self.navigationController?.popViewController(animated: true)
+            }
+            else {
+                if let customName = selectedPosition.name {
+                    setCustomTitle(titleString: customName)
+                }
+            }
         }
         else {
             print("custom calling pressed")
