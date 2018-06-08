@@ -29,8 +29,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     var updatedCalling : Calling? {
         didSet {
             if let validCalling = updatedCalling {
-                    if let prevVal = callingToDisplay, validCalling.position.multiplesAllowed, prevVal.id != validCalling.id {
-                        // in the cases where we've done an update to LCR when multiples are allowed the calling ID may have changed so we need to remove the old one (by it's cwfID) before updating with the new one. If we simply update the new value with the ID it is not matched with the old calling without an ID, so it gets added as new rather than replacing
+                    if let prevVal = callingToDisplay, (validCalling.position.multiplesAllowed || validCalling.position.custom), prevVal.id != validCalling.id {
+                        // in the cases where we've done an update to LCR when multiples are allowed, or a custom calling, the calling ID may have changed so we need to remove the old one (by it's cwfID) before updating with the new one. If we simply update the new value with the ID it is not matched with the old calling without an ID, so it gets added as new rather than replacing
                         self.rootOrg = self.rootOrg?.updatedWith(callingToDelete: prevVal)
                     }
                 //Updates the ui only. No updates to Drive or LCR

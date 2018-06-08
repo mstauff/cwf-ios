@@ -620,7 +620,7 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
     }
     
     /** deletes a potential calling in the app's data store */
-    public func deleteCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {
+     func deleteCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: calling, operation: .Delete, completionHandler: completionHandler)
     }
     
@@ -629,9 +629,20 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
         self.storeCallingChange(changedCalling: updatedCalling, operation: .Update, completionHandler: completionHandler)
     }
     
-    public func releaseCalling(updatedCalling: Calling, completionHandler: @escaping (Bool, Error?) -> Void) {
+    /** "releases" a calling in the data store. This should never be called externally, it should only be used by releaseLCRCalling (after it completes successfully it calls this method to update google drive with the change) */
+    func releaseCalling(updatedCalling: Calling, completionHandler: @escaping (Bool, Error?) -> Void) {
         // this should be the calling before it's released (still contains the positionId and the existing ind id so we can successfully identify it in the org structure)
         self.storeCallingChange(changedCalling: updatedCalling, operation: .Release, completionHandler: completionHandler)
+    }
+    
+    /** Deletes a calling from either the remote data source, or from LCR (which in turn deletes it from the remote data source). All the other calling actions the change destination is determined by the action (calling actions->update or release is by definition an LCR update. Delete is the one exception where it could be a delete from the datasource, or a delete from LCR. So this method determines whether the calling can simply be deleted from the datasource or if we need to go to LCR */
+    func deleteFromLCROrApp( calling: Calling, completionHandler: @escaping( Bool, Error?) -> Void ) {
+        // if it's been created by cwf then we delete locally, if not then we attempt to delete from LCR. If it doesn't exist in LCR they will return an error, but we'll still delete locally as well.
+        if calling.cwfOnly  {
+            self.deleteCalling(calling: calling, completionHandler: completionHandler)
+        } else {
+            self.deleteLCRCalling(callingToDelete: calling, completionHandler: completionHandler )
+        }
     }
     
     //MARK: - LCR API Calls
@@ -690,7 +701,7 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
         }
     }
     
-    public func deleteLCRCalling( callingToDelete: Calling, completionHandler: @escaping(Bool, Error?) -> Void ) {
+     func deleteLCRCalling( callingToDelete: Calling, completionHandler: @escaping(Bool, Error?) -> Void ) {
         guard let unitNum = callingToDelete.parentOrg?.unitNum else {
             let errorMsg = "Error: calling didn't have a parent org"
             print( errorMsg )
