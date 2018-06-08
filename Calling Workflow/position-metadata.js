@@ -1185,7 +1185,7 @@
         "positionTypeId": 1559,
         "shortName": "Website Admin",
         "requirements": null
-    }
+    },
 
 
 

@@ -214,11 +214,11 @@
             ],
             "phone": "444-HOME-PHONE",
             "address": {
-                "streetAddress": "456 Another Street",
-                "streetAddress2": "Savali, Tonga",
-                "city": "Savali",
-                "state": null,
-                "postal": "shouldn't be included"
+                 "streetAddress": "167 Ave C Apt 3a",
+                "streetAddress2": "",
+                "city": "New York",
+                "state": "New York",
+                "postal": "10009"
             },
             "emailAddress": "hh@email.com",
             "responsibleHTAuxiliaryId": 908949,
@@ -377,11 +377,11 @@
 			"children": [],
 			"phone": null,
 			"address": {
-				"streetAddress": "456 Another Street",
-				"streetAddress2": "Savali, Tonga",
-				"city": "Savali",
-				"state": null,
-				"postal": "shouldn't be included"
+				"streetAddress": "50 E 98th St",
+				"streetAddress2": "Ste 10K-4",
+				"city": "New York",
+				"state": "New York",
+				"postal": "10029-6552"
 			},
 			"emailAddress": "",
 			"responsibleHTAuxiliaryId": 908949,
