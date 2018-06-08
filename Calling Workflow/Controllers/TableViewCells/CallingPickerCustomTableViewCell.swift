@@ -87,6 +87,7 @@ class CallingPickerCustomTableViewCell: UITableViewCell {
     }
     
     func setupViewForInput () {
+        //setting up buttons to show for input
         print("button pressed")
         firstButton.isHidden = true
         doneButton.isHidden = false

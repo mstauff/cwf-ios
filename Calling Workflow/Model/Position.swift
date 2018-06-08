@@ -29,7 +29,7 @@ public struct Position : JSONParsable {
     
     let multiplesAllowed : Bool
     
-    let custom : Bool
+    let custom : Bool // custom 
     
     let displayOrder : Int?
     
