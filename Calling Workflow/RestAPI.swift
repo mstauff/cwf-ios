@@ -47,7 +47,6 @@ class RestAPI {
             completionHandler(nil, nil, NSError( domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: [ "error" : errorMsg ] ) )
             return
         }
-        print( "Performing Network " + httpMethod.rawValue + " to " + urlString )
         var restRequest = URLRequest( url:  url )
         restRequest.addValue(HttpContentType.Json.rawValue, forHTTPHeaderField: NetworkConstants.acceptHeader)
         if httpMethod == .Post {

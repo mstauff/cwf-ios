@@ -279,10 +279,8 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
         if let setMember = member {
             newCalling?.proposedIndId = setMember.individualId
             //TODO add check that calling is set
-            if let isCustom = newCalling?.position.custom {
-                if (isCustom || newCalling?.position.positionTypeId != 0) {
-                    navigationItem.rightBarButtonItem?.isEnabled = true
-                }
+            if (newCalling?.position.positionTypeId != 0) {
+                navigationItem.rightBarButtonItem?.isEnabled = true
             }
             
         }

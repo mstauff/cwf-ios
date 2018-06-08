@@ -197,7 +197,7 @@ class RemoteDataSource : NSObject, DataSource, GIDSignInDelegate {
         }
     }
 
-    func deleteOrgs( orgs: [Org], completionHandler: ((_ success : Bool, _ errors : [Error] )-> Void)? ) {
+    func deleteFiles( forOrgs orgs: [Org], completionHandler: ((_ success : Bool, _ errors : [Error] )-> Void)? ) {
         if orgs.isEmpty {
             if let callback = completionHandler {
                 callback( true, [] )

@@ -8,11 +8,11 @@
 
 import UIKit
 
-class CallingPickerViewController: CWFBaseTableViewController, CallingPickerCustomCellDelegate {
+class CallingPickerViewController: CWFBaseTableViewController {
     
     var org : Org? = nil
 
-    var positionsToDisplay : [Position] = [] {
+    var callingsToDisplay : [Position] = [] {
         didSet {
             tableView.reloadData()
         }
@@ -29,8 +29,6 @@ class CallingPickerViewController: CWFBaseTableViewController, CallingPickerCust
         tableView.estimatedRowHeight = 44
 
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        tableView.register(CallingPickerCustomTableViewCell.self, forCellReuseIdentifier: "customCell")
-
         // Do any additional setup after loading the view.
         setupCallings()
     }
@@ -59,69 +57,38 @@ class CallingPickerViewController: CWFBaseTableViewController, CallingPickerCust
                 }
             }
 
-            positionsToDisplay = tmpNewPositions
+            callingsToDisplay = tmpNewPositions
         }
     }
     
 
     //MARK: - Table View Delegates
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 1
-    }
-    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if positionsToDisplay.count > 0 {
-            //we want the number of callings plus a custom calling cell
-            return positionsToDisplay.count + 1
+        if callingsToDisplay.count > 0 {
+            return callingsToDisplay.count
         }
         else {
-            // This will be the custom calling cell
             return 1
         }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if positionsToDisplay.count > 0 && indexPath.row < positionsToDisplay.count {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            cell.textLabel?.text = positionsToDisplay[indexPath.row].mediumName
-            return cell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        if callingsToDisplay.count > 0 {
+            cell.textLabel?.text = callingsToDisplay[indexPath.row].mediumName
         }
         else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "customCell", for: indexPath) as? CallingPickerCustomTableViewCell
-            cell?.delegate = self
-            return cell!
+            cell.textLabel?.text = NSLocalizedString("No available callings to add", comment: "no callings")
         }
+        return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (positionsToDisplay.count > 0 && indexPath.row < positionsToDisplay.count) {
-            //Get the position from the datasource
-            let selectedPosition = positionsToDisplay[indexPath.row]
-            
-            //If a custom calling is selected we don't reuse the position. We create a new position and send that.
-            if !selectedPosition.custom {
-                self.delegate?.setReturnedPostiton(position: selectedPosition)
-                self.navigationController?.popViewController(animated: true)
-            }
-            else {
-                if let customName = selectedPosition.name {
-                    setCustomTitle(titleString: customName)
-                }
-            }
-        }
-        else {
-            print("custom calling pressed")
-        }
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
-    func setCustomTitle(titleString: String) {
-        let position = Position(customPosition: titleString, inUnitNum: org?.unitNum)
-        self.delegate?.setReturnedPostiton(position: position)
+        self.delegate?.setReturnedPostiton(position: callingsToDisplay[indexPath.row])
         self.navigationController?.popViewController(animated: true)
     }
 }

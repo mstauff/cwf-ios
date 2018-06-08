@@ -29,9 +29,7 @@ protocol CallingsTableViewControllerDelegate {
 protocol CallingPickerTableViewControllerDelegate {
     func setReturnedPostiton(position: Position)
 }
-protocol CallingPickerCustomCellDelegate {
-    func setCustomTitle(titleString: String)
-}
+
 protocol FilterTableViewCellDelegate {
     func updateFilterOptionsForFilterView()
 }

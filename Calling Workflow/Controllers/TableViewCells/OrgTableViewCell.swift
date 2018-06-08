@@ -10,7 +10,7 @@ import UIKit
 
 class OrgTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var conflictButton: UIButton!
+    @IBOutlet weak var conflictButton: UIButtonWithOrg!
     @IBOutlet weak var titleLabel: UILabel!
     
     override func awakeFromNib() {
