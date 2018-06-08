@@ -141,6 +141,7 @@ class NewCallingTableViewController: UITableViewController, MemberPickerDelegate
                 if let org = parentOrg {
                     nextVC?.org = org
                 }
+                
                 nextVC?.delegate = self
                 navigationController?.pushViewController(nextVC!, animated: true)
 
