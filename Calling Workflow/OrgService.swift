@@ -215,6 +215,7 @@ class OrgService {
     
     /**
      Determines if a calling is eligible to be deleted. In order to determine this we need the other callings in the sub org (if it's a class with multiple teachers we can delete teachers until there is only one left, but we need the context to determine that. The org could be any parent org of the calling, including the entire unit org. We will return true if the calling is cwfOnly (that means it was added by the app, if it was added then multiples are allowed and it can be deleted), or if there are multiples of the same calling type within the org. Returns false otherwise.
+     
      */
     func canDeleteCalling( callingToDelete : Calling?, fromUnitOrg : Org? ) -> Bool {
         
