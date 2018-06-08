@@ -86,7 +86,7 @@ class CallingManagerServiceTests: XCTestCase {
     }
     
     class MockDataSource : DataSource {
-        func deleteFiles(forOrgs: [Org], completionHandler: ((Bool, [Error]) -> Void)?) {
+        func deleteOrgs(orgs: [Org], completionHandler: ((Bool, [Error]) -> Void)?) {
             if let callback = completionHandler {
                 callback( true, [] )
             }

@@ -38,10 +38,8 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        self.searchController.isActive = false
         self.searchController.searchBar.resignFirstResponder()
         self.searchController.dismiss(animated: false, completion: nil)
-
     }
     
     override func didReceiveMemoryWarning() {
@@ -233,7 +231,6 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     
     // MARK: - Button Method
     func memberSelected(selectedMember: MemberCallings?) {
-        self.searchController.isActive = false
         if let member = selectedMember {
             delegate?.setProspectiveMember(member: member.member)
         }
@@ -241,8 +238,6 @@ class MemberPickerTableViewController: UITableViewController, FilterTableViewCon
     }
     
     func filterButtonPressed(sender : UIView) {
-        self.searchController.isActive = false
-
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let filterView = storyboard.instantiateViewController(withIdentifier: "FilterTableViewController") as? FilterTableViewController
         // we want all the filter options to be included so just use the convenience method to add them all

@@ -313,7 +313,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
             let cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath) as? CWFButtonTableViewCell
             cell?.cellButton.setTitle(NSLocalizedString("Calling Actions", comment: "Calling Actions"), for: UIControlState.normal)
             cell?.cellButton.addTarget(self, action: #selector(callingActionsButtonPressed), for: .touchUpInside)
-            if callingToDisplay?.conflict != nil || callingToDisplay?.parentOrg?.conflict != nil {
+            if callingToDisplay?.conflict != nil {
                 cell?.cellButton.isUserInteractionEnabled = false
                 cell?.tintColor = UIColor.white
                 cell?.backgroundColor = UIColor.lightGray
@@ -625,7 +625,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         }
         
         //init delete option for the action sheet
-        if callingMgr.orgService.canDeleteCalling(callingToDelete: callingToDisplay, fromUnitOrg: callingMgr.appDataOrg) {
+        if canDeleteCalling() {
             let deleteAction = UIAlertAction(title: NSLocalizedString("Delete Calling", comment: "delete calling"), style: UIAlertActionStyle.default, handler:  {
                 (alert: UIAlertAction!) -> Void in
                 
@@ -652,7 +652,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                 let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                     (alert: UIAlertAction!) -> Void in
                     self.startSpinner()
-                    callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
+                    callingMgr.deleteFromLCROrApp(calling: self.callingToDisplay!) { (success, error) in
                         let err = error?.localizedDescription ?? "nil"
                         print("Delete result: \(success) - error: \(err)")
                         DispatchQueue.main.async {
@@ -791,4 +791,26 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
         }
     }
     
+    func canDeleteCalling() -> Bool {
+        var boolToReturn = false
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        
+        if let calling = callingToDisplay,let parentOrgId = calling.parentOrg?.id, let rootOrg = appDelegate?.callingManager.unitLevelOrg(forSubOrg: parentOrgId) {
+            // if it only exists in CWF, means was added from the app then it can always be deleted. Similarly, any custom callings can always be deleted.
+            if calling.cwfOnly || calling.position.custom {
+                boolToReturn = true
+            }
+            else {
+                if let parentOrgId = calling.parentOrg?.id, let parentOrg = rootOrg.getChildOrg(id: parentOrgId ) {
+                    let callings = parentOrg.callings.filter() { $0.position.positionTypeId == calling.position.positionTypeId }
+                    if calling.position.multiplesAllowed && callings.count > 1 {
+                        boolToReturn = true
+                    }
+                }
+            }
+            
+        }
+        
+        return boolToReturn
+    }
 }
