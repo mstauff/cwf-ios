@@ -35,7 +35,7 @@ protocol DataSource {
 
     func initializeDrive(forOrgs orgs: [Org], completionHandler: @escaping(_ orgsToCreate: [Org], _ remainingOrgs: [Org], _ error: Error?) -> Void)
     func createFiles( forOrgs orgs: [Org], completionHandler: @escaping(_ success : Bool, _ errors : [Error] )-> Void )
-    func deleteOrgs( orgs: [Org], completionHandler: (( _ success: Bool, _ errors : [Error])-> Void)?)
+    func deleteFiles( forOrgs orgs: [Org], completionHandler: (( _ success: Bool, _ errors : [Error])-> Void)?)
     func getData( forOrg : Org, completionHandler : @escaping (_ org : Org?, _ error: Error? ) -> Void )
     
     func updateOrg( org : Org, completionHandler : @escaping (_ success : Bool, _ error: Error? ) -> Void )
