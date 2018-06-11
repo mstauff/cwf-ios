@@ -449,7 +449,7 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
                 
                 // these are the orgs that aren't in LCR and don't have any in process callings - they can be safely removed
                 let orgsToDelete = extraAppOrgs.filter() { $0.allInProcessCallings.isEmpty }
-                self.dataSource.deleteOrgs(orgs: orgsToDelete, completionHandler: nil)
+                self.dataSource.deleteFiles(forOrgs: orgsToDelete, completionHandler: nil)
                 
                 // these are the orgs that aren't in LCR, but they still have in process callings, so we need to add them in to the rest of the orgs that have been merged between LCR & app data so they appear in the app. Here we need to mark them as being in conflict, as they don't get marked in reconcile orgs (they never actually go through that code since they don't exist in both places)
                 let conflictOrgs = extraAppOrgs.filter() { $0.allInProcessCallings.isNotEmpty }.map() { orgIn -> Org in
@@ -536,35 +536,25 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
     
     /** Reads the given Org from google drive and calls the callback with the org converted from JSON. This doesn't update the internal org in memory or the calling maps. This should generally only be used during the startup */
     private func getOrgData(forOrgId orgId: Int64, completionHandler: @escaping (Org?, Error?) -> Void) {
-        // we prefer to use the one from LCR, but in some cases that may not be available (if the org has been deleted), so we'll use the google drive org as a fallback. This is only to do permission check, and to provide the details necessary to retrieve from remote data source
-        var selectedOrg = self.ldsUnitOrgsMap[orgId]
-        if selectedOrg == nil {
-            // we could probably just pull from appDataOrg, it should always be there, but it's O(n) rather than O(1) with the map, so we'll use the map, as in most cases it will be there. This is the fallback in case the org has been removed from LCR
-            selectedOrg = appDataOrg?.getChildOrg(id: orgId)
-        }
-        
-        if let ldsOrg = selectedOrg, let orgType = UnitLevelOrgType(rawValue: ldsOrg.orgTypeId) {
-            let orgAuth = AuthorizableOrg(unitNum: ldsOrg.unitNum, unitLevelOrgId:ldsOrg.id , unitLevelOrgType: orgType, orgTypeId: ldsOrg.orgTypeId)
+        // we look for the org in appData first, and then use LCR orgs as a fallback. First time we go through this method there will not be any data in appDataOrg, since it hasn't been initialized yet, so in those cases it will use lds data. On subsequent attempts (when the user selects an org to view details) we need the appData copy of the org because that is the only one that has any potential conflicts.
+        if let org = appDataOrg?.getChildOrg(id: orgId) ?? self.ldsUnitOrgsMap[orgId], let orgType = UnitLevelOrgType(rawValue: org.orgTypeId) {
+            let orgAuth = AuthorizableOrg(unitNum: org.unitNum, unitLevelOrgId:org.id , unitLevelOrgType: orgType, orgTypeId: org.orgTypeId)
             guard permissionMgr.isAuthorized(unitRoles: userRoles, domain: .OrgInfo, permission: .View, targetData: orgAuth ) else  {
-                completionHandler(ldsOrg, nil)
+                completionHandler(org, nil)
                 return
             }
             
             // the new data coming out of google drive will not have the conflicts that were found between the app and LCR data. We don't want to remerge against LCR because it may be stale, so we just want to get any callings that were found to be in conflict and update them once we pull latest out of google drive
-            var conflictCallingIdMap : [Int64:ConflictCause] = [:]
-            if let conflictCallings = self.appDataOrg?.allOrgCallings.filter({ $0.id != nil && $0.conflict != nil })  {
-                conflictCallingIdMap = conflictCallings.toDictionary() { return ( $0.id!, $0.conflict! ) }
-            }
-            dataSource.getData(forOrg: ldsOrg) { org, error in
+            let conflictOrgIdMap : [Int64:ConflictCause] = org.allSubOrgs.filter({ $0.conflict != nil }).toDictionary() { return ( $0.id, $0.conflict! ) }
+            dataSource.getData(forOrg: org) { org, error in
                 if error != nil {
                     completionHandler(nil, error)
                 } else if org == nil {
                     let errorMsg = "Error: No Org data found for ID: \(orgId)"
                     completionHandler(nil, NSError(domain: ErrorConstants.domain, code: ErrorConstants.notFound, userInfo: ["error": errorMsg]))
                 } else {
-                    // todo - need to strip out any org exceptions
                     // add in position meta data, and any conflicts
-                    let updatedOrg = org!.updatedWith(positionMetadata: self.positionMetadataMap).updatedWith( conflictCallingIds: conflictCallingIdMap )
+                    let updatedOrg = org!.updatedWith(positionMetadata: self.positionMetadataMap).updatedWith( conflictOrgIds: conflictOrgIdMap )
                     completionHandler(updatedOrg, nil)
                 }
             }
@@ -612,8 +602,38 @@ class CWFCallingManagerService: DataSourceInjected, DataCacheInjected, LdsOrgApi
         return self.memberPotentialCallingsMap.getValues(forKey: member.individualId)
     }
     
-    //MARK: - Update/Add Calling in app data store
-    
+    //MARK: - Update data in app data store
+    /** Remove an org/sub-org from the data store */
+    public func removeOrg( org orgToDelete: Org, completionHandler: @escaping(Bool, Error?) -> Void ) {
+        var completionHandlerCalled = false
+        // this should always be true, we shouldn't be able to have an org that doesn't exist in appDataOrg, but err on the side of caution
+        if var unit = self.appDataOrg,  let orgDepth = unit.getOrgDepth(subOrg: orgToDelete) {
+            if orgDepth == 0 {
+                completionHandlerCalled = true
+                // it's a root level org, so we need to remove the entire file
+                self.dataSource.deleteFiles(forOrgs: [orgToDelete] ) { success, errors in
+                    // also remove from in-memory org structure & update cache of member callings
+                    unit = unit.updatedWith(childOrgRemoved: orgToDelete) ?? unit
+                    self.initDatasourceData(fromOrg: unit, extraOrgs: [])
+                    completionHandler( success, errors[safe: 0] )
+                }
+            } else if orgDepth > 0 {
+                completionHandlerCalled = true
+                // it's a sub-org, so we need to update a file
+                let parentOrg = unit.children.first(where: { $0.getOrgDepth(subOrg: orgToDelete) != nil })
+                if let updatedParentOrg = parentOrg?.updatedWith(childOrgRemoved: orgToDelete) {
+                    unit.updateDirectChildOrg(org: updatedParentOrg)
+                    self.initDatasourceData(fromOrg: unit, extraOrgs: [])
+                    self.dataSource.updateOrg(org: updatedParentOrg, completionHandler: completionHandler )
+                }
+            }
+        }
+        if !completionHandlerCalled {
+            // just to cover our bases. Shouldn't ever happen.
+            completionHandler( false, nil )
+        }
+    }
+
     /** Adds a potential calling in the app's data store */
     public func addCalling(calling: Calling, completionHandler: @escaping(Bool, Error?) -> Void) {
         self.storeCallingChange(changedCalling: calling, operation: .Create, completionHandler: completionHandler)

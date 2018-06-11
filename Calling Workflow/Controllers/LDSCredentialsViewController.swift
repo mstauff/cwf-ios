@@ -29,7 +29,7 @@ struct LDSCredentialsVCEnums {
         case Btn
 
         static let allValues = [Username, Password, Btn]
-        
+
         static var count : Int {
             get {
                 return allValues.count
