@@ -26,11 +26,10 @@ struct LDSCredentialsVCEnums {
     enum CredentialsItemType : Int {
         case Username
         case Password
-        case SignInBtn
-        case SignOutBtn
+        case Btn
 
-        static let allValues = [Username, Password, SignInBtn, SignOutBtn]
-        
+        static let allValues = [Username, Password, Btn]
+
         static var count : Int {
             get {
                 return allValues.count
@@ -150,15 +149,15 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
 
                 self.passwordField = passwordCell?.inputField
                 initializePasswordField(withPassword: keychainDataDictionary?["password"])
-            case LDSCredentialsVCEnums.CredentialsItemType.SignInBtn.rawValue:
+            case LDSCredentialsVCEnums.CredentialsItemType.Btn.rawValue:
                 cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath)
-            case LDSCredentialsVCEnums.CredentialsItemType.SignOutBtn.rawValue:
-                cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath)
-                let btnText = NSLocalizedString("Sign Out", comment: "Sign Out")
-                // the "button" is actually just a text label in the row. The sign-in button is defined in the storyboard. We don't currently have a component for it (although we probably should at some point, for these two buttons as well as the lds.org actions button on the calling details). So we just have to grab the label off the button and set the text (from "sign in" to "sign out...")
-                if let btn = cell?.contentView.subviews.first(where: {$0 is UILabel}) as? UILabel {
-                    btn.text = btnText
-                }
+//            case LDSCredentialsVCEnums.CredentialsItemType.Btn.rawValue:
+//                cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath)
+//                let btnText = NSLocalizedString("Sign Out", comment: "Sign Out")
+//                // the "button" is actually just a text label in the row. The sign-in button is defined in the storyboard. We don't currently have a component for it (although we probably should at some point, for these two buttons as well as the lds.org actions button on the calling details). So we just have to grab the label off the button and set the text (from "sign in" to "sign out...")
+//                if let btn = cell?.contentView.subviews.first(where: {$0 is UILabel}) as? UILabel {
+//                    btn.text = btnText
+//                }
             default:
                 let inputCell = tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath) as? InputTableViewCell
                 inputCell?.textLabel?.text = nil
@@ -186,19 +185,19 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
         case LDSCredentialsVCEnums.SectionTypes.Credentials.rawValue:
             switch indexPath.row {
                 // no handler for username or password - the UITextField seems to consume the event, and even if it doesn't we were just doing the default action anyway
-            case LDSCredentialsVCEnums.CredentialsItemType.SignInBtn.rawValue:
+            case LDSCredentialsVCEnums.CredentialsItemType.Btn.rawValue:
                 userNameField?.resignFirstResponder()
                 passwordField?.resignFirstResponder()
 
                 prepareAndLogin()
                 tableView.deselectRow(at: indexPath, animated: true)
                 
-            case LDSCredentialsVCEnums.CredentialsItemType.SignOutBtn.rawValue:
-                userNameField?.resignFirstResponder()
-                passwordField?.resignFirstResponder()
-
-                logOutLDSUser()
-                tableView.deselectRow(at: indexPath, animated: true)
+//            case LDSCredentialsVCEnums.CredentialsItemType.SignOutBtn.rawValue:
+//                userNameField?.resignFirstResponder()
+//                passwordField?.resignFirstResponder()
+//
+//                logOutLDSUser()
+//                tableView.deselectRow(at: indexPath, animated: true)
 
             default:
                 tableView.deselectRow(at: indexPath, animated: true)

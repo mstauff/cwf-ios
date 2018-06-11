@@ -29,8 +29,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
     var updatedCalling : Calling? {
         didSet {
             if let validCalling = updatedCalling {
-                    if let prevVal = callingToDisplay, (validCalling.position.multiplesAllowed || validCalling.position.custom), prevVal.id != validCalling.id {
-                        // in the cases where we've done an update to LCR when multiples are allowed, or a custom calling, the calling ID may have changed so we need to remove the old one (by it's cwfID) before updating with the new one. If we simply update the new value with the ID it is not matched with the old calling without an ID, so it gets added as new rather than replacing
+                if let prevVal = callingToDisplay, validCalling.position.multiplesAllowed, prevVal.id != validCalling.id {
+                    // in the cases where we've done an update to LCR when multiples are allowed the calling ID may have changed so we need to remove the old one (by it's cwfID) before updating with the new one. If we simply update the new value with the ID it is not matched with the old calling without an ID, so it gets added as new rather than replacing
                         self.rootOrg = self.rootOrg?.updatedWith(callingToDelete: prevVal)
                     }
                 //Updates the ui only. No updates to Drive or LCR
@@ -150,6 +150,27 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         }
     }
     
+    func setupNewButton (button : UIButtonWithOrg?) {
+        button?.removeTarget(nil, action: nil, for: .allEvents)
+        if self.expandedParents.contains(where: {button?.buttonOrg == $0.dataItem as? Org}) {
+            button?.isHidden = false
+            button?.setBackgroundImage(UIImage.init(named: "add"), for: .normal)
+            button?.setTitle(nil, for: .normal)
+            button?.addTarget(self, action: #selector(addButtonPressed(sender:)), for: .touchUpInside)
+        }
+        else {
+            button?.isHidden = true
+        }
+    }
+    
+    func setupWarningButton (button : UIButtonWithOrg?) {
+        button?.removeTarget(self, action: #selector(addButtonPressed(sender:)), for: .touchUpInside)
+        button?.isHidden = false
+        button?.setBackgroundImage(nil, for: .normal)
+        button?.setTitle("⚠️", for: .normal)
+        button?.addTarget(self, action: #selector(orgDeletedWarningPressed(sender:)), for: .touchUpInside)
+    }
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -174,15 +195,10 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
                 cell?.titleLabel.text = org.orgName
                 cell?.newButton.buttonOrg = org
                 if org.conflict == nil {
-                    if self.expandedParents.contains(where: {org == $0.dataItem as? Org}) {
-                        cell?.newButton.isHidden = false
-                    }
-                    else {
-                        cell?.newButton.isHidden = true
-                    }
+                    setupNewButton(button: cell?.newButton)
                 }
                 else {
-                    cell?.newButton.isHidden = true
+                    setupWarningButton(button: cell?.newButton)
                 }
             }
             return cell!
@@ -190,8 +206,10 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         case .AddCalling:
             let cell = tableView.dequeueReusableCell(withIdentifier: "rootCell", for: indexPath) as? CWFAccordionRootTableViewCell
             cell?.titleLabel.text = currentDataItem.dataItem as? String
-            cell?.newButton.isHidden = false
-            cell?.newButton.addTarget(self, action: #selector(rootAddButtonPressed(sender:)), for: .touchUpInside)
+            if rootOrg?.conflict == nil {
+                cell?.newButton.isHidden = false
+                cell?.newButton.addTarget(self, action: #selector(rootAddButtonPressed(sender:)), for: .touchUpInside)
+            }
             return cell!
         
         case .Child:
@@ -263,21 +281,26 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
             else {
                 if (dataItem.expanded) {
                     let cell = tableView.cellForRow(at: indexPath) as? CWFAccordionRootTableViewCell
-                    cell?.newButton.isHidden = true
+                    if cell?.newButton.buttonOrg?.conflict == nil {
+                        cell?.newButton.isHidden = true
+                    }
                     collapseCell(indexPath: indexPath)
                 }
                 else {
                     let cell = tableView.cellForRow(at: indexPath) as? CWFAccordionRootTableViewCell
-                    cell?.newButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
                     if let org = dataItem.dataItem as? Org {
                         if org.conflict == nil {
                             if (hasPermissionToEdit() && org.potentialNewPositions.count > 0) {
                                 cell?.newButton.isHidden = false
+                                cell?.newButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
                             }
                             cell?.newButton.buttonOrg = org
                         }
                         else {
-                            cell?.newButton.isHidden = true
+                            cell?.newButton.isHidden = false
+                            cell?.newButton.setBackgroundImage(nil, for: .normal)
+                            cell?.newButton.setTitle("⚠️", for: .normal)
+                            cell?.newButton.addTarget(self, action: #selector(orgDeletedWarningPressed), for: .touchUpInside)
                         }
                     }
                     expandCell(indexPath: indexPath)
@@ -375,8 +398,8 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         self.tableView.endUpdates()
     }
 
-    func addButtonPressed(sender: AccordionUIButton) {
-        
+    func addButtonPressed(sender: UIButtonWithOrg) {
+
         let storyBoard = UIStoryboard.init(name: "Main", bundle:nil)
         let nextVC = storyBoard.instantiateViewController(withIdentifier: "NewCallingTableViewController") as? NewCallingTableViewController
         if let org = sender.buttonOrg {
@@ -424,4 +447,123 @@ class CWFAccordionTableViewController: CWFBaseTableViewController, CallingsTable
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
     }
+    
+    func orgDeletedWarningPressed(sender: UIButtonWithOrg) {
+
+        var orgName : String = "Organization"
+        //Get the name for the org with the conflict if not found default to "Organization
+        if let name = sender.buttonOrg?.orgName {
+            orgName = name
+        }
+        
+        var messageText = NSLocalizedString("\(orgName) no longer exists on lds.org and should be removed, but there are outstanding changes in some callings. If these proposed changes are no longer needed you can remove the organization with the 'Remove' button. If you want to review the callings with outstanding changes you can choose 'keep for now'\n", comment: "Deleted org error message")
+        
+        //Load the callings with changes to be displayed
+        if let callingsWithChanges = sender.buttonOrg?.allInProcessCallings{
+            var callingsString = ""
+            if callingsWithChanges.count > 0 {
+                callingsString += NSLocalizedString("\n Callings With Changes:\n", comment: "callings with changes")
+            }
+            var names : [String] = []
+            for calling in callingsWithChanges {
+                if let callingName = calling.position.mediumName {
+                    names.append(callingName)
+                }
+            }
+            for name in names {
+                callingsString += "\n•  \(name)"
+            }
+            messageText += callingsString
+        }
+        
+        //setup the attributed message so we can format the string left aligned
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .left
+        
+        //set the message and its attributes
+        let messageTextAttributed = NSMutableAttributedString(
+            string: messageText,
+            attributes: [
+                NSParagraphStyleAttributeName: paragraphStyle,
+                NSForegroundColorAttributeName: UIColor.black,
+                NSFontAttributeName: UIFont.init(name: "Arial", size: 14)!
+            ])
+        
+        //Create the alert and add the message
+        let alert = UIAlertController(title: NSLocalizedString("Missing Organization", comment: ""), message: "", preferredStyle: .alert)
+        alert.setValue(messageTextAttributed, forKey: "attributedMessage")
+        
+        //add the actions to the alert
+        let removeAction = UIAlertAction(title: NSLocalizedString("Remove", comment: "Remove"), style: UIAlertActionStyle.destructive, handler: {
+            (alert: UIAlertAction!) -> Void in
+            if let org = sender.buttonOrg {
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                appDelegate?.callingManager.removeOrg(org: org) { success, error in
+                    // if there was an error then we need to inform the user
+                    if error != nil || !success {
+                        let updateErrorAlert = UIAlertController(title: NSLocalizedString("Error", comment: "Error"), message: NSLocalizedString("Unable to remove \(org.orgName). Please try again later.", comment: "Error removing org"), preferredStyle: .alert)
+                        let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.cancel, handler: nil)
+                        
+                        //Add the buttons to the alert and display to the user.
+                        updateErrorAlert.addAction(okAction)
+                        
+                        showAlertFromBackground(alert: updateErrorAlert, completion: nil)
+                    }
+                    else {
+                        
+                        self.updateDeletedOrg(orgDeleted: org)
+                        
+                    }
+                    self.tableView.reloadData()
+                }
+            }
+        })
+        //setup action that does nothing
+        let keepAction = UIAlertAction(title: NSLocalizedString("Keep For Now", comment: "Keep For Now"), style: UIAlertActionStyle.default, handler: nil)
+        
+        //Add actions and present alert
+        alert.addAction(removeAction)
+        alert.addAction(keepAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func updateDeletedOrg(orgDeleted: Org) {
+        //create an array to keep track of the data items that need to be deleted
+        var indexesToRemove : [Int] = []
+        //loop through the data source
+        for i in 0...dataSource.count-1 {
+            let data = dataSource[i]
+            //check if the data is the org that was deleted
+            if (data.dataItemType == .Parent && (data.dataItem as? Org == orgDeleted)) {
+                //add it to the data items to remove
+                indexesToRemove.append(i)
+                //check if it is the last data item. If not check for callings
+                if i < dataSource.count - 1 {
+                    //loop throug the remaining data items checking for callings
+                    for j in i+1...dataSource.count-1 {
+                        let nextData = dataSource[j]
+                        //if a calling is found add it to be deleted. If another element is found stop searching
+                        if nextData.dataItemType == .Calling {
+                            indexesToRemove.append(j)
+                        }
+                        else {
+                            break
+                        }
+                    }
+                }
+                break
+            }
+        }
+        //remove items from the datasource in reverse order
+        for index in indexesToRemove.reversed() {
+            dataSource.remove(at: index)
+        }
+        //remove org from expanded parents if it is there.
+        self.expandedParents = self.expandedParents.filter() { $0.dataItem as? Org != orgDeleted }
+        
+        self.tableView.reloadData()
+    }
+    
 }
+
+

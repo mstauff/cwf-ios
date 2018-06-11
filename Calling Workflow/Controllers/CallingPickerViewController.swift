@@ -32,7 +32,9 @@ class CallingPickerViewController: CWFBaseTableViewController, CallingPickerCust
         tableView.register(CallingPickerCustomTableViewCell.self, forCellReuseIdentifier: "customCell")
 
         // Do any additional setup after loading the view.
-        setupCallings()
+        if positionsToDisplay.count == 0 {
+            setupPositions()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -42,7 +44,7 @@ class CallingPickerViewController: CWFBaseTableViewController, CallingPickerCust
     
     //MARK: - Setup
     
-    func setupCallings() {
+    func setupPositions() {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         
         if let orgCallings = org?.potentialNewPositions {
@@ -58,8 +60,18 @@ class CallingPickerViewController: CWFBaseTableViewController, CallingPickerCust
                     tmpNewPositions.append(position)
                 }
             }
-
-            positionsToDisplay = tmpNewPositions
+            var filteredPositions : [Position] = []
+            for position in tmpNewPositions {
+                if position.custom == false {
+                    filteredPositions.append(position)
+                }
+                else {
+                    if !filteredPositions.contains(where: {$0.name == position.name}) {
+                        filteredPositions.append(position)
+                    }
+                }
+            }
+            positionsToDisplay = filteredPositions
         }
     }
     
@@ -75,7 +87,9 @@ class CallingPickerViewController: CWFBaseTableViewController, CallingPickerCust
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if positionsToDisplay.count > 0 {
-            //we want the number of callings plus a custom calling cell
+            
+            
+           //we want the number of callings plus a custom calling cell
             return positionsToDisplay.count + 1
         }
         else {

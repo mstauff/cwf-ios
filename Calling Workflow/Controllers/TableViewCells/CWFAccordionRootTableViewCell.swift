@@ -8,15 +8,15 @@
 
 import UIKit
 
-class AccordionUIButton: UIButton {
+class UIButtonWithOrg: UIButton {
     var buttonOrg : Org? = nil
 }
 
 class CWFAccordionRootTableViewCell: UITableViewCell {
     
     let titleLabel : UILabel = UILabel()
-    let newButton : AccordionUIButton = AccordionUIButton()
-    
+    let newButton : UIButtonWithOrg = UIButtonWithOrg()
+
     
     //MARK: - Life Cycle
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
