@@ -652,7 +652,7 @@ class CallingDetailsTableViewController: CWFBaseViewController, UITableViewDeleg
                 let okAction = UIAlertAction(title: NSLocalizedString("OK", comment: "OK"), style: UIAlertActionStyle.destructive, handler: {
                     (alert: UIAlertAction!) -> Void in
                     self.startSpinner()
-                    callingMgr.deleteFromLCROrApp(calling: self.callingToDisplay!) { (success, error) in
+                    callingMgr.deleteLCRCalling(callingToDelete: self.callingToDisplay!) { (success, error) in
                         let err = error?.localizedDescription ?? "nil"
                         print("Delete result: \(success) - error: \(err)")
                         DispatchQueue.main.async {

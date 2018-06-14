@@ -339,7 +339,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
          38816970
          ]
          - add is the same as update except you don't need releasePositionIds or releaseDate
-         - for custom callings you just need to make sure to include the position name, custom=true, and positionTypeId should be nil if not set from LCR (on an add, or not included at all)
+         - for custom callings you just need to make sure to include the position name, custom=true, and positionTypeId should be nil if not set from LCR (on an add)
          */
         guard let org = calling.parentOrg, let newMemberId = calling.proposedIndId else {
             // todo - need more message for case of no proposedIndId
@@ -356,11 +356,6 @@ class LdsRestApi : RestAPI, LdsOrgApi {
         var payloadJsonObj : JSONObject = [ LcrCallingJsonKeys.unitNum : unitNum as AnyObject, LcrCallingJsonKeys.subOrgId : org.id as AnyObject, LcrCallingJsonKeys.orgTypeId : org.orgTypeId as AnyObject, LcrCallingJsonKeys.positionTypeId : calling.position.positionTypeId as AnyObject, LcrCallingJsonKeys.memberId : newMemberId as AnyObject, LcrCallingJsonKeys.activeDate : todayAsLcrString as AnyObject, LcrCallingJsonKeys.position: positionName as AnyObject ]
         if calling.position.custom {
             payloadJsonObj[LcrCallingJsonKeys.custom] = true as AnyObject
-            // if the positionTypeId hasn't been set by LCR then we want to set it to null (this would be an add)
-            if calling.position.positionTypeId <= Position.defaultCustomPositionTypeId {
-                // generally speaking if a field is going to be null we just don't include it in the object. In the case of a position add we need it to be null. LCR will assign an ID and return it in the JSON
-                payloadJsonObj[LcrCallingJsonKeys.positionTypeId] = NetworkConstants.nilJson  as AnyObject
-            }
         }
         if let callingId = calling.id {
             // there is someone already in the calling, so we need to release them
@@ -398,10 +393,8 @@ class LdsRestApi : RestAPI, LdsOrgApi {
                     if let newActiveDateString = responseJson[LcrCallingJsonKeys.activeDate] as? String, let newActiveDate = Date(fromLCRString: newActiveDateString) {
                         activeDate = newActiveDate
                     }
-                    // if it's a custom position then we need the updated position from the JSON (it will have the correct positionTypeId). The Position from json init creates an optional Position, so the ?? is just a fallback in case we can't parse the JSON. Shouldn't ever happen
-                    let position = calling.position.custom ? (Position(fromJSON: responseJson) ?? calling.position) : calling.position
                     // create the calling based on the returned json
-                    let updatedCalling = Calling( id: newCallingId.int64Value, cwfId : nil, existingIndId : newExistingIndId, existingStatus: .Active, activeDate: activeDate, proposedIndId : nil, status: CallingStatus.None, position: position, notes: nil, parentOrg : calling.parentOrg, cwfOnly: false )
+                    let updatedCalling = Calling( id: newCallingId.int64Value, cwfId : nil, existingIndId : newExistingIndId, existingStatus: .Active, activeDate: activeDate, proposedIndId : nil, status: CallingStatus.None, position: calling.position, notes: nil, parentOrg : calling.parentOrg, cwfOnly: false )
 
                     completionHandler(updatedCalling, nil)
                 } else {
@@ -435,8 +428,7 @@ class LdsRestApi : RestAPI, LdsOrgApi {
          "position": "any non-empty string"
         "positionId": 38816967,
          "positionTypeId": 208,
-        "releaseDate": "20170801",
-         "pendingDelete": false
+        "releaseDate": "20170801"
     } */
         guard let org = calling.parentOrg, calling.id != nil else {
             let orgDescription = calling.parentOrg?.orgTypeId.description ?? "no org type"
@@ -449,8 +441,6 @@ class LdsRestApi : RestAPI, LdsOrgApi {
         var payloadJsonObj = lcrJsonPayload( forCalling: calling, inOrg: org, unitNum: unitNum )
         // the positionTypeId cannot be added in the util method because it causes problems with release of a calling with a current holder, so we have to add it for the case of release (without it a release will actually delete the calling)
         payloadJsonObj[LcrCallingJsonKeys.positionTypeId] = calling.position.positionTypeId as AnyObject
-        payloadJsonObj[LcrCallingJsonKeys.pendingDelete] = false.description as AnyObject
-
         removeCalling(bodyPayload: payloadJsonObj, completionHandler)
         
     }
@@ -497,9 +487,9 @@ class LdsRestApi : RestAPI, LdsOrgApi {
         }
         var payloadJsonObj = lcrJsonPayload( forCalling: calling, inOrg: org, unitNum: unitNum )
         if calling.position.custom {
-            payloadJsonObj[LcrCallingJsonKeys.pendingDelete] = true.description as AnyObject
+            payloadJsonObj[LcrCallingJsonKeys.pendingDelete] = "true" as AnyObject
         } else {
-            payloadJsonObj[LcrCallingJsonKeys.hidden] = true.description as AnyObject
+            payloadJsonObj[LcrCallingJsonKeys.hidden] = "true" as AnyObject
 
         }
         payloadJsonObj[LcrCallingJsonKeys.positionTypeId] = calling.position.positionTypeId as AnyObject

@@ -13,8 +13,6 @@ import Foundation
  */
 public struct Position : JSONParsable {
     
-    static let defaultCustomPositionTypeId = 0
-    
     /// The position type ID that is assigned by CDOL
     let positionTypeId : Int
     
@@ -31,7 +29,7 @@ public struct Position : JSONParsable {
     
     let multiplesAllowed : Bool
     
-    let custom : Bool
+    let custom : Bool // custom 
     
     let displayOrder : Int?
     
@@ -72,7 +70,7 @@ public struct Position : JSONParsable {
     }
     
     init( customPosition name: String, inUnitNum unitNum: Int64? ) {
-        self.init(positionTypeId: Position.defaultCustomPositionTypeId, name: name, unitNum: unitNum, hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata(), custom: true)
+        self.init(positionTypeId: 0, name: name, unitNum: unitNum, hidden: false, multiplesAllowed: true, displayOrder: nil, metadata: PositionMetadata(), custom: true)
     }
     
     public init?(fromJSON json: JSONObject) {
@@ -123,7 +121,7 @@ public struct Position : JSONParsable {
 extension Position : Equatable {
     static public func == (lhs : Position, rhs : Position ) -> Bool {
         // if the positionTypeId is 0 or less then it's a custom position, that hasn't been assigned a positionTypeId from LCR, so those are always unique. Once it's been given a positionTypeId by LCR then we can use that
-        return lhs.positionTypeId > Position.defaultCustomPositionTypeId ? lhs.positionTypeId == rhs.positionTypeId : false
+        return lhs.positionTypeId > 0 ? lhs.positionTypeId == rhs.positionTypeId : false
     }
 }
 
