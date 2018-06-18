@@ -109,6 +109,31 @@ struct MemberClassFilter : MemberFilter {
 //        if let memberClassAssigned = member.member.classAssignment {
 //            includeInList = memberClass.contains(item: memberClassAssigned)
 //        }
+        if member.member.gender == Gender.Female, let assignedClass = member.member.classAssignment {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            let rootOrg = appDelegate?.callingManager.ldsOrgUnit
+            if let orgChildren = rootOrg?.children {
+                for childOrg in orgChildren {
+                    if assignedClass == childOrg.id {
+                        print("found org")
+                    }
+                }
+            }
+            
+            if assignedClass == MemberClass.ReliefSociety.hashValue {
+                currentMemberClass = .ReliefSociety
+            }
+            else if assignedClass == MemberClass.ReliefSociety.hashValue {
+                currentMemberClass = .Laurel
+            }
+            else if assignedClass == MemberClass.ReliefSociety.hashValue {
+                currentMemberClass = .MiaMaid
+            }
+            else if assignedClass == MemberClass.ReliefSociety.hashValue {
+                currentMemberClass = .Beehive
+            }
+        }
+            //This is the old way of filtering, before class assignment. It will be removed when the above code is fully working.
         if member.member.gender == Gender.Female, let age = member.member.age {
             if age >= 18 {
                 currentMemberClass = .ReliefSociety
@@ -122,12 +147,12 @@ struct MemberClassFilter : MemberFilter {
             else if age < 14 && age >= 12 {
                 currentMemberClass = .Beehive
             }
-            
-            // if they fit into one of the age based groups, then lookup whether that age based group was selected in the UI
-            if let memClass = currentMemberClass {
-                includeInList = memberClass.contains(item: memClass)
-            }
         }
+        // if they fit into one of the age based groups, then lookup whether that age based group was selected in the UI
+        if let memClass = currentMemberClass {
+            includeInList = memberClass.contains(item: memClass)
+        }
+    
         return includeInList
         
     }

@@ -98,6 +98,7 @@
 		3C6928301F50A80D00E209D9 /* RootTabBarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C69282F1F50A80D00E209D9 /* RootTabBarUITests.swift */; };
 		3C6A365B1EC23D4600A58C33 /* FilterTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6A365A1EC23D4600A58C33 /* FilterTableViewController.swift */; };
 		3C6A365E1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6A365D1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift */; };
+		3C6C5D7720D1D1D400C75651 /* LoginButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6C5D7620D1D1D400C75651 /* LoginButtonTableViewCell.swift */; };
 		3C7345F21F420FD500E1BF40 /* StatusSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7345F11F420FD500E1BF40 /* StatusSettingsViewController.swift */; };
 		3C76FBA11E52693B008C4A61 /* SingleFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */; };
 		3C8300F31E3698DD00FD0D34 /* CallingDetailsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */; };
@@ -305,6 +306,7 @@
 		3C69282F1F50A80D00E209D9 /* RootTabBarUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootTabBarUITests.swift; sourceTree = "<group>"; };
 		3C6A365A1EC23D4600A58C33 /* FilterTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterTableViewController.swift; path = Controllers/General/FilterTableViewController.swift; sourceTree = "<group>"; };
 		3C6A365D1EC24AFC00A58C33 /* FilterTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FilterTitleTableViewCell.swift; path = Controllers/TableViewCells/FilterCells/FilterTitleTableViewCell.swift; sourceTree = "<group>"; };
+		3C6C5D7620D1D1D400C75651 /* LoginButtonTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LoginButtonTableViewCell.swift; path = Controllers/TableViewCells/LoginButtonTableViewCell.swift; sourceTree = "<group>"; };
 		3C7345F11F420FD500E1BF40 /* StatusSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StatusSettingsViewController.swift; path = Controllers/StatusSettingsViewController.swift; sourceTree = "<group>"; };
 		3C76FBA01E52693B008C4A61 /* SingleFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SingleFieldTableViewCell.swift; path = Controllers/TableViewCells/SingleFieldTableViewCell.swift; sourceTree = "<group>"; };
 		3C8300F21E3698DD00FD0D34 /* CallingDetailsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CallingDetailsTableViewController.swift; path = Controllers/CallingDetailsTableViewController.swift; sourceTree = "<group>"; };
@@ -646,6 +648,7 @@
 				3C38B8901EFD798100436BF4 /* DirectoryTableViewCell.swift */,
 				3C20DF661DD3AFC100F9847E /* InputTableViewCell.swift */,
 				3CBDDCAD1E49345100F211F5 /* LeftTitleRightLabelTableViewCell.swift */,
+				3C6C5D7620D1D1D400C75651 /* LoginButtonTableViewCell.swift */,
 				E83B34931FE4521B0087564B /* MultiSelectTableViewCell.swift */,
 				3CEBAF471DD14AB20071BE9F /* NameCallingProposedTableViewCell.swift */,
 				3C9298B11E5E314000A6339B /* NotesTableViewCell.swift */,
@@ -1080,6 +1083,7 @@
 				3C3737B41F13DCB000D62C2E /* CallingPickerViewController.swift in Sources */,
 				3C3737B21F0FFD5600D62C2E /* CWFMapViewController.swift in Sources */,
 				3CEBAF431DCD0E010071BE9F /* DirectoryTableViewController.swift in Sources */,
+				3C6C5D7720D1D1D400C75651 /* LoginButtonTableViewCell.swift in Sources */,
 				E85E7EE61E53B6D700CE05CD /* MultiValueDictionary.swift in Sources */,
 				3C4E49B820904EF1008E75A5 /* OrgTableViewCell.swift in Sources */,
 				E87A9E7F1E01FC6A00A7A618 /* Utils.swift in Sources */,

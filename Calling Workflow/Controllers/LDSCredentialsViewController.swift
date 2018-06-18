@@ -25,10 +25,10 @@ struct LDSCredentialsVCEnums {
     
     enum CredentialsItemType : Int {
         case Username
-        case Password
+        case PasswordOrBtn
         case Btn
 
-        static let allValues = [Username, Password, Btn]
+        static let allValues = [Username, PasswordOrBtn, Btn]
 
         static var count : Int {
             get {
@@ -106,7 +106,7 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
         switch section {
         case LDSCredentialsVCEnums.SectionTypes.Credentials.rawValue:
             // if we're not signed in then we don't want to include a row for the sign out button
-            return signedIn ? LDSCredentialsVCEnums.CredentialsItemType.count : (LDSCredentialsVCEnums.CredentialsItemType.count - 1)
+            return signedIn ? (LDSCredentialsVCEnums.CredentialsItemType.count - 1) : LDSCredentialsVCEnums.CredentialsItemType.count
         case LDSCredentialsVCEnums.SectionTypes.Sync.rawValue:
             return 1
         default:
@@ -142,22 +142,30 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
 
                 self.userNameField = usernameCell?.inputField
                 initializeUsernameField( withUser: keychainDataDictionary?["username"])
-            case LDSCredentialsVCEnums.CredentialsItemType.Password.rawValue:
-                let passwordCell = tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath) as? InputTableViewCell
-                passwordCell?.inputField?.isSecureTextEntry = true
-                cell = passwordCell
+                
+            // In this case there are 2 possible cell types. If no user is logged in we want to display an input field for the password.
+            // If we are logged in we want to display a log out button only.
+            case LDSCredentialsVCEnums.CredentialsItemType.PasswordOrBtn.rawValue:
+                if !signedIn {
+                    let passwordCell = tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath) as? InputTableViewCell
+                    passwordCell?.inputField?.isSecureTextEntry = true
+                    cell = passwordCell
 
-                self.passwordField = passwordCell?.inputField
-                initializePasswordField(withPassword: keychainDataDictionary?["password"])
+                    self.passwordField = passwordCell?.inputField
+                    initializePasswordField(withPassword: keychainDataDictionary?["password"])
+                }
+                else {
+                    let logCell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath) as? LoginButtonTableViewCell
+                    logCell?.titleLabel.text = NSLocalizedString("Log Out", comment: "log out current user")
+                    cell = logCell
+                }
+                
+            // This case will only show when the user is logged out, and will show the login button.
             case LDSCredentialsVCEnums.CredentialsItemType.Btn.rawValue:
-                cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath)
-//            case LDSCredentialsVCEnums.CredentialsItemType.Btn.rawValue:
-//                cell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath)
-//                let btnText = NSLocalizedString("Sign Out", comment: "Sign Out")
-//                // the "button" is actually just a text label in the row. The sign-in button is defined in the storyboard. We don't currently have a component for it (although we probably should at some point, for these two buttons as well as the lds.org actions button on the calling details). So we just have to grab the label off the button and set the text (from "sign in" to "sign out...")
-//                if let btn = cell?.contentView.subviews.first(where: {$0 is UILabel}) as? UILabel {
-//                    btn.text = btnText
-//                }
+                let signInCell = tableView.dequeueReusableCell(withIdentifier: "buttonCell", for: indexPath) as? LoginButtonTableViewCell
+                signInCell?.titleLabel.text = NSLocalizedString("Log In", comment: "log in current user")
+                cell = signInCell
+
             default:
                 let inputCell = tableView.dequeueReusableCell(withIdentifier: "inputCell", for: indexPath) as? InputTableViewCell
                 inputCell?.textLabel?.text = nil
@@ -184,7 +192,15 @@ class LDSCredentialsTableViewController: CWFBaseTableViewController, ProcessingS
         switch indexPath.section {
         case LDSCredentialsVCEnums.SectionTypes.Credentials.rawValue:
             switch indexPath.row {
-                // no handler for username or password - the UITextField seems to consume the event, and even if it doesn't we were just doing the default action anyway
+            // no handler for username - the UITextField seems to consume the event, and even if it doesn't we were just doing the default action anyway
+            // if user is signed in we want to sign them out, if not the UITextField seems to consume the event, and we just want to deselect
+            case LDSCredentialsVCEnums.CredentialsItemType.PasswordOrBtn.rawValue:
+                if signedIn {
+                    userNameField?.resignFirstResponder()
+                    logOutLDSUser()
+                }
+                tableView.deselectRow(at: indexPath, animated: true)
+                
             case LDSCredentialsVCEnums.CredentialsItemType.Btn.rawValue:
                 userNameField?.resignFirstResponder()
                 passwordField?.resignFirstResponder()

@@ -132,7 +132,7 @@
                                     <outlet property="inputField" destination="dlM-sz-mRo" id="fkM-Bl-ctq"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="buttonCell" id="SRR-0M-jbL">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="buttonCell" id="SRR-0M-jbL" customClass="LoginButtonTableViewCell" customModule="Calling_Workflow" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="72" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SRR-0M-jbL" id="L7w-1D-nD3">
@@ -154,6 +154,9 @@
                                         <constraint firstAttribute="bottomMargin" secondItem="fVC-3h-mkp" secondAttribute="bottom" constant="3.5" id="u77-xG-DPV"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="titleLabel" destination="fVC-3h-mkp" id="r1q-56-YwR"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
